@@ -5,10 +5,10 @@
       <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
         <div class="container">
           <div class="row justify-content-center">
-            <div class="col-xl-8 d-flex flex-column align-items-center justify-content-center">
+            <div class="col-lg-5 d-flex flex-column align-items-center justify-content-center">
               <div class="d-flex justify-content-center py-4">
                 <a href="/" class="logo d-flex align-items-center w-auto">
-                  <!-- <img src="assets/logo.svg" alt=""> -->
+                  <img :src="logo" alt="">
                   <span class="d-none d-lg-block">TPA Dashbard</span>
                 </a>
               </div><!-- End Logo -->
@@ -45,7 +45,7 @@
                       <button class="btn btn-primary w-100" type="submit">Login</button>
                     </div>
                     <div class="col-12">
-                      <p class="small mb-0">Don't have account? <a href="pages-register.html">Create an account</a></p>
+                      <p class="small mb-0">Don't have account? <router-link tag="a" to="register">Create an account</router-link></p>
                     </div>
                   </form>
 
@@ -70,4 +70,5 @@
   </main><!-- End #main -->
 </template>
 <script setup>
+import logo from "@/assets/img/logo.png"
 </script>

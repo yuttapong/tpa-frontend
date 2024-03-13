@@ -1,7 +1,7 @@
 <template>
     <Header />
     <Sidebar />
-    <main>
+    <main id="main">
         <RouterView />
     </main>
     <Footer />

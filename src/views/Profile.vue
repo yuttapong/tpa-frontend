@@ -3,7 +3,7 @@
         <h1>Profile</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
                 <li class="breadcrumb-item">Users</li>
                 <li class="breadcrumb-item active">Profile</li>
             </ol>
@@ -18,7 +18,7 @@
                     <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
                         <img :src="profile" alt="Profile" class="rounded-circle">
-                        <h2>Kevin Anderson</h2>
+                        <h2>Yuttapong Napikun</h2>
                         <h3>Web Designer</h3>
                         <div class="social-links mt-2">
                             <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
@@ -324,3 +324,58 @@
 <script setup>
 import profile from "@/assets/img/profile-img.jpg"
 </script>
+<style lang="scss" scoped>
+/*--------------------------------------------------------------
+  # Profie Page
+  --------------------------------------------------------------*/
+.profile .profile-card img {
+    max-width: 120px;
+}
+
+.profile .profile-card h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c384e;
+    margin: 10px 0 0 0;
+}
+
+.profile .profile-card h3 {
+    font-size: 18px;
+}
+
+.profile .profile-card .social-links a {
+    font-size: 20px;
+    display: inline-block;
+    color: rgba(1, 41, 112, 0.5);
+    line-height: 0;
+    margin-right: 10px;
+    transition: 0.3s;
+}
+
+.profile .profile-card .social-links a:hover {
+    color: #012970;
+}
+
+.profile .profile-overview .row {
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.profile .profile-overview .card-title {
+    color: #012970;
+}
+
+.profile .profile-overview .label {
+    font-weight: 600;
+    color: rgba(1, 41, 112, 0.6);
+}
+
+.profile .profile-edit label {
+    font-weight: 600;
+    color: rgba(1, 41, 112, 0.6);
+}
+
+.profile .profile-edit img {
+    max-width: 120px;
+}
+</style>

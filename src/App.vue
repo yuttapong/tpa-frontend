@@ -5,13 +5,7 @@ import Navbar from "./components/layouts/Navbar.vue"
 </script>
 
 <template>
-  <main>
-    <Sidebar />
-    <Header />
-
-    <Footer />
-    <RouterView />
-  </main>
+  <RouterView />
 </template>
 
 

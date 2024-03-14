@@ -1,39 +1,22 @@
 <template>
     <div class="pagetitle">
-        <h1>Profile</h1>
+        <h1>Quotations</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-                <li class="breadcrumb-item">Users</li>
-                <li class="breadcrumb-item active">Profile</li>
+                <li class="breadcrumb-item active">Quotations</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
 
     <section class="section profile">
-        <div class="p-3" v-if="!row.id">
-        <spinner/>
+        <div class="p-3" v-if="items.length == 0">
+            <spinner />
         </div>
-        <div class="row"  v-if="row.id">
-            <div class="col-xl-4">
-                <div class="card">
-                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+        <div class="row" v-if="items">
 
-                        <img :src="avatar" alt="Profile" class="rounded-circle">
-                        <h2> {{ fullname }}</h2>
-                        <h3>Level : {{ row?.level }}</h3>
-                        <div class="social-links mt-2">
-                            <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-                            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-                            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-                            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-                        </div>
-                    </div>
-                </div>
 
-            </div>
-
-            <div class="col-xl-8">
+            <div class="col-xl-12">
 
                 <div class="card">
                     <div class="card-body pt-3">
@@ -61,62 +44,37 @@
                             </li>
 
                         </ul>
-                        <div class="tab-content pt-2" v-if="row.id">
+                        <div class="tab-content pt-2">
 
                             <div class="tab-pane fade show active profile-overview" id="profile-overview">
-                                <h5 class="card-title">About</h5>
-                                <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque
-                                    temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae
-                                    quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
 
-                                <h5 class="card-title">Profile Details</h5>
-
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label ">รหัสพนัก</div>
-                                    <div class="col-lg-9 col-md-8">{{ row.code }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label ">Full Name</div>
-                                    <div class="col-lg-9 col-md-8">{{ fullname }}</div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Company</div>
-                                    <div class="col-lg-9 col-md-8">Lueilwitz, Wisoky and Leuschke</div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Job</div>
-                                    <div class="col-lg-9 col-md-8">Web Designer</div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Country</div>
-                                    <div class="col-lg-9 col-md-8">USA</div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Address</div>
-                                    <div class="col-lg-9 col-md-8">A108 Adam Street, New York, NY 535022</div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Phone</div>
-                                    <div class="col-lg-9 col-md-8">(436) 486-3538 x29071</div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Email</div>
-                                    <div class="col-lg-9 col-md-8">k.anderson@example.com</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Permissions</div>
-                                    <div class="col-lg-9 col-md-8">
-                                        <span class="badge bg-light text-dark mx-1" v-for="(name,key) in row.permisions" :key="key">
-                                        {{ name}}</span>
-                                    </div>
-                                </div>
-
+                                <h5 class="card-title">Small tables</h5>
+                                <p>Add <code>.table-sm</code> to make any <code>.table</code> more compact by cutting all
+                                    cell padding in half.</p>
+                                <!-- Small tables -->
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Code</th>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Price</th>
+                                            <th scope="col">Customer</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in items" :key="index">
+                                            <th scope="row">{{ index + 1 }}</th>
+                                            <td>{{ item.code }}</td>
+                                            <td>{{ DateTime(new Date(item.document_date)) }}</td>
+                                            <td>{{ (item.total_price) }}</td>
+                                            <td><div>{{ item.address_name }}</div>
+                                            <small>({{ item.agent_name }})</small>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- End small tables -->
                             </div>
 
                             <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
@@ -339,13 +297,23 @@ import { onMounted, computed, ref } from "vue";
 import avatar from "@/assets/img/profile-img.jpg"
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
+import { DateTime, Number } from "@/helpers/myformat";
 const row = ref({})
+const items = ref({})
+const pagination = ref({})
 
 const loadData = async () => {
-    const { data } = await api.get("/v1/auth/me")
+    const { data } = await api.get("/v1/quotation")
     if (data) {
-        console.log(data.result)
-        row.value = data.result
+        console.log(data)
+        const p = {
+            total: data?.total,
+            page: data?.curent_page,
+            per_page: data?.per_page,
+            page_count: data?.last_page
+        }
+        pagination.value = p
+        items.value = data.data
     }
 
 }

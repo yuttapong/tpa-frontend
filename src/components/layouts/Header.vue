@@ -4,7 +4,7 @@
         <div class="d-flex align-items-center justify-content-between">
             <router-link tag="a" to="/" class="logo d-flex align-items-center">
                 <img :src="logo" alt="">
-                <span class="d-none d-lg-block">NiceAdmin</span>
+                <span class="d-none d-lg-block">AppCAL</span>
             </router-link>
             <i class="bi bi-list toggle-sidebar-btn" @click="toggleSidebar"></i>
         </div><!-- End Logo -->

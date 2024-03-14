@@ -1,0 +1,20 @@
+const locales = localStorage.getItem('lang')
+const myFormatLang = locales ? locales : 'th-TH'
+
+export const DateTime = (date, options) => {
+  let op = {
+    dateStyle: 'medium', //  full, long, medium, short
+    timeStyle: 'short', //  full, long, medium, short
+    timeZone: 'Australia/Sydney',
+    hourCycle: 'h24',
+    hideTime: false,
+    ...options
+  }
+  if (date) {
+    return new Intl.DateTimeFormat(myFormatLang, op).format(date)
+  }
+}
+
+export const Number = (number) => {
+  return Number(number) > 0 ? number.toLocaleSring() : 0
+}

@@ -25,7 +25,7 @@ const routes = [
       {
         path: 'quotations',
         name: 'quotations',
-        component: () => import('../views/Profile.vue')
+        component: () => import('../views/Quotations.vue')
       },
       {
         path: 'bills',
@@ -108,8 +108,7 @@ const routes = [
     component: () => import('../views/Error404.vue')
   }
 ]
-
 export default createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.VITE_BASE_URL),
   routes
 })

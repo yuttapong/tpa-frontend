@@ -86,8 +86,8 @@ const schema = yup.object({
 
 const { values, errors, defineField } = useForm(schema)
 
-const username = ref('user_lab_ee')
-const password = ref('1234')
+const username = ref('')
+const password = ref('')
 
 const login = (e) => {
   const params = {
@@ -95,11 +95,9 @@ const login = (e) => {
     password: password.value
   }
   api.post("v1/auth/login", params).then(rs => {
-    console.log(rs)
     const ep = rs.data.result.expire_time
     const token = rs.data.result.token
-    const epDay = ((ep/24)/60/60) || 0
-    console.log('token', token, ep,  epDay)
+    const epDay = ((ep / 24) / 60 / 60) || 0
     localStorage.setItem('expire_time', ep)
     localStorage.setItem('token', token)
     Cookies.set('tpa', token, { expires: epDay })

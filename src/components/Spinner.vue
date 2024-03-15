@@ -1,18 +1,16 @@
 <script setup>
 defineProps({
-  msg: {
-    type: String,
-    required: true
+  visible: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
 
 <template>
-  <span>
-    <div class="spinner-grow" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </span>
+  <div class="spinner-grow m-1" role="status" v-if="visible">
+    <span class="visually-hidden">Loading...</span>
+  </div>
 </template>
 
 <style scoped></style>

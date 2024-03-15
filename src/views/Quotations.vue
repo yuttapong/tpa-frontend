@@ -10,9 +10,7 @@
     </div><!-- End Page Title -->
 
     <section class="section profile">
-        <div class="p-3" v-if="items.length == 0">
-            <spinner />
-        </div>
+        <spinner :visible="loading" />
         <div class="row" v-if="items">
 
 
@@ -25,32 +23,29 @@
 
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#profile-overview">Overview</button>
+                                    data-bs-target="#qt-index">List</button>
                             </li>
 
                             <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit
-                                    Profile</button>
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-detail">Detail</button>
                             </li>
-
                             <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#profile-settings">Settings</button>
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-edit">Edit</button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#profile-change-password">Change Password</button>
+                                    data-bs-target="#qt-settings">Settings</button>
                             </li>
+
+
 
                         </ul>
                         <div class="tab-content pt-2">
 
-                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                            <div class="tab-pane fade show active qt-index" id="qt-index">
 
-                                <h5 class="card-title">Small tables</h5>
-                                <p>Add <code>.table-sm</code> to make any <code>.table</code> more compact by cutting all
-                                    cell padding in half.</p>
+
                                 <!-- Small tables -->
                                 <table class="table table-sm">
                                     <thead>
@@ -66,10 +61,14 @@
                                         <tr v-for="(item, index) in items" :key="index">
                                             <th scope="row">{{ index + 1 }}</th>
                                             <td>{{ item.code }}</td>
-                                            <td>{{ DateTime(new Date(item.document_date)) }}</td>
+                                            <td>
+                                                <span class="badge bg-light text-dark">{{ DateTime(new
+                                                    Date(item.document_date)) }}</span>
+                                            </td>
                                             <td>{{ (item.total_price) }}</td>
-                                            <td><div>{{ item.address_name }}</div>
-                                            <small>({{ item.agent_name }})</small>
+                                            <td>
+                                                <div>{{ item.address_name }}</div>
+                                                <small class="text-danger">({{ item.agent_name }})</small>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -77,7 +76,66 @@
                                 <!-- End small tables -->
                             </div>
 
-                            <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+                            <div class="tab-pane fade pt-3 qt-detail" id="qt-detail">
+
+                                <!--  Detail -->
+
+                                <h5 class="card-title">About</h5>
+                                <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque
+                                    temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae
+                                    quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
+
+                                <h5 class="card-title">Profile Details</h5>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">รหัสพนัก</div>
+                                    <div class="col-lg-9 col-md-8">{{ row.code }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Full Name</div>
+                                    <div class="col-lg-9 col-md-8">{{ fullname }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Company</div>
+                                    <div class="col-lg-9 col-md-8">Lueilwitz, Wisoky and Leuschke</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Job</div>
+                                    <div class="col-lg-9 col-md-8">Web Designer</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Country</div>
+                                    <div class="col-lg-9 col-md-8">USA</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Address</div>
+                                    <div class="col-lg-9 col-md-8">A108 Adam Street, New York, NY 535022</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Phone</div>
+                                    <div class="col-lg-9 col-md-8">(436) 486-3538 x29071</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Email</div>
+                                    <div class="col-lg-9 col-md-8">k.anderson@example.com</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Permissions</div>
+                                    <div class="col-lg-9 col-md-8">
+                                        <span class="badge bg-light text-dark mx-1" v-for="(name, key) in row.permisions"
+                                            :key="key">
+                                            {{ name }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade pt-3 qt-edit" id="qt-edit">
 
                                 <!-- Profile Edit Form -->
                                 <form>
@@ -201,7 +259,7 @@
 
                             </div>
 
-                            <div class="tab-pane fade pt-3" id="profile-settings">
+                            <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
 
                                 <!-- Settings Form -->
                                 <form>
@@ -301,6 +359,7 @@ import { DateTime, Number } from "@/helpers/myformat";
 const row = ref({})
 const items = ref({})
 const pagination = ref({})
+const loading = ref(true)
 
 const loadData = async () => {
     const { data } = await api.get("/v1/quotation")
@@ -315,6 +374,7 @@ const loadData = async () => {
         pagination.value = p
         items.value = data.data
     }
+    loading.value = false
 
 }
 const fullname = computed(() => row.value ? `${row.value?.name_th} ${row.value?.lastname_th}` : null)
@@ -323,57 +383,19 @@ onMounted(() => {
 })
 </script>
 <style lang="scss" scoped>
-/*--------------------------------------------------------------
-  # Profie Page
-  --------------------------------------------------------------*/
-.profile .profile-card img {
-    max-width: 120px;
-}
+.qt-detail {
+    .row {
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
 
-.profile .profile-card h2 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #2c384e;
-    margin: 10px 0 0 0;
-}
+    .card-title {
+        color: #012970;
+    }
 
-.profile .profile-card h3 {
-    font-size: 18px;
-}
-
-.profile .profile-card .social-links a {
-    font-size: 20px;
-    display: inline-block;
-    color: rgba(1, 41, 112, 0.5);
-    line-height: 0;
-    margin-right: 10px;
-    transition: 0.3s;
-}
-
-.profile .profile-card .social-links a:hover {
-    color: #012970;
-}
-
-.profile .profile-overview .row {
-    margin-bottom: 20px;
-    font-size: 15px;
-}
-
-.profile .profile-overview .card-title {
-    color: #012970;
-}
-
-.profile .profile-overview .label {
-    font-weight: 600;
-    color: rgba(1, 41, 112, 0.6);
-}
-
-.profile .profile-edit label {
-    font-weight: 600;
-    color: rgba(1, 41, 112, 0.6);
-}
-
-.profile .profile-edit img {
-    max-width: 120px;
+    .label {
+        font-weight: 600;
+        color: rgba(1, 41, 112, 0.6);
+    }
 }
 </style>

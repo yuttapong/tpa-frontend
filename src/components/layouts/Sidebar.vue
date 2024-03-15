@@ -17,14 +17,20 @@
 
       <li class="nav-item">
         <router-link to="/profile" class="nav-link collapsed">
-          <i class="bi bi-person"></i>
+          <i class="bi bi-person-lines-fill"></i>
           <span>Profile</span>
         </router-link>
       </li>
       <li class="nav-item">
         <router-link to="/customers" class="nav-link collapsed">
-          <i class="bi bi-file-person"></i>
+          <i class="bi bi-people"></i>
           <span>Customers</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/contacts" class="nav-link collapsed">
+          <i class="bi bi-person-vcard"></i>
+          <span>Contacts</span>
         </router-link>
       </li>
       <li class="nav-item">
@@ -40,11 +46,18 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/invoices" class="nav-link collapsed">
-          <i class="bi bi-file"></i>
-          <span>Invoices</span>
+        <router-link to="/Products" class="nav-link collapsed">
+          <i class="bi bi-star"></i>
+          <span>Products</span>
         </router-link>
       </li>
+      <li class="nav-item">
+        <router-link to="/staffs" class="nav-link collapsed">
+          <i class="bi bi-person-circle"></i>
+          <span>Staffs</span>
+        </router-link>
+      </li>
+
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-gear"></i>
@@ -60,7 +73,7 @@
           <li class="nav-item">
             <router-link to="/setting/permission" class="nav-link collapsed">
               <i class="bi bi-gear"></i>
-              <span>Permission</span>
+              <span>Role && Permission</span>
             </router-link>
           </li>
           <li class="nav-item">

@@ -1,39 +1,22 @@
 <template>
     <div class="pagetitle">
-        <h1>Profile</h1>
+        <h1>Roles & Permissions</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-                <li class="breadcrumb-item">Users</li>
-                <li class="breadcrumb-item active">Profile</li>
+                <li class="breadcrumb-item">Settings</li>
+                <li class="breadcrumb-item active">Roles & Permissions</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
 
     <section class="section profile">
-        <div class="p-3" v-if="!row.id">
-            <spinner :visible="loading" />
-        </div>
-        <div class="row" v-if="row.id">
-            <div class="col-xl-4">
-                <div class="card">
-                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+        <spinner :visible="loading" />
 
-                        <img :src="avatar" alt="Profile" class="rounded-circle">
-                        <h2> {{ fullname }}</h2>
-                        <h3>Level : {{ row?.level }}</h3>
-                        <div class="social-links mt-2">
-                            <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-                            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-                            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-                            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-                        </div>
-                    </div>
-                </div>
+        <div class="row" v-if="roles">
 
-            </div>
 
-            <div class="col-xl-8">
+            <div class="col-xl-12">
 
                 <div class="card">
                     <div class="card-body pt-3">
@@ -42,85 +25,94 @@
 
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#profile-overview">Overview</button>
-                            </li>
-
-                            <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit
-                                    Profile</button>
+                                    data-bs-target="#qt-role">Roles</button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#profile-settings">Settings</button>
+                                    data-bs-target="#qt-permission">Permistions</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-edit">Edit</button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#profile-change-password">Change Password</button>
+                                    data-bs-target="#qt-settings">Settings</button>
                             </li>
+
+
 
                         </ul>
-                        <div class="tab-content pt-2" v-if="row.id">
+                        <div class="tab-content pt-2">
 
-                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
-                                <h5 class="card-title">About</h5>
-                                <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque
-                                    temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae
-                                    quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
+                            <div class="tab-pane fade show active qt-role" id="qt-role">
 
-                                <h5 class="card-title">Profile Details</h5>
 
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label ">รหัสพนัก</div>
-                                    <div class="col-lg-9 col-md-8">{{ row.code }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label ">Full Name</div>
-                                    <div class="col-lg-9 col-md-8">{{ fullname }}</div>
-                                </div>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Name</th>
 
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Company</div>
-                                    <div class="col-lg-9 col-md-8">Lueilwitz, Wisoky and Leuschke</div>
-                                </div>
+                                            <th scope="col">Description</th>
 
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Job</div>
-                                    <div class="col-lg-9 col-md-8">Web Designer</div>
-                                </div>
 
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Country</div>
-                                    <div class="col-lg-9 col-md-8">USA</div>
-                                </div>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in roles" :key="index">
+                                            <th scope="row">{{ item.id }}</th>
+                                            <td>{{ item.name }}</td>
 
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Address</div>
-                                    <div class="col-lg-9 col-md-8">A108 Adam Street, New York, NY 535022</div>
-                                </div>
+                                            <td>
+                                                {{ item.name_th }}
 
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Phone</div>
-                                    <div class="col-lg-9 col-md-8">(436) 486-3538 x29071</div>
-                                </div>
+                                            </td>
 
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Email</div>
-                                    <div class="col-lg-9 col-md-8">k.anderson@example.com</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Permissions</div>
-                                    <div class="col-lg-9 col-md-8">
-                                        <span class="badge bg-light text-dark mx-1" v-for="(name, key) in row.permisions"
-                                            :key="key">
-                                            {{ name }}</span>
-                                    </div>
-                                </div>
 
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- End small tables -->
                             </div>
 
-                            <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+                            <div class="tab-pane fade pt-3 qt-permission" id="qt-permission">
+
+                                <!--  Detail -->
+
+
+
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Name</th>
+
+                                            <th scope="col">Description</th>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in permissions" :key="index">
+                                            <th scope="row">{{ item.id }}</th>
+                                            <td>{{ item.name }}</td>
+
+                                            <td>
+                                                {{ item.description_th }}
+
+                                            </td>
+
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="tab-pane fade pt-3 qt-edit" id="qt-edit">
 
                                 <!-- Profile Edit Form -->
                                 <form>
@@ -244,7 +236,7 @@
 
                             </div>
 
-                            <div class="tab-pane fade pt-3" id="profile-settings">
+                            <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
 
                                 <!-- Settings Form -->
                                 <form>
@@ -340,81 +332,49 @@ import { onMounted, computed, ref } from "vue";
 import avatar from "@/assets/img/profile-img.jpg"
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
-import { useRouter } from "vue-router";
+import { DateTime, Number } from "@/helpers/myformat";
 const row = ref({})
-const router = useRouter()
+const roles = ref([])
+const permissions = ref([])
 const loading = ref(true)
-const loadData = async () => {
-    try {
-        const { data } = await api.get("/v1/auth/me")
-        if (data) {
-            console.log(data.result)
-            row.value = data.result
-        }
-    } catch (error) {
-        console.log("error", error)
-        router.push("/login")
+
+const loadRoles = async () => {
+    const { data } = await api.get("/v2/roles")
+    if (data) {
+        roles.value = data
+
     }
     loading.value = false
+}
+const loadPermission = async () => {
+    loading.value = true;
+    const { data } = await api.get("/v2/permissions")
+    if (data) {
+        permissions.value = data
 
+    }
+    loading.value = false
 }
 const fullname = computed(() => row.value ? `${row.value?.name_th} ${row.value?.lastname_th}` : null)
 onMounted(() => {
-    loadData()
+    loadRoles()
+    loadPermission()
 })
 </script>
 <style lang="scss" scoped>
-/*--------------------------------------------------------------
-  # Profie Page
-  --------------------------------------------------------------*/
-.profile .profile-card img {
-    max-width: 120px;
-}
+.qt-detail {
+    .row {
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
 
-.profile .profile-card h2 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #2c384e;
-    margin: 10px 0 0 0;
-}
+    .card-title {
+        color: #012970;
+    }
 
-.profile .profile-card h3 {
-    font-size: 18px;
-}
-
-.profile .profile-card .social-links a {
-    font-size: 20px;
-    display: inline-block;
-    color: rgba(1, 41, 112, 0.5);
-    line-height: 0;
-    margin-right: 10px;
-    transition: 0.3s;
-}
-
-.profile .profile-card .social-links a:hover {
-    color: #012970;
-}
-
-.profile .profile-overview .row {
-    margin-bottom: 20px;
-    font-size: 15px;
-}
-
-.profile .profile-overview .card-title {
-    color: #012970;
-}
-
-.profile .profile-overview .label {
-    font-weight: 600;
-    color: rgba(1, 41, 112, 0.6);
-}
-
-.profile .profile-edit label {
-    font-weight: 600;
-    color: rgba(1, 41, 112, 0.6);
-}
-
-.profile .profile-edit img {
-    max-width: 120px;
+    .label {
+        font-weight: 600;
+        color: rgba(1, 41, 112, 0.6);
+    }
 }
 </style>

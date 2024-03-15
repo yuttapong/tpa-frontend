@@ -30,14 +30,38 @@ const routes = [
       {
         path: 'bills',
         name: 'bills',
-        component: () => import('../views/Profile.vue')
+        component: () => import('../views/Bills.vue')
       },
       {
         path: 'invoices',
         name: 'invoices',
         component: () => import('../views/Profile.vue')
       },
-
+      {
+        path: 'products',
+        name: 'products',
+        component: () => import('../views/Products.vue')
+      },
+      {
+        path: 'stdinstruments',
+        name: 'stdinstruments',
+        component: () => import('../views/StandardInstruments.vue')
+      },
+      {
+        path: 'staffs',
+        name: 'staffs',
+        component: () => import('../views/Staffs.vue')
+      },
+      {
+        path: 'customers',
+        name: 'customers',
+        component: () => import('../views/Customers.vue')
+      },
+      {
+        path: 'contacts',
+        name: 'contacts',
+        component: () => import('../views/Contacts.vue')
+      },
       {
         path: 'home',
         name: 'home',
@@ -54,22 +78,22 @@ const routes = [
       {
         path: 'setting/staff',
         name: 'setting.staff',
-        component: () => import('../views/Error404.vue')
+        component: () => import('../views/Staffs.vue')
       },
       {
         path: 'setting/permission',
         name: 'setting.permission',
-        component: () => import('../views/Error404.vue')
+        component: () => import('../views/Roles.vue')
       },
       {
         path: 'setting/product',
         name: 'setting.product',
-        component: () => import('../views/Error404.vue')
+        component: () => import('../views/Products.vue')
       },
       {
         path: 'setting/stdinstrument',
         name: 'setting.stdinstrument',
-        component: () => import('../views/Error404.vue')
+        component: () => import('../views/StandardInstruments.vue')
       }
     ]
   },

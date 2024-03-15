@@ -16,5 +16,6 @@ export const DateTime = (date, options) => {
 }
 
 export const Number = (number) => {
-  return Number(number) > 0 ? number.toLocaleSring() : 0
+  console.log(typeof number)
+  return number ? number : 0
 }

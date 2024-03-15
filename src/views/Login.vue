@@ -78,16 +78,18 @@ import { DateTime } from "@/helpers/myformat"
 import { ref, computed } from "vue"
 import { api } from "@/helpers/api"
 import Cookies from 'js-cookie'
+import { useRouter } from "vue-router";
 
 const schema = yup.object({
   email: yup.string().required().email(),
   password: yup.string().required().min(6),
 });
+const router = useRouter()
 
 const { values, errors, defineField } = useForm(schema)
 
-const username = ref('')
-const password = ref('')
+const username = ref('Surin.Y')
+const password = ref('1234')
 
 const login = (e) => {
   const params = {
@@ -95,19 +97,21 @@ const login = (e) => {
     password: password.value
   }
   api.post("v1/auth/login", params).then(rs => {
-    const ep = rs.data.result.expire_time
-    const token = rs.data.result.token
-    const epDay = ((ep / 24) / 60 / 60) || 0
-    localStorage.setItem('expire_time', ep)
-    localStorage.setItem('token', token)
-    Cookies.set('tpa', token, { expires: epDay })
-
     if (rs.data) {
-
+      const ep = rs.data.result.expire_time
+      const token = rs.data.result.token
+      const epDay = ((ep / 24) / 60 / 60) || 0
+      localStorage.setItem('expire_time', ep)
+      localStorage.setItem('token', token)
+      Cookies.set('tpa', token, { expires: epDay })
+      router.replace("/")
     }
   }).catch((err) => {
     const status = err.response.status === 401
     console.log(err)
+    Cookies.remove('tpa')
+    localStorage.removeItem("expire_time")
+    localStorage.removeItem("token")
     if (status === 401) {
       console.log(err)
     }

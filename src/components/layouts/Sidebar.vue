@@ -12,15 +12,9 @@
       </li><!-- End Dashboard Nav -->
 
 
-
       <li class="nav-heading">Pages</li>
 
-      <li class="nav-item">
-        <router-link to="/profile" class="nav-link collapsed">
-          <i class="bi bi-person-lines-fill"></i>
-          <span>Profile</span>
-        </router-link>
-      </li>
+
       <li class="nav-item">
         <router-link to="/customers" class="nav-link collapsed">
           <i class="bi bi-people"></i>
@@ -31,6 +25,24 @@
         <router-link to="/contacts" class="nav-link collapsed">
           <i class="bi bi-person-vcard"></i>
           <span>Contacts</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/products" class="nav-link collapsed">
+          <i class="bi bi-box"></i>
+          <span>Products</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/stdinstruments" class="nav-link collapsed">
+          <i class="bi bi-box"></i>
+          <span>Standard Instruments</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/staffs" class="nav-link collapsed">
+          <i class="bi bi-person-circle"></i>
+          <span>Staffs</span>
         </router-link>
       </li>
       <li class="nav-item">
@@ -46,17 +58,12 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/Products" class="nav-link collapsed">
-          <i class="bi bi-star"></i>
-          <span>Products</span>
+        <router-link to="/invoices" class="nav-link collapsed">
+          <i class="bi bi-file"></i>
+          <span>Invoices</span>
         </router-link>
       </li>
-      <li class="nav-item">
-        <router-link to="/staffs" class="nav-link collapsed">
-          <i class="bi bi-person-circle"></i>
-          <span>Staffs</span>
-        </router-link>
-      </li>
+
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
@@ -76,18 +83,7 @@
               <span>Role && Permission</span>
             </router-link>
           </li>
-          <li class="nav-item">
-            <router-link to="/setting/product" class="nav-link collapsed">
-              <i class="bi bi-gear"></i>
-              <span>Product</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/setting/stdinstrument" class="nav-link collapsed">
-              <i class="bi bi-gear"></i>
-              <span>Standard Instrument</span>
-            </router-link>
-          </li>
+
 
         </ul>
       </li>
@@ -106,7 +102,12 @@
         </router-link>
       </li>
       <!-- End Login Page Nav -->
-
+      <li class="nav-item">
+        <router-link to="/profile" class="nav-link collapsed">
+          <i class="bi bi-person-lines-fill"></i>
+          <span>Profile</span>
+        </router-link>
+      </li>
       <li class="nav-item">
         <router-link tag="a" to="/error403" class="nav-link collapsed">
           <i class="bi bi-dash-circle"></i>

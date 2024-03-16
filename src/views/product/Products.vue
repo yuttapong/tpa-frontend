@@ -1,18 +1,16 @@
 <template>
     <div class="pagetitle">
-        <h1>Cusomers</h1>
+        <h1>Products</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-                <li class="breadcrumb-item active">Cusomers</li>
+                <li class="breadcrumb-item active">Products</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
 
     <section class="section profile">
-
         <spinner :visible="loading" />
-
 
         <div class="row" v-if="items">
 
@@ -26,15 +24,18 @@
 
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#qt-index">Customers</button>
+                                    data-bs-target="#qt-index">List</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab"
+                                    data-bs-target="#tab-category">Category</button>
                             </li>
 
                             <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-category">Customer
-                                    Types</button>
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-detail">Detail</button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-edit"></button>
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-edit">Edit</button>
                             </li>
 
                             <li class="nav-item">
@@ -50,49 +51,73 @@
                             <div class="tab-pane fade show active qt-index" id="qt-index">
 
 
-                                <table class="table table-sm">
+
+                                <!-- Small tables -->
+                                <table class="table table-sm table-striped">
                                     <thead>
                                         <tr>
-                                            <th scope="col">ID</th>
-
-
+                                            <th scope="col">#</th>
+                                            <th scope="col">Code</th>
                                             <th scope="col">Name</th>
-                                            <th scope="col">ที่อยู่</th>
-                                            <th scope="col">Created</th>
+                                            <th scope="col">CalPoint</th>
+                                            <th scope="col">CalHour</th>
+                                            <th scope="col">CalPrice</th>
+                                            <th scope="col">Lab/Sub Lab</th>
+                                            <th scope="col">action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(item, index) in items" :key="index">
-                                            <th scope="row">{{ item.id }}</th>
-
-
+                                            <th scope="row">{{ index + 1 }}</th>
                                             <td>
-                                                {{ item.companyname }}<br />
-                                                <span class="badge bg-light text-danger">{{ item.companynameen }}</span>
-                                                <p>
-                                                    <span class="badge bg-info text-white"
-                                                        v-if="item.is_company == 'yes'">Company</span>
-                                                    <span class="badge bg-light text-dark p-2 mx-1"><i
-                                                            class="bt bi-phone"></i>
-                                                        {{
-                                                            item.phone }}</span>
-                                                    <span class="badge bg-war text-dark p-2 mx-1"> <i
-                                                            class="bi bi-person-vcard"></i> {{
-                                                                item.taxnumber }}</span>
-                                                </p>
+                                                <span class="badge bg-dark text-light">{{ item.code }}</span>
                                             </td>
-                                            <td>{{ item.province }}</td>
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ item.calpoint }}</td>
+                                            <td>{{ item.calhour }}</td>
+                                            <td>{{ item.calprice }}</td>
                                             <td>
-                                                <!-- <span class="badge bg-light text-dark">{{ DateTime(new
-                                                Date(item.datestart))
-                                            }}</span> -->
+                                                <small class="fw-bold">{{ item.lab.name }}</small>
+                                                <div>{{ item.sublab.name }}</div>
                                             </td>
+                                            <td>
 
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <!-- End small tables -->
                             </div>
+                            <div class="tab-pane fade  tab-category" id="tab-category">
+
+
+
+                                <!-- Small tables -->
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Code</th>
+                                            <th scope="col">Name</th>
+
+
+                                            <th scope="col">action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in items" :key="index">
+                                            <th scope="row">{{ index + 1 }}</th>
+                                            <td>{{ item.code }}</td>
+                                            <td>{{ item.name }}</td>
+                                            <td>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- End small tables -->
+                            </div>
+
 
                             <div class="tab-pane fade pt-3 qt-detail" id="qt-detail">
 
@@ -280,7 +305,7 @@
                             <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
 
                                 <!-- Settings Form -->
-                                <form>
+                                <form @submit.prevent="() => { }">
 
                                     <div class="row mb-3">
                                         <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email
@@ -375,23 +400,27 @@ import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { DateTime, Number } from "@/helpers/myformat";
 const row = ref({})
-const items = ref([])
+const items = ref({})
 const pagination = ref({})
 const loading = ref(true)
+
+
 const loadData = async () => {
-    const { data } = await api.get("/v2/customers")
+    const { data, curent_page, last_page, per_page, total } = await api.get("/v2/products")
     if (data) {
 
         const p = {
-            total: data.total,
-            page: data.curent_page,
-            per_page: data.per_page,
-            page_count: data.last_page
+            total: total,
+            page: curent_page,
+            per_page: per_page,
+            page_count: last_page
         }
         pagination.value = p
         items.value = data.data
-        loading.value = false
+
+
     }
+    loading.value = false
 
 }
 const fullname = computed(() => row.value ? `${row.value?.name_th} ${row.value?.lastname_th}` : null)

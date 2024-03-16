@@ -1,17 +1,16 @@
 <template>
     <div class="pagetitle">
-        <h1>Products</h1>
+        <h1>Quotations</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-                <li class="breadcrumb-item active">Products</li>
+                <li class="breadcrumb-item active">Quotations</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
 
     <section class="section profile">
         <spinner :visible="loading" />
-
         <div class="row" v-if="items">
 
 
@@ -25,10 +24,6 @@
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
                                     data-bs-target="#qt-index">List</button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#tab-category">Category</button>
                             </li>
 
                             <li class="nav-item">
@@ -51,64 +46,35 @@
                             <div class="tab-pane fade show active qt-index" id="qt-index">
 
 
-
-                                <!-- Small tables -->
-                                <table class="table table-sm table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Code</th>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Lab/Sub Lab</th>
-                                            <th scope="col">action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(item, index) in items" :key="index">
-                                            <th scope="row">{{ index + 1 }}</th>
-                                            <td>{{ item.code }}</td>
-                                            <td>{{ item.name }}</td>
-                                            <td>
-                                                <small class="fw-bold">{{ item.lab.name }}</small>
-                                                <div>{{ item.sublab.name }}</div>
-                                            </td>
-                                            <td>
-
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <!-- End small tables -->
-                            </div>
-                            <div class="tab-pane fade  tab-category" id="tab-category">
-
-
-
                                 <!-- Small tables -->
                                 <table class="table table-sm">
                                     <thead>
                                         <tr>
                                             <th scope="col">#</th>
                                             <th scope="col">Code</th>
-                                            <th scope="col">Name</th>
-
-                                            <th scope="col">action</th>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Price</th>
+                                            <th scope="col">Customer</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(item, index) in items" :key="index">
                                             <th scope="row">{{ index + 1 }}</th>
                                             <td>{{ item.code }}</td>
-                                            <td>{{ item.name }}</td>
                                             <td>
-
+                                                <span class="badge bg-light text-dark">{{ DateTime(new
+                                                    Date(item.document_date)) }}</span>
+                                            </td>
+                                            <td>{{ (item.total_price) }}</td>
+                                            <td>
+                                                <div>{{ item.address_name }}</div>
+                                                <small class="text-danger">({{ item.agent_name }})</small>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <!-- End small tables -->
                             </div>
-
 
                             <div class="tab-pane fade pt-3 qt-detail" id="qt-detail">
 
@@ -173,19 +139,7 @@
 
                                 <!-- Profile Edit Form -->
                                 <form>
-                                    <div class="row mb-3">
-                                        <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
-                                            Image</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <img :src="avatar" alt="Profile">
-                                            <div class="pt-2 btn-group">
-                                                <a href="#" class="btn btn-primary btn-sm"
-                                                    title="Upload new profile image"><i class="bi bi-upload"></i></a>
-                                                <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i
-                                                        class="bi bi-trash"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
+
 
                                     <div class="row mb-3">
                                         <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
@@ -296,7 +250,7 @@
                             <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
 
                                 <!-- Settings Form -->
-                                <form>
+                                <form @submit.prevent="() => { }">
 
                                     <div class="row mb-3">
                                         <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email
@@ -395,21 +349,18 @@ const items = ref({})
 const pagination = ref({})
 const loading = ref(true)
 
-
 const loadData = async () => {
-    const { data, curent_page, last_page, per_page, total } = await api.get("/v2/products")
+    const { data } = await api.get("/v1/quotation")
     if (data) {
-
+        console.log(data)
         const p = {
-            total: total,
-            page: curent_page,
-            per_page: per_page,
-            page_count: last_page
+            total: data?.total,
+            page: data?.curent_page,
+            per_page: data?.per_page,
+            page_count: data?.last_page
         }
         pagination.value = p
         items.value = data.data
-
-
     }
     loading.value = false
 

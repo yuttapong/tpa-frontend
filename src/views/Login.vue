@@ -49,11 +49,7 @@
                       <p class="small mb-0">Don't have account? <router-link tag="a" to="register">Create an
                           account</router-link></p>
                     </div>
-                    {{ values }}
-                    <br>
-                    Now: {{ nowDat }}
-                    <br>
-                    username : {{ username }} / pwd: {{ password }}
+
                   </form>
 
                 </div>

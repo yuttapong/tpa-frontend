@@ -140,19 +140,7 @@
 
                                 <!-- Profile Edit Form -->
                                 <form>
-                                    <div class="row mb-3">
-                                        <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
-                                            Image</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <img :src="avatar" alt="Profile">
-                                            <div class="pt-2 btn-group">
-                                                <a href="#" class="btn btn-primary btn-sm"
-                                                    title="Upload new profile image"><i class="bi bi-upload"></i></a>
-                                                <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i
-                                                        class="bi bi-trash"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
+
 
                                     <div class="row mb-3">
                                         <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
@@ -263,7 +251,7 @@
                             <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
 
                                 <!-- Settings Form -->
-                                <form>
+                                <form @submit.prevent="() => { }">
 
                                     <div class="row mb-3">
                                         <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email

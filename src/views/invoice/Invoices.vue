@@ -1,19 +1,19 @@
 <template>
     <div class="pagetitle">
-        <h1>Roles & Permissions</h1>
+        <h1>Invoices</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-                <li class="breadcrumb-item">Settings</li>
-                <li class="breadcrumb-item active">Roles & Permissions</li>
+                <li class="breadcrumb-item active">Invoices</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
 
     <section class="section profile">
+
         <spinner :visible="loading" />
 
-        <div class="row" v-if="roles">
+        <div class="row" v-if="items">
 
 
             <div class="col-xl-12">
@@ -25,12 +25,11 @@
 
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#qt-role">Roles</button>
+                                    data-bs-target="#qt-index">Invoices</button>
                             </li>
 
                             <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#qt-permission">Permistions</button>
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-detail">Detail</button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-edit">Edit</button>
@@ -46,89 +45,102 @@
                         </ul>
                         <div class="tab-content pt-2">
 
-                            <div class="tab-pane fade show active qt-role" id="qt-role">
+                            <div class="tab-pane fade show active qt-index" id="qt-index">
 
-
+                                <!-- Small tables -->
                                 <table class="table table-sm">
                                     <thead>
                                         <tr>
-                                            <th scope="col">ID</th>
-                                            <th scope="col">Name</th>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Code</th>
+                                            <th scope="col">Date</th>
 
-                                            <th scope="col">Description</th>
-
-
+                                            <th scope="col">Customer</th>
+                                            <th scope="col">Approve Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(item, index) in roles" :key="index">
-                                            <th scope="row">{{ item.id }}</th>
-                                            <td>{{ item.name }}</td>
+                                        <tr v-for="(item, index) in items" :key="index">
+                                            <th scope="row">{{ index + 1 }}</th>
+                                            <td>{{ item.code }}</td>
+                                            <td> <span class="badge bg-light text-dark">{{ DateTime(new
+                                                Date(item.document_date)) }}</span></td>
 
                                             <td>
-                                                {{ item.name_th }}
-
+                                                <div>{{ item.customer_name }}</div>
+                                                <small class="text-danger">({{ item.agent_name }})</small>
                                             </td>
-
-
-
+                                            <td>{{ item.approve_status }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <!-- End small tables -->
                             </div>
 
-                            <div class="tab-pane fade pt-3 qt-permission" id="qt-permission">
+                            <div class="tab-pane fade pt-3 qt-detail" id="qt-detail">
 
                                 <!--  Detail -->
 
+                                <h5 class="card-title">About</h5>
+                                <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque
+                                    temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae
+                                    quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
 
+                                <h5 class="card-title">Profile Details</h5>
 
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">ID</th>
-                                            <th scope="col">Name</th>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">รหัสพนัก</div>
+                                    <div class="col-lg-9 col-md-8">{{ row.code }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Full Name</div>
+                                    <div class="col-lg-9 col-md-8">{{ fullname }}</div>
+                                </div>
 
-                                            <th scope="col">Description</th>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Company</div>
+                                    <div class="col-lg-9 col-md-8">Lueilwitz, Wisoky and Leuschke</div>
+                                </div>
 
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Job</div>
+                                    <div class="col-lg-9 col-md-8">Web Designer</div>
+                                </div>
 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(item, index) in permissions" :key="index">
-                                            <th scope="row">{{ item.id }}</th>
-                                            <td>{{ item.name }}</td>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Country</div>
+                                    <div class="col-lg-9 col-md-8">USA</div>
+                                </div>
 
-                                            <td>
-                                                {{ item.description_th }}
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Address</div>
+                                    <div class="col-lg-9 col-md-8">A108 Adam Street, New York, NY 535022</div>
+                                </div>
 
-                                            </td>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Phone</div>
+                                    <div class="col-lg-9 col-md-8">(436) 486-3538 x29071</div>
+                                </div>
 
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Email</div>
+                                    <div class="col-lg-9 col-md-8">k.anderson@example.com</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Permissions</div>
+                                    <div class="col-lg-9 col-md-8">
+                                        <span class="badge bg-light text-dark mx-1" v-for="(name, key) in row.permisions"
+                                            :key="key">
+                                            {{ name }}</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="tab-pane fade pt-3 qt-edit" id="qt-edit">
 
                                 <!-- Profile Edit Form -->
                                 <form>
-                                    <div class="row mb-3">
-                                        <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
-                                            Image</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <img :src="avatar" alt="Profile">
-                                            <div class="pt-2 btn-group">
-                                                <a href="#" class="btn btn-primary btn-sm"
-                                                    title="Upload new profile image"><i class="bi bi-upload"></i></a>
-                                                <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i
-                                                        class="bi bi-trash"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
+
 
                                     <div class="row mb-3">
                                         <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
@@ -239,7 +251,7 @@
                             <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
 
                                 <!-- Settings Form -->
-                                <form>
+                                <form @submit.prevent="() => { }">
 
                                     <div class="row mb-3">
                                         <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email
@@ -334,31 +346,29 @@ import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { DateTime, Number } from "@/helpers/myformat";
 const row = ref({})
-const roles = ref([])
-const permissions = ref([])
+const items = ref({})
+const pagination = ref({})
 const loading = ref(true)
 
-const loadRoles = async () => {
-    const { data } = await api.get("/v2/roles")
+const loadData = async () => {
+    const { data } = await api.get("/v1/invoice")
     if (data) {
-        roles.value = data
-
+        console.log(data)
+        const p = {
+            total: data?.total,
+            page: data?.curent_page,
+            per_page: data?.per_page,
+            page_count: data?.last_page
+        }
+        pagination.value = p
+        items.value = data.result
+        loading.value = false
     }
-    loading.value = false
-}
-const loadPermission = async () => {
-    loading.value = true;
-    const { data } = await api.get("/v2/permissions")
-    if (data) {
-        permissions.value = data
 
-    }
-    loading.value = false
 }
 const fullname = computed(() => row.value ? `${row.value?.name_th} ${row.value?.lastname_th}` : null)
 onMounted(() => {
-    loadRoles()
-    loadPermission()
+    loadData()
 })
 </script>
 <style lang="scss" scoped>

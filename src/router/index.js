@@ -25,42 +25,42 @@ const routes = [
       {
         path: 'quotations',
         name: 'quotations',
-        component: () => import('../views/Quotations.vue')
+        component: () => import('../views/quotation/Quotations.vue')
       },
       {
         path: 'bills',
         name: 'bills',
-        component: () => import('../views/Bills.vue')
+        component: () => import('../views/bill/Bills.vue')
       },
       {
         path: 'invoices',
         name: 'invoices',
-        component: () => import('../views/Profile.vue')
+        component: () => import('../views/invoice/Invoices.vue')
       },
       {
         path: 'products',
         name: 'products',
-        component: () => import('../views/Products.vue')
+        component: () => import('../views/product/Products.vue')
       },
       {
         path: 'stdinstruments',
         name: 'stdinstruments',
-        component: () => import('../views/StandardInstruments.vue')
+        component: () => import('../views/stdinstrument/StandardInstruments.vue')
       },
       {
         path: 'staffs',
         name: 'staffs',
-        component: () => import('../views/Staffs.vue')
+        component: () => import('../views/staff/Staffs.vue')
       },
       {
         path: 'customers',
         name: 'customers',
-        component: () => import('../views/Customers.vue')
+        component: () => import('../views/customer/Customers.vue')
       },
       {
         path: 'contacts',
         name: 'contacts',
-        component: () => import('../views/Contacts.vue')
+        component: () => import('../views/contact/Contacts.vue')
       },
       {
         path: 'home',
@@ -78,22 +78,22 @@ const routes = [
       {
         path: 'setting/staff',
         name: 'setting.staff',
-        component: () => import('../views/Staffs.vue')
+        component: () => import('../views/staff/Staffs.vue')
       },
       {
         path: 'setting/permission',
         name: 'setting.permission',
-        component: () => import('../views/Roles.vue')
+        component: () => import('../views/role/Roles.vue')
       },
       {
         path: 'setting/product',
         name: 'setting.product',
-        component: () => import('../views/Products.vue')
+        component: () => import('../views/product/Products.vue')
       },
       {
         path: 'setting/stdinstrument',
         name: 'setting.stdinstrument',
-        component: () => import('../views/StandardInstruments.vue')
+        component: () => import('../views/stdinstrument/StandardInstruments.vue')
       }
     ]
   },
@@ -110,26 +110,26 @@ const routes = [
   {
     path: '/error401',
     name: 'error401',
-    component: () => import('../views/Error401.vue')
+    component: () => import('../views/error/Error401.vue')
   },
   {
     path: '/error403',
     name: 'error403',
-    component: () => import('../views/Error403.vue')
+    component: () => import('../views/error/Error403.vue')
   },
   {
     path: '/error404',
     name: 'error404',
-    component: () => import('../views/Error404.vue')
+    component: () => import('../views/error/Error404.vue')
   },
   {
     path: '/error500',
     name: 'error500',
-    component: () => import('../views/Error500.vue')
+    component: () => import('../views/error/Error500.vue')
   },
   {
     path: '/:pathMatch(.*)*',
-    component: () => import('../views/Error404.vue')
+    component: () => import('../views/error/Error404.vue')
   }
 ]
 export default createRouter({

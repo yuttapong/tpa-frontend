@@ -10,7 +10,8 @@ import router from './router'
 import './scss/styles.scss'
 
 // Import all of Bootstrap's JS
-import * as bootstrap from 'bootstrap'
+import 'bootstrap'
+import '@popperjs/core'
 import '@/assets/js/layout.js'
 import 'bootstrap-icons/font/bootstrap-icons.min.css'
 import Quill from 'quill'

@@ -63,6 +63,12 @@
           <span>Invoices</span>
         </router-link>
       </li>
+      <li class="nav-item">
+        <router-link to="/certificates" class="nav-link collapsed">
+          <i class="bi bi-file"></i>
+          <span>Certificates</span>
+        </router-link>
+      </li>
 
 
       <li class="nav-item">

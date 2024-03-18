@@ -48,32 +48,34 @@
                             <div class="tab-pane fade show active qt-index" id="qt-index">
 
                                 <!-- Small tables -->
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Code</th>
-                                            <th scope="col">Date</th>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Code</th>
+                                                <th scope="col">Date</th>
 
-                                            <th scope="col">Customer</th>
-                                            <th scope="col">Progress Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(item, index) in items" :key="index">
-                                            <th scope="row">{{ index + 1 }}</th>
-                                            <td>{{ item.code }}</td>
-                                            <td> <span class="badge bg-light text-dark">{{ DateTime(new
-                                                Date(item.document_date)) }}</span></td>
+                                                <th scope="col">Customer</th>
+                                                <th scope="col">Progress Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item, index) in items" :key="index">
+                                                <th scope="row">{{ index + 1 }}</th>
+                                                <td>{{ item.code }}</td>
+                                                <td> <span class="badge bg-light text-dark">{{ DateTime(new
+                                                    Date(item.document_date)) }}</span></td>
 
-                                            <td>
-                                                <div>{{ item.customer.companyname }}</div>
-                                                <small class="text-danger">({{ item.agent_name }})</small>
-                                            </td>
-                                            <td>{{ item.progress_status }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                <td>
+                                                    <div>{{ item.customer.companyname }}</div>
+                                                    <small class="text-danger">({{ item.agent_name }})</small>
+                                                </td>
+                                                <td>{{ item.progress_status }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                                 <!-- End small tables -->
                             </div>
 
@@ -82,8 +84,10 @@
                                 <!--  Detail -->
 
                                 <h5 class="card-title">About</h5>
-                                <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque
-                                    temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae
+                                <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores
+                                    cumque
+                                    temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum
+                                    quae
                                     quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
 
                                 <h5 class="card-title">Profile Details</h5>

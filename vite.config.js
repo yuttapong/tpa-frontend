@@ -9,7 +9,8 @@ export default defineConfig({
   plugins: [vue(), VueDevTools()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '~bootstrap': resolve(__dirname, 'node_modules/bootstrap')
     }
   },
   base: process.env.MODE === 'development' ? '/' : process.env.VITE_BASE_URL

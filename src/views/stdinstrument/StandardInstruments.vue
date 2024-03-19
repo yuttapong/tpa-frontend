@@ -67,6 +67,44 @@
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active" id="tab-instrument">
+                <!-- <Offcanvas :id="canvas_intrument" v-model="visibleCanvasIntrument">
+                  <template #title>
+                    <h3>เครื่องมือมาตรฐาน</h3>
+                  </template>
+                  <template #body>
+                    Content for the offcanvas goes here. You can place just about any Bootstrap
+                    component or custom elements here.
+                  </template>
+                </Offcanvas> -->
+                <div
+                  class="offcanvas offcanvas-end"
+                  tabindex="-1"
+                  id="offcanvas"
+                  aria-labelledby="offcanvasLabel"
+                >
+                  <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasLabel">Offcanvas</h5>
+                    <button
+                      type="button"
+                      class="btn-close text-reset"
+                      data-bs-dismiss="offcanvas"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="offcanvas-body">
+                    Content for the offcanvas goes here. You can place just about any Bootstrap
+                    component or custom elements here.
+                  </div>
+                </div>
+                <!-- <a
+                  class="btn btn-primary"
+                  data-bs-toggle="offcanvas"
+                  href="#canvas_intrument"
+                  role="button"
+                  aria-controls="canvas_intrument"
+                >
+                  Link with href
+                </a> -->
                 <div class="table-responsive">
                   <table class="table table-sm table-striped">
                     <thead>
@@ -88,7 +126,9 @@
                           </span>
                         </td>
                         <td>
-                          {{ item.standardname }}
+                          <a role="button" class="btn btn-link" @click="viewInstrument(item)">
+                            {{ item.standardname }}</a
+                          >
                           <div>
                             <span class="badge bg-light text-dark mx-1 p-2">
                               SN. {{ item.serail }}</span
@@ -117,16 +157,23 @@
                     <thead>
                       <tr>
                         <th scope="col" class="fw-bold text-decoration-underline">ID</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Name</th>
-
-                        <th scope="col" class="fw-bold text-decoration-underline">action</th>
+                        <th
+                          scope="col"
+                          class="fw-bold text-decoration-underline"
+                          style="width: 100px"
+                        >
+                          Name
+                        </th>
+                        <th scope="col" class="fw-bold text-decoration-underline">Lab</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">Sub Lab</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="(item, index) in groups" :key="index">
                         <th scope="row">{{ item.id }}</th>
                         <td>{{ item.name }}</td>
-                        <td></td>
+                        <td>{{ item.lab_id }}</td>
+                        <td>{{ item.sublab_id }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -536,6 +583,95 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
         </div>
       </div>
     </div>
+
+    <div
+      class="modal fade"
+      id="exampleModal"
+      ref="modalRef"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Detail</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link active"
+                  id="home-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#home"
+                  type="button"
+                  role="tab"
+                  aria-controls="home"
+                  aria-selected="true"
+                >
+                  Home
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="profile-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#profile"
+                  type="button"
+                  role="tab"
+                  aria-controls="profile"
+                  aria-selected="false"
+                >
+                  Profile
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="contact-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#contact"
+                  type="button"
+                  role="tab"
+                  aria-controls="contact"
+                  aria-selected="false"
+                >
+                  Contact
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div
+                class="tab-pane fade show active"
+                id="home"
+                role="tabpanel"
+                aria-labelledby="home-tab"
+              >
+                ...
+              </div>
+              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                ...
+              </div>
+              <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                ...
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Send message</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -544,7 +680,9 @@ import { onMounted, computed, ref } from 'vue'
 import avatar from '@/assets/img/profile-img.jpg'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { DateTime, Number } from '@/helpers/myformat'
+
+import Offcanvas from '@/components/Offcanvas.vue'
+import { Modal } from 'bootstrap'
 const row = ref({})
 const items = ref([])
 const groups = ref([])
@@ -552,15 +690,20 @@ const suppliers = ref([])
 const manufactures = ref([])
 const pagination = ref({})
 const loading = ref(true)
+const modalRef = ref(null)
+const modal = ref(null)
+
+const visibleCanvasIntrument = ref(false)
 
 const loadData = async () => {
+  loading.value = true
   const { data, curent_page, last_page, per_page, total } = await api.get('/v2/stdinstruments')
   if (data) {
     const p = {
       total: total,
       page: curent_page,
       per_page: per_page,
-      page_count: last_page
+      page_count: last_page,
     }
     pagination.value = p
     items.value = data.data
@@ -568,34 +711,36 @@ const loadData = async () => {
   loading.value = false
 }
 const loadGroups = async () => {
+  loading.value = true
   const { data, curent_page, last_page, per_page, total } = await api.get(
-    '/v2/stdinstruments/groups'
+    '/v2/stdinstruments/groups',
   )
-
-  groups.value = data.data
-
+  groups.value = data
   loading.value = false
 }
 const loadSuppliers = async () => {
+  loading.value = true
   const { data, curent_page, last_page, per_page, total } = await api.get('/v2/suppliers')
   suppliers.value = data.data
   loading.value = false
 }
 const loadManufacturers = async () => {
+  loading.value = true
   const { data, curent_page, last_page, per_page, total } = await api.get(
-    '/v2/stdinstruments/manufactures'
+    '/v2/stdinstruments/manufactures',
   )
-  console.log('manufactures', data)
   manufactures.value = data
   loading.value = false
 }
+const viewInstrument = (item) => {
+  visibleCanvasIntrument.value = true
+  modal.value.show()
+  console.log(visibleCanvasIntrument.value, item)
+}
 
-const fullname = computed(() =>
-  row.value ? `${row.value?.name_th} ${row.value?.lastname_th}` : null
-)
 onMounted(() => {
   loadData()
-  loadGroups()
+  modal.value = new Modal(modalRef.value)
 })
 </script>
 <style lang="scss" scoped>

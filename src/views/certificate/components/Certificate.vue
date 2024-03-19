@@ -42,8 +42,8 @@
         <div class="col-2">{{ data.referace }}</div>
         <div class="col-2 fw-bold fw-bold">Submitted by:</div>
         <div class="col-6">
-          {{ data.submitted.customer }}<br />
-          {{ data.submitted.address }}
+          {{ data?.submitted?.customer }}<br />
+          {{ data?.submitted?.address }}
         </div>
       </div>
       <div class="row">

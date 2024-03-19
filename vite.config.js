@@ -13,5 +13,5 @@ export default defineConfig({
       '~bootstrap': resolve(__dirname, 'node_modules/bootstrap')
     }
   },
-  base: process.env.MODE === 'development' ? '/' : process.env.VITE_BASE_URL
+  base: process.env.MODE === 'development' ? '/' : '/appcal/'
 })

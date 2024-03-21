@@ -89,6 +89,27 @@
               <span>Role && Permission</span>
             </router-link>
           </li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-gear"></i>
+          <span>Settings</span>
+        </a>
+        <ul id="setting-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li class="nav-item">
+            <router-link to="/setting/staff" class="nav-link collapsed">
+              <i class="bi bi-gear"></i>
+              <span>Staff</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/setting/permission" class="nav-link collapsed">
+              <i class="bi bi-gear"></i>
+              <span>Role && Permission</span>
+            </router-link>
+          </li>
 
 
         </ul>

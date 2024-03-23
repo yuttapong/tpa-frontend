@@ -7,7 +7,7 @@ const http = axios.create({
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
     //'X-Powered-By': 'Yuttapong Napikun'
-    //Authorization: token ? token : null
+    // Authorization: token ? token : null,
   },
 })
 export const api = http

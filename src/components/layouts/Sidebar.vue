@@ -1,50 +1,17 @@
 <template>
   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
-
     <ul class="sidebar-nav" id="sidebar-nav">
-
       <li class="nav-item">
-        <router-link to="/dashboard" class="nav-link " href="index.html">
+        <router-link to="/dashboard" class="nav-link" href="index.html">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </router-link>
-      </li><!-- End Dashboard Nav -->
+      </li>
+      <!-- End Dashboard Nav -->
 
+      <li class="nav-heading">ระบบ</li>
 
-      <li class="nav-heading">Pages</li>
-
-
-      <li class="nav-item">
-        <router-link to="/customers" class="nav-link collapsed">
-          <i class="bi bi-people"></i>
-          <span>Customers</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link to="/contacts" class="nav-link collapsed">
-          <i class="bi bi-person-vcard"></i>
-          <span>Contacts</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link to="/products" class="nav-link collapsed">
-          <i class="bi bi-box"></i>
-          <span>Products</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link to="/stdinstruments" class="nav-link collapsed">
-          <i class="bi bi-box"></i>
-          <span>Standard Instruments</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link to="/staffs" class="nav-link collapsed">
-          <i class="bi bi-person-circle"></i>
-          <span>Staffs</span>
-        </router-link>
-      </li>
       <li class="nav-item">
         <router-link to="/quotations" class="nav-link collapsed">
           <i class="bi bi-file"></i>
@@ -70,13 +37,61 @@
         </router-link>
       </li>
 
-
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-gear"></i>
-          <span>Settings</span>
+        <a class="nav-link collapsed" data-bs-target="#data-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-database"></i>
+          <span>ข้อมูล</span>
         </a>
-        <ul id="setting-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="data-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li class="nav-item">
+            <router-link to="/data/customers" class="nav-link collapsed">
+              <i class="bi bi-people"></i>
+              <span>Customers</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/data/contacts" class="nav-link collapsed">
+              <i class="bi bi-person-vcard"></i>
+              <span>Contacts</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/data/products" class="nav-link collapsed">
+              <i class="bi bi-box"></i>
+              <span>Products</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/data/stdinstruments" class="nav-link collapsed">
+              <i class="bi bi-box"></i>
+              <span>Standard Instruments</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/data/staffs" class="nav-link collapsed">
+              <i class="bi bi-person-circle"></i>
+              <span>Staffs</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/data/company" class="nav-link collapsed">
+              <i class="bi bi-person-circle"></i>
+              <span>บริษัท</span>
+            </router-link>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link collapsed"
+          data-bs-target="#setting-nav"
+          data-bs-toggle="collapse"
+          href="#"
+        >
+          <i class="bi bi-gear"></i>
+          <span>ตั้งค่า</span>
+        </a>
+        <ul id="setting-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
           <li class="nav-item">
             <router-link to="/setting/staff" class="nav-link collapsed">
               <i class="bi bi-gear"></i>
@@ -91,36 +106,13 @@
           </li>
         </ul>
       </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-gear"></i>
-          <span>Settings</span>
-        </a>
-        <ul id="setting-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li class="nav-item">
-            <router-link to="/setting/staff" class="nav-link collapsed">
-              <i class="bi bi-gear"></i>
-              <span>Staff</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/setting/permission" class="nav-link collapsed">
-              <i class="bi bi-gear"></i>
-              <span>Role && Permission</span>
-            </router-link>
-          </li>
-
-
-        </ul>
-      </li>
-
       <li class="nav-item">
         <router-link to="register" class="nav-link collapsed">
           <i class="bi bi-card-list"></i>
           <span>Register</span>
         </router-link>
-      </li><!-- End Register Page Nav -->
+      </li>
+      <!-- End Register Page Nav -->
 
       <li class="nav-item">
         <router-link tag="a" to="/login" class="nav-link collapsed">
@@ -154,20 +146,19 @@
         </router-link>
       </li>
 
-
       <li class="nav-item">
         <router-link to="blank" class="nav-link collapsed">
           <i class="bi bi-file-earmark"></i>
           <span>Blank</span>
         </router-link>
-      </li><!-- End Blank Page Nav -->
-
+      </li>
+      <!-- End Blank Page Nav -->
     </ul>
-
-  </aside><!-- End Sidebar-->
+  </aside>
+  <!-- End Sidebar-->
 </template>
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted } from 'vue'
 const select = (el, all = false) => {
   el = el.trim()
   if (all) {
@@ -181,7 +172,6 @@ const select = (el, all = false) => {
  * Easy event listener function
  */
 const on = (type, el, listener, all = false) => {
-
   if (all) {
     select(el, all).forEach((e) => e.addEventListener(type, listener))
   } else {
@@ -193,8 +183,6 @@ onMounted(() => {
   //   select('body').classList.toggle('toggle-sidebar')
   // }, true)
 })
-
-
 </script>
 <style lang="scss" scoped>
 /*--------------------------------------------------------------
@@ -233,7 +221,6 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
-
   #main,
   #footer {
     margin-left: 300px;
@@ -247,7 +234,6 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
-
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;

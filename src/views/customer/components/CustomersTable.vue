@@ -3,14 +3,21 @@
     <table class="table table-sm">
       <thead>
         <tr>
+          <th scope="col">Action</th>
           <th scope="col">ID</th>
           <th scope="col">Name</th>
           <th scope="col">ที่อยู่</th>
-          <th scope="col">Created</th>
+          <th scope="col">Status</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
+          <th scope="row">
+            <div class="btn-group">
+              <button class="btn btn-sm"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm"><i class="bi bi-trash"></i></button>
+            </div>
+          </th>
           <th scope="row">{{ item.id }}</th>
 
           <td>
@@ -29,9 +36,7 @@
           </td>
           <td>{{ item.province }}</td>
           <td>
-            <!-- <span class="badge bg-light text-dark">{{ DateTime(new
-                                                Date(item.datestart))
-                                            }}</span> -->
+            <span class="badge bg-light text-dark">{{ item.status }}</span>
           </td>
         </tr>
       </tbody>

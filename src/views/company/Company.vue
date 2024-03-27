@@ -11,67 +11,50 @@
   </div>
   <!-- End Page Title -->
 
+
   <section class="section company">
     <spinner :visible="loading" />
-    <!-- Default Tabs -->
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link active"
-          id="department-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#department"
-          type="button"
-          role="tab"
-          aria-controls="department"
-          aria-selected="true"
-        >
-          แผนก
-        </button>
-      </li>
-      <li class="nav-item" role="presentation" :class="{ active: activeTab == 'position' }">
-        <button
-          class="nav-link"
-          id="position-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#position"
-          type="button"
-          role="tab"
-          aria-controls="position"
-          aria-selected="false"
-        >
-          ตำแหน่งงาน
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="contact-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#contact"
-          type="button"
-          role="tab"
-          aria-controls="contact"
-          aria-selected="false"
-        >
-          Contact
-        </button>
-      </li>
-    </ul>
-    <div class="tab-content pt-2" id="companyTabContent">
-      <div
-        class="tab-pane show active fade"
-        id="department"
-        role="tabpanel"
-        aria-labelledby="department-tab"
-      >
-        <div v-if="departments">
-          <Departments :items="departments" />
-        </div>
-      </div>
-      <div class="tab-pane fade" id="position" role="tabpanel" aria-labelledby="position-tab">
-        <div v-if="positions">
-          <Positions :items="positions" />
+
+
+    <div class="col-xl-12">
+      <div class="card">
+        <div class="card-body pt-3">
+
+
+          <!-- Default Tabs -->
+          <ul class="nav nav-tabs nav-tabs-bordered" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="department-tab" data-bs-toggle="tab" data-bs-target="#department"
+                type="button" role="tab" aria-controls="department" aria-selected="true">
+                แผนก
+              </button>
+            </li>
+            <li class="nav-item" role="presentation" :class="{ active: activeTab == 'position' }">
+              <button class="nav-link" id="position-tab" data-bs-toggle="tab" data-bs-target="#position" type="button"
+                role="tab" aria-controls="position" aria-selected="false">
+                ตำแหน่งงาน
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+                role="tab" aria-controls="contact" aria-selected="false">
+                Contact
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content pt-2" id="companyTabContent">
+            <div class="tab-pane show active fade" id="department" role="tabpanel" aria-labelledby="department-tab">
+              <div v-if="departments">
+                <Departments :items="departments" />
+              </div>
+            </div>
+            <div class="tab-pane fade" id="position" role="tabpanel" aria-labelledby="position-tab">
+              <div v-if="positions">
+                <Positions :items="positions" />
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -114,4 +97,6 @@ onMounted(() => {
   height: 600px;
   overflow: scroll;
 }
+
+.company {}
 </style>

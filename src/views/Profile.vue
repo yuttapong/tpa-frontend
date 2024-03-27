@@ -353,7 +353,7 @@ const loadData = async () => {
         }
     } catch (error) {
         console.log("error", error)
-        router.push("/login")
+
     }
     loading.value = false
 

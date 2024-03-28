@@ -16,12 +16,7 @@
       <div class="col-xl-12">
         <div class="card">
           <div class="card-body pt-3">
-            <ul
-              class="nav nav-tabs nav-tabs-bordered"
-              id="tab_certificate"
-              role="tablist"
-              ref="tabViewRef"
-            >
+            <ul class="nav nav-tabs nav-tabs-bordered" id="tab_certificate" role="tablist" ref="tabViewRef">
               <li class="nav-item" role="presentation">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
                   List
@@ -52,11 +47,7 @@
                       <tr v-for="(item, index) in items" :key="index">
                         <td scope="row">{{ item.cerid }}</td>
                         <td>
-                          <button
-                            type="button"
-                            class="btn btn-link fw-bold"
-                            @click="viewCert(item)"
-                          >
+                          <button type="button" class="btn btn-link fw-bold" @click="viewCert(item)">
                             {{ item.cerno }}
                           </button>
                         </td>
@@ -138,28 +129,25 @@
         </div>
       </div>
     </div>
-    <div class="modal" ref="modalViewRef">
-      <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Certificate</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <Certificate v-model:data="viewData" />
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
+
+  </section>
+
+  <div class="modal" ref="modalViewRef">
+    <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Certificate</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <Certificate v-model:data="viewData" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script setup>

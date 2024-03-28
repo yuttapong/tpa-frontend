@@ -6,12 +6,12 @@ const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    //Authorization: token ? token : null,
+    Authorization: token ? token : null,
   },
 })
 http.interceptors.request.use(
   (config) => {
-    // config.headers['Authorization'] = `${token}`
+    config.headers['Authorization'] = `${token}`
     return config
   },
   (error) => {

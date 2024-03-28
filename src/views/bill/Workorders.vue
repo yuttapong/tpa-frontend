@@ -1,10 +1,10 @@
 <template>
     <div class="pagetitle">
-        <h1>Invoices</h1>
+        <h1>Work Orders</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-                <li class="breadcrumb-item active">Invoices</li>
+                <li class="breadcrumb-item active">Work Orders </li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -13,7 +13,7 @@
 
         <spinner :visible="loading" />
 
-        <div class="row" v-if="items">
+        <div class="row">
 
 
             <div class="col-xl-12">
@@ -24,8 +24,8 @@
                         <ul class="nav nav-tabs nav-tabs-bordered">
 
                             <li class="nav-item">
-                                <button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#qt-index">Invoices</button>
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">List ({{
+                                    pagination.total }})</button>
                             </li>
 
                             <!-- <li class="nav-item">
@@ -46,7 +46,7 @@
                         <div class="tab-content pt-2">
 
                             <div class="tab-pane fade show active qt-index" id="qt-index">
-                                <div class="row g-2">
+                                <div class="row">
                                     <div class="col-6">
                                         <input type="search" v-model="taxnumber" name="taxnumber"
                                             class="form-control form-control-sm"
@@ -54,48 +54,56 @@
                                     </div>
                                     <div class="col-6">
                                         <input type="search" v-model="q" name="q" class="form-control form-control-sm"
-                                            placeholder="ชื่อ ลูกค้า/ผู้ติดต่อ/สินค้า" @keyup.enter="search" />
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="submit" class="btn btn-primary btn-sm" />
+                                            placeholder="สินค้า/seriallnumber/id_no/model" @keyup.enter="search" />
                                     </div>
                                 </div>
                                 <!-- Small tables -->
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" class="fw-bold text-decoration-underline">#</th>
-                                            <th scope="col" class="fw-bold text-decoration-underline">Code</th>
-                                            <th scope="col" class="fw-bold text-decoration-underline">Bill Code</th>
-                                            <th scope="col" class="fw-bold text-decoration-underline">Date</th>
+                                <div class="my-3 p-2 bg-light text-danger" v-if="taxnumber && Number(pagination.total) > 0">
 
-                                            <th scope="col" class="fw-bold text-decoration-underline">Customer</th>
-                                            <th scope="col" class="fw-bold text-decoration-underline">Approve Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(item, index) in items" :key="index">
-                                            <th scope="row">{{ index + 1 }}</th>
-                                            <td>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="fw-bold text-decoration-underline">#</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Code</th>
 
-                                                <a class="btn btn-light btn-sm fw-bold" role="button"
-                                                    @click="showDetail(item)">
-                                                    {{ item.code }}
-                                                </a>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Product</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Date</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Customer</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item, index) in items" :key="index">
+                                                <th scope="row">{{ index + 1 }}</th>
+                                                <td>{{ item.item_code }}</td>
+                                                <td>
+                                                    <div>{{ item.product_name }}</div>
+                                                    <span class="badge badge-light text-dark mx-2 d-inline-block"
+                                                        style="width: 100px;">
+                                                        {{ item.model
+                                                        }}</span>
+                                                    <span class="badge bg-warning text-dark mx-2  d-inline-block"
+                                                        style="width: 100px;">
+                                                        {{ item.serialnumber
+                                                        }}</span>
+                                                </td>
+                                                <td> <span class="badge bg-light text-dark">{{ DateTime(new
+                                                    Date(item.bill.document_date)) }}</span>
+                                                </td>
 
-                                            </td>
-                                            <td>{{ item.bill_code }}</td>
-                                            <td> <span class="badge bg-light text-dark">{{ DateTime(new
-                                                Date(item.date_starts)) }}</span></td>
-
-                                            <td>
-                                                <div>{{ item.customer?.companyname }}</div>
-                                                <small class="text-danger">({{ item.customer?.taxnumber }})</small>
-                                            </td>
-                                            <td>{{ item.status }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                <td>
+                                                    <div>{{ item.customer.companyname }}</div>
+                                                    <small class="text-danger  mx-1">({{ item.bill.agent_name }})</small>
+                                                    <small class="text-dark mx-1">({{ item.customer.taxnumber
+                                                    }})</small>
+                                                </td>
+                                                <td>{{ item.current_service_status }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                                 <!-- End small tables -->
                             </div>
 
@@ -104,8 +112,10 @@
                                 <!--  Detail -->
 
                                 <h5 class="card-title">About</h5>
-                                <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque
-                                    temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae
+                                <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores
+                                    cumque
+                                    temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum
+                                    quae
                                     quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
 
                                 <h5 class="card-title">Profile Details</h5>
@@ -359,22 +369,6 @@
             </div>
         </div>
     </section>
-    <div class="modal" ref="modalViewRef">
-        <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Invoice</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </template>
 
 <script setup>
@@ -383,17 +377,13 @@ import avatar from "@/assets/img/profile-img.jpg"
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { DateTime, Number } from "@/helpers/myformat";
-import { Modal } from "bootstrap";
 const row = ref({})
 const items = ref({})
 const pagination = ref({})
 const loading = ref(true)
-const modalView = ref(null)
-const modalViewRef = ref(null)
-const invoice = ref({})
 
 const loadData = async () => {
-    const { data } = await api.get("/v2/invoices")
+    const { data } = await api.get("/v2/workorders")
     if (data) {
         console.log(data)
         const p = {
@@ -406,26 +396,33 @@ const loadData = async () => {
         items.value = data.data
         loading.value = false
     }
-
 }
-const getInvoiceById = async (id) => {
-    try {
-        const { data } = await api.get("/v2/invoices/" + id)
-        if (data) {
-            items.value = data
-            loading.value = false
-        }
-    } catch (error) {
+const q = ref("")
+const taxnumber = ref("")
+const search = async () => {
+    pagination.value.curent_page = 1;
+    pagination.value.total = 0;
+    let params = {
+        taxnumber: taxnumber.value,
+        q: q.value
     }
-
-}
-const showDetail = (item) => {
-    modalView.value.show();
-    getInvoiceById()
+    const { data } = await api.get("/v2/workorders", {
+        params
+    })
+    if (data) {
+        console.log(data)
+        const p = {
+            total: data?.total,
+            page: data?.curent_page,
+            per_page: data?.per_page,
+            page_count: data?.last_page
+        }
+        pagination.value = p
+        items.value = data.data
+        loading.value = false
+    }
 }
 onMounted(() => {
-    modalView.value = new Modal(modalViewRef.value)
-    modalView.value.hide()
     loadData()
 })
 </script>

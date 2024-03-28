@@ -25,9 +25,11 @@
 
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#qt-index">List</button>
+                                    data-bs-target="#qt-index">ใบขอรับบริการ <span v-if="pagination">({{ pagination.total ||
+                                        0
+                                    }})</span></button>
                             </li>
-
+                            <!-- 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-detail">Detail</button>
                             </li>
@@ -38,7 +40,7 @@
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab"
                                     data-bs-target="#qt-settings">Settings</button>
-                            </li>
+                            </li> -->
 
 
 
@@ -52,18 +54,29 @@
                                     <table class="table table-sm">
                                         <thead>
                                             <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Code</th>
-                                                <th scope="col">Date</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Action</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">#</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Code</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Date</th>
 
-                                                <th scope="col">Customer</th>
-                                                <th scope="col">Progress Status</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Customer</th>
+                                                <th scope="col" class="fw-bold text-decoration-underline">Status
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="(item, index) in items" :key="index">
+                                                <th scope="row">
+                                                    <i class="bi bi-pencil mx-1" @click="showDetail(item)"
+                                                        role="button"></i>
+                                                    <i class="bi bi-search mx-1" @click="showDetail(item)"
+                                                        role="button"></i>
+                                                </th>
                                                 <th scope="row">{{ index + 1 }}</th>
-                                                <td>{{ item.code }}</td>
+                                                <td>
+                                                    <a class="btn btn-light fw-bold border btn-sm"
+                                                        @click="showDetail(item)">{{ item.code }}</a>
+                                                </td>
                                                 <td> <span class="badge bg-light text-dark">{{ DateTime(new
                                                     Date(item.document_date)) }}</span></td>
 
@@ -341,6 +354,180 @@
             </div>
         </div>
     </section>
+
+    <div class="modal" ref="modalViewRef" v-if="bill">
+        <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bill เลขที่ : {{ bill.code }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="fw-bold text-decoration-underline">เลขที่</label>
+                            <p>{{ bill.code }}</p>
+                        </div>
+                        <div class="col-4">
+                            <label class="fw-bold text-decoration-underline">ลูกค้า</label>
+                            <p>{{ bill?.customer?.companyname }}</p>
+                        </div>
+                        <div class="col-4">
+                            <label class="fw-bold text-decoration-underline">วันที่</label>
+                            <p>{{ bill.document_date }}</p>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
+                            <p>{{ bill.agent_name }}</p>
+                        </div>
+                        <div class="col-4">
+                            <label class="fw-bold text-decoration-underline">เลขที่</label>
+                            <p>{{ bill.address_name }} {{ bill.address_detail }}</p>
+                        </div>
+                        <div class="col-4">
+                            <label class="fw-bold text-decoration-underline">เวลาทำรายการ</label>
+                            <p>{{ bill.date_start }}</p>
+                        </div>
+                    </div>
+                    <div class="" v-if="loadingItems">
+                        <div class="spinner-grow" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <table class="table table-condensed" v-if="!loadingItems">
+                        <thead>
+                            <tr>
+                                <th class="fw-bold text-decoration-underline">#</th>
+                                <th class="fw-bold text-decoration-underline">NO</th>
+                                <th class="fw-bold text-decoration-underline">ItemCode</th>
+                                <th class="fw-bold text-decoration-underline">รายการ</th>
+                                <th class="fw-bold text-decoration-underline">Model</th>
+                                <th class="fw-bold text-decoration-underline">Point</th>
+                                <th class="fw-bold text-decoration-underline">Point Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(row, rowIndex) in bill.items" :key="row">
+                                <th><input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
+                                </th>
+                                <th>{{ rowIndex + 1 }}</th>
+                                <th>{{ row.item_code }}</th>
+                                <th>{{ row.product_name }}
+                                </th>
+                                <th> <span class="mx-2 badge badge-light text-dark d-inline-block">{{ row.model }}</span>
+                                </th>
+                                <th>{{ row.point }}</th>
+                                <th>{{ row.point_price }}</th>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                        NOTE: {{ bill.note_customers }}
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <span class="alert alert-danger" v-if="errorMsg">{{ errorMsg }}</span>
+                    <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
+                        itemsSelected.length
+                    }}
+                        รายการ</span>
+
+                    <button type="button" class="btn btn-success" @click="newInvoice"><i class=""></i>สร้างใบแจ้งหนี้ - New
+                        Invoice</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" ref="modalInvoiceRef">
+        <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-4">
+                            <!-- <label class="fw-bold text-decoration-underline">เลขที่</label>
+                            <p>xxxxxxxxxxxxx</p> -->
+                        </div>
+                        <div class="col-4">
+                            <label class="fw-bold text-decoration-underline">ลูกค้า</label>
+                            <p>
+                                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
+                            </p>
+                        </div>
+                        <div class="col-4">
+                            <label class="fw-bold text-decoration-underline">วันที่</label>
+                            <p>
+                                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
+                            </p>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
+                            <p>
+                                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
+                            </p>
+                        </div>
+                        <div class="col-8">
+                            <label class="fw-bold text-decoration-underline">ที่อยู่</label>
+                            <p>
+                                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
+                            </p>
+                        </div>
+
+                    </div>
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+
+                                <th class="fw-bold text-decoration-underline">NO</th>
+                                <th class="fw-bold text-decoration-underline">ItemCode</th>
+                                <th class="fw-bold text-decoration-underline">รายการ</th>
+                                <th class="fw-bold text-decoration-underline">Model</th>
+                                <th class="fw-bold text-decoration-underline">ราคา</th>
+                                <th class="fw-bold text-decoration-underline">ส่วนลด</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(row, rowIndex) in invoice.items" :key="row">
+
+                                <th>{{ rowIndex + 1 }}</th>
+                                <th>{{ row.item_code }}</th>
+                                <th>{{ row.product_name }}
+                                </th>
+                                <th> <span class="mx-2 badge badge-light text-dark d-inline-block">{{ row.model }}</span>
+                                </th>
+                                <th><input type="number" name="price[]" v-model="row.price"
+                                        class="form-control form-control-sm " style="width:100px;" /></th>
+                                <th><input type="number" name="price[]" v-model="row.discount"
+                                        class="form-control form-control-sm " style="width:100px;" /></th>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                        NOTE:
+                        <textarea class="form-control" placeholder="หมายเหตุ"></textarea>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @click="createInvoice">สร้างใบแจ้งหนี้</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -349,10 +536,19 @@ import avatar from "@/assets/img/profile-img.jpg"
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { DateTime, Number } from "@/helpers/myformat";
+import { Modal } from "bootstrap";
+
 const row = ref({})
 const items = ref({})
 const pagination = ref({})
 const loading = ref(true)
+const loadingItems = ref(true)
+const bill = ref({})
+const invoice = ref({})
+const modalViewRef = ref(null)
+const modalView = ref(null)
+const modalInvoiceRef = ref(null)
+const modalInvoice = ref(null)
 
 const loadData = async () => {
     const { data } = await api.get("/v2/bills")
@@ -368,10 +564,70 @@ const loadData = async () => {
         items.value = data.data
         loading.value = false
     }
+}
+
+const getBillById = async (id) => {
+    try {
+        const { data } = await api.get("/v2/bills/" + id)
+        if (data) {
+            bill.value = data
+            loading.value = false
+        }
+        loadingItems.value = false
+    } catch (error) {
+        loadingItems.value = false
+    }
 
 }
-const fullname = computed(() => row.value ? `${row.value?.name_th} ${row.value?.lastname_th}` : null)
+
+
+const showDetail = (item) => {
+    loadingItems.value = true
+    errorMsg.value = ""
+    itemsSelected.value = []
+    bill.value = item
+    bill.value.items = []
+    modalView.value.show();
+    getBillById(item.id)
+}
+const errorMsg = ref()
+const itemsSelected = ref([])
+const newInvoice = () => {
+    errorMsg.value = ""
+    const i = bill.value
+    if (itemsSelected.value.length === 0) {
+        errorMsg.value = "โปรดเลือกรายการเครื่องมืออย่างน้อย 1 รายการ"
+        return false
+    }
+    invoice.value = {
+        bill_id: i.id,
+        bill_code: i.code,
+        customer_name: i.customer?.companyname,
+        document_date: i.document_date,
+        address_name: i.address_name,
+        address_detail: i.address_detail,
+        contact_name: i.agent_name,
+        bill_id: i.id,
+        discount: 0,
+    }
+    invoice.value.items = itemsSelected.value
+    modalView.value.hide()
+    modalInvoice.value.show()
+}
+
+const createInvoice = () => {
+    alert('สร้างใบแจ้งนี้สำเร็จ')
+    invoice.value = {}
+    bill.value = {}
+    errorMsg.value = ""
+    itemsSelected.value = []
+    modalView.value.hide()
+    modalInvoice.value.hide()
+}
 onMounted(() => {
+    errorMsg.value = ""
+    modalView.value = new Modal(modalViewRef.value)
+    modalInvoice.value = new Modal(modalInvoiceRef.value)
     loadData()
 })
 </script>
@@ -390,5 +646,11 @@ onMounted(() => {
         font-weight: 600;
         color: rgba(1, 41, 112, 0.6);
     }
+}
+
+.checkbox {
+    transform: scale(
+            /*desired magnification*/
+        );
 }
 </style>

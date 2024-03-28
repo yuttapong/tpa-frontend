@@ -25,6 +25,12 @@
         </router-link>
       </li>
       <li class="nav-item">
+        <router-link to="/workoders" class="nav-link collapsed">
+          <i class="bi bi-file"></i>
+          <span>Workoders</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
         <router-link to="/invoices" class="nav-link collapsed">
           <i class="bi bi-file"></i>
           <span>Invoices</span>
@@ -82,12 +88,7 @@
         </ul>
       </li>
       <li class="nav-item">
-        <a
-          class="nav-link collapsed"
-          data-bs-target="#setting-nav"
-          data-bs-toggle="collapse"
-          href="#"
-        >
+        <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-gear"></i>
           <span>ตั้งค่า</span>
         </a>
@@ -221,6 +222,7 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
+
   #main,
   #footer {
     margin-left: 300px;
@@ -234,6 +236,7 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
+
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;

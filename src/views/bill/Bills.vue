@@ -465,7 +465,7 @@
                             </p>
                         </div>
                         <div class="col-4">
-                            <label class="fw-bold text-decoration-underline">วันที่</label>
+                            <label class="fw-bold text-decoration-underline">ที่อยู่</label>
                             <p>
                                 <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
                             </p>

@@ -1,3 +1,82 @@
+<script setup>
+import { onMounted, computed, ref } from "vue";
+import { api } from "@/helpers/api";
+import Spinner from "@/components/Spinner.vue";
+import { DateTime, Number } from "@/helpers/myformat";
+import { Modal } from "bootstrap";
+const row = ref({})
+const items = ref({})
+const pagination = ref({
+    per_page: 15,
+    curent_page: 1,
+})
+const loading = ref(true)
+const modalView = ref(null)
+const modalViewRef = ref(null)
+const invoice = ref({})
+const formSearch = ref({
+    code: "",
+    taxnumber: "",
+    q: ""
+})
+
+const loadData = async () => {
+    let params =
+    {
+        per_page: pagination.value.per_page,
+        page: pagination.value.curent_page,
+        ...formSearch.value,
+    }
+    const { data } = await api.get("/v2/invoices", {
+        params: params
+
+    })
+    if (data) {
+        const p = {
+            total: data?.total,
+            page: data?.curent_page,
+            per_page: data?.per_page,
+            page_count: data?.last_page
+        }
+        pagination.value = p
+        items.value = data.data
+        loading.value = false
+    }
+}
+const getInvoiceById = async (id) => {
+    try {
+        const { data } = await api.get("/v2/invoices/" + id)
+        if (data) {
+            items.value = data
+            loading.value = false
+        }
+    } catch (error) {
+    }
+
+}
+const showDetail = (item) => {
+    modalView.value.show();
+    getInvoiceById(item.id)
+}
+
+const onSearch = async () => {
+    pagination.value.curent_page = 1;
+    pagination.value.total = 0;
+    try {
+        loadData();
+    } catch (error) {
+    }
+}
+const resetFormSearch = () => {
+    formSearch.value.taxnumber = ""
+    formSearch.value.q = ""
+}
+onMounted(() => {
+    modalView.value = new Modal(modalViewRef.value)
+    modalView.value.hide()
+    loadData()
+})
+</script>
 <template>
     <div class="pagetitle">
         <h1>Invoices</h1>
@@ -12,6 +91,25 @@
     <section class="section profile">
 
         <spinner :visible="loading" />
+
+
+        <div class="row">
+            <div class="col-xl-8">
+
+                <div class="card">
+                    <div class="card-body pt-3">
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4">
+
+                <div class="card">
+                    <div class="card-body pt-3">
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <div class="row" v-if="items">
 
@@ -46,27 +144,40 @@
                         <div class="tab-content pt-2">
 
                             <div class="tab-pane fade show active qt-index" id="qt-index">
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <input type="search" v-model="taxnumber" name="taxnumber"
-                                            class="form-control form-control-sm"
-                                            placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน" @keyup.enter="search" />
+                                <form @submit.prevent="onSearch()">
+                                    <div class="row g-2">
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="search" v-model="formSearch.code" name="code"
+                                                class="form-control form-control-sm" placeholder="Code"
+                                                @keyup.enter="search" />
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                                                class="form-control form-control-sm"
+                                                placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน" @keyup.enter="search" />
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="search" v-model="formSearch.q" name="q"
+                                                class="form-control form-control-sm" placeholder="ลูกค้า/ผู้ติดต่อ"
+                                                @keyup.enter="search" />
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-4">
+                                            <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
+                                            <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset"
+                                                @click="resetFormSearch" />
+                                            <router-link class="btn btn-sm btn-success" :to="{ name: 'invoices.create' }"
+                                                v-slot="{ href, navigate }" tag="a">
+                                                <i class="bi bi-plus"></i> สร้างใบแจ้งหนี้
+                                            </router-link>
+                                        </div>
                                     </div>
-                                    <div class="col-6">
-                                        <input type="search" v-model="q" name="q" class="form-control form-control-sm"
-                                            placeholder="ชื่อ ลูกค้า/ผู้ติดต่อ/สินค้า" @keyup.enter="search" />
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="submit" class="btn btn-primary btn-sm" />
-                                    </div>
-                                </div>
+                                </form>
                                 <!-- Small tables -->
                                 <table class="table table-sm">
                                     <thead>
                                         <tr>
                                             <th scope="col" class="fw-bold text-decoration-underline">#</th>
                                             <th scope="col" class="fw-bold text-decoration-underline">Code</th>
-                                            <th scope="col" class="fw-bold text-decoration-underline">Bill Code</th>
                                             <th scope="col" class="fw-bold text-decoration-underline">Date</th>
 
                                             <th scope="col" class="fw-bold text-decoration-underline">Customer</th>
@@ -84,7 +195,7 @@
                                                 </a>
 
                                             </td>
-                                            <td>{{ item.bill_code }}</td>
+
                                             <td> <span class="badge bg-light text-dark">{{ DateTime(new
                                                 Date(item.date_starts)) }}</span></td>
 
@@ -116,7 +227,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">Full Name</div>
-                                    <div class="col-lg-9 col-md-8">{{ fullname }}</div>
+                                    <div class="col-lg-9 col-md-8"></div>
                                 </div>
 
                                 <div class="row">
@@ -377,58 +488,7 @@
     </div>
 </template>
 
-<script setup>
-import { onMounted, computed, ref } from "vue";
-import avatar from "@/assets/img/profile-img.jpg"
-import { api } from "@/helpers/api";
-import Spinner from "@/components/Spinner.vue";
-import { DateTime, Number } from "@/helpers/myformat";
-import { Modal } from "bootstrap";
-const row = ref({})
-const items = ref({})
-const pagination = ref({})
-const loading = ref(true)
-const modalView = ref(null)
-const modalViewRef = ref(null)
-const invoice = ref({})
 
-const loadData = async () => {
-    const { data } = await api.get("/v2/invoices")
-    if (data) {
-        console.log(data)
-        const p = {
-            total: data?.total,
-            page: data?.curent_page,
-            per_page: data?.per_page,
-            page_count: data?.last_page
-        }
-        pagination.value = p
-        items.value = data.data
-        loading.value = false
-    }
-
-}
-const getInvoiceById = async (id) => {
-    try {
-        const { data } = await api.get("/v2/invoices/" + id)
-        if (data) {
-            items.value = data
-            loading.value = false
-        }
-    } catch (error) {
-    }
-
-}
-const showDetail = (item) => {
-    modalView.value.show();
-    getInvoiceById()
-}
-onMounted(() => {
-    modalView.value = new Modal(modalViewRef.value)
-    modalView.value.hide()
-    loadData()
-})
-</script>
 <style lang="scss" scoped>
 .qt-detail {
     .row {

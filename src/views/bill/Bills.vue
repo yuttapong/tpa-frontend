@@ -48,7 +48,30 @@
                         <div class="tab-content pt-2">
 
                             <div class="tab-pane fade show active qt-index" id="qt-index">
-
+                                <form @submit.prevent="onSearch()">
+                                    <div class="row g-2">
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="search" v-model="formSearch.code" name="code"
+                                                class="form-control form-control-sm" placeholder="Code"
+                                                @keyup.enter="search" />
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                                                class="form-control form-control-sm"
+                                                placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน" @keyup.enter="search" />
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="search" v-model="formSearch.q" name="q"
+                                                class="form-control form-control-sm" placeholder="ลูกค้า/ผู้ติดต่อ"
+                                                @keyup.enter="search" />
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
+                                            <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset"
+                                                @click="resetFormSearch" />
+                                        </div>
+                                    </div>
+                                </form>
                                 <!-- Small tables -->
                                 <div class="table-responsive">
                                     <table class="table table-sm">
@@ -82,7 +105,9 @@
 
                                                 <td>
                                                     <div>{{ item.customer.companyname }}</div>
-                                                    <small class="text-danger">({{ item.agent_name }})</small>
+                                                    <small class="text-danger mx-1">({{ item.agent_name }})</small>
+                                                    <small class="text-secondary mx-1">({{ item.customer.taxnumber
+                                                    }})</small>
                                                 </td>
                                                 <td>{{ item.progress_status }}</td>
                                             </tr>
@@ -107,11 +132,11 @@
 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">รหัสพนัก</div>
-                                    <div class="col-lg-9 col-md-8">{{ row.code }}</div>
+                                    <div class="col-lg-9 col-md-8"></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">Full Name</div>
-                                    <div class="col-lg-9 col-md-8">{{ fullname }}</div>
+                                    <div class="col-lg-9 col-md-8"></div>
                                 </div>
 
                                 <div class="row">
@@ -405,6 +430,7 @@
                                 <th class="fw-bold text-decoration-underline">NO</th>
                                 <th class="fw-bold text-decoration-underline">ItemCode</th>
                                 <th class="fw-bold text-decoration-underline">รายการ</th>
+                                <th class="fw-bold text-decoration-underline">ID No.</th>
                                 <th class="fw-bold text-decoration-underline">Model</th>
                                 <th class="fw-bold text-decoration-underline">Point</th>
                                 <th class="fw-bold text-decoration-underline">Point Price</th>
@@ -415,13 +441,15 @@
                                 <th><input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
                                 </th>
                                 <th>{{ rowIndex + 1 }}</th>
-                                <th>{{ row.item_code }}</th>
-                                <th>{{ row.product_name }}
-                                </th>
-                                <th> <span class="mx-2 badge badge-light text-dark d-inline-block">{{ row.model }}</span>
-                                </th>
-                                <th>{{ row.point }}</th>
-                                <th>{{ row.point_price }}</th>
+                                <td>{{ row.item_code }}</td>
+                                <td>{{ row.product_name }}
+                                </td>
+                                <td><span class="mx-2 badge badge-light text-dark d-inline-block">{{ row.id_no }}</span>
+                                </td>
+                                <td><span class="mx-2 badge badge-light text-dark d-inline-block">{{ row.model }}</span>
+                                </td>
+                                <td>{{ row.point }}</td>
+                                <td>{{ row.point_price }}</td>
 
                             </tr>
                         </tbody>
@@ -537,10 +565,15 @@ import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { DateTime, Number } from "@/helpers/myformat";
 import { Modal } from "bootstrap";
+import { useInvoiceStore } from "@/stores/invoiceStore";
+import router from "@/router";
 
 const row = ref({})
 const items = ref({})
-const pagination = ref({})
+const pagination = ref({
+    per_page: 15,
+    curent_page: 1,
+})
 const loading = ref(true)
 const loadingItems = ref(true)
 const bill = ref({})
@@ -549,11 +582,26 @@ const modalViewRef = ref(null)
 const modalView = ref(null)
 const modalInvoiceRef = ref(null)
 const modalInvoice = ref(null)
-
+const formSearch = ref({
+    code: "",
+    taxnumber: "",
+    q: ""
+})
+const invoiceStore = useInvoiceStore()
+const q = ref()
 const loadData = async () => {
-    const { data } = await api.get("/v2/bills")
+    let params =
+    {
+        per_page: pagination.value.per_page,
+        page: pagination.value.curent_page,
+        ...formSearch.value,
+    }
+    console.log('params', params)
+    const { data } = await api.get("/v2/bills", {
+        params: params
+
+    })
     if (data) {
-        console.log(data)
         const p = {
             total: data?.total,
             page: data?.curent_page,
@@ -592,6 +640,7 @@ const showDetail = (item) => {
 }
 const errorMsg = ref()
 const itemsSelected = ref([])
+
 const newInvoice = () => {
     errorMsg.value = ""
     const i = bill.value
@@ -611,8 +660,29 @@ const newInvoice = () => {
         discount: 0,
     }
     invoice.value.items = itemsSelected.value
+    if (itemsSelected.value.length > 0) {
+        itemsSelected.value.map((item) => {
+            const product = {
+                item_id: item.item_id,
+                item_code: item.item_code,
+                bill_id: item.bill_id,
+                product_name: item.product_name,
+                product_id: item.product_id,
+                product: item?.product,
+                id_no: item.id_no,
+                model: item.model,
+                serialnumber: item.serialnumber,
+                barcode_no: item.barcode_no,
+                price: item.total,
+                manufaturer_name: item.manufaturer_name,
+                lab: item.lab
+            }
+            invoiceStore.addItem(product)
+        })
+    }
     modalView.value.hide()
-    modalInvoice.value.show()
+    router.push({ name: 'invoices.create' })
+
 }
 
 const createInvoice = () => {
@@ -623,6 +693,18 @@ const createInvoice = () => {
     itemsSelected.value = []
     modalView.value.hide()
     modalInvoice.value.hide()
+}
+
+const onSearch = async () => {
+    try {
+        await loadData();
+
+    } catch (error) {
+    }
+}
+const resetFormSearch = () => {
+    formSearch.value.taxnumber = ""
+    formSearch.value.q = ""
 }
 onMounted(() => {
     errorMsg.value = ""

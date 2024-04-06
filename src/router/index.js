@@ -43,6 +43,16 @@ const routes = [
         component: () => import('../views/invoice/Invoices.vue'),
       },
       {
+        path: 'invoices/create',
+        name: 'invoices.create',
+        component: () => import('../views/invoice/InvoiceForm.vue'),
+      },
+      {
+        path: 'invoices/preview',
+        name: 'invoices.preview',
+        component: () => import('../views/invoice/InvoicePreview.vue'),
+      },
+      {
         path: 'certificates',
         name: 'certificates',
         component: () => import('../views/certificate/Certificates.vue'),

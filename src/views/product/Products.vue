@@ -51,6 +51,20 @@
                             <div class="tab-pane fade show active qt-index" id="qt-index">
 
 
+                                <form @submit.prevent="onSearch()">
+                                    <div class="row g-2">
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="search" v-model="formSearchProduct.q" name="q"
+                                                class="form-control form-control-sm" placeholder="keyword..."
+                                                @keyup.enter="onSearch()" />
+                                        </div>
+
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
+
+                                        </div>
+                                    </div>
+                                </form>
 
                                 <!-- Small tables -->
                                 <table class="table table-sm table-striped">
@@ -401,12 +415,23 @@ import Spinner from "@/components/Spinner.vue";
 import { DateTime, Number } from "@/helpers/myformat";
 const row = ref({})
 const items = ref({})
-const pagination = ref({})
+const pagination = ref({
+    per_page: 15,
+    curent_page: 1,
+})
 const loading = ref(true)
-
+const formSearchProduct = ref({
+    q: '',
+})
 
 const loadData = async () => {
-    const { data, curent_page, last_page, per_page, total } = await api.get("/v2/products")
+    loading.value = true
+    const { data, curent_page, last_page, per_page, total } = await api.get("/v2/products", {
+        params: {
+            ...pagination.value,
+            ...formSearchProduct.value
+        }
+    })
     if (data) {
 
         const p = {
@@ -423,7 +448,16 @@ const loadData = async () => {
     loading.value = false
 
 }
-const fullname = computed(() => row.value ? `${row.value?.name_th} ${row.value?.lastname_th}` : null)
+const onSearch = async () => {
+    pagination.value.curent_page = 1;
+    pagination.value.total = 0;
+    try {
+        loadData();
+    } catch (error) {
+        loading.value = false
+    }
+}
+
 onMounted(() => {
     loadData()
 })

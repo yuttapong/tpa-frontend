@@ -4,6 +4,8 @@ import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { DateTime, Number } from "@/helpers/myformat";
 import { Modal } from "bootstrap";
+import MyModal from "@/components/Modal.vue";
+import { useRoute } from "vue-router";
 const row = ref({})
 const items = ref({})
 const pagination = ref({
@@ -14,6 +16,9 @@ const loading = ref(true)
 const modalView = ref(null)
 const modalViewRef = ref(null)
 const invoice = ref({})
+const visibleModal = ref(true)
+const route = useRoute();
+route.query.noom = 2
 const formSearch = ref({
     code: "",
     taxnumber: "",
@@ -56,6 +61,7 @@ const getInvoiceById = async (id) => {
 }
 const showDetail = (item) => {
     modalView.value.show();
+    visibleModal.value = true
     getInvoiceById(item.id)
 }
 
@@ -470,7 +476,27 @@ onMounted(() => {
             </div>
         </div>
     </section>
+
+    <MyModal v-model="visibleModal" header="xxx"></MyModal>
+
     <div class="modal" ref="modalViewRef">
+        <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Invoice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" ref="modalAddRef">
         <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">

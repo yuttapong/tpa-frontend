@@ -1,61 +1,77 @@
 <template>
-  <div class="modal" tabindex="-1" ref="modalRef" :id="computedId">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <slot name="header">
-            <h5 class="modal-title"><slot name="title"></slot></h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </slot>
-        </div>
-        <div class="modal-body"><slot></slot></div>
-        <div class="modal-footer">
-          <slot name="footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </slot>
+  <teleport to="body">
+    <transition name="fade">
+      <div v-if="modelValue" class="pt-5 position-fixed top-0 start-0 h-100 w-100"
+        style="background-color: rgba(0, 0, 0, 0.25)">
+        <div id="backdrop" @click="backdropClick" class="modal1-dialog h-100 overflow-auto">
+          <div class="card px-0" :class="(container == null) ? 'container' : `container-${container}`"
+            :style="(maxwidth != null) ? `max-width: ${maxwidth}` : null">
+            <div class="card-header h2">
+              {{ header }}
+              <button v-if="closeable" @click='$emit("update:modelValue", false)'
+                class="btn btn-text float-end"><strong>X</strong></button>
+            </div>
+            <div class="card-body">
+              <slot>{{ modelValue }}</slot>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+    </transition>
+  </teleport>
 </template>
+
 <script setup>
-import { computed, ref } from 'vue'
+import { ref, defineEmits, defineProps } from 'vue';
+const emit = defineEmits();
+
+const isVisible = ref(false);
+
+const backdropClick = (event) => {
+  if (event.target.id == 'backdrop' && props.closeable == true) {
+    emit("update:modelValue", false);
+  }
+}
+
 const props = defineProps({
   modelValue: {
     type: Boolean,
+    required: true,
+    default: false
   },
-  id: {
+  closeable: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
+  header: {
     type: String,
+    required: false,
+    default: null
   },
-})
-const computedId = computed(() => props.id)
-</script>
-<style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-}
-
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
-
-@media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
-    text-align: left;
+  container: {
+    type: String,
+    required: false,
+    default: null
+  },
+  maxwidth: {
+    type: String,
+    required: false,
+    default: null
   }
+})
+
+
+</script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0
 }
 </style>

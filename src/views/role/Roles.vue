@@ -45,6 +45,23 @@
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-role" id="qt-role">
+                <form @submit.prevent="onSearch()">
+                  <div class="row g-2">
+                    <div class="col-10 col-md-4">
+                      <input
+                        type="search"
+                        v-model="formSearch.q"
+                        class="form-control form-control-sm"
+                        placeholder=""
+                        @keyup.enter="onSearch"
+                      />
+                    </div>
+                    <div class="col-2 col-md-2">
+                      <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
+                    </div>
+                  </div>
+                </form>
+
                 <table class="table table-sm">
                   <thead>
                     <tr>
@@ -67,7 +84,23 @@
                 <!-- End small tables -->
               </div>
 
-              <div class="tab-pane fade pt-3 qt-permission" id="qt-permission">
+              <div class="tab-pane fade qt-permission" id="qt-permission">
+                <form @submit.prevent="loadPermission()">
+                  <div class="row g-2">
+                    <div class="col-10 col-md-4">
+                      <input
+                        type="search"
+                        v-model="formSearch.q"
+                        class="form-control form-control-sm"
+                        placeholder=""
+                        @keyup.enter="loadPermission"
+                      />
+                    </div>
+                    <div class="col-2 col-md-2">
+                      <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
+                    </div>
+                  </div>
+                </form>
                 <div class="dropdown">
                   <button
                     class="btn btn-link dropdown-toggle"
@@ -85,6 +118,7 @@
                     </li>
                   </ul>
                 </div>
+                {{ permisstionSelected }}
                 <div class="table-resonsive">
                   <table class="table table-sm table-hover">
                     <caption>
@@ -106,10 +140,11 @@
                         <td>
                           <input
                             type="checkbox"
-                            name="permisstionSelected"
+                            name="permisstionSelected[]"
                             v-model="permisstionSelected"
                             class="form-check-input"
                             :id="`p__${item.id}`"
+                            :value="item.name"
                           />
                         </td>
                         <td>
@@ -436,8 +471,11 @@ const permisstionType = ref([
   },
 ])
 const permissions = ref([])
+const permisstionSelected = ref([])
 const loading = ref(true)
-
+const formSearch = ref({
+  q: '',
+})
 const loadRoles = async () => {
   const { data } = await api.get('/v2/roles')
   if (data) {
@@ -455,6 +493,9 @@ const loadPermission = async () => {
 }
 const filterType = (item) => {
   console.log(item)
+}
+const onSearch = () => {
+  loadRoles()
 }
 onMounted(() => {
   loadRoles()

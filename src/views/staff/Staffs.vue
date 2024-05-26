@@ -1,10 +1,10 @@
 <template>
   <div class="pagetitle">
-    <h1>Staffs</h1>
+    <h1>ผู้ใช้งาน</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-        <li class="breadcrumb-item active">Staffs</li>
+        <li class="breadcrumb-item"><router-link  to="/">Home</router-link></li>
+        <li class="breadcrumb-item active">ผู้ใช้งาน</li>
       </ol>
     </nav>
   </div>

@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useInvoiceStore = defineStore('invoice', {
+export const useBillStore = defineStore('invoice', {
   state: () => {
     return {
       selectedItems: [],
@@ -17,28 +17,24 @@ export const useInvoiceStore = defineStore('invoice', {
   },
   actions: {
     hasSelectedItem(item) {
-      console.log("hassl", item);
       let find = this.selectedItems.filter((row) => {
-        if (item.item_code == row.item_code) {
+        if (item.code == row.code) {
           return row
         }
       })
-      console.log(find);
+      console.log(find)
       return find.length > 0 ? true : false
     },
 
     addItem(item) {
       const exist = this.hasSelectedItem(item)
-      console.log('existfff', item, exist)
       if (item.discount === undefined) {
         item.discount = 0
       }
       if (item.price === undefined) {
         item.price = 0
       }
-      if (!exist) {
-        this.selectedItems.push(item)
-      }
+      this.selectedItems.push(item)
     },
     removeItem(item) {
       let index = this.selectedItems.indexOf(item)

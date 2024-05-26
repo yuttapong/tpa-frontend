@@ -97,8 +97,9 @@ const login = (e) => {
       const ep = rs.data.result.expire_time
       const token = rs.data.result.token
       const epDay = ((ep / 24) / 60 / 60) || 0
-      localStorage.setItem('expire_time', ep)
-      localStorage.setItem('token', token)
+      // localStorage.setItem('expire_time', ep)
+      // localStorage.setItem('token', token)
+      Cookies.set('expire_time', token)
       Cookies.set('tpa', token, { expires: epDay })
       router.replace("/")
     }
@@ -106,8 +107,9 @@ const login = (e) => {
     const status = err.response.status === 401
     console.log(err)
     Cookies.remove('tpa')
-    localStorage.removeItem("expire_time")
-    localStorage.removeItem("token")
+    Cookies.remove('expire_time')
+    // localStorage.removeItem("expire_time")
+    // localStorage.removeItem("token")
     if (status === 401) {
       console.log(err)
     }

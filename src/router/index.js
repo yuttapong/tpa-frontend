@@ -33,6 +33,16 @@ const routes = [
         component: () => import('../views/bill/Bills.vue'),
       },
       {
+        path: 'bills/create',
+        name: 'bills.create',
+        component: () => import('../views/bill/BillForm.vue'),
+      },
+      {
+        path: 'bills/preview',
+        name: 'bills.preview',
+        component: () => import('../views/bill/BillPreview.vue'),
+      },
+      {
         path: 'workoders',
         name: 'workoders',
         component: () => import('../views/bill/Workorders.vue'),
@@ -76,6 +86,11 @@ const routes = [
         path: '/data/customers',
         name: 'data.customers',
         component: () => import('../views/customer/Customers.vue'),
+      },
+      {
+        path: '/data/customers/:id',
+        name: 'data.customers.detail',
+        component: () => import('../views/customer/CustomerDetail.vue'),
       },
       {
         path: '/data/contacts',

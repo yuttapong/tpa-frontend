@@ -56,11 +56,11 @@
                         </td>
 
                         <td>
-                          <div>{{ item.equipment.product_name }}</div>
+                          <div>{{ item?.equipment?.product_name }}</div>
                           <small class="badge bg-warning text-dark">{{
-                            item.equipment.model
+                            item.equipment?.model
                           }}</small>
-                          <div class="text-info">{{ item.lab.name }}</div>
+                          <div class="text-info">{{ item.lab?.name }}</div>
                         </td>
                         <td>{{ item.submitted.customer }}</td>
                       </tr>

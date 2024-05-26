@@ -1,10 +1,10 @@
 <template>
     <div class="pagetitle">
-        <h1>Quotations</h1>
+        <h1>ใบเสนอราคา</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-                <li class="breadcrumb-item active">Quotations</li>
+                <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
+                <li class="breadcrumb-item active">ใบเสนอราคา</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -47,6 +47,7 @@
 
 
                                 <!-- Small tables -->
+                                <div class="table-responsive">
                                 <table class="table table-sm">
                                     <thead>
                                         <tr>
@@ -73,6 +74,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                </div>
                                 <!-- End small tables -->
                             </div>
 

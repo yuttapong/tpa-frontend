@@ -15,15 +15,15 @@
       </div>
       <div class="row">
         <div class="col-4 fw-bold">Model</div>
-        <div class="col-8">{{ data.equipment.model }}</div>
+        <div class="col-8">{{ data.equipment?.model }}</div>
       </div>
       <div class="row">
         <div class="col-4 fw-bold">Serial No.</div>
-        <div class="col-8">{{ data.equipment.serialnumber }}</div>
+        <div class="col-8">{{ data.equipment?.serialnumber }}</div>
       </div>
       <div class="row">
         <div class="col-4 fw-bold">ID No.</div>
-        <div class="col-8">{{ data.equipment.id_no }}</div>
+        <div class="col-8">{{ data.equipment?.id_no }}</div>
       </div>
       <div class="row">
         <div class="col-4 fw-bold">Condition AS-Receiveed</div>
@@ -104,12 +104,13 @@
             <li>
               This Certification is traceable to the International System of Unit maintained at:-
               <!-- {{ traces }} -->
-              <template v-if="traces">
-                <div v-for="(t, tkey) in traces" :key="tkey">
-                  <span class="badge bg-info mx-1">{{ t.standardid }}</span>
-                  <span class="badge bg-dark mx-1">{{ t.cerno }}</span>
-                  {{ t.tracecername }}
-                </div>
+
+              <template v-if="data.condition">
+                <ul v-for="(t, tkey) in data.condition?.tracecername" :key="tkey">
+                  <!-- <span class="badge bg-info mx-1">{{ t.standardid }}</span>
+                  <span class="badge bg-dark mx-1">{{ t.cerno }}</span> -->
+                  <li>{{ t?.tracecername }}</li>
+                </ul>
               </template>
             </li>
           </ol>
@@ -134,8 +135,8 @@ import { object } from 'yup'
 const props = defineProps({
   data: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 })
 
 const traces = computed(() => {

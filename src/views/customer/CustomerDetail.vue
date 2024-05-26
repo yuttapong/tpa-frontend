@@ -13,7 +13,7 @@
   <section class="section profile">
     <spinner :visible="loading" />
 
-    <div class="row" v-if="items">
+    <div class="row" v-if="customer">
       <div class="col-xl-12">
         <div class="card">
           <div class="card-body pt-3">
@@ -62,28 +62,48 @@
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active tab-customer" id="tab-customer">
-                <CustomersTable :items="items" @show="getCustomer" />
-
-                <p v-if="totalCustomer">
-                  <Pagination
-                    v-model="customerPagination.current_page"
-                    v-model:total="totalCustomer"
-                    :perPage="customerPagination.per_page"
-                    :pageCount="customerPagination.last_page"
-                    alignment="center"
-                    :onChange="onChangeCustomer"
-                  />
-                </p>
+  
+                <div class="row g-2">
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xxl-2">
+                    <label>รหัสลูกค้า</label>
+                    <p>{{customer.customercode}}</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xxl-2">
+                    <label>ลูกค้า (TH)</label>
+                    <p>{{customer.companyname}}</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xxl-2">
+                    <label>รหัสลูกค้า (EN)</label>
+                    <p>{{customer.companynameen}}</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xxl-2">
+                    <label>taxnumber</label>
+                    <p>{{customer.taxnumber}}</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xxl-2">
+                    <label>province</label>
+                    <p>{{customer.province}}</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xxl-2">
+                    <label>province</label>
+                    <p>{{customer.province}}</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xxl-2">
+                    <label>รหัสลูกค้า</label>
+                    <p>{{customer.customercode}}</p>
+                  </div>
+                </div>
+                {{customer}}
               </div>
 
               <div class="tab-pane fade pt-3 tab-category" id="tab-category">
-                <CustomerTypesTable :items="customerTypes" />
+                <!-- <CustomerTypesTable :items="customerTypes" /> -->
               </div>
               <div class="tab-pane fade pt-3 tab-creditday" id="tab-creditday">
-                <credit-day-table :items="creditDays" />
+                <!-- <credit-day-table :items="creditDays" /> -->
               </div>
               <div class="tab-pane fade pt-3 tab-credit" id="tab-credit">
-                <credit-table :items="credits" />
+                <!-- <credit-table :items="credits" /> -->
               </div>
 
               <div class="tab-pane fade pt-3 qt-edit" id="qt-edit">
@@ -529,8 +549,9 @@ import CustomersTable from './components/CustomersTable.vue'
 import CustomerTypesTable from './components/CustomerTypesTable.vue'
 import CreditDayTable from './components/CreditDayTable.vue'
 import CreditTable from './components/CreditTable.vue'
+import { useRoute } from 'vue-router'
 
-const items = ref([])
+const customer = ref([])
 const customerTypes = ref([])
 const customerPagination = ref({
   total: 0,
@@ -541,6 +562,7 @@ const customerPagination = ref({
 const totalCustomer = ref(0)
 const loading = ref(true)
 const modalRef = ref(null)
+const route = useRoute()
 const modal = ref(null)
 const dataCustomer = ref({})
 const bills = ref({})
@@ -549,24 +571,11 @@ const creditDays = ref({})
 const credits = ref({})
 
 const loadData = async () => {
-  const { data } = await api.get('/v2/customers', {
-    params: {
-      page: customerPagination.value.current_page,
-    },
-  })
+  const { data } = await api.get('/v2/customers/' + route.params.id)
 
   if (data) {
-    totalCustomer.value = data.total
-    const p = {
-      total: Number(data.total),
-      page: data.current_page,
-      per_page: data.per_page,
-      last_page: data.last_page,
-    }
-    customerPagination.value = p
-    items.value = data.data
+    customer.value = data
     loading.value = false
-    console.log('pagination ff', customerPagination.value)
   }
 }
 const loadCustomerTypes = async () => {
@@ -631,9 +640,6 @@ const onChangeCustomer = (page) => {
 
 onMounted(() => {
   loadData()
-  loadCustomerTypes()
-  loadCredits()
-  loadCreditDay()
   modal.value = new Modal(modalRef.value)
 })
 </script>

@@ -3,92 +3,102 @@
   <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
       <li class="nav-item">
-        <router-link to="/dashboard" class="nav-link" href="index.html">
+        <router-link to="/dashboard" class="nav-link collapsed" href="index.html">
           <i class="bi bi-grid"></i>
-          <span>Dashboard</span>
+          <span>Dashboard {{ width }}</span>
         </router-link>
       </li>
       <!-- End Dashboard Nav -->
 
-      <li class="nav-heading">ระบบ</li>
+      <li class="nav-heading">ระบบงาน</li>
 
       <li class="nav-item">
         <router-link to="/quotations" class="nav-link collapsed">
           <i class="bi bi-file"></i>
-          <span>Quotations</span>
+          <span>ใบเสนอราคา</span>
         </router-link>
       </li>
       <li class="nav-item">
         <router-link to="/bills" class="nav-link collapsed">
-          <i class="bi bi-file"></i>
-          <span>Bills</span>
+          <i class="bi bi-book"></i>
+          <span>ใบขอรับบริการ</span>
         </router-link>
       </li>
       <li class="nav-item">
         <router-link to="/workoders" class="nav-link collapsed">
-          <i class="bi bi-file"></i>
-          <span>Workoders</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link to="/invoices" class="nav-link collapsed">
-          <i class="bi bi-file"></i>
-          <span>Invoices</span>
+          <i class="bi bi-star"></i>
+          <span>งาน</span>
         </router-link>
       </li>
       <li class="nav-item">
         <router-link to="/certificates" class="nav-link collapsed">
-          <i class="bi bi-file"></i>
-          <span>Certificates</span>
+          <i class="bi bi-check-circle"></i>
+          <span>ใบรับรอง</span>
         </router-link>
       </li>
-
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#data-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-database"></i>
-          <span>ข้อมูล</span>
-        </a>
-        <ul id="data-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-          <li class="nav-item">
-            <router-link to="/data/customers" class="nav-link collapsed">
-              <i class="bi bi-people"></i>
-              <span>Customers</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/data/contacts" class="nav-link collapsed">
-              <i class="bi bi-person-vcard"></i>
-              <span>Contacts</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/data/products" class="nav-link collapsed">
-              <i class="bi bi-box"></i>
-              <span>Products</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/data/stdinstruments" class="nav-link collapsed">
-              <i class="bi bi-box"></i>
-              <span>Standard Instruments</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/data/staffs" class="nav-link collapsed">
-              <i class="bi bi-person-circle"></i>
-              <span>Staffs</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/data/company" class="nav-link collapsed">
-              <i class="bi bi-person-circle"></i>
-              <span>บริษัท</span>
-            </router-link>
-          </li>
-        </ul>
+        <router-link to="/invoices" class="nav-link collapsed">
+          <i class="bi bi-files"></i>
+          <span>ใบแจ้งหนี้</span>
+        </router-link>
+      </li>
+      <li class="nav-heading">ข้อมูล</li>
+      <li class="nav-item">
+        <router-link to="/data/customers" class="nav-link collapsed">
+          <i class="bi bi-people"></i>
+          <span>บริษัท/ลูกค้า</span>
+        </router-link>
       </li>
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
+        <router-link to="/data/contacts" class="nav-link collapsed">
+          <i class="bi bi-person-vcard"></i>
+          <span>รายชื่อ/ผู้ติดต่อ</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/data/products" class="nav-link collapsed">
+          <i class="bi bi-box"></i>
+          <span>Products</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/data/stdinstruments" class="nav-link collapsed">
+          <i class="bi bi-box"></i>
+          <span>เครื่องมือมาตรฐาน</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/data/staffs" class="nav-link collapsed">
+          <i class="bi bi-person-circle"></i>
+          <span>ผู้ใช้/พนักงาน</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/data/company" class="nav-link collapsed">
+          <i class="bi bi-person-circle"></i>
+          <span>บริษัท</span>
+        </router-link>
+      </li>
+      <li class="nav-heading">สำหรับผู้ดูแลระบบ</li>
+      <li class="nav-item">
+        <router-link to="/setting/staff" class="nav-link collapsed">
+          <i class="bi bi-gear"></i>
+          <span>ผู้ใช้งานระบบ</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/setting/permission" class="nav-link collapsed">
+          <i class="bi bi-gear"></i>
+          <span>บทบาท && สิทธิ์</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link collapsed"
+          data-bs-target="#setting-nav"
+          data-bs-toggle="collapse"
+          href="#"
+        >
           <i class="bi bi-gear"></i>
           <span>ตั้งค่า</span>
         </a>
@@ -96,7 +106,7 @@
           <li class="nav-item">
             <router-link to="/setting/staff" class="nav-link collapsed">
               <i class="bi bi-gear"></i>
-              <span>Staff</span>
+              <span>ผู้ใช้งานระบบ</span>
             </router-link>
           </li>
           <li class="nav-item">
@@ -107,6 +117,7 @@
           </li>
         </ul>
       </li>
+      <li class="nav-heading">Pages</li>
       <li class="nav-item">
         <router-link to="register" class="nav-link collapsed">
           <i class="bi bi-card-list"></i>
@@ -116,32 +127,32 @@
       <!-- End Register Page Nav -->
 
       <li class="nav-item">
-        <router-link tag="a" to="/login" class="nav-link collapsed">
+        <router-link to="/login" class="nav-link collapsed">
           <i class="bi bi-box-arrow-in-right"></i>
-          <span>Login</span>
+          <span>เข้าสู่ระบบ</span>
         </router-link>
       </li>
       <!-- End Login Page Nav -->
       <li class="nav-item">
         <router-link to="/profile" class="nav-link collapsed">
           <i class="bi bi-person-lines-fill"></i>
-          <span>Profile</span>
+          <span>โปร์ไฟล์</span>
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link tag="a" to="/error403" class="nav-link collapsed">
+        <router-link to="/error403" class="nav-link collapsed">
           <i class="bi bi-dash-circle"></i>
           <span>Error 403</span>
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link tag="a" to="/error404" class="nav-link collapsed">
+        <router-link to="/error404" class="nav-link collapsed">
           <i class="bi bi-dash-circle"></i>
           <span>Error 404</span>
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link tag="a" to="/error500" class="nav-link collapsed">
+        <router-link to="/error500" class="nav-link collapsed">
           <i class="bi bi-dash-circle"></i>
           <span>Error 500</span>
         </router-link>
@@ -159,30 +170,34 @@
   <!-- End Sidebar-->
 </template>
 <script setup>
-import { onMounted } from 'vue'
-const select = (el, all = false) => {
-  el = el.trim()
-  if (all) {
-    return [...document.querySelectorAll(el)]
-  } else {
-    return document.querySelector(el)
-  }
-}
+import { onMounted, ref, computed } from 'vue'
+import { on, select } from '@/helpers/layout'
+let windowWidth = ref(window.innerWidth)
 
-/**
- * Easy event listener function
- */
-const on = (type, el, listener, all = false) => {
-  if (all) {
-    select(el, all).forEach((e) => e.addEventListener(type, listener))
-  } else {
-    select(el, all)
-  }
-}
+const width = computed(() => windowWidth.value)
 onMounted(() => {
-  // on('click', '.nav-link', function (e) {
-  //   select('body').classList.toggle('toggle-sidebar')
-  // }, true)
+  window.addEventListener('resize', () => {
+    windowWidth.value = window.innerWidth
+  })
+
+  if (width.value <= 1199) {
+    on(
+      'click',
+      '.nav-link',
+      function () {
+        select('body').classList.remove('toggle-sidebar')
+      },
+      true,
+    )
+    on(
+      'click',
+      '#main',
+      function () {
+        select('body').classList.remove('toggle-sidebar')
+      },
+      true,
+    )
+  }
 })
 </script>
 <style lang="scss" scoped>
@@ -202,7 +217,7 @@ onMounted(() => {
   scrollbar-width: thin;
   scrollbar-color: #aab7cf transparent;
   box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
-  background-color: #fff;
+  background-color: #024d79;
 }
 
 @media (max-width: 1199px) {
@@ -214,7 +229,7 @@ onMounted(() => {
 .sidebar::-webkit-scrollbar {
   width: 5px;
   height: 8px;
-  background-color: #fff;
+  background-color: #ffffff;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
@@ -222,7 +237,6 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
-
   #main,
   #footer {
     margin-left: 300px;
@@ -236,7 +250,6 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
-
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;
@@ -260,13 +273,14 @@ onMounted(() => {
 }
 
 .sidebar-nav .nav-item {
-  margin-bottom: 5px;
+  margin-bottom: 1px;
+  // background: #f6f9ff;
 }
 
 .sidebar-nav .nav-heading {
-  font-size: 11px;
+  font-size: 16px;
   text-transform: uppercase;
-  color: #899bbd;
+  color: #09f7cf;
   font-weight: 600;
   margin: 10px 0 5px 15px;
 }
@@ -276,35 +290,35 @@ onMounted(() => {
   align-items: center;
   font-size: 15px;
   font-weight: 600;
-  color: #4154f1;
+  color: #ecebdec4;
   transition: 0.3;
-  background: #f6f9ff;
-  padding: 10px 15px;
+  background: none;
+  padding: 5px 10px;
   border-radius: 4px;
 }
 
 .sidebar-nav .nav-link i {
   font-size: 16px;
   margin-right: 10px;
-  color: #4154f1;
+  color: #ecebdec4;
 }
 
 .sidebar-nav .nav-link.collapsed {
-  color: #012970;
-  background: #fff;
+  color: #f3f3f3;
+  background: none;
 }
 
 .sidebar-nav .nav-link.collapsed i {
-  color: #899bbd;
+  color: #f3f3f3;
 }
 
 .sidebar-nav .nav-link:hover {
-  color: #4154f1;
-  background: #f6f9ff;
+  color: #f5f2f2;
+  background: #044da0;
 }
 
 .sidebar-nav .nav-link:hover i {
-  color: #4154f1;
+  color: #f5f2f2;
 }
 
 .sidebar-nav .nav-link .bi-chevron-down {
@@ -329,12 +343,12 @@ onMounted(() => {
   font-weight: 600;
   color: #012970;
   transition: 0.3;
-  padding: 10px 0 10px 40px;
+  padding: 5px 0 5px 35px;
   transition: 0.3s;
 }
 
 .sidebar-nav .nav-content a i {
-  font-size: 6px;
+  font-size: 12px;
   margin-right: 8px;
   line-height: 0;
   border-radius: 50%;
@@ -342,7 +356,7 @@ onMounted(() => {
 
 .sidebar-nav .nav-content a:hover,
 .sidebar-nav .nav-content a.active {
-  color: #4154f1;
+  color: #d5d8f0;
 }
 
 .sidebar-nav .nav-content a.active i {

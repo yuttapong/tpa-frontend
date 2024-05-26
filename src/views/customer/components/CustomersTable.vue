@@ -14,16 +14,16 @@
         <tr v-for="(item, index) in items" :key="index">
           <th scope="row">
             <div class="btn-group">
-              <button class="btn btn-sm"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm" @click="view(item)"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm"><i class="bi bi-trash"></i></button>
             </div>
           </th>
           <th scope="row">{{ item.id }}</th>
 
           <td>
-            <a @click="view(item)" role="button" class="btn btn-link"> {{ item.companyname }}</a
+            <router-link role="button" class="btn btn-link" :to="`/data/customers/${item.id}`"> {{ item.companyname }}</router-link
             ><br />
-            <span class="badge bg-light text-danger">{{ item.companynameen }}</span>
+            <span class="company-name">{{ item.companynameen }}</span>
             <p>
               <span class="badge bg-info text-white" v-if="item.is_company == 'yes'">Company</span>
               <span class="badge bg-light text-dark p-2 mx-1"
@@ -57,3 +57,9 @@ const view = (item) => {
   emit('show', item)
 }
 </script>
+<style lang="scss" scoped>
+.comany-name {
+  font-size: 13px;
+  color: red;
+}
+</style>

@@ -3,8 +3,8 @@
         <h1>Work Orders</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-                <li class="breadcrumb-item active">Work Orders </li>
+                <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
+                <li class="breadcrumb-item active">งาน</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -77,7 +77,7 @@
                                         <tbody>
                                             <tr v-for="(item, index) in items" :key="index">
                                                 <th scope="row">{{ index + 1 }}</th>
-                                                <td>{{ item.item_code }}</td>
+                                                <td  nowrap><span class="btn btn-sm text-dark fw-bold">{{ item.item_code }}</span></td>
                                                 <td>
                                                     <div>{{ item.product_name }}</div>
                                                     <span class="badge badge-light text-dark mx-2 d-inline-block"

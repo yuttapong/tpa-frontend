@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/Home.vue'
-
+import {baseUrl} from '@/config'
 const routes = [
   {
     path: '/',
@@ -9,7 +9,6 @@ const routes = [
     children: [
       {
         path: '',
-        name: 'default',
         redirect: 'dashboard',
       },
       {
@@ -177,7 +176,8 @@ const routes = [
     component: () => import('../views/error/Error404.vue'),
   },
 ]
+//import.meta.env.VITE_BASE_URL
 export default createRouter({
-  history: createWebHashHistory(import.meta.env.VITE_BASE_URL),
+  history: createWebHashHistory(baseUrl),
   routes,
 })

@@ -197,7 +197,7 @@
           </li>
 
           <li>
-            <a class="dropdown-item d-flex align-items-center" href="#" @click="doLogout">
+            <a class="dropdown-item d-flex align-items-center" href="#" @click="doLogout()">
               <i class="bi bi-box-arrow-right"></i>
               <span>Sign Out</span>
             </a>
@@ -215,7 +215,7 @@ import '@/assets/js/layout.js'
 import { onMounted } from 'vue'
 import { on, select } from '@/helpers/layout'
 import Cookies from 'js-cookie'
-import {useRouter} from "vue-router"
+import { useRouter } from 'vue-router'
 defineProps({
   name: {
     type: String,
@@ -227,16 +227,13 @@ import profile from '@/assets/img/profile-img.jpg'
 import message1 from '@/assets/img/messages-1.jpg'
 import message2 from '@/assets/img/messages-2.jpg'
 import message3 from '@/assets/img/messages-3.jpg'
-
-
+import {baseUrl} from '@/config'
 const router = useRouter()
 
 const doLogout = () => {
-  console.log('logout', router);
-  router.push("/profile")
-  // Cookies.remove('tpa')
-  // Cookies.remove('expire_time')
-  // router.replace("/profile")
+  Cookies.remove('token')
+  Cookies.remove('expire_time')
+  window.location.replace(baseUrl +"#login")
 }
 onMounted(() => {
   if (select('.search-bar-toggle')) {

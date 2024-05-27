@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-const token = Cookies.get('tpa')
+const token = Cookies.get('token')
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
@@ -11,6 +11,7 @@ const http = axios.create({
 })
 http.interceptors.request.use(
   (config) => {
+    const token = Cookies.get('token')
     config.headers['Authorization'] = `${token}`
     return config
   },

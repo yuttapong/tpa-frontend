@@ -1,1 +1,1 @@
-export const baseUrl = '/appcal002/'
+export const baseUrl = '/'

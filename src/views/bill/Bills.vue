@@ -93,7 +93,7 @@
                     </thead>
                     <tbody>
                       <tr v-for="(item, index) in items" :key="index">
-                        <th scope="row">
+                        <th scope="row" nowrap>
                           <i class="bi bi-pencil mx-1" @click="showDetail(item)" role="button"></i>
                           <i class="bi bi-search mx-1" @click="showDetail(item)" role="button"></i>
                         </th>
@@ -512,7 +512,12 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               <label class="fw-bold text-decoration-underline">เวลาทำรายการ</label>
               <p>{{ bill.date_start }}</p>
             </div>
+            <div class="col-4">
+              <label class="fw-bold text-decoration-underline">Commitment Date</label>
+              <p>{{ bill.commitment_date }}</p>
+            </div>
           </div>
+
           <div class="" v-if="loadingItems">
             <div class="spinner-grow" role="status">
               <span class="visually-hidden">Loading...</span>
@@ -563,23 +568,57 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
           <p>NOTE: {{ bill.note_customers }}</p>
         </div>
         <div class="modal-footer">
-          <input type="date" v-model="commitment_date_target" class="formcontrol-sm" />
-          <button class="btn btn-sm btn-info" type="button" @click="seachCommitmentDate">
-            <i class="bi bi-search"></i> ประมวลวันจองคิวงาน
-          </button>
-          <span class="alert alert-danger" v-if="errorMsg">{{ errorMsg }}</span>
-          <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
-            >{{ itemsSelected.length }} รายการ</span
-          >
+          <!-- ///////////// -->
+          <div class="row gap-2">
+            <div class="col-12 d-flex">
+              <div class="p-1">
+                <span class="alert alert-danger p-1" v-if="errorMsg">{{ errorMsg }}</span>
+              </div>
+              <div class="p-1">
+                <span
+                  class="badge rounded-pill bg-danger p-2 fw-bold"
+                  v-if="itemsSelected.length > 0"
+                  >{{ itemsSelected.length }} รายการ</span
+                >
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="row">
+                <div class="col-6 col-md-6 col-lg-6">
+                  <spinner :visible="loadingCommitment" />
+                  <span class="input-group">
+                    <input
+                      type="date"
+                      v-model="commitment_date_target"
+                      class="form-control-sm form-control"
+                    />
+                    <button class="btn btn-sm btn-info" type="button" @click="seachCommitmentDate">
+                      <i class="bi bi-search"></i> จองคิวงาน
+                    </button>
+                  </span>
+                </div>
+                <div class="col-6 col-md-6 col-lg-6">
+                  <button type="button" class="btn btn-success btn-sm mx-1" @click="newInvoice">
+                    <i class="bi bi-plus"></i> Invoice Cart
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm mx-1"
+                    data-bs-dismiss="modal"
+                  >
+                    <i class="bi bi-x-circle"></i> ปิดหน้าต่าง
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <button type="button" class="btn btn-success" @click="newInvoice">
-            <i class=""></i>สร้างใบแจ้งหนี้ - New Invoice
-          </button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <!-- ///////////// -->
         </div>
       </div>
     </div>
   </div>
+
   <div class="modal" ref="modalInvoiceRef">
     <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -718,6 +757,7 @@ const pagination = ref({
   per_page: 15,
   curent_page: 1,
 })
+const loadingCommitment = ref(false)
 const loading = ref(true)
 const loadingItems = ref(true)
 const bill = ref({})
@@ -856,466 +896,487 @@ const resetFormSearch = () => {
   formSearch.value.q = ''
 }
 const billData = {
-    "id": 12358,
-    "document_date": "2024-04-11",
-    "code": "2404-0384WN",
-    "company_id": 16195,
-    "agent_id": null,
-    "agent_name": "Ms. Sokanha Piseth",
-    "note_customers": "ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice",
-    "date_start": "2024-04-11 16:05:29",
-    "user_start": 256036,
-    "cert_address_name": "SGS ( Cambodia ) Limited",
-    "cert_address_detail": "No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia",
-    "address_name": "SGS ( Cambodia ) Limited",
-    "address_detail": "No. 1076 A-D, Street 371",
-    "approve_status": "draft",
-    "remark": "",
-    "progress_status": null,
-    "has_tracking": "no",
-    "commitment_date": "2024-04-13",
-    "total": "0.00",
-    "customer": {
-        "id": 16195,
-        "is_company": "yes",
-        "customercode": "16195",
-        "companyname": "SGS ( Cambodia ) Limited",
-        "companynameen": "SGS ( Cambodia ) Limited",
-        "subdistrict": "Sangkat Stung Meanchey,",
-        "district": "Khan Meanchey,",
-        "postalcode": 0,
-        "country": "T",
-        "taxnumber": "CE00000000225",
-        "address": "No. 1076 A-D, Street 371",
-        "province": "Phnom Penh, Kingdom of Cambodia",
-        "phone": "+855 23 967 888 Ext.",
-        "contactmain": "+855 23 967 888 Ext. 506",
-        "status": 1,
-        "name": null,
-        "lastname": null,
-        "name_th": null,
-        "lastname_th": null,
-        "idcard": null
+  id: 12358,
+  document_date: '2024-04-11',
+  code: '2404-0384WN',
+  company_id: 16195,
+  agent_id: null,
+  agent_name: 'Ms. Sokanha Piseth',
+  note_customers:
+    'ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice',
+  date_start: '2024-04-11 16:05:29',
+  user_start: 256036,
+  cert_address_name: 'SGS ( Cambodia ) Limited',
+  cert_address_detail:
+    'No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia',
+  address_name: 'SGS ( Cambodia ) Limited',
+  address_detail: 'No. 1076 A-D, Street 371',
+  approve_status: 'draft',
+  remark: '',
+  progress_status: null,
+  has_tracking: 'no',
+  commitment_date: '2024-04-13',
+  total: '0.00',
+  customer: {
+    id: 16195,
+    is_company: 'yes',
+    customercode: '16195',
+    companyname: 'SGS ( Cambodia ) Limited',
+    companynameen: 'SGS ( Cambodia ) Limited',
+    subdistrict: 'Sangkat Stung Meanchey,',
+    district: 'Khan Meanchey,',
+    postalcode: 0,
+    country: 'T',
+    taxnumber: 'CE00000000225',
+    address: 'No. 1076 A-D, Street 371',
+    province: 'Phnom Penh, Kingdom of Cambodia',
+    phone: '+855 23 967 888 Ext.',
+    contactmain: '+855 23 967 888 Ext. 506',
+    status: 1,
+    name: null,
+    lastname: null,
+    name_th: null,
+    lastname_th: null,
+    idcard: null,
+  },
+  items: [
+    {
+      item_id: 45440,
+      calid: '675356',
+      item_code: '2404-0384WN-01',
+      bill_id: 12358,
+      company_id: 16195,
+      product_id: 250,
+      product_name: 'Micropipette',
+      barcode_no: '1619500035',
+      manufaturer_name: 'VITLAB',
+      model: '1641012',
+      serialnumber: '12M08531',
+      id_no: 'M2015002',
+      test_point:
+        'ปรับเทียบ 1000, 5000, 10000 ul ******ระบุ ID ใน sticker ** Tolerance ตามแนบ + กล่องกระดาษ + Tip 3 / ตัวเครื่องมีรอยแตก',
+      lab_id: 18,
+      sublab_id: 25,
+      point: 1,
+      point_price: '700.00',
+      hour: '0.30',
+      range_value: '3',
+      range_price: '0.00',
+      total: '0.00',
+      service_status_id: 0,
+      document_date: '2024-04-11',
+      img: 'https://placehold.co/32x32/000000/FFF',
+      current_service_status: null,
+      customer: {
+        id: 16195,
+        is_company: 'yes',
+        customercode: '16195',
+        companyname: 'SGS ( Cambodia ) Limited',
+        companynameen: 'SGS ( Cambodia ) Limited',
+        subdistrict: 'Sangkat Stung Meanchey,',
+        district: 'Khan Meanchey,',
+        postalcode: 0,
+        country: 'T',
+        taxnumber: 'CE00000000225',
+        address: 'No. 1076 A-D, Street 371',
+        province: 'Phnom Penh, Kingdom of Cambodia',
+        phone: '+855 23 967 888 Ext.',
+        contactmain: '+855 23 967 888 Ext. 506',
+        status: 1,
+        name: null,
+        lastname: null,
+        name_th: null,
+        lastname_th: null,
+        idcard: null,
+      },
+      sublab: {
+        id: 25,
+        lab_id: 18,
+        code: 'CM',
+        name_th: 'งานสอบเทียบปริมาตร (Micro Pipet)',
+        name: 'Volumetric Lab',
+      },
+      lab: {
+        id: 18,
+        code: 'GW',
+        name_th: 'ห้องปฏิบัติการสอบเทียบปริมาตร',
+        name: 'Volumetric',
+      },
+      certificates: [
+        {
+          cerid: 542361,
+          cerno: '24CM355',
+          calid: 675356,
+          submitted: {
+            customer_id: null,
+            customer: null,
+            address: '',
+          },
+          calibratedBy: null,
+          bill: null,
+          employee: null,
+        },
+      ],
+      service_statuses: [],
+      bill: {
+        id: 12358,
+        document_date: '2024-04-11',
+        code: '2404-0384WN',
+        company_id: 16195,
+        agent_id: null,
+        agent_name: 'Ms. Sokanha Piseth',
+        note_customers:
+          'ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice',
+        date_start: '2024-04-11 16:05:29',
+        user_start: 256036,
+        cert_address_name: 'SGS ( Cambodia ) Limited',
+        cert_address_detail:
+          'No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia',
+        address_name: 'SGS ( Cambodia ) Limited',
+        address_detail: 'No. 1076 A-D, Street 371',
+        approve_status: 'draft',
+        remark: '',
+        progress_status: null,
+        has_tracking: 'no',
+        commitment_date: '2024-04-13',
+        total: '0.00',
+        customer: {
+          id: 16195,
+          is_company: 'yes',
+          customercode: '16195',
+          companyname: 'SGS ( Cambodia ) Limited',
+          companynameen: 'SGS ( Cambodia ) Limited',
+          subdistrict: 'Sangkat Stung Meanchey,',
+          district: 'Khan Meanchey,',
+          postalcode: 0,
+          country: 'T',
+          taxnumber: 'CE00000000225',
+          address: 'No. 1076 A-D, Street 371',
+          province: 'Phnom Penh, Kingdom of Cambodia',
+          phone: '+855 23 967 888 Ext.',
+          contactmain: '+855 23 967 888 Ext. 506',
+          status: 1,
+          name: null,
+          lastname: null,
+          name_th: null,
+          lastname_th: null,
+          idcard: null,
+        },
+      },
     },
-    "items": [
+    {
+      item_id: 45441,
+      calid: '675357',
+      item_code: '2404-0384WN-02',
+      bill_id: 12358,
+      company_id: 16195,
+      product_id: 276,
+      product_name: 'Digital Thermo-Hygrometer',
+      barcode_no: '0530401084',
+      manufaturer_name: 'Testo',
+      model: '608-H1',
+      serialnumber: '41377025',
+      id_no: 'T2014011',
+      test_point:
+        'ปรับเทียบ 20, 25, 30 C / 40, 45, 50, 55, 60, 65, 70%RH / Tolerance ± 2C,±5%RH/ ระบุ ID ใน sticker',
+      lab_id: 16,
+      sublab_id: 23,
+      point: 1,
+      point_price: '1460.00',
+      hour: '2.00',
+      range_value: '10',
+      range_price: '0.00',
+      total: '0.00',
+      service_status_id: 0,
+      document_date: '2024-04-11',
+      img: 'https://placehold.co/32x32/000000/FFF',
+      current_service_status: {
+        item_id: 45441,
+        status_id: 0,
+        status_name: null,
+      },
+      customer: {
+        id: 16195,
+        is_company: 'yes',
+        customercode: '16195',
+        companyname: 'SGS ( Cambodia ) Limited',
+        companynameen: 'SGS ( Cambodia ) Limited',
+        subdistrict: 'Sangkat Stung Meanchey,',
+        district: 'Khan Meanchey,',
+        postalcode: 0,
+        country: 'T',
+        taxnumber: 'CE00000000225',
+        address: 'No. 1076 A-D, Street 371',
+        province: 'Phnom Penh, Kingdom of Cambodia',
+        phone: '+855 23 967 888 Ext.',
+        contactmain: '+855 23 967 888 Ext. 506',
+        status: 1,
+        name: null,
+        lastname: null,
+        name_th: null,
+        lastname_th: null,
+        idcard: null,
+      },
+      sublab: {
+        id: 23,
+        lab_id: 16,
+        code: 'H',
+        name_th: 'งานสอบเทียบความชื้น',
+        name: 'Humidity Lab',
+      },
+      lab: {
+        id: 16,
+        code: 'H',
+        name_th: 'ห้องปฏิบัติการสอบเทียบความชื้น',
+        name: 'Humidity',
+      },
+      certificates: [
         {
-            "item_id": 45440,
-            "calid": "675356",
-            "item_code": "2404-0384WN-01",
-            "bill_id": 12358,
-            "company_id": 16195,
-            "product_id": 250,
-            "product_name": "Micropipette",
-            "barcode_no": "1619500035",
-            "manufaturer_name": "VITLAB",
-            "model": "1641012",
-            "serialnumber": "12M08531",
-            "id_no": "M2015002",
-            "test_point": "ปรับเทียบ 1000, 5000, 10000 ul ******ระบุ ID ใน sticker ** Tolerance ตามแนบ + กล่องกระดาษ + Tip 3 / ตัวเครื่องมีรอยแตก",
-            "lab_id": 18,
-            "sublab_id": 25,
-            "point": 1,
-            "point_price": "700.00",
-            "hour": "0.30",
-            "range_value": "3",
-            "range_price": "0.00",
-            "total": "0.00",
-            "service_status_id": 0,
-            "document_date": "2024-04-11",
-            "img": "https://placehold.co/32x32/000000/FFF",
-            "current_service_status": null,
-            "customer": {
-                "id": 16195,
-                "is_company": "yes",
-                "customercode": "16195",
-                "companyname": "SGS ( Cambodia ) Limited",
-                "companynameen": "SGS ( Cambodia ) Limited",
-                "subdistrict": "Sangkat Stung Meanchey,",
-                "district": "Khan Meanchey,",
-                "postalcode": 0,
-                "country": "T",
-                "taxnumber": "CE00000000225",
-                "address": "No. 1076 A-D, Street 371",
-                "province": "Phnom Penh, Kingdom of Cambodia",
-                "phone": "+855 23 967 888 Ext.",
-                "contactmain": "+855 23 967 888 Ext. 506",
-                "status": 1,
-                "name": null,
-                "lastname": null,
-                "name_th": null,
-                "lastname_th": null,
-                "idcard": null
-            },
-            "sublab": {
-                "id": 25,
-                "lab_id": 18,
-                "code": "CM",
-                "name_th": "งานสอบเทียบปริมาตร (Micro Pipet)",
-                "name": "Volumetric Lab"
-            },
-            "lab": {
-                "id": 18,
-                "code": "GW",
-                "name_th": "ห้องปฏิบัติการสอบเทียบปริมาตร",
-                "name": "Volumetric"
-            },
-            "certificates": [
-                {
-                    "cerid": 542361,
-                    "cerno": "24CM355",
-                    "calid": 675356,
-                    "submitted": {
-                        "customer_id": null,
-                        "customer": null,
-                        "address": ""
-                    },
-                    "calibratedBy": null,
-                    "bill": null,
-                    "employee": null
-                }
-            ],
-            "service_statuses": [],
-            "bill": {
-                "id": 12358,
-                "document_date": "2024-04-11",
-                "code": "2404-0384WN",
-                "company_id": 16195,
-                "agent_id": null,
-                "agent_name": "Ms. Sokanha Piseth",
-                "note_customers": "ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice",
-                "date_start": "2024-04-11 16:05:29",
-                "user_start": 256036,
-                "cert_address_name": "SGS ( Cambodia ) Limited",
-                "cert_address_detail": "No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia",
-                "address_name": "SGS ( Cambodia ) Limited",
-                "address_detail": "No. 1076 A-D, Street 371",
-                "approve_status": "draft",
-                "remark": "",
-                "progress_status": null,
-                "has_tracking": "no",
-                "commitment_date": "2024-04-13",
-                "total": "0.00",
-                "customer": {
-                    "id": 16195,
-                    "is_company": "yes",
-                    "customercode": "16195",
-                    "companyname": "SGS ( Cambodia ) Limited",
-                    "companynameen": "SGS ( Cambodia ) Limited",
-                    "subdistrict": "Sangkat Stung Meanchey,",
-                    "district": "Khan Meanchey,",
-                    "postalcode": 0,
-                    "country": "T",
-                    "taxnumber": "CE00000000225",
-                    "address": "No. 1076 A-D, Street 371",
-                    "province": "Phnom Penh, Kingdom of Cambodia",
-                    "phone": "+855 23 967 888 Ext.",
-                    "contactmain": "+855 23 967 888 Ext. 506",
-                    "status": 1,
-                    "name": null,
-                    "lastname": null,
-                    "name_th": null,
-                    "lastname_th": null,
-                    "idcard": null
-                }
-            }
+          cerid: 542689,
+          cerno: '24H779',
+          calid: 675357,
+          submitted: {
+            customer_id: null,
+            customer: null,
+            address: '',
+          },
+          calibratedBy: null,
+          bill: null,
+          employee: null,
+        },
+      ],
+      service_statuses: [
+        {
+          id: 1557,
+          item_id: 45441,
+          sublab_id: 23,
+          product_id: 276,
+          bill_id: null,
+          created_at: 0,
+          sublab_name: 'งานสอบเทียบความชื้น',
+          status_id: 0,
+          status_name: null,
+          cust_id: 16195,
+          cust_name: 'SGS ( Cambodia ) Limited',
+          created_by: 256036,
+          created_name: 'พวงทิพย์ สว่างโคกกรวด',
+          remark: 'ทดสอบ add Tracking Data',
         },
         {
-            "item_id": 45441,
-            "calid": "675357",
-            "item_code": "2404-0384WN-02",
-            "bill_id": 12358,
-            "company_id": 16195,
-            "product_id": 276,
-            "product_name": "Digital Thermo-Hygrometer",
-            "barcode_no": "0530401084",
-            "manufaturer_name": "Testo",
-            "model": "608-H1",
-            "serialnumber": "41377025",
-            "id_no": "T2014011",
-            "test_point": "ปรับเทียบ 20, 25, 30 C / 40, 45, 50, 55, 60, 65, 70%RH / Tolerance ± 2C,±5%RH/ ระบุ ID ใน sticker",
-            "lab_id": 16,
-            "sublab_id": 23,
-            "point": 1,
-            "point_price": "1460.00",
-            "hour": "2.00",
-            "range_value": "10",
-            "range_price": "0.00",
-            "total": "0.00",
-            "service_status_id": 0,
-            "document_date": "2024-04-11",
-            "img": "https://placehold.co/32x32/000000/FFF",
-            "current_service_status": {
-                "item_id": 45441,
-                "status_id": 0,
-                "status_name": null
-            },
-            "customer": {
-                "id": 16195,
-                "is_company": "yes",
-                "customercode": "16195",
-                "companyname": "SGS ( Cambodia ) Limited",
-                "companynameen": "SGS ( Cambodia ) Limited",
-                "subdistrict": "Sangkat Stung Meanchey,",
-                "district": "Khan Meanchey,",
-                "postalcode": 0,
-                "country": "T",
-                "taxnumber": "CE00000000225",
-                "address": "No. 1076 A-D, Street 371",
-                "province": "Phnom Penh, Kingdom of Cambodia",
-                "phone": "+855 23 967 888 Ext.",
-                "contactmain": "+855 23 967 888 Ext. 506",
-                "status": 1,
-                "name": null,
-                "lastname": null,
-                "name_th": null,
-                "lastname_th": null,
-                "idcard": null
-            },
-            "sublab": {
-                "id": 23,
-                "lab_id": 16,
-                "code": "H",
-                "name_th": "งานสอบเทียบความชื้น",
-                "name": "Humidity Lab"
-            },
-            "lab": {
-                "id": 16,
-                "code": "H",
-                "name_th": "ห้องปฏิบัติการสอบเทียบความชื้น",
-                "name": "Humidity"
-            },
-            "certificates": [
-                {
-                    "cerid": 542689,
-                    "cerno": "24H779",
-                    "calid": 675357,
-                    "submitted": {
-                        "customer_id": null,
-                        "customer": null,
-                        "address": ""
-                    },
-                    "calibratedBy": null,
-                    "bill": null,
-                    "employee": null
-                }
-            ],
-            "service_statuses": [
-                {
-                    "id": 1557,
-                    "item_id": 45441,
-                    "sublab_id": 23,
-                    "product_id": 276,
-                    "bill_id": null,
-                    "created_at": 0,
-                    "sublab_name": "งานสอบเทียบความชื้น",
-                    "status_id": 0,
-                    "status_name": null,
-                    "cust_id": 16195,
-                    "cust_name": "SGS ( Cambodia ) Limited",
-                    "created_by": 256036,
-                    "created_name": "พวงทิพย์ สว่างโคกกรวด",
-                    "remark": "ทดสอบ add Tracking Data"
-                },
-                {
-                    "id": 1556,
-                    "item_id": 45441,
-                    "sublab_id": 23,
-                    "product_id": 276,
-                    "bill_id": null,
-                    "created_at": 0,
-                    "sublab_name": "งานสอบเทียบความชื้น",
-                    "status_id": 0,
-                    "status_name": null,
-                    "cust_id": 16195,
-                    "cust_name": "SGS ( Cambodia ) Limited",
-                    "created_by": 256036,
-                    "created_name": "พวงทิพย์ สว่างโคกกรวด",
-                    "remark": "ทดสอบ add Tracking Data"
-                }
-            ],
-            "bill": {
-                "id": 12358,
-                "document_date": "2024-04-11",
-                "code": "2404-0384WN",
-                "company_id": 16195,
-                "agent_id": null,
-                "agent_name": "Ms. Sokanha Piseth",
-                "note_customers": "ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice",
-                "date_start": "2024-04-11 16:05:29",
-                "user_start": 256036,
-                "cert_address_name": "SGS ( Cambodia ) Limited",
-                "cert_address_detail": "No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia",
-                "address_name": "SGS ( Cambodia ) Limited",
-                "address_detail": "No. 1076 A-D, Street 371",
-                "approve_status": "draft",
-                "remark": "",
-                "progress_status": null,
-                "has_tracking": "no",
-                "commitment_date": "2024-04-13",
-                "total": "0.00",
-                "customer": {
-                    "id": 16195,
-                    "is_company": "yes",
-                    "customercode": "16195",
-                    "companyname": "SGS ( Cambodia ) Limited",
-                    "companynameen": "SGS ( Cambodia ) Limited",
-                    "subdistrict": "Sangkat Stung Meanchey,",
-                    "district": "Khan Meanchey,",
-                    "postalcode": 0,
-                    "country": "T",
-                    "taxnumber": "CE00000000225",
-                    "address": "No. 1076 A-D, Street 371",
-                    "province": "Phnom Penh, Kingdom of Cambodia",
-                    "phone": "+855 23 967 888 Ext.",
-                    "contactmain": "+855 23 967 888 Ext. 506",
-                    "status": 1,
-                    "name": null,
-                    "lastname": null,
-                    "name_th": null,
-                    "lastname_th": null,
-                    "idcard": null
-                }
-            }
+          id: 1556,
+          item_id: 45441,
+          sublab_id: 23,
+          product_id: 276,
+          bill_id: null,
+          created_at: 0,
+          sublab_name: 'งานสอบเทียบความชื้น',
+          status_id: 0,
+          status_name: null,
+          cust_id: 16195,
+          cust_name: 'SGS ( Cambodia ) Limited',
+          created_by: 256036,
+          created_name: 'พวงทิพย์ สว่างโคกกรวด',
+          remark: 'ทดสอบ add Tracking Data',
         },
+      ],
+      bill: {
+        id: 12358,
+        document_date: '2024-04-11',
+        code: '2404-0384WN',
+        company_id: 16195,
+        agent_id: null,
+        agent_name: 'Ms. Sokanha Piseth',
+        note_customers:
+          'ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice',
+        date_start: '2024-04-11 16:05:29',
+        user_start: 256036,
+        cert_address_name: 'SGS ( Cambodia ) Limited',
+        cert_address_detail:
+          'No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia',
+        address_name: 'SGS ( Cambodia ) Limited',
+        address_detail: 'No. 1076 A-D, Street 371',
+        approve_status: 'draft',
+        remark: '',
+        progress_status: null,
+        has_tracking: 'no',
+        commitment_date: '2024-04-13',
+        total: '0.00',
+        customer: {
+          id: 16195,
+          is_company: 'yes',
+          customercode: '16195',
+          companyname: 'SGS ( Cambodia ) Limited',
+          companynameen: 'SGS ( Cambodia ) Limited',
+          subdistrict: 'Sangkat Stung Meanchey,',
+          district: 'Khan Meanchey,',
+          postalcode: 0,
+          country: 'T',
+          taxnumber: 'CE00000000225',
+          address: 'No. 1076 A-D, Street 371',
+          province: 'Phnom Penh, Kingdom of Cambodia',
+          phone: '+855 23 967 888 Ext.',
+          contactmain: '+855 23 967 888 Ext. 506',
+          status: 1,
+          name: null,
+          lastname: null,
+          name_th: null,
+          lastname_th: null,
+          idcard: null,
+        },
+      },
+    },
+    {
+      item_id: 45442,
+      calid: '675358',
+      item_code: '2404-0384WN-03',
+      bill_id: 12358,
+      company_id: 16195,
+      product_id: 2441,
+      product_name: 'Service Charge',
+      barcode_no: '1619500255',
+      manufaturer_name: '',
+      model: '',
+      serialnumber: '',
+      id_no: '',
+      test_point: '',
+      lab_id: 2,
+      sublab_id: 1,
+      point: 1,
+      point_price: '1.00',
+      hour: '1.00',
+      range_value: '1',
+      range_price: '0.00',
+      total: '0.00',
+      service_status_id: 0,
+      document_date: '2024-04-11',
+      img: 'https://placehold.co/32x32/000000/FFF',
+      current_service_status: {
+        item_id: 45442,
+        status_id: 0,
+        status_name: null,
+      },
+      customer: {
+        id: 16195,
+        is_company: 'yes',
+        customercode: '16195',
+        companyname: 'SGS ( Cambodia ) Limited',
+        companynameen: 'SGS ( Cambodia ) Limited',
+        subdistrict: 'Sangkat Stung Meanchey,',
+        district: 'Khan Meanchey,',
+        postalcode: 0,
+        country: 'T',
+        taxnumber: 'CE00000000225',
+        address: 'No. 1076 A-D, Street 371',
+        province: 'Phnom Penh, Kingdom of Cambodia',
+        phone: '+855 23 967 888 Ext.',
+        contactmain: '+855 23 967 888 Ext. 506',
+        status: 1,
+        name: null,
+        lastname: null,
+        name_th: null,
+        lastname_th: null,
+        idcard: null,
+      },
+      sublab: {
+        id: 1,
+        lab_id: 2,
+        code: 'C',
+        name_th: 'ค่าบริการรถรับ-ส่งเครื่องมือ/ค่าบริการขนส่ง / ค่าแก้ Cert.',
+        name: 'CentralOffice',
+      },
+      lab: {
+        id: 2,
+        code: 'C',
+        name_th: 'ส่วนงานรับ-ส่งเครื่องมือ',
+        name: 'Delivery',
+      },
+      certificates: [],
+      service_statuses: [
         {
-            "item_id": 45442,
-            "calid": "675358",
-            "item_code": "2404-0384WN-03",
-            "bill_id": 12358,
-            "company_id": 16195,
-            "product_id": 2441,
-            "product_name": "Service Charge",
-            "barcode_no": "1619500255",
-            "manufaturer_name": "",
-            "model": "",
-            "serialnumber": "",
-            "id_no": "",
-            "test_point": "",
-            "lab_id": 2,
-            "sublab_id": 1,
-            "point": 1,
-            "point_price": "1.00",
-            "hour": "1.00",
-            "range_value": "1",
-            "range_price": "0.00",
-            "total": "0.00",
-            "service_status_id": 0,
-            "document_date": "2024-04-11",
-            "img": "https://placehold.co/32x32/000000/FFF",
-            "current_service_status": {
-                "item_id": 45442,
-                "status_id": 0,
-                "status_name": null
-            },
-            "customer": {
-                "id": 16195,
-                "is_company": "yes",
-                "customercode": "16195",
-                "companyname": "SGS ( Cambodia ) Limited",
-                "companynameen": "SGS ( Cambodia ) Limited",
-                "subdistrict": "Sangkat Stung Meanchey,",
-                "district": "Khan Meanchey,",
-                "postalcode": 0,
-                "country": "T",
-                "taxnumber": "CE00000000225",
-                "address": "No. 1076 A-D, Street 371",
-                "province": "Phnom Penh, Kingdom of Cambodia",
-                "phone": "+855 23 967 888 Ext.",
-                "contactmain": "+855 23 967 888 Ext. 506",
-                "status": 1,
-                "name": null,
-                "lastname": null,
-                "name_th": null,
-                "lastname_th": null,
-                "idcard": null
-            },
-            "sublab": {
-                "id": 1,
-                "lab_id": 2,
-                "code": "C",
-                "name_th": "ค่าบริการรถรับ-ส่งเครื่องมือ/ค่าบริการขนส่ง / ค่าแก้ Cert.",
-                "name": "CentralOffice"
-            },
-            "lab": {
-                "id": 2,
-                "code": "C",
-                "name_th": "ส่วนงานรับ-ส่งเครื่องมือ",
-                "name": "Delivery"
-            },
-            "certificates": [],
-            "service_statuses": [
-                {
-                    "id": 1555,
-                    "item_id": 45442,
-                    "sublab_id": 1,
-                    "product_id": 2441,
-                    "bill_id": null,
-                    "created_at": 0,
-                    "sublab_name": "ค่าบริการรถรับ-ส่งเครื่องมือ/ค่าบริการขนส่ง / ค่าแก้ Cert.",
-                    "status_id": 0,
-                    "status_name": null,
-                    "cust_id": 16195,
-                    "cust_name": "SGS ( Cambodia ) Limited",
-                    "created_by": 256036,
-                    "created_name": "พวงทิพย์ สว่างโคกกรวด",
-                    "remark": "ทดสอบ add Tracking Data"
-                }
-            ],
-            "bill": {
-                "id": 12358,
-                "document_date": "2024-04-11",
-                "code": "2404-0384WN",
-                "company_id": 16195,
-                "agent_id": null,
-                "agent_name": "Ms. Sokanha Piseth",
-                "note_customers": "ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice",
-                "date_start": "2024-04-11 16:05:29",
-                "user_start": 256036,
-                "cert_address_name": "SGS ( Cambodia ) Limited",
-                "cert_address_detail": "No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia",
-                "address_name": "SGS ( Cambodia ) Limited",
-                "address_detail": "No. 1076 A-D, Street 371",
-                "approve_status": "draft",
-                "remark": "",
-                "progress_status": null,
-                "has_tracking": "no",
-                "commitment_date": "2024-04-13",
-                "total": "0.00",
-                "customer": {
-                    "id": 16195,
-                    "is_company": "yes",
-                    "customercode": "16195",
-                    "companyname": "SGS ( Cambodia ) Limited",
-                    "companynameen": "SGS ( Cambodia ) Limited",
-                    "subdistrict": "Sangkat Stung Meanchey,",
-                    "district": "Khan Meanchey,",
-                    "postalcode": 0,
-                    "country": "T",
-                    "taxnumber": "CE00000000225",
-                    "address": "No. 1076 A-D, Street 371",
-                    "province": "Phnom Penh, Kingdom of Cambodia",
-                    "phone": "+855 23 967 888 Ext.",
-                    "contactmain": "+855 23 967 888 Ext. 506",
-                    "status": 1,
-                    "name": null,
-                    "lastname": null,
-                    "name_th": null,
-                    "lastname_th": null,
-                    "idcard": null
-                }
-            }
-        }
-    ]
+          id: 1555,
+          item_id: 45442,
+          sublab_id: 1,
+          product_id: 2441,
+          bill_id: null,
+          created_at: 0,
+          sublab_name: 'ค่าบริการรถรับ-ส่งเครื่องมือ/ค่าบริการขนส่ง / ค่าแก้ Cert.',
+          status_id: 0,
+          status_name: null,
+          cust_id: 16195,
+          cust_name: 'SGS ( Cambodia ) Limited',
+          created_by: 256036,
+          created_name: 'พวงทิพย์ สว่างโคกกรวด',
+          remark: 'ทดสอบ add Tracking Data',
+        },
+      ],
+      bill: {
+        id: 12358,
+        document_date: '2024-04-11',
+        code: '2404-0384WN',
+        company_id: 16195,
+        agent_id: null,
+        agent_name: 'Ms. Sokanha Piseth',
+        note_customers:
+          'ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice',
+        date_start: '2024-04-11 16:05:29',
+        user_start: 256036,
+        cert_address_name: 'SGS ( Cambodia ) Limited',
+        cert_address_detail:
+          'No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia',
+        address_name: 'SGS ( Cambodia ) Limited',
+        address_detail: 'No. 1076 A-D, Street 371',
+        approve_status: 'draft',
+        remark: '',
+        progress_status: null,
+        has_tracking: 'no',
+        commitment_date: '2024-04-13',
+        total: '0.00',
+        customer: {
+          id: 16195,
+          is_company: 'yes',
+          customercode: '16195',
+          companyname: 'SGS ( Cambodia ) Limited',
+          companynameen: 'SGS ( Cambodia ) Limited',
+          subdistrict: 'Sangkat Stung Meanchey,',
+          district: 'Khan Meanchey,',
+          postalcode: 0,
+          country: 'T',
+          taxnumber: 'CE00000000225',
+          address: 'No. 1076 A-D, Street 371',
+          province: 'Phnom Penh, Kingdom of Cambodia',
+          phone: '+855 23 967 888 Ext.',
+          contactmain: '+855 23 967 888 Ext. 506',
+          status: 1,
+          name: null,
+          lastname: null,
+          name_th: null,
+          lastname_th: null,
+          idcard: null,
+        },
+      },
+    },
+  ],
 }
 const commitment_date_target = ref(null)
+
 const seachCommitmentDate = () => {
-  const params = billData
-  const { data } = api.get('https://kanban.tpacal.or.th/api/kanban/private/v1/bill', params, {
-    Headers: {
-     'Content-Type': 'application/json',
-    }
-  })
-  console.log(data)
+  loadingCommitment.value = true
+  try {
+    errorMsg.value = ''
+    const params = billData
+    const { data } = api.get('https://kanban.tpacal.or.th/api/kanban/private/v1/bill', params, {
+    headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    setInterval(() => {
+      loadingCommitment.value = false
+    }, 2000)
+    console.log(data)
+  } catch (error) {
+    alert("ติดต่อเครื่อข่าย Kanban ไม่ได้")
+    loadingCommitment.value = false
+  }
 }
 const updateCommitmentDate = () => {}
 onMounted(() => {

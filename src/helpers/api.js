@@ -5,13 +5,13 @@ const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    Authorization: token ? token : null,
+    Authorization: token ? `Bearer ${token}` : null,
   },
 })
 http.interceptors.request.use(
   (config) => {
     const token = Cookies.get('token')
-    config.headers['Authorization'] = `${token}`
+    config.headers['Authorization'] = `Bearer ${token}`
     return config
   },
   (error) => {

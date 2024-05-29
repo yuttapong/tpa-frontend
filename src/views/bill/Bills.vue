@@ -30,43 +30,21 @@
                 <form @submit.prevent="onSearch()">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.code"
-                        name="code"
-                        class="form-control form-control-sm"
-                        placeholder="Code"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
+                        placeholder="Code" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        name="taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.q"
-                        name="q"
-                        class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input
-                        type="reset"
-                        class="btn btn-secondary btn-sm mx-2"
-                        value="Reset"
-                        @click="resetFormSearch"
-                      />
+                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
                       <router-link class="btn btn-sm btn-success" :to="{ name: 'bills.create' }">
                         <i class="bi bi-plus"></i> สร้าง
                       </router-link>
@@ -99,11 +77,8 @@
                         </th>
                         <!-- <th scope="row">{{ index + 1 }}</th> -->
                         <td align="left" nowrap>
-                          <router-link
-                            :to="`/bills/${item.code}`"
-                            class="btn btn-light fw-bold border btn-sm"
-                            target="_blank"
-                          >
+                          <router-link :to="`/bills/${item.code}`" class="btn btn-light fw-bold border btn-sm"
+                            target="_blank">
                             {{ item.code }}
                           </router-link>
                         </td>
@@ -184,13 +159,8 @@
                 <div class="row">
                   <div class="col-lg-3 col-md-4 label">Permissions</div>
                   <div class="col-lg-9 col-md-8">
-                    <span
-                      class="badge bg-light text-dark mx-1"
-                      v-for="(name, key) in row.permisions"
-                      :key="key"
-                    >
-                      {{ name }}</span
-                    >
+                    <span class="badge bg-light text-dark mx-1" v-for="(name, key) in row.permisions" :key="key">
+                      {{ name }}</span>
                   </div>
                 </div>
               </div>
@@ -201,13 +171,7 @@
                   <div class="row mb-3">
                     <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="fullName"
-                        type="text"
-                        class="form-control"
-                        id="fullName"
-                        value="Kevin Anderson"
-                      />
+                      <input name="fullName" type="text" class="form-control" id="fullName" value="Kevin Anderson" />
                     </div>
                   </div>
 
@@ -215,146 +179,82 @@
                     <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
                     <div class="col-md-8 col-lg-9">
                       <textarea name="about" class="form-control" id="about" style="height: 100px">
-Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea
-                      >
+Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="company"
-                        type="text"
-                        class="form-control"
-                        id="company"
-                        value="Lueilwitz, Wisoky and Leuschke"
-                      />
+                      <input name="company" type="text" class="form-control" id="company"
+                        value="Lueilwitz, Wisoky and Leuschke" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="job"
-                        type="text"
-                        class="form-control"
-                        id="Job"
-                        value="Web Designer"
-                      />
+                      <input name="job" type="text" class="form-control" id="Job" value="Web Designer" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Country" class="col-md-4 col-lg-3 col-form-label">Country</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="country"
-                        type="text"
-                        class="form-control"
-                        id="Country"
-                        value="USA"
-                      />
+                      <input name="country" type="text" class="form-control" id="Country" value="USA" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Address" class="col-md-4 col-lg-3 col-form-label">Address</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="address"
-                        type="text"
-                        class="form-control"
-                        id="Address"
-                        value="A108 Adam Street, New York, NY 535022"
-                      />
+                      <input name="address" type="text" class="form-control" id="Address"
+                        value="A108 Adam Street, New York, NY 535022" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="phone"
-                        type="text"
-                        class="form-control"
-                        id="Phone"
-                        value="(436) 486-3538 x29071"
-                      />
+                      <input name="phone" type="text" class="form-control" id="Phone" value="(436) 486-3538 x29071" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="email"
-                        type="email"
-                        class="form-control"
-                        id="Email"
-                        value="k.anderson@example.com"
-                      />
+                      <input name="email" type="email" class="form-control" id="Email" value="k.anderson@example.com" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label"
-                      >Twitter Profile</label
-                    >
+                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="twitter"
-                        type="text"
-                        class="form-control"
-                        id="Twitter"
-                        value="https://twitter.com/#"
-                      />
+                      <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label"
-                      >Facebook Profile</label
-                    >
+                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="facebook"
-                        type="text"
-                        class="form-control"
-                        id="Facebook"
-                        value="https://facebook.com/#"
-                      />
+                      <input name="facebook" type="text" class="form-control" id="Facebook"
+                        value="https://facebook.com/#" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Instagram" class="col-md-4 col-lg-3 col-form-label"
-                      >Instagram Profile</label
-                    >
+                    <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="instagram"
-                        type="text"
-                        class="form-control"
-                        id="Instagram"
-                        value="https://instagram.com/#"
-                      />
+                      <input name="instagram" type="text" class="form-control" id="Instagram"
+                        value="https://instagram.com/#" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label"
-                      >Linkedin Profile</label
-                    >
+                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="linkedin"
-                        type="text"
-                        class="form-control"
-                        id="Linkedin"
-                        value="https://linkedin.com/#"
-                      />
+                      <input name="linkedin" type="text" class="form-control" id="Linkedin"
+                        value="https://linkedin.com/#" />
                     </div>
                   </div>
 
@@ -367,11 +267,9 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
 
               <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
                 <!-- Settings Form -->
-                <form @submit.prevent="() => {}">
+                <form @submit.prevent="() => { }">
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
-                      >Email Notifications</label
-                    >
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="changesMade" checked />
@@ -392,13 +290,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                         </label>
                       </div>
                       <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          id="securityNotify"
-                          checked
-                          disabled
-                        />
+                        <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled />
                         <label class="form-check-label" for="securityNotify">
                           Security alerts
                         </label>
@@ -417,44 +309,23 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                 <!-- Change Password Form -->
                 <form>
                   <div class="row mb-3">
-                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label"
-                      >Current Password</label
-                    >
+                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="password"
-                        type="password"
-                        class="form-control"
-                        id="currentPassword"
-                      />
+                      <input name="password" type="password" class="form-control" id="currentPassword" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label"
-                      >New Password</label
-                    >
+                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="newpassword"
-                        type="password"
-                        class="form-control"
-                        id="newPassword"
-                      />
+                      <input name="newpassword" type="password" class="form-control" id="newPassword" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label"
-                      >Re-enter New Password</label
-                    >
+                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="renewpassword"
-                        type="password"
-                        class="form-control"
-                        id="renewPassword"
-                      />
+                      <input name="renewpassword" type="password" class="form-control" id="renewPassword" />
                     </div>
                   </div>
 
@@ -477,12 +348,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Bill เลขที่ : {{ bill.code }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -540,12 +406,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <tbody>
               <tr v-for="(row, rowIndex) in bill.items" :key="row">
                 <th>
-                  <input
-                    type="checkbox"
-                    v-model="itemsSelected"
-                    name="itemsSelected[]"
-                    :value="row"
-                  />
+                  <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
                 </th>
                 <th>{{ rowIndex + 1 }}</th>
                 <td>{{ row.item_code }}</td>
@@ -575,11 +436,11 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                 <span class="alert alert-danger p-1" v-if="errorMsg">{{ errorMsg }}</span>
               </div>
               <div class="p-1">
-                <span
-                  class="badge rounded-pill bg-danger p-2 fw-bold"
-                  v-if="itemsSelected.length > 0"
-                  >{{ itemsSelected.length }} รายการ</span
-                >
+                <span class="alert alert-danger p-1" v-if="messageErrorCommitment">{{ messageErrorCommitment }}</span>
+              </div>
+              <div class="p-1">
+                <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
+                  itemsSelected.length }} รายการ</span>
               </div>
             </div>
             <div class="col-12">
@@ -587,11 +448,13 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                 <div class="col-6 col-md-6 col-lg-6">
                   <spinner :visible="loadingCommitment" />
                   <span class="input-group">
-                    <input
-                      type="date"
-                      v-model="commitment_date_target"
-                      class="form-control-sm form-control"
-                    />
+                    <select v-model="formCommitment.priority" class="form-control form-control-sm">
+                      <option value="">-ระดับความสำคัญ-</option>
+                      <option :value="c.code" v-for="(c, key) in commitmentPriority" :key="c" :selected="c.default">
+                        {{
+                          c.text }}</option>
+                    </select>
+                    <input type="date" v-model="formCommitment.commitment_date" class="form-control-sm form-control" />
                     <button class="btn btn-sm btn-info" type="button" @click="seachCommitmentDate">
                       <i class="bi bi-search"></i> จองคิวงาน
                     </button>
@@ -601,11 +464,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                   <button type="button" class="btn btn-success btn-sm mx-1" @click="newInvoice">
                     <i class="bi bi-plus"></i> Invoice Cart
                   </button>
-                  <button
-                    type="button"
-                    class="btn btn-secondary btn-sm mx-1"
-                    data-bs-dismiss="modal"
-                  >
+                  <button type="button" class="btn btn-secondary btn-sm mx-1" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> ปิดหน้าต่าง
                   </button>
                 </div>
@@ -624,12 +483,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -640,21 +494,13 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.customer_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="date"
-                  v-model="invoice.document_date"
-                  class="form-control form-control-sm"
-                />
+                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -662,21 +508,13 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.contact_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-8">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.address_detail"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -692,7 +530,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(row, rowIndex) in invoice.items" :key="row">
+              <tr v-for="(  row, rowIndex  ) in   invoice.items  " :key="row">
                 <th>{{ rowIndex + 1 }}</th>
                 <th>{{ row.item_code }}</th>
                 <th>{{ row.product_name }}</th>
@@ -702,22 +540,12 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                   }}</span>
                 </th>
                 <th>
-                  <input
-                    type="number"
-                    name="price[]"
-                    v-model="row.price"
-                    class="form-control form-control-sm"
-                    style="width: 100px"
-                  />
+                  <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
+                    style="width: 100px" />
                 </th>
                 <th>
-                  <input
-                    type="number"
-                    name="price[]"
-                    v-model="row.discount"
-                    class="form-control form-control-sm"
-                    style="width: 100px"
-                  />
+                  <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
+                    style="width: 100px" />
                 </th>
               </tr>
             </tbody>
@@ -766,6 +594,7 @@ const modalViewRef = ref(null)
 const modalView = ref(null)
 const modalInvoiceRef = ref(null)
 const modalInvoice = ref(null)
+const messageErrorCommitment = ref()
 const formSearch = ref({
   code: '',
   taxnumber: '',
@@ -785,13 +614,33 @@ const columns = [
     name: 'agent_name',
   },
 ]
+const commitmentPriority = [
+  {
+    code: 'low',
+    text: 'ต่ำ',
+    default: false,
+  },
+  {
+    code: 'medium',
+    text: 'ปานกลาง',
+    default: true,
+  },
+  {
+    code: 'height',
+    text: 'สูง (ไม่มีการจองคิว)',
+    default: false,
+  },
+]
+const formCommitment = ref({
+  prority: 'medium',
+  commitment_date: '',
+})
 const loadData = async () => {
   let params = {
     per_page: pagination.value.per_page,
     page: pagination.value.curent_page,
     ...formSearch.value,
   }
-  console.log('params', params)
   const { data } = await api.get('/v2/bills', {
     params: params,
   })
@@ -889,496 +738,52 @@ const createInvoice = () => {
 const onSearch = async () => {
   try {
     await loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
   formSearch.value.q = ''
 }
-const billData = {
-  id: 12358,
-  document_date: '2024-04-11',
-  code: '2404-0384WN',
-  company_id: 16195,
-  agent_id: null,
-  agent_name: 'Ms. Sokanha Piseth',
-  note_customers:
-    'ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice',
-  date_start: '2024-04-11 16:05:29',
-  user_start: 256036,
-  cert_address_name: 'SGS ( Cambodia ) Limited',
-  cert_address_detail:
-    'No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia',
-  address_name: 'SGS ( Cambodia ) Limited',
-  address_detail: 'No. 1076 A-D, Street 371',
-  approve_status: 'draft',
-  remark: '',
-  progress_status: null,
-  has_tracking: 'no',
-  commitment_date: '2024-04-13',
-  total: '0.00',
-  customer: {
-    id: 16195,
-    is_company: 'yes',
-    customercode: '16195',
-    companyname: 'SGS ( Cambodia ) Limited',
-    companynameen: 'SGS ( Cambodia ) Limited',
-    subdistrict: 'Sangkat Stung Meanchey,',
-    district: 'Khan Meanchey,',
-    postalcode: 0,
-    country: 'T',
-    taxnumber: 'CE00000000225',
-    address: 'No. 1076 A-D, Street 371',
-    province: 'Phnom Penh, Kingdom of Cambodia',
-    phone: '+855 23 967 888 Ext.',
-    contactmain: '+855 23 967 888 Ext. 506',
-    status: 1,
-    name: null,
-    lastname: null,
-    name_th: null,
-    lastname_th: null,
-    idcard: null,
-  },
-  items: [
-    {
-      item_id: 45440,
-      calid: '675356',
-      item_code: '2404-0384WN-01',
-      bill_id: 12358,
-      company_id: 16195,
-      product_id: 250,
-      product_name: 'Micropipette',
-      barcode_no: '1619500035',
-      manufaturer_name: 'VITLAB',
-      model: '1641012',
-      serialnumber: '12M08531',
-      id_no: 'M2015002',
-      test_point:
-        'ปรับเทียบ 1000, 5000, 10000 ul ******ระบุ ID ใน sticker ** Tolerance ตามแนบ + กล่องกระดาษ + Tip 3 / ตัวเครื่องมีรอยแตก',
-      lab_id: 18,
-      sublab_id: 25,
-      point: 1,
-      point_price: '700.00',
-      hour: '0.30',
-      range_value: '3',
-      range_price: '0.00',
-      total: '0.00',
-      service_status_id: 0,
-      document_date: '2024-04-11',
-      img: 'https://placehold.co/32x32/000000/FFF',
-      current_service_status: null,
-      customer: {
-        id: 16195,
-        is_company: 'yes',
-        customercode: '16195',
-        companyname: 'SGS ( Cambodia ) Limited',
-        companynameen: 'SGS ( Cambodia ) Limited',
-        subdistrict: 'Sangkat Stung Meanchey,',
-        district: 'Khan Meanchey,',
-        postalcode: 0,
-        country: 'T',
-        taxnumber: 'CE00000000225',
-        address: 'No. 1076 A-D, Street 371',
-        province: 'Phnom Penh, Kingdom of Cambodia',
-        phone: '+855 23 967 888 Ext.',
-        contactmain: '+855 23 967 888 Ext. 506',
-        status: 1,
-        name: null,
-        lastname: null,
-        name_th: null,
-        lastname_th: null,
-        idcard: null,
-      },
-      sublab: {
-        id: 25,
-        lab_id: 18,
-        code: 'CM',
-        name_th: 'งานสอบเทียบปริมาตร (Micro Pipet)',
-        name: 'Volumetric Lab',
-      },
-      lab: {
-        id: 18,
-        code: 'GW',
-        name_th: 'ห้องปฏิบัติการสอบเทียบปริมาตร',
-        name: 'Volumetric',
-      },
-      certificates: [
-        {
-          cerid: 542361,
-          cerno: '24CM355',
-          calid: 675356,
-          submitted: {
-            customer_id: null,
-            customer: null,
-            address: '',
-          },
-          calibratedBy: null,
-          bill: null,
-          employee: null,
-        },
-      ],
-      service_statuses: [],
-      bill: {
-        id: 12358,
-        document_date: '2024-04-11',
-        code: '2404-0384WN',
-        company_id: 16195,
-        agent_id: null,
-        agent_name: 'Ms. Sokanha Piseth',
-        note_customers:
-          'ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice',
-        date_start: '2024-04-11 16:05:29',
-        user_start: 256036,
-        cert_address_name: 'SGS ( Cambodia ) Limited',
-        cert_address_detail:
-          'No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia',
-        address_name: 'SGS ( Cambodia ) Limited',
-        address_detail: 'No. 1076 A-D, Street 371',
-        approve_status: 'draft',
-        remark: '',
-        progress_status: null,
-        has_tracking: 'no',
-        commitment_date: '2024-04-13',
-        total: '0.00',
-        customer: {
-          id: 16195,
-          is_company: 'yes',
-          customercode: '16195',
-          companyname: 'SGS ( Cambodia ) Limited',
-          companynameen: 'SGS ( Cambodia ) Limited',
-          subdistrict: 'Sangkat Stung Meanchey,',
-          district: 'Khan Meanchey,',
-          postalcode: 0,
-          country: 'T',
-          taxnumber: 'CE00000000225',
-          address: 'No. 1076 A-D, Street 371',
-          province: 'Phnom Penh, Kingdom of Cambodia',
-          phone: '+855 23 967 888 Ext.',
-          contactmain: '+855 23 967 888 Ext. 506',
-          status: 1,
-          name: null,
-          lastname: null,
-          name_th: null,
-          lastname_th: null,
-          idcard: null,
-        },
-      },
-    },
-    {
-      item_id: 45441,
-      calid: '675357',
-      item_code: '2404-0384WN-02',
-      bill_id: 12358,
-      company_id: 16195,
-      product_id: 276,
-      product_name: 'Digital Thermo-Hygrometer',
-      barcode_no: '0530401084',
-      manufaturer_name: 'Testo',
-      model: '608-H1',
-      serialnumber: '41377025',
-      id_no: 'T2014011',
-      test_point:
-        'ปรับเทียบ 20, 25, 30 C / 40, 45, 50, 55, 60, 65, 70%RH / Tolerance ± 2C,±5%RH/ ระบุ ID ใน sticker',
-      lab_id: 16,
-      sublab_id: 23,
-      point: 1,
-      point_price: '1460.00',
-      hour: '2.00',
-      range_value: '10',
-      range_price: '0.00',
-      total: '0.00',
-      service_status_id: 0,
-      document_date: '2024-04-11',
-      img: 'https://placehold.co/32x32/000000/FFF',
-      current_service_status: {
-        item_id: 45441,
-        status_id: 0,
-        status_name: null,
-      },
-      customer: {
-        id: 16195,
-        is_company: 'yes',
-        customercode: '16195',
-        companyname: 'SGS ( Cambodia ) Limited',
-        companynameen: 'SGS ( Cambodia ) Limited',
-        subdistrict: 'Sangkat Stung Meanchey,',
-        district: 'Khan Meanchey,',
-        postalcode: 0,
-        country: 'T',
-        taxnumber: 'CE00000000225',
-        address: 'No. 1076 A-D, Street 371',
-        province: 'Phnom Penh, Kingdom of Cambodia',
-        phone: '+855 23 967 888 Ext.',
-        contactmain: '+855 23 967 888 Ext. 506',
-        status: 1,
-        name: null,
-        lastname: null,
-        name_th: null,
-        lastname_th: null,
-        idcard: null,
-      },
-      sublab: {
-        id: 23,
-        lab_id: 16,
-        code: 'H',
-        name_th: 'งานสอบเทียบความชื้น',
-        name: 'Humidity Lab',
-      },
-      lab: {
-        id: 16,
-        code: 'H',
-        name_th: 'ห้องปฏิบัติการสอบเทียบความชื้น',
-        name: 'Humidity',
-      },
-      certificates: [
-        {
-          cerid: 542689,
-          cerno: '24H779',
-          calid: 675357,
-          submitted: {
-            customer_id: null,
-            customer: null,
-            address: '',
-          },
-          calibratedBy: null,
-          bill: null,
-          employee: null,
-        },
-      ],
-      service_statuses: [
-        {
-          id: 1557,
-          item_id: 45441,
-          sublab_id: 23,
-          product_id: 276,
-          bill_id: null,
-          created_at: 0,
-          sublab_name: 'งานสอบเทียบความชื้น',
-          status_id: 0,
-          status_name: null,
-          cust_id: 16195,
-          cust_name: 'SGS ( Cambodia ) Limited',
-          created_by: 256036,
-          created_name: 'พวงทิพย์ สว่างโคกกรวด',
-          remark: 'ทดสอบ add Tracking Data',
-        },
-        {
-          id: 1556,
-          item_id: 45441,
-          sublab_id: 23,
-          product_id: 276,
-          bill_id: null,
-          created_at: 0,
-          sublab_name: 'งานสอบเทียบความชื้น',
-          status_id: 0,
-          status_name: null,
-          cust_id: 16195,
-          cust_name: 'SGS ( Cambodia ) Limited',
-          created_by: 256036,
-          created_name: 'พวงทิพย์ สว่างโคกกรวด',
-          remark: 'ทดสอบ add Tracking Data',
-        },
-      ],
-      bill: {
-        id: 12358,
-        document_date: '2024-04-11',
-        code: '2404-0384WN',
-        company_id: 16195,
-        agent_id: null,
-        agent_name: 'Ms. Sokanha Piseth',
-        note_customers:
-          'ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice',
-        date_start: '2024-04-11 16:05:29',
-        user_start: 256036,
-        cert_address_name: 'SGS ( Cambodia ) Limited',
-        cert_address_detail:
-          'No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia',
-        address_name: 'SGS ( Cambodia ) Limited',
-        address_detail: 'No. 1076 A-D, Street 371',
-        approve_status: 'draft',
-        remark: '',
-        progress_status: null,
-        has_tracking: 'no',
-        commitment_date: '2024-04-13',
-        total: '0.00',
-        customer: {
-          id: 16195,
-          is_company: 'yes',
-          customercode: '16195',
-          companyname: 'SGS ( Cambodia ) Limited',
-          companynameen: 'SGS ( Cambodia ) Limited',
-          subdistrict: 'Sangkat Stung Meanchey,',
-          district: 'Khan Meanchey,',
-          postalcode: 0,
-          country: 'T',
-          taxnumber: 'CE00000000225',
-          address: 'No. 1076 A-D, Street 371',
-          province: 'Phnom Penh, Kingdom of Cambodia',
-          phone: '+855 23 967 888 Ext.',
-          contactmain: '+855 23 967 888 Ext. 506',
-          status: 1,
-          name: null,
-          lastname: null,
-          name_th: null,
-          lastname_th: null,
-          idcard: null,
-        },
-      },
-    },
-    {
-      item_id: 45442,
-      calid: '675358',
-      item_code: '2404-0384WN-03',
-      bill_id: 12358,
-      company_id: 16195,
-      product_id: 2441,
-      product_name: 'Service Charge',
-      barcode_no: '1619500255',
-      manufaturer_name: '',
-      model: '',
-      serialnumber: '',
-      id_no: '',
-      test_point: '',
-      lab_id: 2,
-      sublab_id: 1,
-      point: 1,
-      point_price: '1.00',
-      hour: '1.00',
-      range_value: '1',
-      range_price: '0.00',
-      total: '0.00',
-      service_status_id: 0,
-      document_date: '2024-04-11',
-      img: 'https://placehold.co/32x32/000000/FFF',
-      current_service_status: {
-        item_id: 45442,
-        status_id: 0,
-        status_name: null,
-      },
-      customer: {
-        id: 16195,
-        is_company: 'yes',
-        customercode: '16195',
-        companyname: 'SGS ( Cambodia ) Limited',
-        companynameen: 'SGS ( Cambodia ) Limited',
-        subdistrict: 'Sangkat Stung Meanchey,',
-        district: 'Khan Meanchey,',
-        postalcode: 0,
-        country: 'T',
-        taxnumber: 'CE00000000225',
-        address: 'No. 1076 A-D, Street 371',
-        province: 'Phnom Penh, Kingdom of Cambodia',
-        phone: '+855 23 967 888 Ext.',
-        contactmain: '+855 23 967 888 Ext. 506',
-        status: 1,
-        name: null,
-        lastname: null,
-        name_th: null,
-        lastname_th: null,
-        idcard: null,
-      },
-      sublab: {
-        id: 1,
-        lab_id: 2,
-        code: 'C',
-        name_th: 'ค่าบริการรถรับ-ส่งเครื่องมือ/ค่าบริการขนส่ง / ค่าแก้ Cert.',
-        name: 'CentralOffice',
-      },
-      lab: {
-        id: 2,
-        code: 'C',
-        name_th: 'ส่วนงานรับ-ส่งเครื่องมือ',
-        name: 'Delivery',
-      },
-      certificates: [],
-      service_statuses: [
-        {
-          id: 1555,
-          item_id: 45442,
-          sublab_id: 1,
-          product_id: 2441,
-          bill_id: null,
-          created_at: 0,
-          sublab_name: 'ค่าบริการรถรับ-ส่งเครื่องมือ/ค่าบริการขนส่ง / ค่าแก้ Cert.',
-          status_id: 0,
-          status_name: null,
-          cust_id: 16195,
-          cust_name: 'SGS ( Cambodia ) Limited',
-          created_by: 256036,
-          created_name: 'พวงทิพย์ สว่างโคกกรวด',
-          remark: 'ทดสอบ add Tracking Data',
-        },
-      ],
-      bill: {
-        id: 12358,
-        document_date: '2024-04-11',
-        code: '2404-0384WN',
-        company_id: 16195,
-        agent_id: null,
-        agent_name: 'Ms. Sokanha Piseth',
-        note_customers:
-          'ห้ามออก inv 20 ของเดือน+*Attach PO and Billing document every time, \r\nwait for PO before invoice',
-        date_start: '2024-04-11 16:05:29',
-        user_start: 256036,
-        cert_address_name: 'SGS ( Cambodia ) Limited',
-        cert_address_detail:
-          'No.1076 A-D, Street 371, Sangkat Stung Meanchey,\r\nKhan Meanchey, Phnom Penh, Kingdom of Cambodia',
-        address_name: 'SGS ( Cambodia ) Limited',
-        address_detail: 'No. 1076 A-D, Street 371',
-        approve_status: 'draft',
-        remark: '',
-        progress_status: null,
-        has_tracking: 'no',
-        commitment_date: '2024-04-13',
-        total: '0.00',
-        customer: {
-          id: 16195,
-          is_company: 'yes',
-          customercode: '16195',
-          companyname: 'SGS ( Cambodia ) Limited',
-          companynameen: 'SGS ( Cambodia ) Limited',
-          subdistrict: 'Sangkat Stung Meanchey,',
-          district: 'Khan Meanchey,',
-          postalcode: 0,
-          country: 'T',
-          taxnumber: 'CE00000000225',
-          address: 'No. 1076 A-D, Street 371',
-          province: 'Phnom Penh, Kingdom of Cambodia',
-          phone: '+855 23 967 888 Ext.',
-          contactmain: '+855 23 967 888 Ext. 506',
-          status: 1,
-          name: null,
-          lastname: null,
-          name_th: null,
-          lastname_th: null,
-          idcard: null,
-        },
-      },
-    },
-  ],
-}
-const commitment_date_target = ref(null)
+
 
 const seachCommitmentDate = () => {
+  messageErrorCommitment.value = ""
   loadingCommitment.value = true
+  const params = {
+    bill_id: bill.value.id,
+    code: bill.value.code,
+    commitment_date: formCommitment.value.commitment_date,
+    document_date: bill.value.document_date,
+    items: bill.value.items,
+    priority: formCommitment.value.priority,
+  }
   try {
     errorMsg.value = ''
-    const params = billData
-    const { data } = api.get('https://kanban.tpacal.or.th/api/kanban/private/v1/bill', params, {
-    headers: {
+    api.post('https://kanban.tpacal.or.th/api/kanban/private/v1/bills', params, {
+      headers: {
         'Content-Type': 'application/json',
       },
+    }).then((rs) => {
+      console.log('rs', rs);
+    }).catch((err) => {
+      console.log('err', err.response);
+      if (err.response) {
+        let er = err.response.data
+        messageErrorCommitment.value = er.message
+      }
     })
     setInterval(() => {
       loadingCommitment.value = false
     }, 2000)
-    console.log(data)
+
+
   } catch (error) {
-    alert("ติดต่อเครื่อข่าย Kanban ไม่ได้")
+    console.log('error', error)
+
     loadingCommitment.value = false
   }
 }
-const updateCommitmentDate = () => {}
+const updateCommitmentDate = () => { }
 onMounted(() => {
   errorMsg.value = ''
   modalView.value = new Modal(modalViewRef.value)
@@ -1404,6 +809,8 @@ onMounted(() => {
 }
 
 .checkbox {
-  transform: scale(/*desired magnification*/);
+  transform: scale(
+      /*desired magnification*/
+    );
 }
 </style>

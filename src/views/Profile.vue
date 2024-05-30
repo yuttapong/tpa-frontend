@@ -80,7 +80,7 @@
                                     <div class="col-lg-9 col-md-8">{{ fullname }}</div>
                                 </div>
 
-                                <div class="row">
+                                <!-- <div class="row">
                                     <div class="col-lg-3 col-md-4 label">Company</div>
                                     <div class="col-lg-9 col-md-8">Lueilwitz, Wisoky and Leuschke</div>
                                 </div>
@@ -108,7 +108,7 @@
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">Email</div>
                                     <div class="col-lg-9 col-md-8">k.anderson@example.com</div>
-                                </div>
+                                </div> -->
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">Permissions</div>
                                     <div class="col-lg-9 col-md-8">

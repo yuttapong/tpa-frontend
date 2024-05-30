@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/Home.vue'
-import {baseUrl} from '@/config'
+import { baseUrl } from '@/config'
+import { useAppStore } from '@/stores/appStore'
+
 const routes = [
   {
     path: '/',
@@ -9,7 +11,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: 'dashboard',
+        redirect: 'login',
       },
       {
         path: 'dashboard',
@@ -181,8 +183,19 @@ const routes = [
     component: () => import('../views/error/Error404.vue'),
   },
 ]
-//import.meta.env.VITE_BASE_URL
-export default createRouter({
+
+const router = createRouter({
   history: createWebHashHistory(baseUrl),
   routes,
 })
+
+router.beforeEach((to, from, next) => {
+  const appStore = new useAppStore()
+
+  if (to.name !== 'login' && !appStore.isLoggedIn()) next({ name: 'login' })
+  // if the user is not authenticated, `next` is called twice
+  next()
+})
+
+//import.meta.env.VITE_BASE_URL
+export default router

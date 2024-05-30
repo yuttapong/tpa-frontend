@@ -11,8 +11,7 @@
       <li class="nav-item dropdown">
         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
           <i class="bi bi-bell"></i>
-          <span class="badge bg-primary badge-number">4</span> </a
-        ><!-- End Notification Icon -->
+          <span class="badge bg-primary badge-number">4</span> </a><!-- End Notification Icon -->
 
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
           <li class="dropdown-header">
@@ -85,8 +84,7 @@
       <li class="nav-item dropdown">
         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
           <i class="bi bi-chat-left-text"></i>
-          <span class="badge bg-success badge-number">3</span> </a
-        ><!-- End Messages Icon -->
+          <span class="badge bg-success badge-number">3</span> </a><!-- End Messages Icon -->
 
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
           <li class="dropdown-header">
@@ -147,72 +145,94 @@
       </li>
       <!-- End Messages Nav -->
 
-      <li class="nav-item dropdown pe-3">
-        <a
-          class="nav-link nav-profile d-flex align-items-center pe-0"
-          href="#"
-          data-bs-toggle="dropdown"
-        >
-          <img :src="profile" alt="Profile" class="rounded-circle" />
-          <span class="d-none d-md-block dropdown-toggle ps-2">Y.Napikun</span> </a
-        ><!-- End Profile Iamge Icon -->
+      <template v-if="appStore.isLoggedIn()">
+        <li class="nav-item dropdown pe-3">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img :src="profile" alt="Profile" class="rounded-circle" />
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ user?.name }}</span>
+          </a><!-- End Profile Iamge Icon -->
 
-        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-          <li class="dropdown-header">
-            <h6>Yuttapong Napikun</h6>
-            <span>Web Designer</span>
-          </li>
-          <li>
-            <hr class="dropdown-divider" />
-          </li>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <template v-if="appStore.isLoggedIn()">
 
-          <li>
-            <router-link class="dropdown-item d-flex align-items-center" to="profile">
-              <i class="bi bi-person"></i>
-              <span>My Profile</span>
-            </router-link>
-          </li>
-          <li>
-            <hr class="dropdown-divider" />
-          </li>
+              <li class="dropdown-header">
+                <h6>{{ user?.name }}</h6>
+                <span>{{ user?.level }}</span>
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
 
-          <li>
+              <li>
+                <router-link class="dropdown-item d-flex align-items-center" to="profile">
+                  <i class="bi bi-person"></i>
+                  <span>โปรไฟล์</span>
+                </router-link>
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+            </template>
+
+
+            <!-- <li>
             <router-link class="dropdown-item d-flex align-items-center" to="/profile?t=setting">
               <i class="bi bi-gear"></i>
               <span>Account Settings</span>
             </router-link>
-          </li>
-          <li>
-            <hr class="dropdown-divider" />
-          </li>
+          </li> -->
+            <li>
+              <hr class="dropdown-divider" />
+            </li>
 
-          <li>
+            <!-- <li>
             <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
               <i class="bi bi-question-circle"></i>
               <span>Need Help?</span>
             </a>
-          </li>
-          <li>
-            <hr class="dropdown-divider" />
-          </li>
+          </li> -->
+            <li>
+              <hr class="dropdown-divider" />
+            </li>
 
-          <li>
-            <a class="dropdown-item d-flex align-items-center" href="#" @click="doLogout()">
-              <i class="bi bi-box-arrow-right"></i>
-              <span>Sign Out</span>
-            </a>
-          </li>
-        </ul>
-        <!-- End Profile Dropdown Items -->
-      </li>
-      <!-- End Profile Nav -->
+            <li v-if="!appStore.isLoggedIn()">
+              <router-link class="dropdown-item d-flex align-items-center" to="/login">
+                <i class="bi bi-unlock"></i>
+                <span>เข้าสู่ระบบ</span>
+              </router-link>
+            </li>
+            <li v-else>
+              <a class="dropdown-item d-flex align-items-center" href="javascription:void()" @click="doLogout()">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>ออกจากระบบ</span>
+              </a>
+            </li>
+          </ul>
+          <!-- End Profile Dropdown Items -->
+        </li>
+        <!-- End Profile Nav -->
+      </template>
+      <template v-else>
+        <!-- <li class="nav-item">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ user?.name }}</span>
+          </a>
+        </li> -->
+        <li class="nav-item">
+          <router-link class="nav-link text-white" to="/login">
+            <i class="bi bi-unlock"></i>
+            <span>เข้าสู่ระบบ</span>
+          </router-link>
+        </li>
+      </template>
     </ul>
   </nav>
   <!-- End Icons Navigation -->
 </template>
 <script setup>
 import '@/assets/js/layout.js'
-import { onMounted } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { on, select } from '@/helpers/layout'
 import Cookies from 'js-cookie'
 import { useRouter } from 'vue-router'
@@ -227,13 +247,18 @@ import profile from '@/assets/img/profile-img.jpg'
 import message1 from '@/assets/img/messages-1.jpg'
 import message2 from '@/assets/img/messages-2.jpg'
 import message3 from '@/assets/img/messages-3.jpg'
-import {baseUrl} from '@/config'
-const router = useRouter()
+import { baseUrl } from '@/config'
+import { useAppStore } from '@/stores/appStore'
+const appStore = new useAppStore()
 
+
+const router = useRouter()
+const user = computed(() => appStore.user)
 const doLogout = () => {
-  Cookies.remove('token')
-  Cookies.remove('expire_time')
-  window.location.replace(baseUrl +"#login")
+  if (confirm('ต้องการออกจากระบบ ?')) {
+    appStore.logout();
+    router.replace({ name: "login" })
+  }
 }
 onMounted(() => {
   if (select('.search-bar-toggle')) {
@@ -252,7 +277,7 @@ onMounted(() => {
   list-style: none;
 }
 
-.header-nav > ul {
+.header-nav>ul {
   margin: 0;
   padding: 0;
 }

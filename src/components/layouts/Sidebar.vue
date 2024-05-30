@@ -93,12 +93,7 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <a
-          class="nav-link collapsed"
-          data-bs-target="#setting-nav"
-          data-bs-toggle="collapse"
-          href="#"
-        >
+        <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-gear"></i>
           <span>ตั้งค่า</span>
         </a>
@@ -126,14 +121,14 @@
       </li>
       <!-- End Register Page Nav -->
 
-      <li class="nav-item">
+      <li class="nav-item" v-if="!appStore.isLoggedIn">
         <router-link to="/login" class="nav-link collapsed">
           <i class="bi bi-box-arrow-in-right"></i>
           <span>เข้าสู่ระบบ</span>
         </router-link>
       </li>
       <!-- End Login Page Nav -->
-      <li class="nav-item">
+      <li class="nav-item" v-if="!appStore.isLoggedIn">
         <router-link to="/profile" class="nav-link collapsed">
           <i class="bi bi-person-lines-fill"></i>
           <span>โปร์ไฟล์</span>
@@ -172,6 +167,9 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { on, select } from '@/helpers/layout'
+import { useAppStore } from '@/stores/appStore'
+const appStore = new useAppStore()
+
 let windowWidth = ref(window.innerWidth)
 
 const width = computed(() => windowWidth.value)
@@ -237,6 +235,7 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
+
   #main,
   #footer {
     margin-left: 300px;
@@ -250,6 +249,7 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
+
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;

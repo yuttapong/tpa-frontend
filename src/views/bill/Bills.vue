@@ -428,49 +428,58 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
           </table>
           <p>NOTE: {{ bill.note_customers }}</p>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer d-block">
           <!-- ///////////// -->
-          <div class="row gap-2">
-            <div class="col-12 d-flex">
-              <div class="p-1">
-                <span class="alert alert-danger p-1" v-if="errorMsg">{{ errorMsg }}</span>
-              </div>
-              <div class="p-1">
-                <span class="alert alert-danger p-1" v-if="messageErrorCommitment">{{ messageErrorCommitment }}</span>
-              </div>
-              <div class="p-1">
-                <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
-                  itemsSelected.length }} รายการ</span>
-              </div>
+
+          <div class="d-flex">
+            <div class="p-1">
+              <span class="alert alert-danger p-1" v-if="errorMsg">{{ errorMsg }}</span>
             </div>
-            <div class="col-12">
-              <div class="row">
-                <div class="col-6 col-md-6 col-lg-6">
-                  <spinner :visible="loadingCommitment" />
-                  <span class="input-group">
-                    <select v-model="formCommitment.priority" class="form-control form-control-sm">
-                      <option value="">-ระดับความสำคัญ-</option>
-                      <option :value="c.code" v-for="(c, key) in commitmentPriority" :key="c" :selected="c.default">
-                        {{
-                          c.text }}</option>
-                    </select>
-                    <input type="date" v-model="formCommitment.commitment_date" class="form-control-sm form-control" />
-                    <button class="btn btn-sm btn-info" type="button" @click="seachCommitmentDate">
-                      <i class="bi bi-search"></i> จองคิวงาน
-                    </button>
-                  </span>
-                </div>
-                <div class="col-6 col-md-6 col-lg-6">
-                  <button type="button" class="btn btn-success btn-sm mx-1" @click="newInvoice">
-                    <i class="bi bi-plus"></i> Invoice Cart
-                  </button>
-                  <button type="button" class="btn btn-secondary btn-sm mx-1" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle"></i> ปิดหน้าต่าง
-                  </button>
-                </div>
-              </div>
+
+            <div class="p-1">
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
+                itemsSelected.length }} รายการ</span>
             </div>
           </div>
+
+          <div class="row gap-2">
+            <div class="col-12 col-lg-12 col-xl-12">
+
+              <span class="input-group">
+                <span class="input-group-text">Priority</span>
+                <select class="form-select" aria-label="priotiry" v-model="formCommitment.priority">
+                  <option value="">-ระดับความสำคัญ-</option>
+                  <option :value="c.code" v-for="(c, key) in commitmentPriority" :key="c"
+                    :selected="c.default === true ? 'selected' : ''">
+                    {{
+                      c.text }}</option>
+                </select>
+                <input type="date" v-model="formCommitment.commitment_date" class="form-control-sm form-control" />
+                <button class="btn btn-primary btn-sm" type="button" :disabled="loadingCommitment"
+                  @click="seachCommitmentDate">
+                  <template v-if="loadingCommitment">
+                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    <span class="visually-hidden">Loading...</span>
+                  </template>
+                  <template v-else><i class="bi bi-search"></i></template>
+
+                </button>
+              </span>
+
+            </div>
+
+            <div class="col-12 col-lg-6 col-xl-6">
+              <button type="button" class="btn btn-success btn-sm mx-1" @click="newInvoice">
+                <i class="bi bi-plus"></i> Invoice Cart
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm mx-1" data-bs-dismiss="modal">
+                <i class="bi bi-x-circle"></i> ปิดหน้าต่าง
+              </button>
+
+            </div>
+          </div>
+
+          <span class="text-danger p-1" v-if="messageErrorCommitment">{{ messageErrorCommitment }}</span>
 
           <!-- ///////////// -->
         </div>
@@ -575,7 +584,13 @@ import { DateTime, Number } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import router from '@/router'
-import VGrid from '@revolist/vue3-datagrid'
+
+import { timezone } from "@/config"
+import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
+import { formatISO } from 'date-fns'
+import { useAppStore } from '@/stores/appStore'
+import axios from 'axios'
+const appStore = new useAppStore()
 
 const table = ref(null) //reference to your table element
 const tabulator = ref(null) //variable to hold your table
@@ -748,34 +763,53 @@ const resetFormSearch = () => {
 
 const seachCommitmentDate = () => {
   messageErrorCommitment.value = ""
+
+
+  if (!formCommitment.value.commitment_date || !formCommitment.value.priority) {
+    messageErrorCommitment.value = "โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ"
+    return;
+  }
   loadingCommitment.value = true
+  let d1 = new Date(`${bill.value.document_date} 00:00:00`);
+  let d2 = new Date(`${formCommitment.value.commitment_date} 00:00:00`);
   const params = {
     bill_id: bill.value.id,
     code: bill.value.code,
-    commitment_date: formCommitment.value.commitment_date,
-    document_date: bill.value.document_date,
+    _document_date: formatISO(toZonedTime(d1, timezone)),
+    _commitment_date: formatISO(toZonedTime(d2, timezone)),
+    document_date: format(toZonedTime(d1, timezone), "yyyy-MM-dd"),
+    commitment_date: format(toZonedTime(d2, timezone), "yyyy-MM-dd"),
     items: bill.value.items,
     priority: formCommitment.value.priority,
   }
+  console.log(params);
   try {
     errorMsg.value = ''
-    api.post('https://kanban.tpacal.or.th/api/kanban/private/v1/bills', params, {
+    axios.post('https://kanban.tpacal.or.th/api/kanban/private/v1/bills', params, {
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${appStore.token}`
       },
     }).then((rs) => {
-      console.log('rs', rs);
+      console.log(rs);
+      setTimeout(() => {
+        loadingCommitment.value = false
+      }, 2000);
     }).catch((err) => {
-      console.log('err', err.response);
+      loadingCommitment.value = false
+      const x = err.toJSON();
+      console.log(x);
       if (err.response) {
-        let er = err.response.data
-        messageErrorCommitment.value = er.message
+        let data = err.response?.data
+        if (data) {
+          messageErrorCommitment.value = data.message
+        } else {
+          messageErrorCommitment.value = err.message
+        }
+      } else {
+        messageErrorCommitment.value = err.message
       }
     })
-    setInterval(() => {
-      loadingCommitment.value = false
-    }, 2000)
-
 
   } catch (error) {
     console.log('error', error)

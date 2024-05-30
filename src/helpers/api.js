@@ -1,17 +1,19 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
-const token = Cookies.get('token')
+import { useAppStore } from '@/stores/appStore'
+const appStore = new useAppStore()
+
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    Authorization: token ? `Bearer ${token}` : null,
   },
 })
 http.interceptors.request.use(
   (config) => {
-    const token = Cookies.get('token')
-    config.headers['Authorization'] = `Bearer ${token}`
+    const appStore = new useAppStore()
+    const token = `${appStore.token}`
+    config.headers['Authorization'] = token
     return config
   },
   (error) => {

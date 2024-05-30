@@ -3,9 +3,11 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import VueDevTools from 'vite-plugin-vue-devtools'
-const BASE_URL = 'https://test-appscal.tpacal.or.th/appcal002/'
+import dotenv from 'dotenv'
+import dv from 'dotenv-expand'
+dv.expand(dotenv.config())
 // https://vitejs.dev/config/
-console.log("process.env", process.env)
+console.log('process.env', process.env.VITE_ENV)
 export default defineConfig({
   plugins: [vue(), VueDevTools()],
   resolve: {
@@ -14,5 +16,8 @@ export default defineConfig({
       '~bootstrap': resolve(__dirname, 'node_modules/bootstrap'),
     },
   },
-  base: process.env.MODE === 'development' ? "/" : BASE_URL,
+  base:
+    process.env.VITE_ENV === 'development'
+      ? process.env.VITE_DEV_BASE_URL
+      : process.env.VITE_BASE_URL,
 })

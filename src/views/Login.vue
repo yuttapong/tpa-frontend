@@ -1,16 +1,14 @@
 <template>
   <main>
     <div class="container">
-      <section
-        class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4"
-      >
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-lg-5 d-flex flex-column align-items-center justify-content-center">
               <div class="d-flex justify-content-center py-4">
                 <a href="/" class="logo d-flex align-items-center w-auto">
                   <img :src="logo" alt="" />
-                  <span class="d-none d-lg-block">TPA Dashbard</span>
+                  <span class="d-none d-lg-block">TPA AppCAL</span>
                 </a>
               </div>
               <!-- End Logo -->
@@ -26,40 +24,22 @@
                       <label for="username" class="form-label">Username</label>
                       <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input
-                          type="text"
-                          name="username"
-                          class="form-control"
-                          id="username"
-                          required
-                          v-model="username"
-                        />
+                        <input type="text" name="username" class="form-control" id="username" required
+                          v-model="username" />
                         <div class="invalid-feedback">Please enter your username.</div>
                       </div>
                     </div>
 
                     <div class="col-12">
                       <label for="password" class="form-label">Password</label>
-                      <input
-                        type="password"
-                        name="password"
-                        class="form-control"
-                        id="password"
-                        required
-                        v-model="password"
-                      />
+                      <input type="password" name="password" class="form-control" id="password" required
+                        v-model="password" />
                       <div class="invalid-feedback">Please enter your password!</div>
                     </div>
 
                     <div class="col-12">
                       <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          name="remember"
-                          value="true"
-                          id="rememberMe"
-                        />
+                        <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
                         <label class="form-check-label" for="rememberMe">Remember me</label>
                       </div>
                     </div>
@@ -92,7 +72,9 @@ import { ref, computed } from 'vue'
 import { api } from '@/helpers/api'
 import Cookies from 'js-cookie'
 import { useRouter } from 'vue-router'
-import {baseUrl} from '@/config'
+import { baseUrl } from '@/config'
+import { useAppStore } from '@/stores/appStore'
+const appStore = new useAppStore()
 
 const schema = yup.object({
   email: yup.string().required().email(),
@@ -102,7 +84,7 @@ const router = useRouter()
 
 const { values, errors, defineField } = useForm(schema)
 
-const username = ref('Surin.Y')
+const username = ref('user_lab_mm')
 const password = ref('1234')
 
 const login = (e) => {
@@ -113,27 +95,27 @@ const login = (e) => {
   api
     .post('v1/auth/login', params)
     .then((rs) => {
+      console.log(rs.data);
       if (rs.data) {
-        const ep = rs.data.result.expire_time
-        const token = rs.data.result.token
+        const r = rs.data.result
+        const ep = r.expire_time
+        const token = r.token
+        const user = r.user
+        const permissions = r.permisions
         const epDay = ep / 24 / 60 / 60 || 0
-        // localStorage.setItem('expire_time', ep)
-        // localStorage.setItem('token', token)
-        Cookies.set('expire_time', token)
-        Cookies.set('token', token, { expires: epDay })
-        window.location.replace(baseUrl +"#profile")
-        // router.replace("/profile")
+        appStore.setExpired(epDay)
+        appStore.login(token, user, permissions)
+        router.replace("/profile")
       }
     })
     .catch((err) => {
-      const status = err.response.status === 401
       console.log(err)
-      Cookies.remove('token')
-      Cookies.remove('expire_time')
-      // localStorage.removeItem("expire_time")
-      // localStorage.removeItem("token")
-      if (status === 401) {
-        console.log(err)
+      if (err.response) {
+        const status = err.response.status === 401
+        if (status === 401) {
+          console.log(err)
+
+        }
       }
     })
 }

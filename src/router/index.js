@@ -34,8 +34,8 @@ const routes = [
         component: () => import('../views/bill/Bills.vue'),
       },
       {
-        path: 'bills/create',
-        name: 'bills.create',
+        path: 'bills/form',
+        name: 'bills.form',
         component: () => import('../views/bill/BillForm.vue'),
       },
       {

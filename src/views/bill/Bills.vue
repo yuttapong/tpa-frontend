@@ -30,21 +30,43 @@
                 <form @submit.prevent="onSearch()">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
-                        placeholder="Code" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.code"
+                        name="code"
+                        class="form-control form-control-sm"
+                        placeholder="Code"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
-                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.taxnumber"
+                        name="taxnumber"
+                        class="form-control form-control-sm"
+                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.q"
+                        name="q"
+                        class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
+                      <input
+                        type="reset"
+                        class="btn btn-secondary btn-sm mx-2"
+                        value="Reset"
+                        @click="resetFormSearch"
+                      />
                       <router-link class="btn btn-sm btn-success" :to="{ name: 'bills.create' }">
                         <i class="bi bi-plus"></i> สร้าง
                       </router-link>
@@ -77,8 +99,11 @@
                         </th>
                         <!-- <th scope="row">{{ index + 1 }}</th> -->
                         <td align="left" nowrap>
-                          <router-link :to="`/bills/${item.code}`" class="btn btn-light fw-bold border btn-sm"
-                            target="_blank">
+                          <router-link
+                            :to="`/bills/${item.code}`"
+                            class="btn btn-light fw-bold border btn-sm"
+                            target="_blank"
+                          >
                             {{ item.code }}
                           </router-link>
                         </td>
@@ -159,8 +184,13 @@
                 <div class="row">
                   <div class="col-lg-3 col-md-4 label">Permissions</div>
                   <div class="col-lg-9 col-md-8">
-                    <span class="badge bg-light text-dark mx-1" v-for="(name, key) in row.permisions" :key="key">
-                      {{ name }}</span>
+                    <span
+                      class="badge bg-light text-dark mx-1"
+                      v-for="(name, key) in row.permisions"
+                      :key="key"
+                    >
+                      {{ name }}</span
+                    >
                   </div>
                 </div>
               </div>
@@ -171,7 +201,13 @@
                   <div class="row mb-3">
                     <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="fullName" type="text" class="form-control" id="fullName" value="Kevin Anderson" />
+                      <input
+                        name="fullName"
+                        type="text"
+                        class="form-control"
+                        id="fullName"
+                        value="Kevin Anderson"
+                      />
                     </div>
                   </div>
 
@@ -179,82 +215,146 @@
                     <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
                     <div class="col-md-8 col-lg-9">
                       <textarea name="about" class="form-control" id="about" style="height: 100px">
-Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
+Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea
+                      >
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="company" type="text" class="form-control" id="company"
-                        value="Lueilwitz, Wisoky and Leuschke" />
+                      <input
+                        name="company"
+                        type="text"
+                        class="form-control"
+                        id="company"
+                        value="Lueilwitz, Wisoky and Leuschke"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="job" type="text" class="form-control" id="Job" value="Web Designer" />
+                      <input
+                        name="job"
+                        type="text"
+                        class="form-control"
+                        id="Job"
+                        value="Web Designer"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Country" class="col-md-4 col-lg-3 col-form-label">Country</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="country" type="text" class="form-control" id="Country" value="USA" />
+                      <input
+                        name="country"
+                        type="text"
+                        class="form-control"
+                        id="Country"
+                        value="USA"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Address" class="col-md-4 col-lg-3 col-form-label">Address</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="address" type="text" class="form-control" id="Address"
-                        value="A108 Adam Street, New York, NY 535022" />
+                      <input
+                        name="address"
+                        type="text"
+                        class="form-control"
+                        id="Address"
+                        value="A108 Adam Street, New York, NY 535022"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="phone" type="text" class="form-control" id="Phone" value="(436) 486-3538 x29071" />
+                      <input
+                        name="phone"
+                        type="text"
+                        class="form-control"
+                        id="Phone"
+                        value="(436) 486-3538 x29071"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="email" type="email" class="form-control" id="Email" value="k.anderson@example.com" />
+                      <input
+                        name="email"
+                        type="email"
+                        class="form-control"
+                        id="Email"
+                        value="k.anderson@example.com"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
+                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label"
+                      >Twitter Profile</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#" />
+                      <input
+                        name="twitter"
+                        type="text"
+                        class="form-control"
+                        id="Twitter"
+                        value="https://twitter.com/#"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
+                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label"
+                      >Facebook Profile</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="facebook" type="text" class="form-control" id="Facebook"
-                        value="https://facebook.com/#" />
+                      <input
+                        name="facebook"
+                        type="text"
+                        class="form-control"
+                        id="Facebook"
+                        value="https://facebook.com/#"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
+                    <label for="Instagram" class="col-md-4 col-lg-3 col-form-label"
+                      >Instagram Profile</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="instagram" type="text" class="form-control" id="Instagram"
-                        value="https://instagram.com/#" />
+                      <input
+                        name="instagram"
+                        type="text"
+                        class="form-control"
+                        id="Instagram"
+                        value="https://instagram.com/#"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
+                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label"
+                      >Linkedin Profile</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="linkedin" type="text" class="form-control" id="Linkedin"
-                        value="https://linkedin.com/#" />
+                      <input
+                        name="linkedin"
+                        type="text"
+                        class="form-control"
+                        id="Linkedin"
+                        value="https://linkedin.com/#"
+                      />
                     </div>
                   </div>
 
@@ -267,9 +367,11 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
 
               <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
                 <!-- Settings Form -->
-                <form @submit.prevent="() => { }">
+                <form @submit.prevent="() => {}">
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
+                      >Email Notifications</label
+                    >
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="changesMade" checked />
@@ -290,7 +392,13 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                         </label>
                       </div>
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled />
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="securityNotify"
+                          checked
+                          disabled
+                        />
                         <label class="form-check-label" for="securityNotify">
                           Security alerts
                         </label>
@@ -309,23 +417,44 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                 <!-- Change Password Form -->
                 <form>
                   <div class="row mb-3">
-                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
+                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label"
+                      >Current Password</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="password" type="password" class="form-control" id="currentPassword" />
+                      <input
+                        name="password"
+                        type="password"
+                        class="form-control"
+                        id="currentPassword"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label"
+                      >New Password</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="newpassword" type="password" class="form-control" id="newPassword" />
+                      <input
+                        name="newpassword"
+                        type="password"
+                        class="form-control"
+                        id="newPassword"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
+                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label"
+                      >Re-enter New Password</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="renewpassword" type="password" class="form-control" id="renewPassword" />
+                      <input
+                        name="renewpassword"
+                        type="password"
+                        class="form-control"
+                        id="renewPassword"
+                      />
                     </div>
                   </div>
 
@@ -348,7 +477,12 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Bill เลขที่ : {{ bill.code }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -383,6 +517,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               <p>{{ bill.commitment_date }}</p>
             </div>
           </div>
+          <CommitmentBooking :data="dataCommitment" @onSearch="onSearchCommitment"></CommitmentBooking>
 
           <div class="" v-if="loadingItems">
             <div class="spinner-grow" role="status">
@@ -406,7 +541,12 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <tbody>
               <tr v-for="(row, rowIndex) in bill.items" :key="row">
                 <th>
-                  <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
+                  <input
+                    type="checkbox"
+                    v-model="itemsSelected"
+                    name="itemsSelected[]"
+                    :value="row"
+                  />
                 </th>
                 <th>{{ rowIndex + 1 }}</th>
                 <td>{{ row.item_code }}</td>
@@ -426,7 +566,10 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               </tr>
             </tbody>
           </table>
-          <p>NOTE: {{ bill.note_customers }}</p>
+          <p>
+            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label
+            >{{ bill.note_customers }}
+          </p>
         </div>
         <div class="modal-footer d-block">
           <!-- ///////////// -->
@@ -437,36 +580,14 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             </div>
 
             <div class="p-1">
-              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
-                itemsSelected.length }} รายการ</span>
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
+                >{{ itemsSelected.length }} รายการ</span
+              >
             </div>
           </div>
 
-          <div class="row gap-2">
-            <div class="col-12 col-lg-12 col-xl-12">
-
-              <span class="input-group">
-                <span class="input-group-text">Priority</span>
-                <select class="form-select" aria-label="priotiry" v-model="formCommitment.priority">
-                  <option value="">-ระดับความสำคัญ-</option>
-                  <option :value="c.code" v-for="(c, key) in commitmentPriority" :key="c"
-                    :selected="c.default === true ? 'selected' : ''">
-                    {{
-                      c.text }}</option>
-                </select>
-                <input type="date" v-model="formCommitment.commitment_date" class="form-control-sm form-control" />
-                <button class="btn btn-primary btn-sm" type="button" :disabled="loadingCommitment"
-                  @click="seachCommitmentDate">
-                  <template v-if="loadingCommitment">
-                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                    <span class="visually-hidden">Loading...</span>
-                  </template>
-                  <template v-else><i class="bi bi-search"></i></template>
-
-                </button>
-              </span>
-
-            </div>
+          <div class="row g-2">
+            <div class="col-12 col-lg-12 col-xl-12"></div>
 
             <div class="col-12 col-lg-6 col-xl-6">
               <button type="button" class="btn btn-success btn-sm mx-1" @click="newInvoice">
@@ -475,11 +596,8 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               <button type="button" class="btn btn-secondary btn-sm mx-1" data-bs-dismiss="modal">
                 <i class="bi bi-x-circle"></i> ปิดหน้าต่าง
               </button>
-
             </div>
           </div>
-
-          <span class="text-danger p-1" v-if="messageErrorCommitment">{{ messageErrorCommitment }}</span>
 
           <!-- ///////////// -->
         </div>
@@ -492,7 +610,12 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -503,13 +626,21 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>
-                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.customer_name"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
+                <input
+                  type="date"
+                  v-model="invoice.document_date"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
           </div>
@@ -517,13 +648,21 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>
-                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.contact_name"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
             <div class="col-8">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.address_detail"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
           </div>
@@ -539,7 +678,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(  row, rowIndex  ) in   invoice.items  " :key="row">
+              <tr v-for="(row, rowIndex) in invoice.items" :key="row">
                 <th>{{ rowIndex + 1 }}</th>
                 <th>{{ row.item_code }}</th>
                 <th>{{ row.product_name }}</th>
@@ -549,18 +688,28 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                   }}</span>
                 </th>
                 <th>
-                  <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
-                    style="width: 100px" />
+                  <input
+                    type="number"
+                    name="price[]"
+                    v-model="row.price"
+                    class="form-control form-control-sm"
+                    style="width: 100px"
+                  />
                 </th>
                 <th>
-                  <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
-                    style="width: 100px" />
+                  <input
+                    type="number"
+                    name="price[]"
+                    v-model="row.discount"
+                    class="form-control form-control-sm"
+                    style="width: 100px"
+                  />
                 </th>
               </tr>
             </tbody>
           </table>
           <p>
-            NOTE:
+            <label class="font-bold mr-3">NOTE:</label>
             <textarea class="form-control" placeholder="หมายเหตุ"></textarea>
           </p>
         </div>
@@ -585,15 +734,14 @@ import { Modal } from 'bootstrap'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import router from '@/router'
 
-import { timezone } from "@/config"
+import { timezone } from '@/config'
 import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
 import { formatISO } from 'date-fns'
 import { useAppStore } from '@/stores/appStore'
 import axios from 'axios'
+import CommitmentBooking from './components/CommitmentBooking.vue'
 const appStore = new useAppStore()
 
-const table = ref(null) //reference to your table element
-const tabulator = ref(null) //variable to hold your table
 const row = ref({})
 const items = ref({})
 const pagination = ref({
@@ -609,26 +757,17 @@ const modalViewRef = ref(null)
 const modalView = ref(null)
 const modalInvoiceRef = ref(null)
 const modalInvoice = ref(null)
+const messageSuccessCommitment = ref()
 const messageErrorCommitment = ref()
+const resultCommitment = ref({})
 const formSearch = ref({
   code: '',
   taxnumber: '',
   q: '',
 })
-const searchField = ['number', 'weight']
-const searchValue = ref(0)
+
 const invoiceStore = useInvoiceStore()
-const q = ref()
-const columns = [
-  {
-    prop: 'code',
-    name: 'code',
-  },
-  {
-    prop: 'agent_name',
-    name: 'agent_name',
-  },
-]
+
 const commitmentPriority = [
   {
     code: 'low',
@@ -694,6 +833,21 @@ const showDetail = (item) => {
   modalView.value.show()
   getBillById(item.id)
 }
+const dataCommitment = computed(() => {
+  let d1 = bill.value.document_date ? new Date(`${bill.value.document_date} 00:00:00`) : ''
+  // let d2 = new Date(`${formCommitment.value.commitment_date} 00:00:00`)
+  const params = {
+    bill_id: bill.value.id,
+    code: bill.value.code,
+    document_date: d1 ? formatISO(toZonedTime(d1, timezone)) : '',
+    commitment_date: '',
+    items: bill.value.items,
+  }
+  return params
+})
+const onSearchCommitment = (data) => {
+  console.log('onSearchCommitment', data);
+}
 const errorMsg = ref()
 const itemsSelected = ref([])
 
@@ -712,7 +866,6 @@ const newInvoice = () => {
     address_name: i.address_name,
     address_detail: i.address_detail,
     contact_name: i.agent_name,
-    bill_id: i.id,
     discount: 0,
   }
   invoice.value.items = itemsSelected.value
@@ -753,71 +906,81 @@ const createInvoice = () => {
 const onSearch = async () => {
   try {
     await loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
   formSearch.value.q = ''
 }
 
-
-const seachCommitmentDate = () => {
-  messageErrorCommitment.value = ""
-
+const seachCommitmentDate = async () => {
+  messageErrorCommitment.value = ''
+  messageSuccessCommitment.value = ''
 
   if (!formCommitment.value.commitment_date || !formCommitment.value.priority) {
-    messageErrorCommitment.value = "โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ"
-    return;
+    messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
+    return
   }
   loadingCommitment.value = true
-  let d1 = new Date(`${bill.value.document_date} 00:00:00`);
-  let d2 = new Date(`${formCommitment.value.commitment_date} 00:00:00`);
+  let d1 = new Date(`${bill.value.document_date} 00:00:00`)
+  let d2 = new Date(`${formCommitment.value.commitment_date} 00:00:00`)
   const params = {
     bill_id: bill.value.id,
     code: bill.value.code,
-    _document_date: formatISO(toZonedTime(d1, timezone)),
-    _commitment_date: formatISO(toZonedTime(d2, timezone)),
-    document_date: format(toZonedTime(d1, timezone), "yyyy-MM-dd"),
-    commitment_date: format(toZonedTime(d2, timezone), "yyyy-MM-dd"),
+    document_date: formatISO(toZonedTime(d1, timezone)),
+    commitment_date: formatISO(toZonedTime(d2, timezone)),
+    // document_date: format(toZonedTime(d1, timezone), 'yyyy-MM-dd'),
+    // commitment_date: format(toZonedTime(d2, timezone), 'yyyy-MM-dd'),
     items: bill.value.items,
     priority: formCommitment.value.priority,
   }
-  console.log(params);
+  // console.log(params)
   try {
     errorMsg.value = ''
-    axios.post('https://kanban.tpacal.or.th/api/kanban/private/v1/bills', params, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${appStore.token}`
-      },
-    }).then((rs) => {
-      console.log(rs);
-      setTimeout(() => {
+    const { data, status } = await axios
+      .post(import.meta.env.VITE_KANBAN_API_URL + '/bills/inquiry', params, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${appStore.token}`,
+        },
+      })
+      .catch((err) => {
         loadingCommitment.value = false
-      }, 2000);
-    }).catch((err) => {
-      loadingCommitment.value = false
-      const x = err.toJSON();
-      console.log(x);
-      if (err.response) {
-        let data = err.response?.data
-        if (data) {
-          messageErrorCommitment.value = data.message
+        const x = err.toJSON()
+        console.log(x)
+        if (err.response) {
+          let data = err.response?.data
+          if (data) {
+            messageErrorCommitment.value = data.message
+          } else {
+            messageErrorCommitment.value = err.message
+          }
         } else {
           messageErrorCommitment.value = err.message
         }
+      })
+    setTimeout(() => {
+      loadingCommitment.value = false
+    }, 2000)
+    resultCommitment.value = data
+    if (data) {
+      console.log('=>', data)
+      if (data.success) {
+        let message = `สำเร็จค้นพบวันที่ ${formatISO(data.data?.commitment_date)}`
+        resultCommitment.value.message = message
+        console.log(message)
+        messageSuccessCommitment.value = message
       } else {
-        messageErrorCommitment.value = err.message
+        messageErrorCommitment.value = data.message
       }
-    })
-
+    }
   } catch (error) {
     console.log('error', error)
 
     loadingCommitment.value = false
   }
 }
-const updateCommitmentDate = () => { }
+const updateCommitmentDate = () => {}
 onMounted(() => {
   errorMsg.value = ''
   modalView.value = new Modal(modalViewRef.value)
@@ -843,8 +1006,6 @@ onMounted(() => {
 }
 
 .checkbox {
-  transform: scale(
-      /*desired magnification*/
-    );
+  transform: scale(/*desired magnification*/);
 }
 </style>

@@ -8,6 +8,8 @@ import { useBillStore } from '@/stores/billStore'
 import ModalProduct from '@/views/product/components/ModalProduct.vue'
 import ModalCustomer from '@/views/customer/components/ModalCustomer.vue'
 import ModalContact from '@/views/customer/components/ModalContact.vue'
+import CommitmentBooking from '@/views/bill/components/CommitmentBooking.vue'
+import { useRoute } from 'vue-router'
 
 const items = ref({})
 const pagination = ref({
@@ -16,7 +18,7 @@ const pagination = ref({
 })
 const loading = ref(false)
 const modalView = ref(null)
-
+const searchCommitmentDate = ref(true)
 
 const modalProduct = ref(null)
 const modalContact = ref(null)
@@ -44,7 +46,34 @@ const form = ref({
   agent_id: '',
   agent_name: '',
   status: '',
-  invoice_status: '',
+  bill_status: '',
+  service_status_id: 0,
+})
+
+//  commitment
+const loadingCommitment = ref(false)
+const errorMsg = ref()
+const resultCommitment = ref()
+const messageSuccessCommitment = ref()
+const messageErrorCommitment = ref()
+const formCommitment = ref({
+  priority: 'medium',
+  commitment_date: '',
+  document_date: '',
+  bill_id: 0,
+  code: '',
+  items: [
+    {
+      item_code: '',
+      lab_id: '',
+      product_id: '',
+      reserved_date: '',
+      sorter: '',
+      sublab_id: '',
+      workorder_id: '',
+      sorter: 0,
+    },
+  ],
 })
 
 const loadData = async () => {
@@ -98,9 +127,9 @@ const loadAddress = async (customerId) => {
     if (data[0]) {
       addresses.value = data
       let a = data[0]
-      console.log('addess', data);
-      let text = (`${a.address} ${a.subdistrict} ${a.district} ${a.province} ${a.postcode}`).trim()
-      console.log(text);
+      console.log('addess', data)
+      let text = `${a.address} ${a.subdistrict} ${a.district} ${a.province} ${a.postcode}`.trim()
+      console.log(text)
       form.value.address_detail = text
     }
   } catch (error) {}
@@ -110,7 +139,7 @@ const loadCertAddress = async (customerId) => {
     const { data } = await api.get(`/v2/customers/${customerId}/cert-addresses`)
     if (data) {
       certAddresses.value = data
-      console.log('certAddresses', data);
+      console.log('certAddresses', data)
     }
   } catch (error) {}
 }
@@ -162,10 +191,108 @@ const removeItem = (item, index) => {
 const updateItems = () => {
   billStore.updateItems(carts.value)
 }
+const dataCommitment = computed(() => {
+  let d1 = form.value.document_date ? new Date(`${form.value.document_date} 00:00:00`) : ''
+  let d2 = new Date(`${formCommitment.value.commitment_date} 00:00:00`)
+  const params = {
+    priority: formCommitment.value.priority,
+    bill_id: form.value.bill_id,
+    code: form.value.code,
+    document_date: d1 ? formatISO(toZonedTime(form.value.document_date, timezone)) : '',
+    commitment_date: d2 ? formatISO(toZonedTime(d2, timezone)) : '',
+    items: billStore.selectedItems.map((item) => {
+      return {
+        duration: 1,
+        item_code: item.item_code,
+        lab_id: item.lab_id,
+        product_id: item.product_id,
+        reserved_date: form.value.document_date,
+        sorter: item.sorter,
+        sublab_id: item.sublab_id,
+        workorder_id: item.item_id,
+      }
+    }),
+  }
+  return params
+})
+const findCommitmentDate = async () => {
+  messageErrorCommitment.value = ''
+  messageSuccessCommitment.value = ''
 
-onMounted(() => {})
+  if (!formCommitment.value.commitment_date || !formCommitment.value.priority) {
+    messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
+    return
+  }
+  loadingCommitment.value = true
+  try {
+    const { data } = await axios
+      .post(import.meta.env.VITE_KANBAN_API_URL + '/bills/inquiry', dataCommitment.value, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${appStore.token}`,
+        },
+      })
+      .catch((err) => {
+        loadingCommitment.value = false
+        if (err.response) {
+          let data = err.response?.data
+          if (data) {
+            messageErrorCommitment.value = data.message
+          } else {
+            messageErrorCommitment.value = err.message
+          }
+        } else {
+          messageErrorCommitment.value = err.message
+        }
+      })
+    setTimeout(() => {
+      loadingCommitment.value = false
+    }, 2000)
+    resultCommitment.value = data
+    console.log('=>', data)
+    if (data) {
+      if (data.success) {
+        let message = `สำเร็จค้นพบวันที่ ${formatISO(data.data?.commitment_date)}`
+        resultCommitment.value.message = message
+        console.log(message)
+        messageSuccessCommitment.value = message
+      } else {
+        messageErrorCommitment.value = data.message
+      }
+    }
+  } catch (error) {
+    resultCommitment.value = error
+    console.log('error', error)
+    loadingCommitment.value = false
+  }
+}
+const onSelectCommitmentDate = (data) => {
+  formCommitment.value.commitment_date = data.commitment_date
+  formCommitment.value.document_date = data.document_date
+}
+const saveBill = () => {
+  form.value.items = billStore.selectedItems
+  console.log('saveBill', form.value)
+  billStore.setForm(form.value)
+  if (searchCommitmentDate.value === true) {
+    findCommitmentDate()
+  } else {
+  }
+}
+const route = useRoute()
+onMounted(() => {
+  form.value = billStore.form
+  if (route.query.id) {
+    api.get('/v2/bills/' + route.query.id).then((rs) => {
+      form.value = rs.data
+      billStore.updateItems(rs.data?.items)
+    })
+  }
+})
 onUpdated(() => {
   billStore.updateItems(carts.value)
+  form.value.items = carts.value
+  billStore.setForm(form.value)
 })
 </script>
 <template>
@@ -190,68 +317,111 @@ onUpdated(() => {
           <div class="card-body pt-3">
             <spinner :visible="loading" />
 
-            <h3>แบบฟอร์มเปิดงานทดสอบเครื่องมือ</h3>
+            <h4 class="bg-info-subtle p-2">แบบฟอร์มเปิดงานทดสอบเครื่องมือ</h4>
 
             <form @submit.prevent="onSearch()">
               <div class="row g-2">
-                <div class="col-6 col-md-4 col-lg-3">
-                  <label>Date Issued</label>
-                  <input
-                    type="date"
-                    v-model="form.document_date"
-                    name="code"
-                    class="form-control form-control-sm"
-                    placeholder="Code"
-                  />
-                </div>
-                <div class="col-6 col-md-4 col-lg-3">
-                  <label>Due Date</label>
-                  <input
-                    type="date"
-                    v-model="form.due_date"
-                    name="code"
-                    class="form-control form-control-sm"
-                    placeholder="Code"
-                  />
-                </div>
-                <div class="col-6 col-md-4 col-lg-3" v-if="form.code">
-                  <label>Code</label>
-                  <input
-                    type="text"
-                    v-model="form.code"
-                    name="code"
-                    class="form-control form-control-sm"
-                    placeholder="Code"
-                    disabled="disabled"
-                  />
-                </div>
-
-                <div class="col-12">
-                  <div class="accordion" id="accordionExample">
+                <div class="col-12 bg-info-subtle p-1">
+                  <div class="accordion" id="accordionBill">
                     <div class="accordion-item">
-                      <h2 class="accordion-header" id="headingOne">
+                      <h2 class="accordion-header" id="headingCustomer">
                         <button
                           class="accordion-button"
                           type="button"
                           data-bs-toggle="collapse"
-                          data-bs-target="#collapseOne"
+                          data-bs-target="#collapseCustomer"
                           aria-expanded="true"
-                          aria-controls="collapseOne"
+                          aria-controls="collapseCustomer"
                         >
                           <i class="bi bi-person mx-2"></i>
-                          ข้อมูลลูกค้า
+                          1) ข้อมูลทั่วไป
                         </button>
                       </h2>
                       <div
-                        id="collapseOne"
+                        id="collapseCustomer"
                         class="accordion-collapse collapse show"
-                        aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample"
+                        aria-labelledby="headingCustomer"
+                        data-bs-parent="#accordionBill"
                       >
                         <div class="accordion-body">
                           <div class="row g-2">
                             <div class="col-6 col-md-4 col-lg-3">
-                              <label>บริษัท <span>{{}}</span></label>
+                              <label>วันที่</label>
+                              <input
+                                type="date"
+                                v-model="form.document_date"
+                                name="code"
+                                class="form-control form-control-sm"
+                                placeholder="Code"
+                              />
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-3">
+                              <label>Commitment Date</label>
+                              <input
+                                type="date"
+                                v-model="form.commitment_date"
+                                name="commitment_date"
+                                class="form-control form-control-sm"
+                                placeholder="commitment_date"
+                                disabled
+                              />
+                            </div>
+                            <div class="col-12 col-md-4 col-lg-3">
+                              <label>เลขที่</label>
+                              <input
+                                type="text"
+                                v-model="form.code"
+                                name="code"
+                                class="form-control form-control-sm"
+                                placeholder="เลขที่"
+                                disabled="disabled"
+                              />
+                            </div>
+                          </div>
+                          <!-- ############ START BUTTON ################# -->
+                          <div class="text-end my-2">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCustomerAddress"
+                              aria-expanded="false"
+                              aria-controls="collapseCustomerAddress"
+                            >
+                              <i class="bi bi-arrow-right"></i> ถัดไป
+                            </button>
+                          </div>
+                          <!-- ############ END BUTTON ################# -->
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button
+                          class="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseCustomerAddress"
+                          aria-expanded="false"
+                          aria-controls="collapseCustomerAddress"
+                        >
+                          <i class="bi bi-house-up mx-2"></i>
+                          2) ลูกค้า
+                        </button>
+                      </h2>
+                      <div
+                        id="collapseCustomerAddress"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingTwo"
+                        data-bs-parent="#accordionBill"
+                      >
+                        <div class="accordion-body">
+                          <div class="row g-2">
+                            <div class="col-12 col-lg-6 col-xl-4">
+                              <label
+                                >บริษัท
+                                <span v-if="form.company_id">({{ form.company_id }})</span></label
+                              >
                               <input
                                 type="text"
                                 v-model="form.address_name"
@@ -261,7 +431,7 @@ onUpdated(() => {
                                 @click="addCustomer"
                               />
                             </div>
-                            <div class="col-6 col-md-4 col-lg-3">
+                            <div class="col-12 col-lg-6 col-xl-4">
                               <label>ผู้ติดต่อ</label>
                               <input
                                 type="text"
@@ -272,175 +442,340 @@ onUpdated(() => {
                                 @click="addContact"
                               />
                             </div>
-                            <div class="col-6 col-md-4 col-lg-6">
+                            <div class="col-12">
                               <label>ที่อยู่</label>
+                              <textarea
+                                v-model="form.address_detail"
+                                class="form-control form-control-sm"
+                                placeholder=""
+                                rows="3"
+                              />
+                            </div>
+                          </div>
+                          <!-- ############ START BUTTON ################# -->
+                          <div class="text-end my-2">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCustomer"
+                              aria-expanded="false"
+                              aria-controls="collapseCustomer"
+                            >
+                              <i class="bi bi-arrow-left"></i> ก่อนหน้า
+                            </button>
+                            <button
+                              class="btn btn-secondary btn-sm ms-3"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCertAddress"
+                              aria-expanded="false"
+                              aria-controls="collapseCertAddress"
+                            >
+                              <i class="bi bi-arrow-right"></i> ถัดไป
+                            </button>
+                          </div>
+                          <!-- ############ END BUTTON ################# -->
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingCertAddress">
+                        <button
+                          class="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseCertAddress"
+                          aria-expanded="false"
+                          aria-controls="collapseCertAddress"
+                        >
+                          <i class="bi bi-house-up mx-2"></i>
+                          3) ที่อยู่ส่งใบรับรอง
+                        </button>
+                      </h2>
+                      <div
+                        id="collapseCertAddress"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingCertAddress"
+                        data-bs-parent="#accordionBill"
+                      >
+                        <div class="accordion-body">
+                          <div class="row g-2">
+                            <div class="col-12 col-xl-12">
+                              <label>บริษัท <span>{{}}</span></label>
                               <input
                                 type="text"
-                                v-model="form.address_detail"
-                     
+                                v-model="form.cert_address_name"
+                                name="customer_name"
                                 class="form-control form-control-sm"
                                 placeholder=""
                               />
                             </div>
+                            <div class="col-12 col-xl-12">
+                              <label>ที่อยู่</label>
+                              <textarea
+                                type="text"
+                                v-model="form.cert_address_detail"
+                                class="form-control form-control-sm"
+                                placeholder="ที่อยู่"
+                                rows="3"
+                              />
+                            </div>
                           </div>
+                          <!-- ############ START BUTTON ################# -->
+                          <div class="text-end my-2">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCustomer"
+                              aria-expanded="false"
+                              aria-controls="collapseCustomer"
+                            >
+                              <i class="bi bi-arrow-left"></i> ก่อนหน้า
+                            </button>
+                            <button
+                              class="btn btn-secondary btn-sm ms-3"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseTools"
+                              aria-expanded="false"
+                              aria-controls="collapseTools"
+                            >
+                              <i class="bi bi-arrow-right"></i> ถัดไป
+                            </button>
+                          </div>
+                          <!-- ############ END BUTTON ################# -->
                         </div>
                       </div>
                     </div>
                     <div class="accordion-item">
-                      <h2 class="accordion-header" id="headingTwo">
+                      <h2 class="accordion-header" id="headingTools">
                         <button
                           class="accordion-button collapsed"
                           type="button"
                           data-bs-toggle="collapse"
-                          data-bs-target="#collapseTwo"
+                          data-bs-target="#collapseTools"
                           aria-expanded="false"
-                          aria-controls="collapseTwo"
+                          aria-controls="collapseTools"
                         >
-                          ที่อยู่ลูกค้า
+                          <i class="bi bi-tools mx-2"></i>
+                          4) สินค้า/เครื่องมือ ({{ billStore.countItems }})
                         </button>
                       </h2>
                       <div
-                        id="collapseTwo"
+                        id="collapseTools"
                         class="accordion-collapse collapse"
-                        aria-labelledby="headingTwo"
-                        data-bs-parent="#accordionExample"
+                        aria-labelledby="headingTools"
+                        data-bs-parent="#accordionBill"
                       >
                         <div class="accordion-body">
-                          <strong>This is the second item's accordion body.</strong> It is hidden by
-                          default, until the collapse plugin adds the appropriate classes that we
-                          use to style each element. These classes control the overall appearance,
-                          as well as the showing and hiding via CSS transitions. You can modify any
-                          of this with custom CSS or overriding our default variables. It's also
-                          worth noting that just about any HTML can go within the
-                          <code>.accordion-body</code>, though the transition does limit overflow.
+                          <div v-for="(item, index) in carts" :key="index" class="my-2">
+                            <table class="table table-sm table-striped border">
+                              <thead>
+                                <tr>
+                                  <td>{{ index + 1 }})</td>
+                                  <td colspan="5">
+                                    <h5 class="h6 text-primary my-0 fw-bolder">
+                                      {{ item.product_name }}
+                                    </h5>
+                                    <div class="text-danger">{{ item.product_code }}</div>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th scope="col" class="text-strong h5"></th>
+
+                                  <th scope="col">Barcode</th>
+
+                                  <th scope="col">Serial No.</th>
+                                  <th scope="col">Model</th>
+                                  <th scope="col">ID No.</th>
+                                </tr>
+                              </thead>
+
+                              <tbody>
+                                <tr>
+                                  <td scope="row">
+                                    <i
+                                      @click="removeItem(item, index)"
+                                      class="bi bi-trash text-danger"
+                                      role="button"
+                                    ></i>
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control-sm"
+                                      v-model="item.barcode_no"
+                                      placeholder="barcode"
+                                    />
+                                  </td>
+
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control-sm"
+                                      v-model="item.serialnumber"
+                                      placeholder="S/N"
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control-sm"
+                                      v-model="item.model"
+                                      placeholder="model"
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control-sm"
+                                      v-model="item.id_no"
+                                      placeholder="id_no"
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th scope="row" colspan="1"></th>
+                                  <td colspan="4">
+                                    <div class="row g-2 mt-1">
+                                      <div class="col-12 col-md-3">
+                                        <label>range price</label>
+                                        <input
+                                          type="number"
+                                          v-model="item.range_price"
+                                          class="form-control-sm form-control"
+                                          placeholder="range_price"
+                                        />
+                                      </div>
+                                      <div class="col-12 col-md-3">
+                                        <label>range value</label>
+                                        <input
+                                          type="number"
+                                          v-model="item.range_value"
+                                          class="form-control-sm form-control"
+                                          placeholder="range_value"
+                                        />
+                                      </div>
+                                      <div class="col-12 col-md-3">
+                                        <label>point price</label>
+                                        <input
+                                          type="number"
+                                          class="form-control form-control-sm"
+                                          min="0"
+                                          v-model="item.point_price"
+                                        />
+                                      </div>
+                                      <div class="col-12 col-md-3">
+                                        <label>point</label>
+                                        <input
+                                          type="number"
+                                          class="form-control form-control-sm"
+                                          min="0"
+                                          v-model="item.point"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div class="row g-2 mt-1">
+                                      <div class="col-12 col-md-6">
+                                        <input
+                                          type="text"
+                                          v-model="item.test_point"
+                                          class="form-control-sm form-control"
+                                          placeholder="test point..."
+                                        />
+                                      </div>
+                                      <div class="col-12 col-md-3">
+                                        <input
+                                          type="number"
+                                          v-model="item.discount"
+                                          class="form-control-sm form-control"
+                                          placeholder="discount"
+                                        />
+                                      </div>
+                                      <div class="col-12 col-md-3">
+                                        <input
+                                          type="number"
+                                          v-model="item.total"
+                                          class="form-control-sm form-control"
+                                          placeholder="total"
+                                        />
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-success"
+                            @click="addProduct()"
+                          >
+                            <i class="bi bi-plus" role="button"></i>
+                          </button>
+                          <!-- ############ START BUTTON ################# -->
+                          <div class="text-end my-2">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCertAddress"
+                              aria-expanded="false"
+                              aria-controls="collapseCertAddress"
+                            >
+                              <i class="bi bi-arrow-left"></i> ก่อนหน้า
+                            </button>
+                            <button
+                              class="btn btn-secondary btn-sm ms-3"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCertAddress"
+                              aria-expanded="false"
+                              aria-controls="collapseCertAddress"
+                            >
+                              <i class="bi bi-arrow-right"></i> ถัดไป
+                            </button>
+                          </div>
+                          <!-- ############ END BUTTON ################# -->
                         </div>
                       </div>
                     </div>
                     <div class="accordion-item">
-                      <h2 class="accordion-header" id="headingThree">
+                      <h2 class="accordion-header" id="headingCommitmentDate">
                         <button
                           class="accordion-button collapsed"
                           type="button"
                           data-bs-toggle="collapse"
-                          data-bs-target="#collapseThree"
+                          data-bs-target="#collapseCommitmentDate"
                           aria-expanded="false"
-                          aria-controls="collapseThree"
+                          aria-controls="collapseCommitmentDate"
                         >
-                          ที่อยู่ในการจัดส่งใบรับรอง
+                          <i class="bi bi-calendar mx-2"></i>
+                          5) Commitment Date && Received Date
                         </button>
                       </h2>
                       <div
-                        id="collapseThree"
+                        id="collapseCommitmentDate"
                         class="accordion-collapse collapse"
-                        aria-labelledby="headingThree"
-                        data-bs-parent="#accordionExample"
+                        aria-labelledby="headingCommitmentDate"
+                        data-bs-parent="#accordionBill"
                       >
                         <div class="accordion-body">
-                          <strong>This is the third item's accordion body.</strong> It is hidden by
-                          default, until the collapse plugin adds the appropriate classes that we
-                          use to style each element. These classes control the overall appearance,
-                          as well as the showing and hiding via CSS transitions. You can modify any
-                          of this with custom CSS or overriding our default variables. It's also
-                          worth noting that just about any HTML can go within the
-                          <code>.accordion-body</code>, though the transition does limit overflow.
+                          <input type="checkbox" v-model="searchCommitmentDate" /> จองคิวห้อง Lab
+                          <CommitmentBooking
+                            :data="form"
+                            title=""
+                            class="my-2"
+                            @change="onSelectCommitmentDate"
+                          />
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div
-                    v-for="(item, index) in carts"
-                    :key="index"
-                    style="border: solid 1px #cccc"
-                    class="my-2"
-                  >
-                    <table class="table table-sm table-striped">
-                      <thead>
-                        <tr>
-                          <td></td>
-                          <td colspan="9">
-                            <h5 class="h5 text-primary">{{ item.product_name }}</h5>
-                            <div class="text-danger">{{ item.product_code }}</div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="col" class="text-strong h5">{{ index + 1 }}</th>
-                          <th scope="col">#</th>
-                          <th scope="col">Barcode</th>
-
-                          <th scope="col">Serial No.</th>
-                          <th scope="col">Model</th>
-                          <th scope="col">ID No.</th>
-
-                          <th scope="col">ส่วนลด</th>
-                          <th scope="col">ราคา</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr>
-                          <th scope="row"></th>
-                          <th scope="row">
-                            <i
-                              @click="removeItem(item, index)"
-                              class="bi bi-trash text-danger"
-                              role="button"
-                            ></i>
-                          </th>
-                          <td>
-                            <input
-                              type="text"
-                              class="form-control form-control-sm"
-                              v-model="item.barcode_no"
-                            />
-                          </td>
-
-                          <td>
-                            <input
-                              type="text"
-                              class="form-control form-control-sm"
-                              v-model="item.serialnumber"
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              class="form-control form-control-sm"
-                              v-model="item.model"
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              class="form-control form-control-sm"
-                              v-model="item.id_no"
-                            />
-                          </td>
-
-                          <td>
-                            <input
-                              type="number"
-                              class="form-control form-control-sm"
-                              min="0"
-                              v-model="item.discount"
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              class="form-control form-control-sm"
-                              min="0"
-                              v-model="item.price"
-                            />
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <button type="button" class="btn btn-sm btn-success" @click="addProduct()">
-                    <i class="bi bi-plus" role="button"></i>
-                  </button>
                 </div>
-                <div class="col-12">Total Items : {{ useBillStore.countItems }}</div>
+                <div class="col-12"></div>
               </div>
             </form>
           </div>
@@ -451,7 +786,7 @@ onUpdated(() => {
           <div class="card-body pt-3">
             <div class="row g-1">
               <div class="col-12">
-                <button class="btn btn-primary btn-sm w-100" @click="updateItems()">บันทึก</button>
+                <button class="btn btn-primary btn-sm w-100" @click="saveBill()">บันทึก</button>
               </div>
               <div class="col-12">
                 <router-link
@@ -481,11 +816,23 @@ onUpdated(() => {
     <ModalProduct ref="modalProduct" @select="onSelectProducts" />
     <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
     <ModalContact ref="modalContact" @select="onSelectContact" />
-    {{ form }}
+    <!-- {{ billStore.form }} -->
   </section>
 </template>
 
 <style lang="scss" scoped>
+.accordion {
+  .accordion-body {
+    background-color: rgb(230, 230, 230);
+    color: #130f0f;
+    .form-control {
+      border: solid 1px #8b8a8a;
+    }
+  }
+}
+.table-bill-items {
+  border: solid 1px #130f0f;
+}
 div[size='A4'] {
   width: 21cm;
   height: 29.7cm;

@@ -4,7 +4,9 @@ import { defineStore } from 'pinia'
 export const useBillStore = defineStore('invoice', {
   state: () => {
     return {
+      formMode: 'add',
       selectedItems: [],
+      form: {},
     }
   },
   getters: {
@@ -43,9 +45,12 @@ export const useBillStore = defineStore('invoice', {
     updateItems(items) {
       this.selectedItems = items
     },
+    setForm(data) {
+      this.form = data
+    },
   },
   persist: {
     enabled: true,
-    strategies: [{ storage: localStorage, paths: ['selectedItems'] }],
+    strategies: [{ storage: localStorage, paths: ['selectedItems','form'] }],
   },
 })

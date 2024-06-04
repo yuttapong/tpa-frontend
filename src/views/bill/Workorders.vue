@@ -77,7 +77,8 @@
                                         <tbody>
                                             <tr v-for="(item, index) in items" :key="index">
                                                 <th scope="row">{{ index + 1 }}</th>
-                                                <td  nowrap><span class="btn btn-sm text-dark fw-bold">{{ item.item_code }}</span></td>
+                                                <td nowrap><span class="btn btn-sm text-dark fw-bold">{{ item.item_code
+                                                }}</span></td>
                                                 <td>
                                                     <div>{{ item.product_name }}</div>
                                                     <span class="badge badge-light text-dark mx-2 d-inline-block"

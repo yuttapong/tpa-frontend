@@ -10,66 +10,66 @@ const routes = [
     component: () => import('../views/Main.vue'),
     children: [
       {
-        path: '',
-        redirect: 'login',
+        path: '/',
+        redirect: '/login',
       },
       {
-        path: 'dashboard',
+        path: '/dashboard',
         name: 'dashboard',
         component: () => import('../views/Dashboard.vue'),
       },
       {
-        path: 'profile',
+        path: '/profile',
         name: 'profile',
         component: () => import('../views/Profile.vue'),
       },
       {
-        path: 'quotations',
+        path: '/quotations',
         name: 'quotations',
         component: () => import('../views/quotation/Quotations.vue'),
       },
       {
-        path: 'bills',
+        path: '/bills',
         name: 'bills',
         component: () => import('../views/bill/Bills.vue'),
       },
       {
-        path: 'bills/form',
+        path: '/bills/form',
         name: 'bills.form',
         component: () => import('../views/bill/BillForm.vue'),
       },
       {
-        path: 'bills/preview',
+        path: '/bills/preview',
         name: 'bills.preview',
         component: () => import('../views/bill/BillPreview.vue'),
       },
       {
-        path: 'bills/:code',
+        path: '/bills/code/:code',
         name: 'bills.detail',
         component: () => import('../views/bill/BillDetail.vue'),
       },
       {
-        path: 'workoders',
+        path: '/workoders',
         name: 'workoders',
         component: () => import('../views/bill/Workorders.vue'),
       },
       {
-        path: 'invoices',
+        path: '/invoices',
         name: 'invoices',
         component: () => import('../views/invoice/Invoices.vue'),
       },
       {
-        path: 'invoices/create',
+        path: '/invoices/create',
         name: 'invoices.create',
         component: () => import('../views/invoice/InvoiceForm.vue'),
       },
       {
-        path: 'invoices/preview',
+        path: '/invoices/preview',
         name: 'invoices.preview',
         component: () => import('../views/invoice/InvoicePreview.vue'),
       },
       {
-        path: 'certificates',
+        path: '/certificates',
         name: 'certificates',
         component: () => import('../views/certificate/Certificates.vue'),
       },
@@ -119,7 +119,7 @@ const routes = [
         component: () => import('../views/Home.vue'),
       },
       {
-        path: 'about',
+        path: '/about',
         name: 'about',
         // route level code-splitting
         // this generates a separate chunk (About.[hash].js) for this route

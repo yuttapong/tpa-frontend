@@ -30,44 +30,22 @@
                 <form @submit.prevent="onSearch()">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.code"
-                        name="code"
-                        class="form-control form-control-sm"
-                        placeholder="Code"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
+                        placeholder="Code" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        name="taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.q"
-                        name="q"
-                        class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input
-                        type="reset"
-                        class="btn btn-secondary btn-sm mx-2"
-                        value="Reset"
-                        @click="resetFormSearch"
-                      />
-                      <router-link class="btn btn-sm btn-success" :to="{ name: 'bills.create' }">
+                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
+                      <router-link class="btn btn-sm btn-success" :to="{ name: 'bills.form' }">
                         <i class="bi bi-plus"></i> สร้าง
                       </router-link>
                     </div>
@@ -92,18 +70,16 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="(item, index) in items" :key="index">
+                      <tr v-for="(item, index) in     items    " :key="index">
                         <th scope="row" nowrap>
-                          <i class="bi bi-pencil mx-1" @click="showDetail(item)" role="button"></i>
+                          <router-link :to="{ name: 'bills.form', query: { id: item.id } }">
+                            <i class="bi bi-pencil mx-1" @click="showDetail(item)" role="button"></i></router-link>
                           <i class="bi bi-search mx-1" @click="showDetail(item)" role="button"></i>
                         </th>
                         <!-- <th scope="row">{{ index + 1 }}</th> -->
                         <td align="left" nowrap>
-                          <router-link
-                            :to="`/bills/${item.code}`"
-                            class="btn btn-light fw-bold border btn-sm"
-                            target="_blank"
-                          >
+                          <router-link :to="`/bills/${item.code}`" class="btn btn-light fw-bold border btn-sm"
+                            target="_blank">
                             {{ item.code }}
                           </router-link>
                         </td>
@@ -184,13 +160,9 @@
                 <div class="row">
                   <div class="col-lg-3 col-md-4 label">Permissions</div>
                   <div class="col-lg-9 col-md-8">
-                    <span
-                      class="badge bg-light text-dark mx-1"
-                      v-for="(name, key) in row.permisions"
-                      :key="key"
-                    >
-                      {{ name }}</span
-                    >
+                    <span class="badge bg-light text-dark mx-1" v-for="(    name, key    ) in     row.permisions    "
+                      :key="key">
+                      {{ name }}</span>
                   </div>
                 </div>
               </div>
@@ -201,13 +173,7 @@
                   <div class="row mb-3">
                     <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="fullName"
-                        type="text"
-                        class="form-control"
-                        id="fullName"
-                        value="Kevin Anderson"
-                      />
+                      <input name="fullName" type="text" class="form-control" id="fullName" value="Kevin Anderson" />
                     </div>
                   </div>
 
@@ -215,146 +181,82 @@
                     <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
                     <div class="col-md-8 col-lg-9">
                       <textarea name="about" class="form-control" id="about" style="height: 100px">
-Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea
-                      >
+Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="company"
-                        type="text"
-                        class="form-control"
-                        id="company"
-                        value="Lueilwitz, Wisoky and Leuschke"
-                      />
+                      <input name="company" type="text" class="form-control" id="company"
+                        value="Lueilwitz, Wisoky and Leuschke" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="job"
-                        type="text"
-                        class="form-control"
-                        id="Job"
-                        value="Web Designer"
-                      />
+                      <input name="job" type="text" class="form-control" id="Job" value="Web Designer" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Country" class="col-md-4 col-lg-3 col-form-label">Country</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="country"
-                        type="text"
-                        class="form-control"
-                        id="Country"
-                        value="USA"
-                      />
+                      <input name="country" type="text" class="form-control" id="Country" value="USA" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Address" class="col-md-4 col-lg-3 col-form-label">Address</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="address"
-                        type="text"
-                        class="form-control"
-                        id="Address"
-                        value="A108 Adam Street, New York, NY 535022"
-                      />
+                      <input name="address" type="text" class="form-control" id="Address"
+                        value="A108 Adam Street, New York, NY 535022" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="phone"
-                        type="text"
-                        class="form-control"
-                        id="Phone"
-                        value="(436) 486-3538 x29071"
-                      />
+                      <input name="phone" type="text" class="form-control" id="Phone" value="(436) 486-3538 x29071" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="email"
-                        type="email"
-                        class="form-control"
-                        id="Email"
-                        value="k.anderson@example.com"
-                      />
+                      <input name="email" type="email" class="form-control" id="Email" value="k.anderson@example.com" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label"
-                      >Twitter Profile</label
-                    >
+                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="twitter"
-                        type="text"
-                        class="form-control"
-                        id="Twitter"
-                        value="https://twitter.com/#"
-                      />
+                      <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label"
-                      >Facebook Profile</label
-                    >
+                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="facebook"
-                        type="text"
-                        class="form-control"
-                        id="Facebook"
-                        value="https://facebook.com/#"
-                      />
+                      <input name="facebook" type="text" class="form-control" id="Facebook"
+                        value="https://facebook.com/#" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Instagram" class="col-md-4 col-lg-3 col-form-label"
-                      >Instagram Profile</label
-                    >
+                    <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="instagram"
-                        type="text"
-                        class="form-control"
-                        id="Instagram"
-                        value="https://instagram.com/#"
-                      />
+                      <input name="instagram" type="text" class="form-control" id="Instagram"
+                        value="https://instagram.com/#" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label"
-                      >Linkedin Profile</label
-                    >
+                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="linkedin"
-                        type="text"
-                        class="form-control"
-                        id="Linkedin"
-                        value="https://linkedin.com/#"
-                      />
+                      <input name="linkedin" type="text" class="form-control" id="Linkedin"
+                        value="https://linkedin.com/#" />
                     </div>
                   </div>
 
@@ -367,11 +269,9 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
 
               <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
                 <!-- Settings Form -->
-                <form @submit.prevent="() => {}">
+                <form @submit.prevent="() => { }">
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
-                      >Email Notifications</label
-                    >
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="changesMade" checked />
@@ -392,13 +292,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                         </label>
                       </div>
                       <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          id="securityNotify"
-                          checked
-                          disabled
-                        />
+                        <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled />
                         <label class="form-check-label" for="securityNotify">
                           Security alerts
                         </label>
@@ -417,44 +311,23 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                 <!-- Change Password Form -->
                 <form>
                   <div class="row mb-3">
-                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label"
-                      >Current Password</label
-                    >
+                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="password"
-                        type="password"
-                        class="form-control"
-                        id="currentPassword"
-                      />
+                      <input name="password" type="password" class="form-control" id="currentPassword" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label"
-                      >New Password</label
-                    >
+                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="newpassword"
-                        type="password"
-                        class="form-control"
-                        id="newPassword"
-                      />
+                      <input name="newpassword" type="password" class="form-control" id="newPassword" />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label"
-                      >Re-enter New Password</label
-                    >
+                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
                     <div class="col-md-8 col-lg-9">
-                      <input
-                        name="renewpassword"
-                        type="password"
-                        class="form-control"
-                        id="renewPassword"
-                      />
+                      <input name="renewpassword" type="password" class="form-control" id="renewPassword" />
                     </div>
                   </div>
 
@@ -477,12 +350,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Bill เลขที่ : {{ bill.code }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -539,14 +407,9 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(row, rowIndex) in bill.items" :key="row">
+              <tr v-for="(    row, rowIndex    ) in     bill.items    " :key="row">
                 <th>
-                  <input
-                    type="checkbox"
-                    v-model="itemsSelected"
-                    name="itemsSelected[]"
-                    :value="row"
-                  />
+                  <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
                 </th>
                 <th>{{ rowIndex + 1 }}</th>
                 <td>{{ row.item_code }}</td>
@@ -567,8 +430,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             </tbody>
           </table>
           <p>
-            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label
-            >{{ bill.note_customers }}
+            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label>{{ bill.note_customers }}
           </p>
         </div>
         <div class="modal-footer d-block">
@@ -580,9 +442,8 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             </div>
 
             <div class="p-1">
-              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
-                >{{ itemsSelected.length }} รายการ</span
-              >
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
+                itemsSelected.length }} รายการ</span>
             </div>
           </div>
 
@@ -610,12 +471,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -626,21 +482,13 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.customer_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="date"
-                  v-model="invoice.document_date"
-                  class="form-control form-control-sm"
-                />
+                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -648,21 +496,13 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.contact_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-8">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.address_detail"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -678,7 +518,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(row, rowIndex) in invoice.items" :key="row">
+              <tr v-for="(    row, rowIndex    ) in     invoice.items    " :key="row">
                 <th>{{ rowIndex + 1 }}</th>
                 <th>{{ row.item_code }}</th>
                 <th>{{ row.product_name }}</th>
@@ -688,22 +528,12 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                   }}</span>
                 </th>
                 <th>
-                  <input
-                    type="number"
-                    name="price[]"
-                    v-model="row.price"
-                    class="form-control form-control-sm"
-                    style="width: 100px"
-                  />
+                  <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
+                    style="width: 100px" />
                 </th>
                 <th>
-                  <input
-                    type="number"
-                    name="price[]"
-                    v-model="row.discount"
-                    class="form-control form-control-sm"
-                    style="width: 100px"
-                  />
+                  <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
+                    style="width: 100px" />
                 </th>
               </tr>
             </tbody>
@@ -906,7 +736,7 @@ const createInvoice = () => {
 const onSearch = async () => {
   try {
     await loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
@@ -980,7 +810,8 @@ const seachCommitmentDate = async () => {
     loadingCommitment.value = false
   }
 }
-const updateCommitmentDate = () => {}
+const updateCommitmentDate = () => { }
+
 onMounted(() => {
   errorMsg.value = ''
   modalView.value = new Modal(modalViewRef.value)
@@ -1006,6 +837,8 @@ onMounted(() => {
 }
 
 .checkbox {
-  transform: scale(/*desired magnification*/);
+  transform: scale(
+      /*desired magnification*/
+    );
 }
 </style>

@@ -17,8 +17,8 @@ const carts = computed(() => billStore.items)
         <h1>ใบขอรับบริการ</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><router-link  to="/">Home</router-link></li>
-                <li class="breadcrumb-item"><router-link  to="/bills">ใบขอรับบริการ</router-link></li>
+                <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
+                <li class="breadcrumb-item"><router-link to="/bills">ใบขอรับบริการ</router-link></li>
                 <li class="breadcrumb-item active">{{ route.params?.code }}</li>
             </ol>
         </nav>
@@ -101,7 +101,7 @@ const carts = computed(() => billStore.items)
                     <div class="card-body pt-3">
                         <div class="row">
                             <div class="col-12">
-                                <router-link :to="{ name: 'bills.create' }" class="btn btn-sm btn-secondary w-100">
+                                <router-link to="/bills/form" class="btn btn-sm btn-secondary w-100">
                                     <i class="bi bi-pencil"></i>
                                     แก้ไข</router-link>
                             </div>

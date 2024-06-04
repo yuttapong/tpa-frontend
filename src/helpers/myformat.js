@@ -8,10 +8,11 @@ export const DateTime = (date, options) => {
     timeZone: 'Australia/Sydney',
     hourCycle: 'h24',
     hideTime: false,
-    ...options
+    ...options,
   }
   if (date) {
-    return new Intl.DateTimeFormat(myFormatLang, op).format(date)
+    let _date = new Date(date)
+    return new Intl.DateTimeFormat(myFormatLang, op).format(_date)
   }
 }
 

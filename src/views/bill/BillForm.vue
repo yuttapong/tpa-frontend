@@ -3,12 +3,12 @@ import { onMounted, computed, ref, onUpdated } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { DateTime, Number } from '@/helpers/myformat'
-import { Modal } from 'bootstrap'
 import { useBillStore } from '@/stores/billStore'
 import ModalProduct from '@/views/product/components/ModalProduct.vue'
 import ModalCustomer from '@/views/customer/components/ModalCustomer.vue'
 import ModalContact from '@/views/customer/components/ModalContact.vue'
 import CommitmentBooking from '@/views/bill/components/CommitmentBooking.vue'
+import BillPriority from '@/views/bill/components/BillPriority.vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
@@ -16,14 +16,8 @@ import { formatDate, formatISO } from 'date-fns'
 import { timezone } from "@/config"
 import { useAppStore } from '@/stores/appStore'
 const route = useRoute()
-const items = ref({})
-const pagination = ref({
-  per_page: 5,
-  curent_page: 1,
-})
 const appStore = useAppStore();
 const loading = ref(false)
-const modalView = ref(null)
 const searchCommitmentDate = ref(true)
 
 const modalProduct = ref(null)
@@ -33,16 +27,11 @@ const addresses = ref([])
 const certAddresses = ref([])
 const billStore = useBillStore()
 
-const formSearch = ref({
-  code: '',
-  taxnumber: '',
-  q: '',
-})
 const carts = computed(() => billStore.items)
 const form = ref({
   id: 0,
   bill_code: '',
-  document_date: new Date(),
+  document_date: '',
   items: [],
   company_id: '',
   address_name: '',
@@ -58,7 +47,6 @@ const form = ref({
 
 //  commitment
 const loadingCommitment = ref(false)
-const errorMsg = ref()
 const resultCommitment = ref()
 const messageSuccessCommitment = ref()
 const messageErrorCommitment = ref()
@@ -84,41 +72,6 @@ const formCommitment = ref({
   ],
 })
 
-const loadData = async () => {
-  let params = {
-    per_page: pagination.value.per_page,
-    page: pagination.value.curent_page,
-    ...formSearch.value,
-  }
-  const { data } = await api.get('/v2/bills', {
-    params: params,
-  })
-  if (data) {
-    const p = {
-      total: data?.total,
-      page: data?.curent_page,
-      per_page: data?.per_page,
-      page_count: data?.last_page,
-    }
-    pagination.value = p
-    items.value = data.data
-    loading.value = false
-  }
-}
-
-const getInvoiceById = async (id) => {
-  try {
-    const { data } = await api.get('/v2/bills/' + id)
-    if (data) {
-      items.value = data
-      loading.value = false
-    }
-  } catch (error) { }
-}
-const showDetail = (item) => {
-  modalView.value.show()
-  getInvoiceById(item.id)
-}
 
 const addProduct = () => {
   modalProduct.value.show()
@@ -199,6 +152,7 @@ const removeItem = (item, index) => {
 const updateItems = () => {
   billStore.updateItems(carts.value)
 }
+
 const dataCommitment = computed(() => {
   let d1 = form.value?.document_date ? new Date(`${form.value?.document_date} 00:00:00`) : ''
   let d2 = new Date(`${formCommitment.value?.commitment_date} 00:00:00`)
@@ -307,8 +261,6 @@ const saveBill = () => {
 }
 
 onMounted(() => {
-  form.value = billStore.form
-
   if (route.query.id) {
     api.get('/v2/bills/' + route.query.id).then((rs) => {
       form.value = rs.data
@@ -325,12 +277,12 @@ onUpdated(() => {
 </script>
 <template>
   <div class="pagetitle">
-    <h1>ใบขอรับบริการ</h1>
+    <h1>Bills</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
         <li class="breadcrumb-item">
-          <router-link to="/invoices">ใบขอรับบริการ</router-link>
+          <router-link to="/bills">ใบขอรับบริการ</router-link>
         </li>
         <li class="breadcrumb-item active">สร้างใบขอรับบริการใหม่</li>
       </ol>
@@ -345,7 +297,7 @@ onUpdated(() => {
           <div class="card-body pt-3">
             <spinner :visible="loading" />
 
-            <h4 class="bg-info-subtle p-2">แบบฟอร์มเปิดงานทดสอบเครื่องมือ</h4>
+            <h5 class="p-2" v-if="form.code">{{ form.code }}</h5>
 
             <!-- #####################START######################## -->
             <form @submit.prevent="onSearch()">
@@ -407,7 +359,7 @@ onUpdated(() => {
                           <div class="row g-2">
                             <div class="col-12 col-lg-6 col-xl-4">
                               <label>บริษัท
-                                <span v-if="form.company_id">({{ form?.company_id }})</span></label>
+                                <span v-if="form.company_id">({{ form.company_id }})</span></label>
                               <input type="text" v-model="form.address_name" name="customer_name"
                                 class="form-control form-control-sm" placeholder="" @click="addCustomer" />
                             </div>
@@ -420,6 +372,16 @@ onUpdated(() => {
                               <label>ที่อยู่</label>
                               <textarea v-model="form.address_detail" class="form-control form-control-sm" placeholder=""
                                 rows="3" />
+                            </div>
+                            <div class="col-12 col-lg-6 col-xl-4">
+                              <label>ผู้ส่ง</label>
+                              <input type="text" v-model="form.sender_name" name="sender_name"
+                                class="form-control form-control-sm" placeholder="ผู้ส่ง">
+                            </div>
+                            <div class="col-12 col-lg-6 col-xl-4">
+                              <label>ผู้ส่ง</label>
+                              <input type="text" v-model="form.sender_name" name="sender_name"
+                                class="form-control form-control-sm" placeholder="ผู้ส่ง">
                             </div>
                           </div>
                           <!-- ############ START BUTTON ################# -->
@@ -612,10 +574,17 @@ onUpdated(() => {
                         <div class="accordion-body">
                           <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
                           จองคิวห้อง Lab
-                          <CommitmentBooking :data="form" title="" class="my-2" @change="onSelectCommitmentDate"
-                            v-model:commitmentDate="commitmentDate" />
+                          <div class="row g2">
+                            <div class="col-12 col-lg-4">
+                              <input type="date" class="form-control-sm form-control" v-model="commitmentDate" />
+
+                            </div>
+                            <div class="col-12 col-lg-8">
+                              <BillPriority v-model="commitmentPriority" />
+                            </div>
+                          </div>
                         </div>
-                        commitmentDate: {{ commitmentDate }}
+
                       </div>
                     </div>
                   </div>
@@ -647,21 +616,18 @@ onUpdated(() => {
           <div class="card-body pt-3">
             <div class="row g-1">
               <div class="col-12">
-                <button class="btn btn-primary btn-sm w-100" @click="saveBill()">บันทึก</button>
+                <button class="btn btn-primary btn-sm w-100" @click="saveBill()">
+                  <i class="float-start bi bi-save"></i> บันทึก
+                </button>
               </div>
               <div class="col-12">
-                <router-link :to="{
-                  name: 'bills.preview',
-                  params: {
-                    code: '',
-                  },
-                }" class="btn btn-sm btn-secondary d-block">
-                  <i class="bi bi-eye"></i>
-                  Preview ดูตัวอย่าง</router-link>
+                <router-link to="/bills/preview" class="btn btn-sm btn-secondary d-block">
+                  <i class="bi bi-eye float-start"></i>
+                  ดูตัวอย่าง</router-link>
               </div>
               <div class="col-12">
                 <a class="btn btn-sm btn-secondary d-block">
-                  <i class="bi bi-printer"></i>
+                  <i class="bi bi-printer float-start"></i>
                   พิมพ์</a>
               </div>
             </div>

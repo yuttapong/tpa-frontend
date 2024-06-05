@@ -6,40 +6,44 @@ import { useAppStore } from '@/stores/appStore'
 const routes = [
   {
     path: '/',
-    name: 'main',
     component: () => import('../views/Main.vue'),
     children: [
       {
-        path: '/',
-        redirect: '/login',
+        path: '',
+        redirect: 'login',
       },
       {
-        path: '/dashboard',
+        path: 'dashboard',
         name: 'dashboard',
         component: () => import('../views/Dashboard.vue'),
       },
       {
-        path: '/profile',
+        path: 'profile',
         name: 'profile',
         component: () => import('../views/Profile.vue'),
       },
       {
-        path: '/quotations',
+        path: 'quotations',
         name: 'quotations',
         component: () => import('../views/quotation/Quotations.vue'),
       },
       {
-        path: '/bills',
+        path: 'bills',
         name: 'bills',
         component: () => import('../views/bill/Bills.vue'),
       },
       {
-        path: '/bills/form',
-        name: 'bills.form',
+        path: 'bills/form',
+        name: 'bills.formAdd',
         component: () => import('../views/bill/BillForm.vue'),
       },
       {
-        path: '/bills/preview',
+        path: 'bills/form/:code',
+        name: 'bills.formEdit',
+        component: () => import('../views/bill/BillForm.vue'),
+      },
+      {
+        path: 'bills/preview',
         name: 'bills.preview',
         component: () => import('../views/bill/BillPreview.vue'),
       },
@@ -47,6 +51,11 @@ const routes = [
         path: '/bills/code/:code',
         name: 'bills.detail',
         component: () => import('../views/bill/BillDetail.vue'),
+      },
+      {
+        path: '/bills/code/:code/commitment',
+        name: 'bills.commitmentForm',
+        component: () => import('../views/bill/BillFormCommitment.vue'),
       },
       {
         path: '/workoders',

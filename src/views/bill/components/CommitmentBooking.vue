@@ -61,7 +61,7 @@ const props = defineProps({
     default: 'Commitment Date',
   },
   data: {
-    type: object,
+    type: Object,
   },
   priority: {
     type: String,

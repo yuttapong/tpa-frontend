@@ -45,7 +45,7 @@
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
                       <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
-                      <router-link class="btn btn-sm btn-success" :to="{ name: 'bills.form' }">
+                      <router-link class="btn btn-sm btn-success" to="/bills/form">
                         <i class="bi bi-plus"></i> สร้าง
                       </router-link>
                     </div>
@@ -72,13 +72,15 @@
                     <tbody>
                       <tr v-for="(item, index) in     items    " :key="index">
                         <th scope="row" nowrap>
-                          <router-link :to="{ name: 'bills.form', query: { id: item.id } }">
-                            <i class="bi bi-pencil mx-1" @click="showDetail(item)" role="button"></i></router-link>
+                          <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }">
+                            <i class="bi bi-calendar mx-1" role="button"></i></router-link>
+                          <router-link :to="{ name: 'bills.formEdit', params: { code: item.code } }">
+                            <i class="bi bi-pencil mx-1" role="button"></i></router-link>
                           <i class="bi bi-search mx-1" @click="showDetail(item)" role="button"></i>
                         </th>
                         <!-- <th scope="row">{{ index + 1 }}</th> -->
                         <td align="left" nowrap>
-                          <router-link :to="`/bills/${item.code}`" class="btn btn-light fw-bold border btn-sm"
+                          <router-link :to="`/bills/code/${item.code}`" class="btn btn-light fw-bold border btn-sm"
                             target="_blank">
                             {{ item.code }}
                           </router-link>
@@ -620,6 +622,7 @@ const formCommitment = ref({
   commitment_date: '',
 })
 const loadData = async () => {
+  loading.value = true
   let params = {
     per_page: pagination.value.per_page,
     page: pagination.value.curent_page,
@@ -639,6 +642,7 @@ const loadData = async () => {
     items.value = data.data
     loading.value = false
   }
+  loading.value = false
 }
 
 const getBillById = async (id) => {

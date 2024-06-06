@@ -4,7 +4,10 @@ import { useAppStore } from '@/stores/appStore'
 const appStore = new useAppStore()
 
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL:
+    import.meta.env.VITE_ENV == 'development'
+      ? import.meta.env.VITE_DEV_API_URL
+      : import.meta.env.VITE_API_URL,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
   },

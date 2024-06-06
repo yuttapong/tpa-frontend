@@ -50,6 +50,12 @@
         </router-link>
       </li>
       <li class="nav-item">
+        <router-link to="/data/labs" class="nav-link collapsed">
+          <i class="bi bi-people"></i>
+          <span>Lab/Sub Lab</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
         <router-link to="/data/contacts" class="nav-link collapsed">
           <i class="bi bi-person-vcard"></i>
           <span>รายชื่อ/ผู้ติดต่อ</span>

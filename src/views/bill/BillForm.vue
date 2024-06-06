@@ -26,7 +26,7 @@ const modalCustomer = ref(null)
 const addresses = ref([])
 const certAddresses = ref([])
 const billStore = useBillStore()
-
+const billCode = computed(() => route.params.code)
 const carts = computed(() => billStore.items)
 const form = ref({
   id: 0,
@@ -261,8 +261,8 @@ const saveBill = () => {
 }
 
 onMounted(() => {
-  if (route.query.id) {
-    api.get('/v2/bills/' + route.query.id).then((rs) => {
+  if (billCode.value) {
+    api.get('/v2/bills/code/' + billCode.value).then((rs) => {
       form.value = rs.data
       billStore.updateItems(rs.data?.items)
       billStore.setForm(form.value)
@@ -270,8 +270,11 @@ onMounted(() => {
   }
 })
 onUpdated(() => {
-  billStore.updateItems(carts.value)
-  form.value.items = carts.value
+  if (!billCode.value) {
+    billStore.updateItems(carts.value)
+    form.value.items = carts.value
+  }
+
 
 })
 </script>

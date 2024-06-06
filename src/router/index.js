@@ -82,6 +82,22 @@ const routes = [
         name: 'certificates',
         component: () => import('../views/certificate/Certificates.vue'),
       },
+      //////////////// DATA ///////////////////
+      {
+        path: '/data/labs',
+        name: 'data.lab',
+        component: () => import('../views/lab/Labs.vue'),
+      },
+      {
+        path: '/data/labs/:id',
+        name: 'data.labView',
+        component: () => import('../views/lab/LabDetail.vue'),
+      },
+      {
+        path: '/data/sublabs',
+        name: 'data.sublabs',
+        component: () => import('../views/lab/Sublabs.vue'),
+      },
       {
         path: '/data/products',
         name: 'data.products',

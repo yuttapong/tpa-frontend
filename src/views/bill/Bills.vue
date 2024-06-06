@@ -86,13 +86,13 @@
                           </router-link>
                         </td>
                         <td>
-                          <span class="badge bg-light text-dark">{{
-                            DateTime(new Date(item.document_date))
+                          <span class="badge bg-light text-dark" v-if="item.document_date">{{
+                            DateTime(new Date(item?.document_date))
                           }}</span>
                         </td>
                         <td>
-                          <span class="badge bg-light text-dark">{{
-                            DateTime(new Date(item.commitment_date))
+                          <span class="badge bg-light text-dark" v-if="item.commitment_date">{{
+                            DateTime(new Date(item?.commitment_date))
                           }}</span>
                         </td>
 

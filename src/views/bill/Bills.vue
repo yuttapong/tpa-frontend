@@ -107,6 +107,7 @@
                   </table>
                 </div>
                 <!-- End small tables -->
+                <MyPagination />
               </div>
 
               <div class="tab-pane fade pt-3 qt-detail" id="qt-detail">
@@ -387,6 +388,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               <p>{{ bill.commitment_date }}</p>
             </div>
           </div>
+
           <CommitmentBooking :data="dataCommitment" @onSearch="onSearchCommitment"></CommitmentBooking>
 
           <div class="" v-if="loadingItems">
@@ -395,42 +397,44 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             </div>
           </div>
 
-          <table class="table table-condensed" v-if="!loadingItems">
-            <thead>
-              <tr>
-                <th class="fw-bold text-decoration-underline">#</th>
-                <th class="fw-bold text-decoration-underline">NO</th>
-                <th class="fw-bold text-decoration-underline">ItemCode</th>
-                <th class="fw-bold text-decoration-underline">รายการ</th>
-                <th class="fw-bold text-decoration-underline">ID No.</th>
-                <th class="fw-bold text-decoration-underline">Model</th>
-                <th class="fw-bold text-decoration-underline">Point</th>
-                <th class="fw-bold text-decoration-underline">Point Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(    row, rowIndex    ) in     bill.items    " :key="row">
-                <th>
-                  <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
-                </th>
-                <th>{{ rowIndex + 1 }}</th>
-                <td>{{ row.item_code }}</td>
-                <td>{{ row.product_name }}</td>
-                <td>
-                  <span class="mx-2 badge badge-light text-dark d-inline-block">{{
-                    row.id_no
-                  }}</span>
-                </td>
-                <td>
-                  <span class="mx-2 badge badge-light text-dark d-inline-block">{{
-                    row.model
-                  }}</span>
-                </td>
-                <td>{{ row.point }}</td>
-                <td>{{ row.point_price }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-condensed" v-if="!loadingItems">
+              <thead>
+                <tr>
+                  <th class="fw-bold text-decoration-underline">#</th>
+                  <th class="fw-bold text-decoration-underline">NO</th>
+                  <th class="fw-bold text-decoration-underline">ItemCode</th>
+                  <th class="fw-bold text-decoration-underline">รายการ</th>
+                  <th class="fw-bold text-decoration-underline">ID No.</th>
+                  <th class="fw-bold text-decoration-underline">Model</th>
+                  <th class="fw-bold text-decoration-underline">Point</th>
+                  <th class="fw-bold text-decoration-underline">Point Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(    row, rowIndex    ) in     bill.items    " :key="row">
+                  <th>
+                    <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
+                  </th>
+                  <th>{{ rowIndex + 1 }}</th>
+                  <td>{{ row.item_code }}</td>
+                  <td>{{ row.product_name }}</td>
+                  <td>
+                    <span class="mx-2 badge badge-light text-dark d-inline-block">{{
+                      row.id_no
+                    }}</span>
+                  </td>
+                  <td>
+                    <span class="mx-2 badge badge-light text-dark d-inline-block">{{
+                      row.model
+                    }}</span>
+                  </td>
+                  <td>{{ row.point }}</td>
+                  <td>{{ row.point_price }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <p>
             <label class="me-3 fw-bold text-decoration-underline">NOTE:</label>{{ bill.note_customers }}
           </p>
@@ -508,38 +512,40 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               </p>
             </div>
           </div>
-          <table class="table table-condensed">
-            <thead>
-              <tr>
-                <th class="fw-bold text-decoration-underline">NO</th>
-                <th class="fw-bold text-decoration-underline">ItemCode</th>
-                <th class="fw-bold text-decoration-underline">รายการ</th>
-                <th class="fw-bold text-decoration-underline">Model</th>
-                <th class="fw-bold text-decoration-underline">ราคา</th>
-                <th class="fw-bold text-decoration-underline">ส่วนลด</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(    row, rowIndex    ) in     invoice.items    " :key="row">
-                <th>{{ rowIndex + 1 }}</th>
-                <th>{{ row.item_code }}</th>
-                <th>{{ row.product_name }}</th>
-                <th>
-                  <span class="mx-2 badge badge-light text-dark d-inline-block">{{
-                    row.model
-                  }}</span>
-                </th>
-                <th>
-                  <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
-                    style="width: 100px" />
-                </th>
-                <th>
-                  <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
-                    style="width: 100px" />
-                </th>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th class="fw-bold text-decoration-underline">NO</th>
+                  <th class="fw-bold text-decoration-underline">ItemCode</th>
+                  <th class="fw-bold text-decoration-underline">รายการ</th>
+                  <th class="fw-bold text-decoration-underline">Model</th>
+                  <th class="fw-bold text-decoration-underline">ราคา</th>
+                  <th class="fw-bold text-decoration-underline">ส่วนลด</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(    row, rowIndex    ) in     invoice.items    " :key="row">
+                  <th>{{ rowIndex + 1 }}</th>
+                  <th>{{ row.item_code }}</th>
+                  <th>{{ row.product_name }}</th>
+                  <th>
+                    <span class="mx-2 badge badge-light text-dark d-inline-block">{{
+                      row.model
+                    }}</span>
+                  </th>
+                  <th>
+                    <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
+                      style="width: 100px" />
+                  </th>
+                  <th>
+                    <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
+                      style="width: 100px" />
+                  </th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <p>
             <label class="font-bold mr-3">NOTE:</label>
             <textarea class="form-control" placeholder="หมายเหตุ"></textarea>
@@ -572,6 +578,7 @@ import { formatISO } from 'date-fns'
 import { useAppStore } from '@/stores/appStore'
 import axios from 'axios'
 import CommitmentBooking from './components/CommitmentBooking.vue'
+import MyPagination from '@/components/MyPagination.vue'
 const appStore = new useAppStore()
 
 const row = ref({})

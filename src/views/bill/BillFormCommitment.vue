@@ -267,12 +267,16 @@ onUpdated(() => {
                             จองคิวห้อง Lab
                             <div class="row g-2">
                                 <div class="col-12 col-lg-4">
-                                    <input type="date" class="form-control-sm form-control" v-model="commitmentDate" />
+                                    <label>วันที่</label>
+                                    <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
+                                        placeholder="เลือกวันที่" />
 
                                 </div>
                                 <div class="col-12 col-lg-8">
+                                    <label>Priority</label>
                                     <BillPriority v-model="commitmentPriority" />
-                                    {{ commitmentPriority }}
+
+
                                 </div>
                                 <div class="col-12">
                                     <div v-if="messageErrorCommitment" class="alert alert-danger">

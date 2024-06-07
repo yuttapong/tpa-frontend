@@ -1,11 +1,9 @@
 <template>
-  <div class="row g-2">
-    <div class="col-auto">
-      <label class="me-4 fw-bold">Priority</label>
-      <div v-for="(c, key) in commitmentPriority" :key="key" class="form-check form-check-inline px-2 me-3">
-        <input type="radio" :id="'priority' + key" v-model="props.modelValue" :value="c.code"
-          :selected="c.default === true ? 'selected' : ''" class="form-check-input"
-          @input="emit('update:modelValue', $event.target.value)" />
+  <div class="">
+    <div class="">
+      <div v-for="(c, key) in  commitmentPriority " :key="key" class=" form-check form-check-inline">
+        <input v-model="props.modelValue" type="radio" :id="'priority' + key" :value="c.code" @change="onChange"
+          :selected="c.default === true ? 'selected' : ''" class="form-check-input" :key="c" />
 
         <label class="form-check-label" :for="'priority' + key"> {{ c.text }}</label>
       </div>
@@ -15,8 +13,6 @@
 </template>
 <script setup>
 import { ref, computed, onMounted, onUpdated, provide } from 'vue'
-
-
 const props = defineProps({
   modelValue: {
     type: String
@@ -41,5 +37,8 @@ const commitmentPriority = [
     default: false,
   },
 ]
+const onChange = (e) => {
+  emit("update:modelValue", e.target.value)
+}
 
 </script>

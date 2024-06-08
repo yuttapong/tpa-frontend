@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, ref } from "vue";
+import { onMounted, computed, ref, onBeforeMount } from "vue";
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { useBillStore } from "@/stores/billStore";
@@ -9,8 +9,16 @@ import { useRoute } from "vue-router";
 const billStore = useBillStore()
 const route = useRoute()
 const carts = computed(() => billStore.items)
-
-
+const bill = ref({})
+const code = computed(() => route.params.code)
+const items = computed(() => bill.value?.items || [])
+const loadData = async () => {
+    const { data } = await api.get("v2/bills/code/" + code.value);
+    if (data) bill.value = data
+}
+onBeforeMount(() => {
+    loadData()
+})
 </script>
 <template>
     <div class="pagetitle">
@@ -40,7 +48,7 @@ const carts = computed(() => billStore.items)
                                     </p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="fw-bolder" style="font-size: 1.2rem;">Invoice # INV-20240400001</p>
+                                    <p class="fw-bolder" style="font-size: 1.2rem;">{{ bill.code }}</p>
                                 </div>
                             </div>
                             <div size="">
@@ -58,7 +66,7 @@ const carts = computed(() => billStore.items)
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(item, index) in carts" :key="index">
+                                        <tr v-for="(item, index) in items" :key="index">
 
                                             <th scope="row">{{ index + 1 }}</th>
                                             <!-- <td> {{ item.item_code }}</td> -->
@@ -99,11 +107,16 @@ const carts = computed(() => billStore.items)
 
                 <div class="card">
                     <div class="card-body pt-3">
-                        <div class="row">
+                        <div class="row g-2">
                             <div class="col-12">
                                 <router-link to="/bills/form" class="btn btn-sm btn-secondary w-100">
-                                    <i class="bi bi-pencil"></i>
+                                    <i class="bi bi-pencil  float-start"></i>
                                     แก้ไข</router-link>
+                            </div>
+                            <div class="col-12">
+                                <router-link to="/bills/form" class="btn btn-sm btn-secondary w-100">
+                                    <i class="bi bi-clock float-start"></i>
+                                    จองคิวงาน</router-link>
                             </div>
                         </div>
                     </div>

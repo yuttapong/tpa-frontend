@@ -7,12 +7,13 @@ import dotenv from 'dotenv'
 import dv from 'dotenv-expand'
 dv.expand(dotenv.config())
 // https://vitejs.dev/config/
-console.log('env', process.env.VITE_ENV)
 
-const baseUrl = process.env.VITE_ENV === 'development'
-? process.env.VITE_DEV_BASE_URL
-: process.env.VITE_BASE_URL
-console.log('baseurl', baseUrl);
+console.log('ENV', process.env.VITE_ENV)
+
+const baseUrl =
+  process.env.VITE_ENV === 'development' ? process.env.VITE_DEV_BASE_URL : process.env.VITE_BASE_URL
+console.log('URL', baseUrl)
+console.log('API', process.env.VITE_API_URL)
 export default defineConfig({
   plugins: [vue(), VueDevTools()],
   resolve: {

@@ -821,7 +821,7 @@ const seachCommitmentDate = async () => {
     loadingCommitment.value = false
   }
 }
-const updateCommitmentDate = () => { }
+
 
 onMounted(() => {
   errorMsg.value = ''

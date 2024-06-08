@@ -11,13 +11,13 @@ import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
 import { formatDate, formatISO, isValid, parse } from 'date-fns'
 import { timezone } from "@/config"
 import { useAppStore } from '@/stores/appStore'
+import ConfirmCommitment from './components/ConfirmCommitment.vue'
 
 const route = useRoute()
 const appStore = useAppStore();
 const loading = ref(false)
 const searchCommitmentDate = ref(true)
-const billStore = useBillStore()
-
+const modalConfirm = ref(null)
 const items = computed(() => form.value?.items || [])
 const form = ref({
     id: 0,
@@ -52,21 +52,26 @@ const findCommitmentDate = async () => {
         messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
         return
     }
-    let d1 = form.value?.document_date ? new Date(`${form.value?.document_date} 00:00:00`) : ''
-    let d2 = new Date(`${commitmentDate.value} 00:00:00`)
+    // let d1 = form.value?.document_date ? new Date(`${form.value?.document_date} 00:00:00`) : ''
+    // let d2 = new Date(`${commitmentDate.value} 00:00:00`)
     const params = {
         priority: commitmentPriority.value,
         bill_id: form.value.id,
         code: form.value.code,
-        document_date: d1 ? formatISO(toZonedTime(form.value.document_date, timezone)) : '',
-        commitment_date: d2 ? formatISO(toZonedTime(d2, timezone)) : '',
+        // document_date: d1 ? formatISO(toZonedTime(form.value.document_date, timezone)) : '',
+        // commitment_date: d2 ? formatISO(toZonedTime(d2, timezone)) : '',
+        document_date: form.value.document_date,
+        commitment_date: commitmentDate.value,
         items: form.value.items.map((item) => {
             return {
                 duration: parseInt(item.product?.calhour),
                 item_code: item.item_code,
                 lab_id: item.lab_id,
                 product_id: item.product_id,
-                reserved_date: form.value?.document_date,
+                product_name: item.product_name,
+                barcode_no: item.barcode_no,
+                serialnumber: item.serialnumber,
+                // reserved_date: form.value?.document_date,
                 sorter: item.sorter,
                 sublab_id: item.sublab_id,
                 workorder_id: item.item_id,
@@ -118,6 +123,7 @@ const findCommitmentDate = async () => {
         if (data.success) {
             let message = `ประมวลผลตารางคิวงานสำเร็จ`
             messageSuccessCommitment.value = message
+            modalConfirm.value.show()
         } else {
             messageErrorCommitment.value = data.message
         }
@@ -309,14 +315,13 @@ onUpdated(() => {
                         <div class="row g-1">
                             <div class="col-12">
                                 <button class="btn btn-primary btn-sm w-100" @click="submit()">
-                                    <i class="float-start bi bi-save"></i> ประมวลผล
+                                    <i class="float-start bi bi-clock"></i> จองคิวงาน
                                 </button>
                             </div>
                             <div class="col-12">
-                                <router-link :to="`/bills/code/${form?.code}/edit`"
-                                    class="btn btn-sm btn-secondary d-block">
-                                    <i class="bi bi-pencil float-start"></i>
-                                    แก้ไข</router-link>
+                                <router-link :to="`/bills/code/${form?.code}`" class="btn btn-sm btn-secondary d-block">
+                                    <i class="bi bi-search float-start"></i>
+                                    ดู</router-link>
                             </div>
 
                         </div>
@@ -324,6 +329,7 @@ onUpdated(() => {
                 </div>
             </div>
         </div>
+        <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" />
     </section>
 </template>
 

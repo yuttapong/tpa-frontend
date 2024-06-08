@@ -1,97 +1,97 @@
 <template>
   <div>
     <div class="modal" ref="modalConfirmRef">
-      <div class="modal-dialog modal-dialog-scrollable modal-lg modal-fullscreen-lg-down">
+      <div class="modal-dialog modal-dialog-scrollable modal-md">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ title }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <div class="row g-2">
+              <div class="col-4">เลขที่ใบขอรับบริการ</div>
+              <div class="col-8"><span class="">{{ doc?.code }}</span></div>
 
+              <div class="col-4">วันที่เอกสาร</div>
+              <div class="col-8"><span class="">{{ DateTime(doc?.document_date)
+              }}</span></div>
+
+              <div class="col-4">วันที่งานเสร็จ</div>
+              <div class="col-8"><span class="">{{ DateTime(doc?.commitment_date)
+              }}</span>
+              </div>
+              <div class="col-4">จำนวนงาน</div>
+              <div class="col-8"><span class="">{{ doc?.items.length }}</span>
+              </div>
+              <div class="col-4">ใช้เวลา (วัน)</div>
+              <div class="col-8"><span class="">{{ differenceInDays(doc?.commitment_date, doc?.document_date) }}</span>
+              </div>
+            </div>
 
 
           </div>
           <div class="modal-footer">
 
-            <button type="button" class="btn btn-primary" @click="select">
-              <i class="bi bi-save"></i> ตกลง
+            <button type="button" class="btn btn-primary btn-sm" @click="onConfirm()">
+              <i class="bi bi-check"></i> ยืนยัน
             </button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="bi bi-times"></i> ปิด
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+              <i class="bi bi-x"></i> ไม่
             </button>
-            <button type="button" class="btn-close" aria-label="Close"></button>
+
           </div>
         </div>
       </div>
     </div>
+    {{ data }}
   </div>
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps, onMounted, defineExpose } from 'vue'
+import { ref, defineEmits, defineProps, onMounted, defineExpose, computed } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
+import { DateTime } from "@/helpers/myformat"
+import { differenceInDays } from "date-fns"
 const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
-const props = defineProps(['visible'])
+const props = defineProps({
+  title: {
+    type: String,
+    default: 'ยืนยันข้อมูล Commitment Date ?',
+  },
+  data: {
+    type: Object,
+    default: () => { }
+  }
+})
 
-let modalProduct = null
+let modalEl = null
 let modalConfirmRef = ref(null)
-const items = ref([])
 const selectedItems = ref([])
 const loading = ref(false)
-const pagination = ref({
-  per_page: 5,
-  curent_page: 1,
-})
+
 const formSearchProduct = ref({
   code: '',
   q: '',
 })
 
-const onSearch = async () => {
-  pagination.value.curent_page = 1
-  pagination.value.total = 0
-  try {
-    loadData()
-  } catch (error) { }
-}
-const loadData = async () => {
-  let params = {
-    per_page: pagination.value.per_page,
-    page: pagination.value.curent_page,
-    ...formSearchProduct.value,
-  }
-  const { data } = await api.get('/v2/products', {
-    params: params,
-  })
-  if (data) {
-    const p = {
-      total: data?.total,
-      page: data?.curent_page,
-      per_page: data?.per_page,
-      page_count: data?.last_page,
-    }
-    pagination.value = p
-    items.value = data.data
-    loading.value = false
-  }
-}
+const doc = computed(() => props.data?.data)
+
 
 const _show = () => {
   emit('onShow', selectedItems.value)
-  modalProduct.show()
+  modalEl.show()
 }
 
-const select = () => {
-  emit('select', selectedItems.value)
+const confirm = () => {
+  emit('confirm', selectedItems.value)
   selectedItems.value = []
-  modalProduct.hide()
+  modalEl.hide()
   emit('onHide')
 }
+
 onMounted(() => {
-  modalProduct = new Modal(modalConfirmRef.value)
-  loadData()
+  modalEl = new Modal(modalConfirmRef.value)
 })
 defineExpose({ show: _show })
 </script>

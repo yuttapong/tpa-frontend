@@ -247,6 +247,17 @@ const onSelectCommitmentDate = (data) => {
     commitmentPriority.value = data.priority
   }
 }
+
+const createBill = () => {
+  form.value.items = billStore.selectedItems
+  console.log('createBill', form.value)
+
+  api.post("/v2/bills", form.value).then((rs) => {
+    console.log(rs);
+  }).catch((err) => {
+    console.log(err);
+  })
+}
 const saveBill = () => {
   form.value.items = billStore.selectedItems
   console.log('formCommitment', formCommitment.value);
@@ -287,7 +298,16 @@ onUpdated(() => {
         <li class="breadcrumb-item">
           <router-link to="/bills">ใบขอรับบริการ</router-link>
         </li>
-        <li class="breadcrumb-item active">สร้างใบขอรับบริการใหม่</li>
+        <template v-if="form.id">
+          <li class="breadcrumb-item active">
+            <router-link :to="`/bills/code/${form?.code}`">{{ form.code }}</router-link>
+          </li>
+          <li class="breadcrumb-item active">แก้ไข</li>
+        </template>
+        <template v-else>
+          <li class="breadcrumb-item active">สร้างใบขอรับบริการใหม่</li>
+        </template>
+
       </ol>
     </nav>
   </div>
@@ -563,7 +583,7 @@ onUpdated(() => {
                         </div>
                       </div>
                     </div>
-                    <div class="accordion-item">
+                    <!-- <div class="accordion-item">
                       <h2 class="accordion-header" id="headingCommitmentDate">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                           data-bs-target="#collapseCommitmentDate" aria-expanded="false"
@@ -589,7 +609,7 @@ onUpdated(() => {
                         </div>
 
                       </div>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
                 <div class="col-12">
@@ -618,21 +638,38 @@ onUpdated(() => {
         <div class="card">
           <div class="card-body pt-3">
             <div class="row g-1">
-              <div class="col-12">
-                <button class="btn btn-primary btn-sm w-100" @click="saveBill()">
-                  <i class="float-start bi bi-save"></i> บันทึก
-                </button>
-              </div>
-              <div class="col-12">
-                <router-link to="/bills/preview" class="btn btn-sm btn-secondary d-block">
-                  <i class="bi bi-eye float-start"></i>
-                  ดูตัวอย่าง</router-link>
-              </div>
-              <div class="col-12">
-                <a class="btn btn-sm btn-secondary d-block">
-                  <i class="bi bi-printer float-start"></i>
-                  พิมพ์</a>
-              </div>
+
+
+              <template v-if="form.id">
+                <div class="col-12">
+                  <button class="btn btn-primary btn-sm w-100" @click="saveBill()">
+                    <i class="float-start bi bi-save"></i> บันทึก
+                  </button>
+                </div>
+                <div class="col-12">
+                  <router-link :to="`/bills/code/${form.code}/commitment`" class="btn btn-sm btn-secondary d-block">
+                    <i class="bi bi-clock float-start"></i>
+                    จองคิวงาน</router-link>
+                </div>
+                <div class="col-12">
+                  <a class="btn btn-sm btn-secondary d-block">
+                    <i class="bi bi-printer float-start"></i>
+                    พิมพ์</a>
+                </div>
+              </template>
+              <template v-else>
+                <div class="col-12">
+                  <button class="btn btn-primary btn-sm w-100" @click="createBill()">
+                    <i class="float-start bi bi-save"></i> สร้างใบขอรับบริการ
+                  </button>
+                </div>
+                <div class="col-12">
+                  <router-link to="/bills/preview" class="btn btn-sm btn-secondary d-block">
+                    <i class="bi bi-eye float-start"></i>
+                    ดูตัวอย่าง</router-link>
+                </div>
+              </template>
+
             </div>
           </div>
         </div>

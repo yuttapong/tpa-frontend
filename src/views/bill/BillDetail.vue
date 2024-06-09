@@ -109,12 +109,12 @@ onBeforeMount(() => {
                     <div class="card-body pt-3">
                         <div class="row g-2">
                             <div class="col-12">
-                                <router-link to="/bills/form" class="btn btn-sm btn-secondary w-100">
+                                <router-link :to="{name: 'bills.formEdit'}" class="btn btn-sm btn-secondary w-100">
                                     <i class="bi bi-pencil  float-start"></i>
                                     แก้ไข</router-link>
                             </div>
                             <div class="col-12">
-                                <router-link to="/bills/form" class="btn btn-sm btn-secondary w-100">
+                                <router-link :to="{name: 'bills.commitmentForm'}" class="btn btn-sm btn-secondary w-100">
                                     <i class="bi bi-clock float-start"></i>
                                     จองคิวงาน</router-link>
                             </div>

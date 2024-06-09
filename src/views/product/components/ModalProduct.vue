@@ -85,16 +85,24 @@
             </div>
             <!-- End small tables -->
           </div>
-          <div class="modal-footer">
-            <span class="fw-bold bg-danger text-white p-1"> {{ selectedItems.length }}</span>
+          <div class="modal-footer d-block">
+            <vue-awesome-paginate
+              :total-items="pagination.total"
+              :items-per-page="pagination.per_page"
+              :max-pages-shown="appStore.settings.page.maxPageShow"
+              v-model="pagination.current_page"
+              :on-click="onChangePage"
+              class=""
+            />
 
-            <button type="button" class="btn btn-primary" @click="select">
-              <i class="bi bi-save"></i> ตกลง
-            </button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="bi bi-times"></i> ปิด
-            </button>
-            <button type="button" class="btn-close" aria-label="Close"></button>
+            <div class="float-end">
+              <button type="button" class="btn btn-primary btn-sm" @click="select">
+                <i class="bi bi-save"></i> ตกลง
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm ms-2" data-bs-dismiss="modal">
+                <i class="bi bi-times"></i> ปิด
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -106,17 +114,20 @@
 import { ref, defineEmits, defineProps, onMounted, defineExpose } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
+import { useAppStore } from '@/stores/appStore'
 const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
 const props = defineProps(['visible'])
 
+const appStore = useAppStore()
 let modalProduct = null
 let modalProductRef = ref(null)
 const items = ref([])
 const selectedItems = ref([])
 const loading = ref(false)
 const pagination = ref({
-  per_page: 5,
-  curent_page: 1,
+  total: 0,
+  per_page: appStore.settings.page.perPage,
+  current_page: 1,
 })
 const formSearchProduct = ref({
   code: '',
@@ -124,8 +135,14 @@ const formSearchProduct = ref({
 })
 
 const onSearch = async () => {
-  pagination.value.curent_page = 1
+  pagination.value.current_page = 1
   pagination.value.total = 0
+  try {
+    loadData()
+  } catch (error) {}
+}
+const onChangePage = async (page) => {
+  pagination.value.current_page = page
   try {
     loadData()
   } catch (error) {}
@@ -133,7 +150,7 @@ const onSearch = async () => {
 const loadData = async () => {
   let params = {
     per_page: pagination.value.per_page,
-    page: pagination.value.curent_page,
+    page: pagination.value.current_page,
     ...formSearchProduct.value,
   }
   const { data } = await api.get('/v2/products', {
@@ -142,7 +159,7 @@ const loadData = async () => {
   if (data) {
     const p = {
       total: data?.total,
-      page: data?.curent_page,
+      current_page: data?.current_page,
       per_page: data?.per_page,
       page_count: data?.last_page,
     }

@@ -1,6 +1,6 @@
 <template>
   <div class="pagetitle">
-    <h1>ใบเสนอราคา</h1>
+    <h1>ใบเสนอราคา ({{ parseInt(pagination.total).toLocaleString() }})</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
@@ -20,7 +20,7 @@
             <ul class="nav nav-tabs nav-tabs-bordered">
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
-                  List
+                  List ({{ parseInt(pagination.total).toLocaleString() }})
                 </button>
               </li>
 
@@ -58,7 +58,9 @@
                     <tbody>
                       <tr v-for="(item, index) in items" :key="index">
                         <th scope="row">{{ index + 1 }}</th>
-                        <td><span class="fw-bold border bg-dark text-white p-1">{{ item.code }}</span></td>
+                        <td>
+                          <span class="fw-bold border bg-dark text-white p-1">{{ item.code }}</span>
+                        </td>
                         <td>
                           <span class="badge bg-light text-dark">{{
                             DateTime(new Date(item.document_date))
@@ -432,7 +434,7 @@ import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { DateTime, Number } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
-const appStore = useAppStore();
+const appStore = useAppStore()
 const row = ref({})
 const items = ref({})
 const pagination = ref({
@@ -449,7 +451,7 @@ const loadData = async () => {
     page: pagination.value.current_page,
     per_page: pagination.value.per_page,
   }
-  const { data } = await api.get('/v2/quotations', { params: params})
+  const { data } = await api.get('/v2/quotations', { params: params })
   if (data) {
     console.log(data)
     const p = {

@@ -7,16 +7,14 @@ import { useBillStore } from '@/stores/billStore'
 import ModalProduct from '@/views/product/components/ModalProduct.vue'
 import ModalCustomer from '@/views/customer/components/ModalCustomer.vue'
 import ModalContact from '@/views/customer/components/ModalContact.vue'
-import CommitmentBooking from '@/views/bill/components/CommitmentBooking.vue'
-import BillPriority from '@/views/bill/components/BillPriority.vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
 import { formatDate, formatISO } from 'date-fns'
-import { timezone } from "@/config"
+import { timezone } from '@/config'
 import { useAppStore } from '@/stores/appStore'
 const route = useRoute()
-const appStore = useAppStore();
+const appStore = useAppStore()
 const loading = ref(false)
 const searchCommitmentDate = ref(true)
 
@@ -72,7 +70,6 @@ const formCommitment = ref({
   ],
 })
 
-
 const addProduct = () => {
   modalProduct.value.show()
 }
@@ -93,7 +90,7 @@ const loadAddress = async (customerId) => {
       console.log(text)
       form.value.address_detail = text
     }
-  } catch (error) { }
+  } catch (error) {}
 }
 const loadCertAddress = async (customerId) => {
   try {
@@ -102,7 +99,7 @@ const loadCertAddress = async (customerId) => {
       certAddresses.value = data
       console.log('certAddresses', data)
     }
-  } catch (error) { }
+  } catch (error) {}
 }
 const onSelectCustomer = (data) => {
   if (data) {
@@ -234,7 +231,7 @@ const onChangeConditionCommitment = (e) => {
   if (checked == false) {
     formCommitment.value.commitment_date = null
     commitmentDate.value = null
-    console.log(formCommitment.value);
+    console.log(formCommitment.value)
   }
 }
 const onSelectCommitmentDate = (data) => {
@@ -252,21 +249,24 @@ const createBill = () => {
   form.value.items = billStore.selectedItems
   console.log('createBill', form.value)
 
-  api.post("/v2/bills", form.value).then((rs) => {
-    console.log(rs);
-  }).catch((err) => {
-    console.log(err);
-  })
+  api
+    .post('/v2/bills', form.value)
+    .then((rs) => {
+      console.log(rs)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 const saveBill = () => {
   form.value.items = billStore.selectedItems
-  console.log('formCommitment', formCommitment.value);
+  console.log('formCommitment', formCommitment.value)
   console.log('saveBill', form.value)
   billStore.setForm(form.value)
 
   if (searchCommitmentDate.value === true) {
     findCommitmentDate()
-    console.log(resultCommitment.value);
+    console.log(resultCommitment.value)
   } else {
   }
 }
@@ -285,8 +285,6 @@ onUpdated(() => {
     billStore.updateItems(carts.value)
     form.value.items = carts.value
   }
-
-
 })
 </script>
 <template>
@@ -307,7 +305,6 @@ onUpdated(() => {
         <template v-else>
           <li class="breadcrumb-item active">สร้างใบขอรับบริการใหม่</li>
         </template>
-
       </ol>
     </nav>
   </div>
@@ -329,37 +326,69 @@ onUpdated(() => {
                   <div class="accordion" id="accordionBill">
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingCustomer">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseCustomer" aria-expanded="true" aria-controls="collapseCustomer">
+                        <button
+                          class="accordion-button"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseCustomer"
+                          aria-expanded="true"
+                          aria-controls="collapseCustomer"
+                        >
                           <i class="bi bi-person mx-2"></i>
                           1) ข้อมูลทั่วไป
                         </button>
                       </h2>
-                      <div id="collapseCustomer" class="accordion-collapse collapse show"
-                        aria-labelledby="headingCustomer" data-bs-parent="#accordionBill">
+                      <div
+                        id="collapseCustomer"
+                        class="accordion-collapse collapse show"
+                        aria-labelledby="headingCustomer"
+                        data-bs-parent="#accordionBill"
+                      >
                         <div class="accordion-body">
                           <div class="row g-2">
                             <div class="col-6 col-md-4 col-lg-3">
                               <label>วันที่</label>
-                              <input type="date" v-model="form.document_date" name="code"
-                                class="form-control form-control-sm" placeholder="Code" />
+                              <input
+                                type="date"
+                                v-model="form.document_date"
+                                name="code"
+                                class="form-control form-control-sm"
+                                placeholder="Code"
+                              />
                             </div>
                             <div class="col-6 col-md-4 col-lg-3">
                               <label>Commitment Date</label>
-                              <input type="date" v-model="form.commitment_date" name="commitment_date"
-                                class="form-control form-control-sm" placeholder="commitment_date" disabled />
+                              <input
+                                type="date"
+                                v-model="form.commitment_date"
+                                name="commitment_date"
+                                class="form-control form-control-sm"
+                                placeholder="commitment_date"
+                                disabled
+                              />
                             </div>
                             <div class="col-12 col-md-4 col-lg-3">
                               <label>เลขที่</label>
-                              <input type="text" v-model="form.code" name="code" class="form-control form-control-sm"
-                                placeholder="เลขที่" disabled="disabled" />
+                              <input
+                                type="text"
+                                v-model="form.code"
+                                name="code"
+                                class="form-control form-control-sm"
+                                placeholder="เลขที่"
+                                disabled="disabled"
+                              />
                             </div>
                           </div>
                           <!-- ############ START BUTTON ################# -->
                           <div class="text-end my-2">
-                            <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCustomerAddress" aria-expanded="false"
-                              aria-controls="collapseCustomerAddress">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCustomerAddress"
+                              aria-expanded="false"
+                              aria-controls="collapseCustomerAddress"
+                            >
                               <i class="bi bi-arrow-right"></i> ถัดไป
                             </button>
                           </div>
@@ -369,53 +398,101 @@ onUpdated(() => {
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseCustomerAddress" aria-expanded="false"
-                          aria-controls="collapseCustomerAddress">
+                        <button
+                          class="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseCustomerAddress"
+                          aria-expanded="false"
+                          aria-controls="collapseCustomerAddress"
+                        >
                           <i class="bi bi-house-up mx-2"></i>
                           2) ลูกค้า
                         </button>
                       </h2>
-                      <div id="collapseCustomerAddress" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                        data-bs-parent="#accordionBill">
+                      <div
+                        id="collapseCustomerAddress"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingTwo"
+                        data-bs-parent="#accordionBill"
+                      >
                         <div class="accordion-body">
                           <div class="row g-2">
                             <div class="col-12 col-lg-6 col-xl-4">
-                              <label>บริษัท
-                                <span v-if="form.company_id">({{ form.company_id }})</span></label>
-                              <input type="text" v-model="form.address_name" name="customer_name"
-                                class="form-control form-control-sm" placeholder="" @click="addCustomer" />
+                              <label
+                                >บริษัท
+                                <span v-if="form.company_id">({{ form.company_id }})</span></label
+                              >
+                              <input
+                                type="text"
+                                v-model="form.address_name"
+                                name="customer_name"
+                                class="form-control form-control-sm"
+                                placeholder=""
+                                @click="addCustomer"
+                              />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
                               <label>ผู้ติดต่อ</label>
-                              <input type="text" v-model="form.agent_name" name="agent_name"
-                                class="form-control form-control-sm" placeholder="ผู้ติดต่อ" @click="addContact" />
+                              <input
+                                type="text"
+                                v-model="form.agent_name"
+                                name="agent_name"
+                                class="form-control form-control-sm"
+                                placeholder="ผู้ติดต่อ"
+                                @click="addContact"
+                              />
                             </div>
                             <div class="col-12">
                               <label>ที่อยู่</label>
-                              <textarea v-model="form.address_detail" class="form-control form-control-sm" placeholder=""
-                                rows="3" />
+                              <textarea
+                                v-model="form.address_detail"
+                                class="form-control form-control-sm"
+                                placeholder=""
+                                rows="3"
+                              />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
                               <label>ผู้ส่ง</label>
-                              <input type="text" v-model="form.sender_name" name="sender_name"
-                                class="form-control form-control-sm" placeholder="ผู้ส่ง">
+                              <input
+                                type="text"
+                                v-model="form.sender_name"
+                                name="sender_name"
+                                class="form-control form-control-sm"
+                                placeholder="ผู้ส่ง"
+                              />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
                               <label>ผู้ส่ง</label>
-                              <input type="text" v-model="form.sender_name" name="sender_name"
-                                class="form-control form-control-sm" placeholder="ผู้ส่ง">
+                              <input
+                                type="text"
+                                v-model="form.sender_name"
+                                name="sender_name"
+                                class="form-control form-control-sm"
+                                placeholder="ผู้ส่ง"
+                              />
                             </div>
                           </div>
                           <!-- ############ START BUTTON ################# -->
                           <div class="text-end my-2">
-                            <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCustomer" aria-expanded="false" aria-controls="collapseCustomer">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCustomer"
+                              aria-expanded="false"
+                              aria-controls="collapseCustomer"
+                            >
                               <i class="bi bi-arrow-left"></i> ก่อนหน้า
                             </button>
-                            <button class="btn btn-secondary btn-sm ms-3" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCertAddress" aria-expanded="false"
-                              aria-controls="collapseCertAddress">
+                            <button
+                              class="btn btn-secondary btn-sm ms-3"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCertAddress"
+                              aria-expanded="false"
+                              aria-controls="collapseCertAddress"
+                            >
                               <i class="bi bi-arrow-right"></i> ถัดไป
                             </button>
                           </div>
@@ -425,35 +502,67 @@ onUpdated(() => {
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingCertAddress">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseCertAddress" aria-expanded="false" aria-controls="collapseCertAddress">
+                        <button
+                          class="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseCertAddress"
+                          aria-expanded="false"
+                          aria-controls="collapseCertAddress"
+                        >
                           <i class="bi bi-house-up mx-2"></i>
                           3) ที่อยู่ส่งใบรับรอง
                         </button>
                       </h2>
-                      <div id="collapseCertAddress" class="accordion-collapse collapse"
-                        aria-labelledby="headingCertAddress" data-bs-parent="#accordionBill">
+                      <div
+                        id="collapseCertAddress"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingCertAddress"
+                        data-bs-parent="#accordionBill"
+                      >
                         <div class="accordion-body">
                           <div class="row g-2">
                             <div class="col-12 col-xl-12">
                               <label>บริษัท <span></span></label>
-                              <input type="text" v-model="form.cert_address_name" name="customer_name"
-                                class="form-control form-control-sm" placeholder="" />
+                              <input
+                                type="text"
+                                v-model="form.cert_address_name"
+                                name="customer_name"
+                                class="form-control form-control-sm"
+                                placeholder=""
+                              />
                             </div>
                             <div class="col-12 col-xl-12">
                               <label>ที่อยู่</label>
-                              <textarea type="text" v-model="form.cert_address_detail"
-                                class="form-control form-control-sm" placeholder="ที่อยู่" rows="3" />
+                              <textarea
+                                type="text"
+                                v-model="form.cert_address_detail"
+                                class="form-control form-control-sm"
+                                placeholder="ที่อยู่"
+                                rows="3"
+                              />
                             </div>
                           </div>
                           <!-- ############ START BUTTON ################# -->
                           <div class="text-end my-2">
-                            <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCustomer" aria-expanded="false" aria-controls="collapseCustomer">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCustomer"
+                              aria-expanded="false"
+                              aria-controls="collapseCustomer"
+                            >
                               <i class="bi bi-arrow-left"></i> ก่อนหน้า
                             </button>
-                            <button class="btn btn-secondary btn-sm ms-3" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseTools" aria-expanded="false" aria-controls="collapseTools">
+                            <button
+                              class="btn btn-secondary btn-sm ms-3"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseTools"
+                              aria-expanded="false"
+                              aria-controls="collapseTools"
+                            >
                               <i class="bi bi-arrow-right"></i> ถัดไป
                             </button>
                           </div>
@@ -463,16 +572,25 @@ onUpdated(() => {
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTools">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseTools" aria-expanded="false" aria-controls="collapseTools">
+                        <button
+                          class="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseTools"
+                          aria-expanded="false"
+                          aria-controls="collapseTools"
+                        >
                           <i class="bi bi-tools mx-2"></i>
                           4) สินค้า/เครื่องมือ ({{ billStore.countItems }})
                         </button>
                       </h2>
-                      <div id="collapseTools" class="accordion-collapse collapse" aria-labelledby="headingTools"
-                        data-bs-parent="#accordionBill">
+                      <div
+                        id="collapseTools"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingTools"
+                        data-bs-parent="#accordionBill"
+                      >
                         <div class="accordion-body">
-
                           <div v-for="(item, index) in carts" :key="index" class="my-2">
                             <table class="table table-sm table-striped border">
                               <thead>
@@ -499,24 +617,44 @@ onUpdated(() => {
                               <tbody>
                                 <tr>
                                   <td scope="row">
-                                    <i @click="removeItem(item, index)" class="bi bi-trash text-danger" role="button"></i>
+                                    <i
+                                      @click="removeItem(item, index)"
+                                      class="bi bi-trash text-danger"
+                                      role="button"
+                                    ></i>
                                   </td>
                                   <td>
-                                    <input type="text" class="form-control form-control-sm" v-model="item.barcode_no"
-                                      placeholder="barcode" />
+                                    <input
+                                      type="text"
+                                      class="form-control form-control-sm"
+                                      v-model="item.barcode_no"
+                                      placeholder="barcode"
+                                    />
                                   </td>
 
                                   <td>
-                                    <input type="text" class="form-control form-control-sm" v-model="item.serialnumber"
-                                      placeholder="S/N" />
+                                    <input
+                                      type="text"
+                                      class="form-control form-control-sm"
+                                      v-model="item.serialnumber"
+                                      placeholder="S/N"
+                                    />
                                   </td>
                                   <td>
-                                    <input type="text" class="form-control form-control-sm" v-model="item.model"
-                                      placeholder="model" />
+                                    <input
+                                      type="text"
+                                      class="form-control form-control-sm"
+                                      v-model="item.model"
+                                      placeholder="model"
+                                    />
                                   </td>
                                   <td>
-                                    <input type="text" class="form-control form-control-sm" v-model="item.id_no"
-                                      placeholder="id_no" />
+                                    <input
+                                      type="text"
+                                      class="form-control form-control-sm"
+                                      v-model="item.id_no"
+                                      placeholder="id_no"
+                                    />
                                   </td>
                                 </tr>
                                 <tr>
@@ -525,37 +663,65 @@ onUpdated(() => {
                                     <div class="row g-2 mt-1">
                                       <div class="col-12 col-md-3">
                                         <label>range price</label>
-                                        <input type="number" v-model="item.range_price"
-                                          class="form-control-sm form-control" placeholder="range_price" />
+                                        <input
+                                          type="number"
+                                          v-model="item.range_price"
+                                          class="form-control-sm form-control"
+                                          placeholder="range_price"
+                                        />
                                       </div>
                                       <div class="col-12 col-md-3">
                                         <label>range value</label>
-                                        <input type="number" v-model="item.range_value"
-                                          class="form-control-sm form-control" placeholder="range_value" />
+                                        <input
+                                          type="number"
+                                          v-model="item.range_value"
+                                          class="form-control-sm form-control"
+                                          placeholder="range_value"
+                                        />
                                       </div>
                                       <div class="col-12 col-md-3">
                                         <label>point price</label>
-                                        <input type="number" class="form-control form-control-sm" min="0"
-                                          v-model="item.point_price" />
+                                        <input
+                                          type="number"
+                                          class="form-control form-control-sm"
+                                          min="0"
+                                          v-model="item.point_price"
+                                        />
                                       </div>
                                       <div class="col-12 col-md-3">
                                         <label>point</label>
-                                        <input type="number" class="form-control form-control-sm" min="0"
-                                          v-model="item.point" />
+                                        <input
+                                          type="number"
+                                          class="form-control form-control-sm"
+                                          min="0"
+                                          v-model="item.point"
+                                        />
                                       </div>
                                     </div>
                                     <div class="row g-2 mt-1">
                                       <div class="col-12 col-md-6">
-                                        <input type="text" v-model="item.test_point" class="form-control-sm form-control"
-                                          placeholder="test point..." />
+                                        <input
+                                          type="text"
+                                          v-model="item.test_point"
+                                          class="form-control-sm form-control"
+                                          placeholder="test point..."
+                                        />
                                       </div>
                                       <div class="col-12 col-md-3">
-                                        <input type="number" v-model="item.discount" class="form-control-sm form-control"
-                                          placeholder="discount" />
+                                        <input
+                                          type="number"
+                                          v-model="item.discount"
+                                          class="form-control-sm form-control"
+                                          placeholder="discount"
+                                        />
                                       </div>
                                       <div class="col-12 col-md-3">
-                                        <input type="number" v-model="item.total" class="form-control-sm form-control"
-                                          placeholder="total" />
+                                        <input
+                                          type="number"
+                                          v-model="item.total"
+                                          class="form-control-sm form-control"
+                                          placeholder="total"
+                                        />
                                       </div>
                                     </div>
                                   </td>
@@ -563,19 +729,33 @@ onUpdated(() => {
                               </tbody>
                             </table>
                           </div>
-                          <button type="button" class="btn btn-sm btn-success" @click="addProduct()">
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-success"
+                            @click="addProduct()"
+                          >
                             <i class="bi bi-plus" role="button"></i>
                           </button>
                           <!-- ############ START BUTTON ################# -->
                           <div class="text-end my-2">
-                            <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCertAddress" aria-expanded="false"
-                              aria-controls="collapseCertAddress">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCertAddress"
+                              aria-expanded="false"
+                              aria-controls="collapseCertAddress"
+                            >
                               <i class="bi bi-arrow-left"></i> ก่อนหน้า
                             </button>
-                            <button class="btn btn-secondary btn-sm ms-3" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCommitmentDate" aria-expanded="false"
-                              aria-controls="collapseCommitmentDate">
+                            <button
+                              class="btn btn-secondary btn-sm ms-3"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCommitmentDate"
+                              aria-expanded="false"
+                              aria-controls="collapseCommitmentDate"
+                            >
                               <i class="bi bi-arrow-right"></i> ถัดไป
                             </button>
                           </div>
@@ -619,12 +799,18 @@ onUpdated(() => {
                   <div v-if="messageSuccessCommitment" class="alert alert-success">
                     {{ messageSuccessCommitment }}
                     <div>
-                      <span class="mx-2">วันที่เอกสาร</span> {{ DateTime(resultCommitment.data.document_date, {
-                        hideTime: true
-                      }) }}
-                      <span class="mx-2">งานเสร็จวันที่</span> {{ DateTime(resultCommitment.data.commitment_date, {
-                        hideTime: true
-                      }) }}
+                      <span class="mx-2">วันที่เอกสาร</span>
+                      {{
+                        DateTime(resultCommitment.data.document_date, {
+                          hideTime: true,
+                        })
+                      }}
+                      <span class="mx-2">งานเสร็จวันที่</span>
+                      {{
+                        DateTime(resultCommitment.data.commitment_date, {
+                          hideTime: true,
+                        })
+                      }}
                     </div>
                   </div>
                 </div>
@@ -638,8 +824,6 @@ onUpdated(() => {
         <div class="card">
           <div class="card-body pt-3">
             <div class="row g-1">
-
-
               <template v-if="form.id">
                 <div class="col-12">
                   <button class="btn btn-primary btn-sm w-100" @click="saveBill()">
@@ -647,14 +831,19 @@ onUpdated(() => {
                   </button>
                 </div>
                 <div class="col-12">
-                  <router-link :to="`/bills/code/${form.code}/commitment`" class="btn btn-sm btn-secondary d-block">
+                  <router-link
+                    :to="`/bills/code/${form.code}/commitment`"
+                    class="btn btn-sm btn-secondary d-block"
+                  >
                     <i class="bi bi-clock float-start"></i>
-                    จองคิวงาน</router-link>
+                    จองคิวงาน</router-link
+                  >
                 </div>
                 <div class="col-12">
                   <a class="btn btn-sm btn-secondary d-block">
                     <i class="bi bi-printer float-start"></i>
-                    พิมพ์</a>
+                    พิมพ์</a
+                  >
                 </div>
               </template>
               <template v-else>
@@ -666,10 +855,10 @@ onUpdated(() => {
                 <div class="col-12">
                   <router-link to="/bills/preview" class="btn btn-sm btn-secondary d-block">
                     <i class="bi bi-eye float-start"></i>
-                    ดูตัวอย่าง</router-link>
+                    ดูตัวอย่าง</router-link
+                  >
                 </div>
               </template>
-
             </div>
           </div>
         </div>
@@ -678,7 +867,6 @@ onUpdated(() => {
     <ModalProduct ref="modalProduct" @select="onSelectProducts" />
     <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
     <ModalContact ref="modalContact" @select="onSelectContact" />
-
   </section>
 </template>
 
@@ -708,7 +896,7 @@ div[size='A4'] {
   margin-bottom: 0.5cm;
   box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
 
-  >p,
+  > p,
   span,
   li,
   td {
@@ -723,7 +911,6 @@ div[size='A4'][layout='portrait'] {
 }
 
 @media print {
-
   body,
   page {
     margin: 0;

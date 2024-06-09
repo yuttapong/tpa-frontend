@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps, onMounted, defineExpose, computed } from 'vue'
+import { ref,onMounted, defineExpose, computed } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { DateTime } from "@/helpers/myformat"
@@ -68,12 +68,6 @@ const props = defineProps({
 let modalEl = null
 let modalConfirmRef = ref(null)
 const selectedItems = ref([])
-const loading = ref(false)
-
-const formSearchProduct = ref({
-  code: '',
-  q: '',
-})
 
 const doc = computed(() => props.data?.data)
 
@@ -83,7 +77,7 @@ const _show = () => {
   modalEl.show()
 }
 
-const confirm = () => {
+const onConfirm = () => {
   emit('confirm', selectedItems.value)
   selectedItems.value = []
   modalEl.hide()

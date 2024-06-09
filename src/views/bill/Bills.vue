@@ -1,6 +1,6 @@
 <template>
   <div class="pagetitle">
-    <h1>ใบขอรับบริการ</h1>
+    <h1>ใบขอรับบริการ ({{ parseInt(pagination.total).toLocaleString() }})</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
@@ -21,13 +21,13 @@
             <ul class="nav nav-tabs nav-tabs-bordered">
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
-                  ใบขอรับบริการ <span v-if="pagination">({{ pagination.total || 0 }})</span>
+                  ใบขอรับบริการ <span v-if="pagination">({{ parseInt(pagination.total).toLocaleString() || 0 }})</span>
                 </button>
               </li>
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-index" id="qt-index">
-                <form @submit.prevent="onSearch()">
+                <form @submit.prevent="onSearch()" class="mb-3">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
@@ -52,7 +52,13 @@
                   </div>
                 </form>
                 <!-- Small tables -->
-
+                <vue-awesome-paginate
+                :total-items="pagination.total"
+                :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow"
+                v-model="pagination.current_page"
+                :on-click="onChangePage"
+              />
                 <div class="table-responsive">
                   <table class="table table-sm">
                     <thead>
@@ -80,7 +86,7 @@
                         </th>
                         <!-- <th scope="row">{{ index + 1 }}</th> -->
                         <td align="left" nowrap>
-                          <router-link :to="`/bills/code/${item.code}`" class="btn btn-light fw-bold border btn-sm"
+                          <router-link :to="`/bills/code/${item.code}`" class="fw-bold border bg-dark text-white p-1"
                             target="_blank">
                             {{ item.code }}
                           </router-link>
@@ -106,8 +112,16 @@
                     </tbody>
                   </table>
                 </div>
+                <vue-awesome-paginate
+                :total-items="pagination.total"
+                :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow"
+                v-model="pagination.current_page"
+                :on-click="onChangePage"
+        
+              />
                 <!-- End small tables -->
-                <MyPagination />
+             
               </div>
 
               <div class="tab-pane fade pt-3 qt-detail" id="qt-detail">
@@ -578,14 +592,15 @@ import { formatISO } from 'date-fns'
 import { useAppStore } from '@/stores/appStore'
 import axios from 'axios'
 import CommitmentBooking from './components/CommitmentBooking.vue'
-import MyPagination from '@/components/MyPagination.vue'
+
 const appStore = new useAppStore()
 
 const row = ref({})
 const items = ref({})
 const pagination = ref({
-  per_page: 15,
-  curent_page: 1,
+  total:0,
+  per_page: appStore.settings.page.perPage,
+  current_page: 1,
 })
 const loadingCommitment = ref(false)
 const loading = ref(true)
@@ -632,7 +647,7 @@ const loadData = async () => {
   loading.value = true
   let params = {
     per_page: pagination.value.per_page,
-    page: pagination.value.curent_page,
+    page: pagination.value.current_page,
     ...formSearch.value,
   }
   const { data } = await api.get('/v2/bills', {
@@ -641,7 +656,7 @@ const loadData = async () => {
   if (data) {
     const p = {
       total: data?.total,
-      page: data?.curent_page,
+      current_page: data?.current_page,
       per_page: data?.per_page,
       page_count: data?.last_page,
     }
@@ -749,6 +764,11 @@ const onSearch = async () => {
     await loadData()
   } catch (error) { }
 }
+const onChangePage = (page) => {
+  pagination.value.current_page = page
+  loadData()
+}
+
 const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
   formSearch.value.q = ''

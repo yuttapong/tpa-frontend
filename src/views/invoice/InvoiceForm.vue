@@ -5,20 +5,21 @@ import Spinner from '@/components/Spinner.vue'
 import { DateTime, Number } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
 import { useInvoiceStore } from '@/stores/invoiceStore'
-
-const row = ref({})
+import { useAppStore } from '@/stores/appStore'
 const items = ref({})
+const appStore = useAppStore()
 const pagination = ref({
-  per_page: 5,
-  curent_page: 1,
+  per_page: appStore.settings.page.perPage,
+  current_page: 1,
 })
 const loading = ref(false)
+const workorderLoading = ref(false)
 const modalView = ref(null)
 const modalViewRef = ref(null)
 const modalProduct = ref(null)
 const modalProductRef = ref(null)
 const invoiceStore = useInvoiceStore()
-const invoice = ref({})
+
 const formSearch = ref({
   code: '',
   taxnumber: '',
@@ -27,7 +28,7 @@ const formSearch = ref({
 const invoiceItems = computed(() => invoiceStore.items)
 const formInvoice = ref({
   bill_code: '',
-  document_date: new Date(),
+  document_date: '',
   items: [],
   agent_id: '',
   agent_name: '',
@@ -37,7 +38,7 @@ const formInvoice = ref({
 const loadData = async () => {
   let params = {
     per_page: pagination.value.per_page,
-    page: pagination.value.curent_page,
+    page: pagination.value.current_page,
     ...formSearch.value,
   }
   const { data } = await api.get('/v2/invoices', {
@@ -46,7 +47,7 @@ const loadData = async () => {
   if (data) {
     const p = {
       total: data?.total,
-      page: data?.curent_page,
+      current_page: data?.current_page,
       per_page: data?.per_page,
       page_count: data?.last_page,
     }
@@ -58,33 +59,20 @@ const loadData = async () => {
 
 const formSearchProduct = ref({
   q: '',
+  item_code: '',
   bill_code: '',
+  alltype: 'yes',
 })
-const loadProducts = async () => {
-  let params = {
-    per_page: pagination.value.per_page,
-    page: pagination.value.curent_page,
-    ...formSearchProduct.value,
-  }
-  const { data } = await api.get('/v2/products', {
-    params: params,
-  })
-  if (data) {
-    const p = {
-      total: data?.total,
-      page: data?.curent_page,
-      per_page: data?.per_page,
-      page_count: data?.last_page,
-    }
-    pagination.value = p
-    items.value = data.data
-    loading.value = false
-  }
+const onChangePage = (page) => {
+  pagination.value.current_page = page
+  loadWorkOrders()
 }
+
 const loadWorkOrders = async () => {
+  workorderLoading.value = true
   let params = {
     per_page: pagination.value.per_page,
-    page: pagination.value.curent_page,
+    page: pagination.value.current_page,
     ...formSearchProduct.value,
   }
   const { data } = await api.get('/v2/workorders', {
@@ -93,7 +81,7 @@ const loadWorkOrders = async () => {
   if (data) {
     const p = {
       total: data?.total,
-      page: data?.curent_page,
+      current_page: data?.current_page,
       per_page: data?.per_page,
       page_count: data?.last_page,
     }
@@ -101,6 +89,7 @@ const loadWorkOrders = async () => {
     items.value = data.data
     loading.value = false
   }
+  workorderLoading.value = false
 }
 const getInvoiceById = async (id) => {
   try {
@@ -124,7 +113,7 @@ const onSearch = async () => {
   } catch (error) {}
 }
 const onSearchProduct = async () => {
-  pagination.value.curent_page = 1
+  pagination.value.current_page = 1
   pagination.value.total = 0
   try {
     loadWorkOrders()
@@ -136,6 +125,13 @@ const resetFormSearch = () => {
 }
 const addItem = () => {
   modalProduct.value.show()
+}
+const clearItem = () => {
+  invoiceStore.updateItems([])
+}
+const existCarts = (data) => {
+  const find = invoiceStore.items.filter((item) => item.item_code == data.item_code)
+  return Boolean(find.length)
 }
 
 const selectProduct = (item) => {
@@ -154,12 +150,9 @@ const selectProduct = (item) => {
     qty: 1,
   }
   invoiceStore.addItem(item)
-  modalProduct.value.hide()
 }
 
 const removeItem = (item, index) => {
-  console.log('remove', index, item)
-  // let index = selectedItems.value.indexOf(item)
   formInvoice.value.items.splice(index, 1)
   invoiceStore.removeItem(item)
 }
@@ -173,12 +166,16 @@ onMounted(() => {
   modalView.value.hide()
   modalProduct.value = new Modal(modalProductRef.value)
   modalProduct.value.hide()
-  //loadProducts();
   loadWorkOrders()
+  if (invoiceStore.form) {
+    formInvoice.value = invoiceStore.form
+  }
 })
 onUpdated(() => {
   console.log('onUpdated')
   invoiceStore.updateItems(invoiceItems.value)
+  console.log(formInvoice.value)
+  invoiceStore.setForm(formInvoice.value)
 })
 </script>
 <template>
@@ -207,7 +204,7 @@ onUpdated(() => {
                   <label>วันที่</label>
                   <input
                     type="date"
-                    v-model="formSearch.document_date"
+                    v-model="formInvoice.document_date"
                     name="code"
                     class="form-control form-control-sm"
                     placeholder="Code"
@@ -217,17 +214,17 @@ onUpdated(() => {
                   <label>Due Date</label>
                   <input
                     type="date"
-                    v-model="formSearch.due_date"
+                    v-model="formInvoice.due_date"
                     name="code"
                     class="form-control form-control-sm"
                     placeholder="Code"
                   />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3" v-if="formSearch.code">
+                <div class="col-6 col-md-4 col-lg-3" v-if="formInvoice.code">
                   <label>Invoice Code</label>
                   <input
                     type="text"
-                    v-model="formSearch.code"
+                    v-model="formInvoice.code"
                     name="code"
                     class="form-control form-control-sm"
                     placeholder="Code"
@@ -238,7 +235,7 @@ onUpdated(() => {
                   <label>ลูกค้า</label>
                   <input
                     type="text"
-                    v-model="formSearch.customer_name"
+                    v-model="formInvoice.customer_name"
                     name="customer_name"
                     class="form-control form-control-sm"
                     placeholder=""
@@ -248,7 +245,7 @@ onUpdated(() => {
                   <label>ผู้ติดต่อ</label>
                   <input
                     type="text"
-                    v-model="formSearch.agent_name"
+                    v-model="formInvoice.agent_name"
                     name="agent_name"
                     class="form-control form-control-sm"
                     placeholder=""
@@ -258,7 +255,7 @@ onUpdated(() => {
                   <label>ที่อยู่</label>
                   <input
                     type="text"
-                    v-model="formSearch.address"
+                    v-model="formInvoice.address"
                     name="address"
                     class="form-control form-control-sm"
                     placeholder=""
@@ -266,93 +263,42 @@ onUpdated(() => {
                 </div>
 
                 <div class="col-12">
-                  <div
-                    v-for="(item, index) in invoiceItems"
-                    :key="index"
-                    style="border: solid 1px #cccc"
-                    class="my-2"
-                  >
-                    <table class="table table-sm table-striped">
-                      <thead>
-                        <tr>
-                          <td></td>
-                          <td colspan="9">
-                            <h5 class="h4 text-secondary">{{ item.product_name }}</h5>
-                            <div class="text-danger">{{ item.test_point }}</div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="col" class="text-strong h5">{{ index + 1 }}</th>
-                          <th scope="col">#</th>
-                          <th scope="col">Item Code</th>
+                  <div class="vstack gap-3">
+                    <div class="bg-light border" v-for="(item, index) in invoiceItems" :key="index">
+                      <button
+                        type="button"
+                        class="btn btn-text text-danger"
+                        @click="removeItem(item, index)"
+                      >
+                        <i class="bi bi-x-circle"></i>
+                      </button>
+                      <!-- </div> -->
+                      <!-- <div class="col">{{ index + 1 }})</div>
+                            <div class="col" nowrap>
+                              <span class="d-block">{{ item.item_code }}</span>
+                            </div> -->
+                      <div class="col">
+                        <span>{{ item.product_name }}</span>
+                      </div>
+                      <!-- <th class="col"><i>S/N.</i> {{ item.id_no }}</th>
+                            <th class="col"><i>Model.</i> {{ item.model }}</th>
+                   -->
 
-                          <th scope="col">Serial No.</th>
-                          <th scope="col">Model</th>
-                          <th scope="col">ID No.</th>
-
-                          <th scope="col">ส่วนลด</th>
-                          <th scope="col">ราคา</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr>
-                          <th scope="row"></th>
-                          <th scope="row">
-                            <i
-                              @click="removeItem(item, index)"
-                              class="bi bi-trash text-danger"
-                              role="button"
-                            ></i>
-                          </th>
-                          <td>
-                            <span class="badge bg-light text-dark">{{ item.item_code }}</span>
-                          </td>
-
-                          <td>
-                            <input
-                              type="text"
-                              class="form-control form-control-sm"
-                              v-model="item.serialnumber"
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              class="form-control form-control-sm"
-                              v-model="item.model"
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              class="form-control form-control-sm"
-                              v-model="item.id_no"
-                            />
-                          </td>
-
-                          <td>
-                            <input
-                              type="number"
-                              class="form-control form-control-sm"
-                              min="0"
-                              v-model="item.discount"
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              class="form-control form-control-sm"
-                              min="0"
-                              v-model="item.price"
-                            />
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                      <div class="float-end">{{ parseFloat(item.total).toLocaleString() }}</div>
+                    </div>
                   </div>
+                </div>
+                <div class="col-12">
                   <button type="button" class="btn btn-sm btn-success" @click="addItem()">
                     <i class="bi bi-plus" role="button"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger ms-3"
+                    v-if="invoiceStore.items.length > 0"
+                    @click="clearItem()"
+                  >
+                    <i class="bi bi-trash" role="button"></i>
                   </button>
                 </div>
                 <div class="col-12">Total Items : {{ invoiceStore.countItems }}</div>
@@ -391,10 +337,11 @@ onUpdated(() => {
   </section>
 
   <div class="modal" ref="modalProductRef">
-    <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">เลือกงาน / Work Orders</h5>
+          <h5 class="modal-title">Work Orders</h5>
+
           <button
             type="button"
             class="btn-close"
@@ -403,56 +350,63 @@ onUpdated(() => {
           ></button>
         </div>
         <div class="modal-body">
-          <!-- Small tables -->
-          <div style="height: 350px; overflow: scroll" class="table table-responsive">
+          <div class="my-2">
             <form @submit.prevent="onSearchProduct()">
               <div class="row g-2">
-                <div class="col-6 col-md-4 col-lg-3">
+                <div class="col-6 col-md-4 col-lg-4">
                   <input
                     type="search"
                     v-model="formSearchProduct.bill_code"
-                    name="bill code"
                     class="form-control form-control-sm"
-                    placeholder="bill code"
+                    placeholder="เลขที่ใบขอรับบริการ"
                     @keyup.enter="onSearchProduct()"
                   />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3">
+                <div class="col-6 col-md-4 col-lg-4">
                   <input
                     type="search"
-                    v-model="formSearchProduct.q"
-                    name="q"
+                    v-model="formSearchProduct.item_code"
                     class="form-control form-control-sm"
-                    placeholder="Code"
+                    placeholder="เลขที่ WorderOrder"
                     @keyup.enter="onSearchProduct()"
                   />
                 </div>
-
+                <div class="col-6 col-md-4 col-lg-3"></div>
                 <div class="col-6 col-md-4 col-lg-3">
                   <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
+                  <spinner :visible="workorderLoading" class="mx-2 p-0" />
                 </div>
               </div>
             </form>
-
+          </div>
+          <!-- Small tables -->
+          <div class="table table-responsive">
             <table class="table table-sm table-striped table-bordered">
               <thead>
                 <tr>
-                  <th scope="col">Action</th>
+                  <th scope="col" class="fw-bold">Action</th>
                   <!-- <th scope="col">#</th> -->
-                  <th scope="col">Code</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Manufaturer</th>
+                  <th scope="col" class="fw-bold">Item ID</th>
+                  <th scope="col" class="fw-bold">Code</th>
+                  <th scope="col" class="fw-bold">Name</th>
+                  <th scope="col" class="fw-bold">จำนวนเงิน</th>
+                  <th scope="col" class="fw-bold">Manufaturer</th>
 
-                  <th scope="col">Barcode</th>
+                  <th scope="col" class="fw-bold">Barcode</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(item, index) in items" :key="index">
                   <th scope="row">
-                    <button class="btn btn-secondary btn-sm d-block" @click="selectProduct(item)">
-                      <i class="bi bi-plus"></i>
-                    </button>
+                    <template v-if="!existCarts(item)">
+                      <button class="btn btn-secondary btn-sm d-block" @click="selectProduct(item)">
+                        <i class="bi bi-plus"></i>
+                      </button>
+                    </template>
                   </th>
+                  <td>
+                    <span class="">{{ item.item_id }}</span>
+                  </td>
                   <td>
                     <span class="badge bg-dark text-light">{{ item.item_code }}</span>
                   </td>
@@ -462,16 +416,47 @@ onUpdated(() => {
                     <span v-if="item.model" class="mx-1 p-1">{{ item.model }}</span>
                     <span v-if="item.serialnumber" class="mx-1 p-1">{{ item.serialnumber }}</span>
                   </td>
+                  <td>{{ parseFloat(item.total).toLocaleString() }}</td>
                   <td>{{ item.manufaturer_name }}</td>
                   <td>{{ item.barcode_no }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
+
           <!-- End small tables -->
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        <div class="modal-footer m-0 p-1 d-block">
+          <div class="row">
+            <!-- <div class="col-md-2 d-none d-sm-block">
+              <select
+                v-model="pagination.per_page"
+                @change="onSearchProduct"
+                class="form-select form-select-sm"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div> -->
+            <div class="col-xs-10 col-md-10">
+              <vue-awesome-paginate
+                :total-items="pagination.total"
+                :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow"
+                v-model="pagination.current_page"
+                :on-click="onChangePage"
+                class=""
+              />
+            </div>
+
+            <div class="col-xs-2 col-md-2">
+              <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal">
+                ปิด
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

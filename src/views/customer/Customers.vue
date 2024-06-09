@@ -62,18 +62,15 @@
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active tab-customer" id="tab-customer">
-                <CustomersTable :items="items" @show="getCustomer" />
-
-                <p v-if="totalCustomer">
-                  <Pagination
-                    v-model="customerPagination.current_page"
-                    v-model:total="totalCustomer"
-                    :perPage="customerPagination.per_page"
-                    :pageCount="customerPagination.last_page"
-                    alignment="center"
-                    :onChange="onChangeCustomer"
-                  />
-                </p>
+                <CustomersTable v-model:items="items" @show="getCustomer" />
+                <vue-awesome-paginate
+                :total-items="customerPagination.total"
+                :items-per-page="customerPagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow"
+                v-model="customerPagination.current_page"
+                :on-click="onChangePageCustomer"
+              />
+        
               </div>
 
               <div class="tab-pane fade pt-3 tab-category" id="tab-category">
@@ -529,14 +526,14 @@ import CustomersTable from './components/CustomersTable.vue'
 import CustomerTypesTable from './components/CustomerTypesTable.vue'
 import CreditDayTable from './components/CreditDayTable.vue'
 import CreditTable from './components/CreditTable.vue'
-
+import { useAppStore } from '@/stores/appStore'
+const appStore = useAppStore()
 const items = ref([])
 const customerTypes = ref([])
 const customerPagination = ref({
-  total: 0,
   current_page: 1,
   last_page: 0,
-  per_page: 15,
+  per_page: appStore.settings.page.perPage,
 })
 const totalCustomer = ref(0)
 const loading = ref(true)
@@ -551,6 +548,7 @@ const credits = ref({})
 const loadData = async () => {
   const { data } = await api.get('/v2/customers', {
     params: {
+      page_page:customerPagination.value.per_page,
       page: customerPagination.value.current_page,
     },
   })
@@ -558,8 +556,8 @@ const loadData = async () => {
   if (data) {
     totalCustomer.value = data.total
     const p = {
-      total: Number(data.total),
-      page: data.current_page,
+      total:data.total,
+      current_page: data.current_page,
       per_page: data.per_page,
       last_page: data.last_page,
     }
@@ -568,6 +566,10 @@ const loadData = async () => {
     loading.value = false
     console.log('pagination ff', customerPagination.value)
   }
+}
+const onChangePageCustomer = (page) => {
+  customerPagination.value.current_page = page
+  loadData()
 }
 const loadCustomerTypes = async () => {
   const { data } = await api.get('/v2/customers/types')

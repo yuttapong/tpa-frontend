@@ -15,6 +15,11 @@ import '@popperjs/core'
 import '@/assets/js/layout.js'
 import 'bootstrap-icons/font/bootstrap-icons.min.css'
 import Quill from 'quill'
+// import the package
+import VueAwesomePaginate from "vue-awesome-paginate";
+
+// import the necessary css file
+import "vue-awesome-paginate/dist/style.css";
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -22,6 +27,7 @@ pinia.use(piniaPersist)
 
 app.use(pinia)
 app.use(router)
+app.use(VueAwesomePaginate)
 app.mount('#app')
 // app.directive('click-outside', {
 //   bind: function (el, binding, vnode) {

@@ -32,7 +32,6 @@
             <template v-else><i class="bi bi-search"></i></template>
           </button> -->
         </div>
-        {{ commitmentDate }}
       </div>
 
       <span class="text-success p-1" v-if="messageSuccessCommitment">{{

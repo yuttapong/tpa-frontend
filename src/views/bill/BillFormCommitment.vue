@@ -89,7 +89,7 @@ const findCommitmentDate = async () => {
     loadingCommitment.value = true
 
     try {
-        const { data, success } = await axios
+        const { data } = await axios
             .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills/inquiry', params, {
                 headers: {
                     'Content-Type': 'application/json',

@@ -6,11 +6,13 @@ import { DateTime, Number } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
 import MyModal from '@/components/Modal.vue'
 import { useRoute } from 'vue-router'
+import { useAppStore } from '@/stores/appStore'
 const row = ref({})
 const items = ref({})
+const appStore = useAppStore()
 const pagination = ref({
-  per_page: 15,
-  curent_page: 1,
+  per_page: appStore.settings.page.perPage,
+  current_page: 1,
 })
 const loading = ref(true)
 const modalView = ref(null)
@@ -28,7 +30,7 @@ const formSearch = ref({
 const loadData = async () => {
   let params = {
     per_page: pagination.value.per_page,
-    page: pagination.value.curent_page,
+    page: pagination.value.current_page,
     ...formSearch.value,
   }
   const { data } = await api.get('/v2/invoices', {
@@ -37,7 +39,7 @@ const loadData = async () => {
   if (data) {
     const p = {
       total: data?.total,
-      page: data?.curent_page,
+      current_page: data?.current_page,
       per_page: data?.per_page,
       page_count: data?.last_page,
     }
@@ -62,7 +64,7 @@ const showDetail = (item) => {
 }
 
 const onSearch = async () => {
-  pagination.value.curent_page = 1
+  pagination.value.current_page = 1
   pagination.value.total = 0
   try {
     loadData()
@@ -222,9 +224,17 @@ onMounted(() => {
                           </td>
                           <td>{{ item.status }}</td>
                         </tr>
-                      </tbody>
+                      </tbody>+
                     </table>
                   </div>
+                  <vue-awesome-paginate
+                :total-items="pagination.total"
+                :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow"
+                v-model="pagination.current_page"
+                :on-click="onChangePage"
+        
+              />
                   <!-- End small tables -->
                 </div>
 

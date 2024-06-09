@@ -1,9 +1,9 @@
 <template>
   <div class="pagetitle">
-    <h1>Certificates</h1>
+    <h1>Certificates ({{ parseInt(pagination.total).toLocaleString() }})</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
+        <li class="breadcrumb-item"><router-lin to="/">Home</router-lin></li>
         <li class="breadcrumb-item active">Certificates</li>
       </ol>
     </nav>
@@ -16,10 +16,15 @@
       <div class="col-xl-12">
         <div class="card">
           <div class="card-body pt-3">
-            <ul class="nav nav-tabs nav-tabs-bordered" id="tab_certificate" role="tablist" ref="tabViewRef">
+            <ul
+              class="nav nav-tabs nav-tabs-bordered"
+              id="tab_certificate"
+              role="tablist"
+              ref="tabViewRef"
+            >
               <li class="nav-item" role="presentation">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
-                  List
+                  List ({{ parseInt(pagination.total).toLocaleString() }})
                 </button>
               </li>
 
@@ -47,26 +52,43 @@
                       <tr v-for="(item, index) in items" :key="index">
                         <td scope="row">{{ item.cerid }}</td>
                         <td>
-                          <button type="button" class="btn btn-link fw-bold" @click="viewCert(item)">
+                          <button
+                            type="button"
+                            class="fw-bold border bg-dark text-white p-1"
+                            @click="viewCert(item)"
+                          >
                             {{ item.cerno }}
                           </button>
+
+                          <!-- <router-link :to="`/certificates/${item.cerno}`">
+                            {{item.cerno}}
+                          </router-link> -->
                         </td>
                         <td>
                           <span class="badge bg-light text-dark">{{ item.caldate }}</span>
                         </td>
 
                         <td>
-                          <div>{{ item?.equipment?.product_name }}</div>
-                          <small class="badge bg-warning text-dark">{{
+                          <div class="fw-bold">{{ item?.equipment?.product_name }}</div>
+                          <small class="badge bg-warning text-dark">
+                            <i>Model.</i> {{
                             item.equipment?.model
                           }}</small>
-                          <div class="text-info">{{ item.lab?.name }}</div>
+                          <div class="ms-2"><small>{{ item.lab?.name }}</small></div>
                         </td>
                         <td>{{ item.submitted.customer }}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
+                <vue-awesome-paginate
+                  :total-items="pagination.total"
+                  :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow"
+                  v-model="pagination.current_page"
+                  :on-click="onChangePage"
+                  class="mt-3"
+                />
               </div>
 
               <div class="tab-pane fade pt-3" id="tab_cert_detail">
@@ -129,7 +151,6 @@
         </div>
       </div>
     </div>
-
   </section>
 
   <div class="modal" ref="modalViewRef">
@@ -137,7 +158,12 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Certificate</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <Certificate v-model:data="viewData" />
@@ -158,10 +184,16 @@ import Spinner from '@/components/Spinner.vue'
 import { Tab, Modal } from 'bootstrap'
 import { DateTime, Number } from '@/helpers/myformat'
 import Certificate from './components/Certificate.vue'
+import { useAppStore } from '@/stores/appStore'
 
 const row = ref({})
+const appStore = useAppStore()
 const items = ref({})
-const pagination = ref({})
+const pagination = ref({
+  current_page: 1,
+  total: 0,
+  per_page: appStore.settings.page.perPage
+})
 const loading = ref(true)
 const viewData = ref({})
 const modalViewRef = ref(null)
@@ -170,19 +202,35 @@ const tabViewRef = ref(null)
 const tabView = ref(null)
 
 const loadData = async () => {
-  const { data } = await api.get('/v2/certificates')
+  loading.value = true
+  let params = {
+    page: pagination.value.current_page,
+    per_page: pagination.value.per_page,
+  }
+  const { data } = await api.get('/v2/certificates', {
+    params: params,
+  })
   if (data) {
-    console.log(data)
+
     const p = {
       total: data?.total,
-      page: data?.curent_page,
+      current_page: data?.current_page,
       per_page: data?.per_page,
-      page_count: data?.last_page
+      page_count: data?.last_page,
     }
     pagination.value = p
     items.value = data.data
     loading.value = false
   }
+}
+
+const search = () => {
+  pagination.value.current_page = 1
+  loadData()
+}
+const onChangePage = (page) => {
+  pagination.value.current_page = page
+  loadData()
 }
 
 const viewCert = async (item) => {
@@ -197,7 +245,7 @@ onMounted(() => {
   modalView.value.hide()
   // tabView.value = new Tab("#tab_cert_detail")
   // tabView.value.show()
-  loadData()
+  search()
 })
 </script>
 <style lang="scss" scoped>

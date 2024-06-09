@@ -1,24 +1,24 @@
-import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useInvoiceStore = defineStore('invoice', {
   state: () => {
     return {
-      selectedItems: [],
+      form:{},
+      carts: [],
     }
   },
   getters: {
     items(state) {
-      return state.selectedItems
+      return state.carts
     },
     countItems(state) {
-      return state.selectedItems.length
+      return state.carts.length
     },
   },
   actions: {
     hasSelectedItem(item) {
       console.log("hassl", item);
-      let find = this.selectedItems.filter((row) => {
+      let find = this.carts.filter((row) => {
         if (item.item_code == row.item_code) {
           return row
         }
@@ -37,19 +37,23 @@ export const useInvoiceStore = defineStore('invoice', {
         item.price = 0
       }
       if (!exist) {
-        this.selectedItems.push(item)
+        this.carts.push(item)
       }
     },
     removeItem(item) {
-      let index = this.selectedItems.indexOf(item)
-      this.selectedItems.splice(index, 1)
+      let index = this.carts.indexOf(item)
+      this.carts.splice(index, 1)
     },
     updateItems(items) {
-      this.selectedItems = items
+      this.carts = items
+    },
+    setForm(data) {
+      console.log('setForm', data);
+      this.form = data
     },
   },
   persist: {
     enabled: true,
-    strategies: [{ storage: localStorage, paths: ['selectedItems'] }],
+    strategies: [{ storage: localStorage, paths: ['form','carts'] }],
   },
 })

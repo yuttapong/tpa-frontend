@@ -1,0 +1,29 @@
+.pagination-container {
+    display: flex;
+    column-gap: 3px;
+}
+
+.paginate-buttons {
+    // height: 40px;
+    min-width: 30px;
+    border-radius: 20px;
+    cursor: pointer;
+    background-color: rgb(242, 242, 242);
+    border: 1px solid rgb(217, 217, 217);
+    color: black;
+}
+
+.paginate-buttons:hover {
+    background-color: #d8d8d8;
+}
+
+.active-page {
+    background-color: #2e2f30;
+    border: 1px solid #0f0f0f;
+    color: white;
+}
+
+.active-page:hover {
+    background-color: #0674bd;
+    border: 1px solid #0415ac;
+}

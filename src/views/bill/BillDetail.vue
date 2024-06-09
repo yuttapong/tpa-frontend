@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, ref, onBeforeMount } from "vue";
+import { computed, ref, onBeforeMount } from "vue";
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { useBillStore } from "@/stores/billStore";

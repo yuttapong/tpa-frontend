@@ -7,6 +7,14 @@ export const useAppStore = defineStore('app', () => {
   const accesstoken = useLocalStorage('accesstoken', '')
   const expiredAt = useLocalStorage('expiredAt', '')
   const user = useLocalStorage('user', {})
+  const settings = useLocalStorage('settings', {
+    lang: 'th_TH',
+    timezone: 'Asia/Bangkok',
+    page: {
+      perPage: 20,
+      maxPageShow: 10,
+    },
+  })
   const token = computed(() => accesstoken.value)
 
   function isLoggedIn() {
@@ -20,6 +28,9 @@ export const useAppStore = defineStore('app', () => {
   }
   function setToken(data) {
     return (accesstoken.value = data)
+  }
+  function setSetting(data) {
+    return (settings.value = data)
   }
   function setPermissions(data) {
     return (permissions.value = data)
@@ -47,6 +58,8 @@ export const useAppStore = defineStore('app', () => {
     setToken,
     logout,
     login,
+    settings,
+    setSetting,
     setPermissions,
   }
 })

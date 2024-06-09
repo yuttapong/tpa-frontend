@@ -90,7 +90,7 @@
               </li>
             </ul>
 
-            <div class="tab-content pt-2">
+            <div class="tab-content">
               <div class="tab-pane fade show active" :id="`t-sublab${index}`">
                 <table v-if="item.sublabs" class="table table-bordered">
                   <thead>
@@ -105,13 +105,13 @@
 
                       </th>
                     </tr>
-                    <tr v-for="(sublab, skey) in item.sublabs">
+                    <tr v-for="(sublab, skey) in item.sublabs" :key="skey">
                       <td valign="top">{{ skey + 1 }}</td>
                       <td valign="top">{{ sublab.id }}</td>
                       <td>{{ sublab.name_th }}<br><small>{{ sublab.name }}</small></td>
                       <td>2</td>
                       <td>
-                        <span class="p-1 me-1 badge bg-dark" v-for="u in sublab.approvers">
+                        <span class="p-1 me-1 badge bg-dark" v-for="u in sublab.approvers" :key="u">
                           {{ u.name_th }}
                           {{ u.lastname_th }}
                           <i role="button" @click="removeSublabApprover(sublab.id, u.id)"
@@ -126,12 +126,12 @@
               </div>
               <div class="tab-pane fade" :id="`t-staff${index}`">
                 <ul v-if="item.staffs">
-                  <li v-for="(staff, skey) in item.staffs">{{ staff }}</li>
+                  <li v-for="(staff, skey) in item.staffs" :key="skey">{{ staff }}</li>
                 </ul>
               </div>
               <div class="tab-pane fade" :id="`t-condition${index}`">
                 <ul v-if="item.conditions">
-                  <li v-for="(c, ckey) in item.conditions">{{ c.conditioname }}</li>
+                  <li v-for="(c, ckey) in item.conditions" :key="ckey">{{ c.conditioname }}</li>
                 </ul>
               </div>
             </div>
@@ -294,7 +294,7 @@ const visibleDialog = ref(false)
 
 const loadData = async () => {
   loading.value = true
-  const { data, curent_page, last_page, per_page, total } = await api.get('/v2/labs')
+  const { data, curent_page, last_page, per_page, total } = await api.get('/v2/labs/all')
   if (data) {
     const p = {
       total: total,
@@ -303,7 +303,7 @@ const loadData = async () => {
       page_count: last_page,
     }
     pagination.value = p
-    items.value = data.data
+    items.value = data
   }
   loading.value = false
 }
@@ -372,19 +372,8 @@ onMounted(() => {
 })
 </script>
 <style lang="scss" scoped>
-.qt-detail {
-  .row {
-    margin-bottom: 20px;
-    font-size: 15px;
-  }
-
-  .card-title {
-    color: #012970;
-  }
-
-  .label {
-    font-weight: 600;
-    color: rgba(1, 41, 112, 0.6);
-  }
+.accordion-body {
+  padding: 3px;
+  background-color: rgb(206, 210, 221);
 }
 </style>

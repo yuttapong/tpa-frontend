@@ -3,7 +3,7 @@ import { onMounted, computed, ref } from "vue";
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { useInvoiceStore } from "@/stores/invoiceStore";
-
+import ProductMeta from "@/views/invoice/components/ProductMeta.vue"
 
 const invoiceStore = useInvoiceStore()
 
@@ -66,13 +66,14 @@ onMounted(() => {
                                             <th scope="row">{{ index + 1 }}</th>
                                             <!-- <td> {{ item.item_code }}</td> -->
                                             <td>{{ item.product_name }}
-                                                <span class="mx-1">{{ item.serialnumber }}</span>
-                                                <span class="mx-1">{{ item.model }}</span>
-                                                <span class="mx-1">{{ item.id_no }}</span>
+
+
+                                                <ProductMeta :item="item"/>
+                           
                                             </td>
-                                            <td>{{ item.qty }}</td>
-                                            <td>{{ item.discount }}</td>
-                                            <td>{{ item.price }}</td>
+                                            <td>{{ 1 }}</td>
+                                            <td>{{ parseFloat(item.discount).toLocaleString() }}</td>
+                                            <td>{{ parseFloat(item.total).toLocaleString() }}</td>
 
 
 

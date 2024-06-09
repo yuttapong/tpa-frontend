@@ -6,6 +6,8 @@ import { DateTime, Number } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import { useAppStore } from '@/stores/appStore'
+import ProductMeta from "@/views/invoice/components/ProductMeta.vue"
+
 const items = ref({})
 const appStore = useAppStore()
 const pagination = ref({
@@ -153,7 +155,6 @@ const selectProduct = (item) => {
 }
 
 const removeItem = (item, index) => {
-  formInvoice.value.items.splice(index, 1)
   invoiceStore.removeItem(item)
 }
 
@@ -172,9 +173,7 @@ onMounted(() => {
   }
 })
 onUpdated(() => {
-  console.log('onUpdated')
   invoiceStore.updateItems(invoiceItems.value)
-  console.log(formInvoice.value)
   invoiceStore.setForm(formInvoice.value)
 })
 </script>
@@ -263,29 +262,48 @@ onUpdated(() => {
                 </div>
 
                 <div class="col-12">
-                  <div class="vstack gap-3">
-                    <div class="bg-light border" v-for="(item, index) in invoiceItems" :key="index">
-                      <button
-                        type="button"
-                        class="btn btn-text text-danger"
-                        @click="removeItem(item, index)"
-                      >
-                        <i class="bi bi-x-circle"></i>
-                      </button>
-                      <!-- </div> -->
-                      <!-- <div class="col">{{ index + 1 }})</div>
-                            <div class="col" nowrap>
-                              <span class="d-block">{{ item.item_code }}</span>
-                            </div> -->
-                      <div class="col">
-                        <span>{{ item.product_name }}</span>
-                      </div>
-                      <!-- <th class="col"><i>S/N.</i> {{ item.id_no }}</th>
-                            <th class="col"><i>Model.</i> {{ item.model }}</th>
-                   -->
+                  <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                      <thead>
+                        <tr>
+                          <th class="fw-bold"># Item</th>
+                          <th class="fw-bold">รายการ</th>
+                          <th class="fw-bold text-end">จำนวนเงิน</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="" v-for="(item, index) in invoiceItems" :key="index">
+                          <td scope="row" nowrap>
+                            <button
+                              type="button"
+                              class="btn btn-text text-danger"
+                              @click="removeItem(item, index)"
+                            >
+                              <i class="bi bi-x-circle"></i>
+                            </button>
+                            {{ index + 1 }})
+                            <span class="ms-2 text-primary fw-bold" style="font-size: 13px">{{
+                              item.item_code
+                            }}</span>
+                          </td>
+                          <td class="">
+                            <div class="fw-bold">
+                              <i class="text-danger">{{ item.manufaturer_name }}</i>
+                              {{ item.product_name }}
+                            </div>
 
-                      <div class="float-end">{{ parseFloat(item.total).toLocaleString() }}</div>
-                    </div>
+                            <div class="">
+                              <ProductMeta :item="item"/>
+                            
+                            </div>
+                          </td>
+
+                          <td class="text-end">
+                            {{ parseFloat(item.total).toLocaleString() }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
                 <div class="col-12">
@@ -390,7 +408,7 @@ onUpdated(() => {
                   <th scope="col" class="fw-bold">Code</th>
                   <th scope="col" class="fw-bold">Name</th>
                   <th scope="col" class="fw-bold">จำนวนเงิน</th>
-                  <th scope="col" class="fw-bold">Manufaturer</th>
+   
 
                   <th scope="col" class="fw-bold">Barcode</th>
                 </tr>
@@ -411,13 +429,11 @@ onUpdated(() => {
                     <span class="badge bg-dark text-light">{{ item.item_code }}</span>
                   </td>
                   <td>
-                    {{ item.product_name }}
-                    <span v-if="item.id_no" class="mx-1 p-1">{{ item.id_no }}</span>
-                    <span v-if="item.model" class="mx-1 p-1">{{ item.model }}</span>
-                    <span v-if="item.serialnumber" class="mx-1 p-1">{{ item.serialnumber }}</span>
+                    <div class="fw-bold"><i class="text-danger">{{item.manufaturer_name}}</i> {{ item.product_name }}</div>
+                    <ProductMeta :item="item"/>
                   </td>
                   <td>{{ parseFloat(item.total).toLocaleString() }}</td>
-                  <td>{{ item.manufaturer_name }}</td>
+ 
                   <td>{{ item.barcode_no }}</td>
                 </tr>
               </tbody>

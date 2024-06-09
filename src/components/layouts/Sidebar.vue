@@ -64,7 +64,7 @@
       <li class="nav-item">
         <router-link to="/data/products" class="nav-link collapsed">
           <i class="bi bi-box"></i>
-          <span>Products</span>
+          <span>สินค้า/เครื่องมือ</span>
         </router-link>
       </li>
       <li class="nav-item">
@@ -99,7 +99,12 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
+        <a
+          class="nav-link collapsed"
+          data-bs-target="#setting-nav"
+          data-bs-toggle="collapse"
+          href="#"
+        >
           <i class="bi bi-gear"></i>
           <span>ตั้งค่า</span>
         </a>
@@ -241,7 +246,6 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
-
   #main,
   #footer {
     margin-left: 300px;
@@ -255,7 +259,6 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
-
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;

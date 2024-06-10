@@ -14,36 +14,29 @@ import 'bootstrap'
 import '@popperjs/core'
 import '@/assets/js/layout.js'
 import 'bootstrap-icons/font/bootstrap-icons.min.css'
-import Quill from 'quill'
+
 // import the package
-import VueAwesomePaginate from "vue-awesome-paginate";
+import VueAwesomePaginate from 'vue-awesome-paginate'
 
 // import the necessary css file
-import "vue-awesome-paginate/dist/style.css";
+import 'vue-awesome-paginate/dist/style.css'
+import { abilitiesPlugin } from '@casl/vue'
+import { createMongoAbility } from '@casl/ability'
+const ability = createMongoAbility()
 
 const app = createApp(App)
 const pinia = createPinia()
+
 pinia.use(piniaPersist)
 
+pinia.use(({ store }) => {
+  store.ability = markRaw(ability)
+})
+app.use(abilitiesPlugin, ability)
 app.use(pinia)
 app.use(router)
 app.use(VueAwesomePaginate)
 app.mount('#app')
-// app.directive('click-outside', {
-//   bind: function (el, binding, vnode) {
-//     el.clickOutsideEvent = function (event) {
-//       // here I check that click was outside the el and his children
-//       if (!(el == event.target || el.contains(event.target))) {
-//         // and if it did, call method provided in attribute value
-//         vnode.context[binding.expression](event)
-//       }
-//     }
-//     document.body.addEventListener('click', el.clickOutsideEvent)
-//   },
-//   unbind: function (el) {
-//     document.body.removeEventListener('click', el.clickOutsideEvent)
-//   },
-// })
 
 if (import.meta.env.DEV) {
   console.log('ENV', import.meta.env)

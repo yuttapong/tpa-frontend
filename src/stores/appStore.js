@@ -15,8 +15,18 @@ export const useAppStore = defineStore('app', () => {
       maxPageShow: 10,
     },
   })
-  const token = computed(() => accesstoken.value)
+  const ability = ref()
 
+  function initCasl() {
+    const builder = new AbilityBuilder(this.ability)
+    if (user.value.role.includes(['admin'])) {
+      builder.can('read', 'Bill')
+      builder.can('create', 'Bill')
+      builder.can('update', 'Bill')
+      builder.can('approve', 'Bill')
+    }
+    ability.update(builder.rules)
+  }
   function isLoggedIn() {
     return !!accesstoken.value
   }

@@ -142,8 +142,8 @@ const onSelectProducts = (items) => {
   }
 }
 const removeItem = (item, index) => {
-  form.value.items.splice(index, 1)
   billStore.removeItem(item)
+  form.value.items.splice(index, 1)
 }
 
 const updateItems = () => {
@@ -263,11 +263,10 @@ const saveBill = () => {
   console.log('formCommitment', formCommitment.value)
   console.log('saveBill', form.value)
   billStore.setForm(form.value)
-
-  if (searchCommitmentDate.value === true) {
-    findCommitmentDate()
-    console.log(resultCommitment.value)
-  } else {
+  if (form.value.id > 0) {
+    api.put('v2/bills/' + form.value.id, form.value).then((rs) => {
+      console.log(rs)
+    })
   }
 }
 
@@ -453,7 +452,7 @@ onUpdated(() => {
                               />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
-                              <label>ผู้ส่ง</label>
+                              <label>ผู้ส่ง(ชื่อ)</label>
                               <input
                                 type="text"
                                 v-model="form.sender_name"
@@ -463,13 +462,30 @@ onUpdated(() => {
                               />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
-                              <label>ผู้ส่ง</label>
+                              <label>ผู้ส่ง(เบอร์โทร)</label>
                               <input
                                 type="text"
-                                v-model="form.sender_name"
-                                name="sender_name"
+                                v-model="form.sender_tel"
                                 class="form-control form-control-sm"
-                                placeholder="ผู้ส่ง"
+                                placeholder="เบอร์โทร"
+                              />
+                            </div>
+                            <div class="col-12 col-lg-6 col-xl-4">
+                              <label>ผู้ส่ง(email)</label>
+                              <input
+                                type="text"
+                                v-model="form.sender_email"
+                                class="form-control form-control-sm"
+                                placeholder="email"
+                              />
+                            </div>
+                            <div class="col-12 col-lg-6 col-xl-4">
+                              <label>ผู้ส่ง(แผนกงาน)</label>
+                              <input
+                                type="text"
+                                v-model="form.sender_department"
+                                class="form-control form-control-sm"
+                                placeholder="แผนก"
                               />
                             </div>
                           </div>

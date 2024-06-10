@@ -96,8 +96,9 @@
             />
 
             <div class="float-end">
-              <button type="button" class="btn btn-primary btn-sm" @click="select">
-                <i class="bi bi-save"></i> ตกลง
+              
+              <button type="button" class="btn btn-primary btn-sm ms-2" @click="select">
+                <i class="bi bi-save"></i> เลือก <span class="badge text-bg-danger"> {{selectedItems.length}}</span>
               </button>
               <button type="button" class="btn btn-secondary btn-sm ms-2" data-bs-dismiss="modal">
                 <i class="bi bi-times"></i> ปิด

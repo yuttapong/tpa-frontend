@@ -3,11 +3,11 @@ import { onMounted, computed, ref, onUpdated } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { DateTime, Number } from '@/helpers/myformat'
-import { Modal } from 'bootstrap'
+import { toast } from 'vue3-toastify'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import { useAppStore } from '@/stores/appStore'
-import ProductMeta from "@/views/invoice/components/ProductMeta.vue"
-
+import ProductMeta from '@/views/invoice/components/ProductMeta.vue'
+import ModalWorkOrder from '@/views/invoice/components/ModalWorkOrder.vue'
 const items = ref({})
 const appStore = useAppStore()
 const pagination = ref({
@@ -102,10 +102,6 @@ const getInvoiceById = async (id) => {
     }
   } catch (error) {}
 }
-const showDetail = (item) => {
-  modalView.value.show()
-  getInvoiceById(item.id)
-}
 
 const onSearch = async () => {
   pagination.value.curent_page = 1
@@ -114,29 +110,21 @@ const onSearch = async () => {
     loadData()
   } catch (error) {}
 }
-const onSearchProduct = async () => {
-  pagination.value.current_page = 1
-  pagination.value.total = 0
-  try {
-    loadWorkOrders()
-  } catch (error) {}
-}
-const resetFormSearch = () => {
-  formSearch.value.taxnumber = ''
-  formSearch.value.q = ''
-}
+
 const addItem = () => {
   modalProduct.value.show()
 }
 const clearItem = () => {
   invoiceStore.updateItems([])
-}
-const existCarts = (data) => {
-  const find = invoiceStore.items.filter((item) => item.item_code == data.item_code)
-  return Boolean(find.length)
+  const { data } = api.delete('v2/invoices/cart').then((rs) => {})
+  toast('ล้างรายการสำเร็จ', {
+    theme: 'auto',
+    type: 'default',
+    dangerouslyHTMLString: true,
+  })
 }
 
-const selectProduct = (item) => {
+const selectProduct = async (item) => {
   let row = {
     product_name: item.product_name,
     product_id: item.product_id,
@@ -151,23 +139,41 @@ const selectProduct = (item) => {
     price: item.total,
     qty: 1,
   }
-  invoiceStore.addItem(item)
+  const data = await api.post('v2/invoices/cart', row)
+  if (data) {
+    toast(`เพิ่มรายการ (${item.item_code}) สำเร็จ`, {
+      theme: 'auto',
+      type: 'default',
+      dangerouslyHTMLString: true,
+    })
+    invoiceStore.addItem(item)
+  }
 }
 
-const removeItem = (item, index) => {
-  invoiceStore.removeItem(item)
+const removeItem = async (item, index) => {
+  const { data } = await api.delete('v2/invoices/cart/' + item.item_id, {
+    item_i: item.item_id,
+  })
+  if (data.success) {
+    toast(`ลบ ${item.item_code} สำเร็จ`, {
+      theme: 'auto',
+      type: 'default',
+      dangerouslyHTMLString: true,
+    })
+    invoiceStore.removeItem(item)
+  }
 }
 
-const updateItems = () => {
-  invoiceStore.updateItems(invoiceItems.value)
+const save = () => {
+  const { data, message } = api.post('v2/invoices', formInvoice.value).then((rs) => {})
+  toast('สร้างรายการสำเร็จ', {
+    theme: 'auto',
+    type: 'default',
+    dangerouslyHTMLString: true,
+  })
 }
 
 onMounted(() => {
-  modalView.value = new Modal(modalViewRef.value)
-  modalView.value.hide()
-  modalProduct.value = new Modal(modalProductRef.value)
-  modalProduct.value.hide()
-  loadWorkOrders()
   if (invoiceStore.form) {
     formInvoice.value = invoiceStore.form
   }
@@ -293,8 +299,7 @@ onUpdated(() => {
                             </div>
 
                             <div class="">
-                              <ProductMeta :item="item"/>
-                            
+                              <ProductMeta :item="item" />
                             </div>
                           </td>
 
@@ -330,7 +335,7 @@ onUpdated(() => {
           <div class="card-body pt-3">
             <div class="row g-1">
               <div class="col-12">
-                <button class="btn btn-primary btn-sm w-100" @click="updateItems()">บันทึก</button>
+                <button class="btn btn-primary btn-sm w-100" @click="save()">บันทึก</button>
               </div>
               <div class="col-12">
                 <router-link
@@ -352,151 +357,8 @@ onUpdated(() => {
         </div>
       </div>
     </div>
+    <ModalWorkOrder ref="modalProduct" @select="selectProduct" />
   </section>
-
-  <div class="modal" ref="modalProductRef">
-    <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Work Orders</h5>
-
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <div class="my-2">
-            <form @submit.prevent="onSearchProduct()">
-              <div class="row g-2">
-                <div class="col-6 col-md-4 col-lg-4">
-                  <input
-                    type="search"
-                    v-model="formSearchProduct.bill_code"
-                    class="form-control form-control-sm"
-                    placeholder="เลขที่ใบขอรับบริการ"
-                    @keyup.enter="onSearchProduct()"
-                  />
-                </div>
-                <div class="col-6 col-md-4 col-lg-4">
-                  <input
-                    type="search"
-                    v-model="formSearchProduct.item_code"
-                    class="form-control form-control-sm"
-                    placeholder="เลขที่ WorderOrder"
-                    @keyup.enter="onSearchProduct()"
-                  />
-                </div>
-                <div class="col-6 col-md-4 col-lg-3"></div>
-                <div class="col-6 col-md-4 col-lg-3">
-                  <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                  <spinner :visible="workorderLoading" class="mx-2 p-0" />
-                </div>
-              </div>
-            </form>
-          </div>
-          <!-- Small tables -->
-          <div class="table table-responsive">
-            <table class="table table-sm table-striped table-bordered">
-              <thead>
-                <tr>
-                  <th scope="col" class="fw-bold">Action</th>
-                  <!-- <th scope="col">#</th> -->
-                  <th scope="col" class="fw-bold">Item ID</th>
-                  <th scope="col" class="fw-bold">Code</th>
-                  <th scope="col" class="fw-bold">Name</th>
-                  <th scope="col" class="fw-bold">จำนวนเงิน</th>
-   
-
-                  <th scope="col" class="fw-bold">Barcode</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, index) in items" :key="index">
-                  <th scope="row">
-                    <template v-if="!existCarts(item)">
-                      <button class="btn btn-secondary btn-sm d-block" @click="selectProduct(item)">
-                        <i class="bi bi-plus"></i>
-                      </button>
-                    </template>
-                  </th>
-                  <td>
-                    <span class="">{{ item.item_id }}</span>
-                  </td>
-                  <td>
-                    <span class="badge bg-dark text-light">{{ item.item_code }}</span>
-                  </td>
-                  <td>
-                    <div class="fw-bold"><i class="text-danger">{{item.manufaturer_name}}</i> {{ item.product_name }}</div>
-                    <ProductMeta :item="item"/>
-                  </td>
-                  <td>{{ parseFloat(item.total).toLocaleString() }}</td>
- 
-                  <td>{{ item.barcode_no }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- End small tables -->
-        </div>
-        <div class="modal-footer m-0 p-1 d-block">
-          <div class="row">
-            <!-- <div class="col-md-2 d-none d-sm-block">
-              <select
-                v-model="pagination.per_page"
-                @change="onSearchProduct"
-                class="form-select form-select-sm"
-              >
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div> -->
-            <div class="col-xs-10 col-md-10">
-              <vue-awesome-paginate
-                :total-items="pagination.total"
-                :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow"
-                v-model="pagination.current_page"
-                :on-click="onChangePage"
-                class=""
-              />
-            </div>
-
-            <div class="col-xs-2 col-md-2">
-              <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal">
-                ปิด
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" ref="modalViewRef">
-    <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Invoice</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body"></div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <style lang="scss" scoped>

@@ -50,7 +50,6 @@
 <script setup>
 import { ref,onMounted, defineExpose, computed } from 'vue'
 import { Modal } from 'bootstrap'
-import { api } from '@/helpers/api'
 import { DateTime } from "@/helpers/myformat"
 import { differenceInDays } from "date-fns"
 const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])

@@ -1,6 +1,8 @@
-import { ref, computed } from 'vue'
+import { ref, computed  } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
+import {AbilityBuilder} from "@casl/ability"
+
 
 export const useAppStore = defineStore('app', () => {
   const permissions = useLocalStorage('permissions', [])
@@ -16,16 +18,16 @@ export const useAppStore = defineStore('app', () => {
     },
   })
   const ability = ref()
-
+  const token = computed(() => accesstoken.value)
   function initCasl() {
-    const builder = new AbilityBuilder(this.ability)
+    const builder = new AbilityBuilder(ability.value)
     if (user.value.role.includes(['admin'])) {
       builder.can('read', 'Bill')
       builder.can('create', 'Bill')
       builder.can('update', 'Bill')
       builder.can('approve', 'Bill')
     }
-    ability.update(builder.rules)
+    ability.value.update(builder.rules)
   }
   function isLoggedIn() {
     return !!accesstoken.value
@@ -71,5 +73,6 @@ export const useAppStore = defineStore('app', () => {
     settings,
     setSetting,
     setPermissions,
+    initCasl,
   }
 })

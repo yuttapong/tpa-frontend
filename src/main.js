@@ -1,6 +1,6 @@
 import './assets/main.css'
 
-import { createApp } from 'vue'
+import { createApp, markRaw } from 'vue'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
@@ -22,6 +22,9 @@ import VueAwesomePaginate from 'vue-awesome-paginate'
 import 'vue-awesome-paginate/dist/style.css'
 import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
+import Vue3Toasity from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+
 const ability = createMongoAbility()
 
 const app = createApp(App)
@@ -36,6 +39,10 @@ app.use(abilitiesPlugin, ability)
 app.use(pinia)
 app.use(router)
 app.use(VueAwesomePaginate)
+app.use(Vue3Toasity, {
+  autoClose: 3000,
+  // ...
+})
 app.mount('#app')
 
 if (import.meta.env.DEV) {

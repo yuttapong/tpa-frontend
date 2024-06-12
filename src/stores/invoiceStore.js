@@ -23,13 +23,11 @@ export const useInvoiceStore = defineStore('invoice', {
           return row
         }
       })
-      console.log(find);
       return find.length > 0 ? true : false
     },
 
     addItem(item) {
       const exist = this.hasSelectedItem(item)
-      console.log('existfff', item, exist)
       if (item.discount === undefined) {
         item.discount = 0
       }
@@ -48,7 +46,6 @@ export const useInvoiceStore = defineStore('invoice', {
       this.carts = items
     },
     setForm(data) {
-      console.log('setForm', data);
       this.form = data
     },
   },

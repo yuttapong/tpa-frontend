@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="modal" ref="modalProductRef">
+    <div class="modal" ref="modelRef">
       <div class="modal-dialog modal-dialog-scrollable modal-lg modal-fullscreen-lg-down">
         <div class="modal-content">
           <div class="modal-header">
@@ -96,9 +96,9 @@
             />
 
             <div class="float-end">
-              
               <button type="button" class="btn btn-primary btn-sm ms-2" @click="select">
-                <i class="bi bi-save"></i> เลือก <span class="badge text-bg-danger"> {{selectedItems.length}}</span>
+                <i class="bi bi-save"></i> เลือก
+                <span class="badge text-bg-danger"> {{ selectedItems.length }}</span>
               </button>
               <button type="button" class="btn btn-secondary btn-sm ms-2" data-bs-dismiss="modal">
                 <i class="bi bi-times"></i> ปิด
@@ -112,7 +112,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps, onMounted, defineExpose } from 'vue'
+import { ref, onMounted, watchEffect } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'
@@ -120,8 +120,8 @@ const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
 const props = defineProps(['visible'])
 
 const appStore = useAppStore()
-let modalProduct = null
-let modalProductRef = ref(null)
+let modelEle = null
+let modelRef = ref(null)
 const items = ref([])
 const selectedItems = ref([])
 const loading = ref(false)
@@ -172,17 +172,17 @@ const loadData = async () => {
 
 const _show = () => {
   emit('onShow', selectedItems.value)
-  modalProduct.show()
+  modelEle.show()
 }
 
 const select = () => {
   emit('select', selectedItems.value)
   selectedItems.value = []
-  modalProduct.hide()
+  modelEle.hide()
   emit('onHide')
 }
-onMounted(() => {
-  modalProduct = new Modal(modalProductRef.value)
+watchEffect(() => {
+  modelEle = new Modal(modelRef.value)
   loadData()
 })
 defineExpose({ show: _show })

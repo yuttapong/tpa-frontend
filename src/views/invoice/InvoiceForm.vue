@@ -149,7 +149,11 @@ const selectProduct = async (item) => {
     invoiceStore.addItem(item)
   }
 }
-
+const emptyCart = () => {
+  formInvoice.value = {}
+  invoiceStore.setForm({})
+  invoiceStore.updateItems([])
+}
 const removeItem = async (item, index) => {
   const { data } = await api.delete('v2/invoices/cart/' + item.item_id, {
     item_i: item.item_id,
@@ -164,13 +168,20 @@ const removeItem = async (item, index) => {
   }
 }
 
-const save = () => {
-  const { data, message } = api.post('v2/invoices', formInvoice.value).then((rs) => {})
-  toast('สร้างรายการสำเร็จ', {
-    theme: 'auto',
-    type: 'default',
-    dangerouslyHTMLString: true,
-  })
+const save = async () => {
+  loading.value = true
+  const { data } = await api.post('v2/invoices', formInvoice.value)
+  if (data) {
+    loading.value = false
+    emptyCart()
+    toast(data.message, {
+      theme: 'auto',
+      type: 'default',
+      dangerouslyHTMLString: true,
+    })
+  } else {
+    loading.value = false
+  }
 }
 
 onMounted(() => {

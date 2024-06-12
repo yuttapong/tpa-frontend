@@ -52,13 +52,9 @@
                   </div>
                 </form>
                 <!-- Small tables -->
-                <vue-awesome-paginate
-                :total-items="pagination.total"
-                :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow"
-                v-model="pagination.current_page"
-                :on-click="onChangePage"
-              />
+                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                  :on-click="onChangePage" />
                 <div class="table-responsive">
                   <table class="table table-sm">
                     <thead>
@@ -86,8 +82,8 @@
                         </th>
                         <!-- <th scope="row">{{ index + 1 }}</th> -->
                         <td align="left" nowrap>
-                          <router-link :to="`/bills/code/${item.code}`" class="fw-bold border bg-dark text-white p-1"
-                            target="_blank">
+                          <router-link :to="`/bills/code/${item.code}`"
+                            class="w-full d-block fw-bold border bg-dark text-white p-1" target="_blank">
                             {{ item.code }}
                           </router-link>
                         </td>
@@ -112,16 +108,11 @@
                     </tbody>
                   </table>
                 </div>
-                <vue-awesome-paginate
-                :total-items="pagination.total"
-                :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow"
-                v-model="pagination.current_page"
-                :on-click="onChangePage"
-        
-              />
+                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                  :on-click="onChangePage" />
                 <!-- End small tables -->
-             
+
               </div>
 
               <div class="tab-pane fade pt-3 qt-detail" id="qt-detail">
@@ -598,7 +589,7 @@ const appStore = new useAppStore()
 const row = ref({})
 const items = ref({})
 const pagination = ref({
-  total:0,
+  total: 0,
   per_page: appStore.settings.page.perPage,
   current_page: 1,
 })

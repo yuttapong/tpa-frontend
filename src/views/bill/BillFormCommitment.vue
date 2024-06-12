@@ -12,7 +12,7 @@ import { formatDate, formatISO, isValid, parse } from 'date-fns'
 import { timezone } from "@/config"
 import { useAppStore } from '@/stores/appStore'
 import ConfirmCommitment from './components/ConfirmCommitment.vue'
-
+import { toast } from 'vue3-toastify'
 const route = useRoute()
 const appStore = useAppStore();
 const loading = ref(false)
@@ -64,7 +64,7 @@ const findCommitmentDate = async () => {
         commitment_date: commitmentDate.value,
         items: form.value.items.map((item) => {
             return {
-                duration: parseInt(item.product?.calhour),
+                duration: parseInt(item.product?.duration),
                 item_code: item.item_code,
                 lab_id: item.lab_id,
                 product_id: item.product_id,
@@ -78,7 +78,7 @@ const findCommitmentDate = async () => {
             }
         }),
     }
-    console.log(params);
+
     messageErrorCommitment.value = ''
     messageSuccessCommitment.value = ''
 
@@ -110,16 +110,9 @@ const findCommitmentDate = async () => {
                     messageErrorCommitment.value = err.message
                 }
             })
-        setTimeout(() => {
-            loadingCommitment.value = false
-        }, 2000)
         console.log('data', data);
         resultCommitment.value = data
-
-        if (data) {
-
-        }
-
+        loadingCommitment.value = false
         if (data.success) {
             let message = `ประมวลผลตารางคิวงานสำเร็จ`
             messageSuccessCommitment.value = message
@@ -148,7 +141,58 @@ const submit = () => {
     } else {
     }
 }
+const confirmCommitmentToKanban = async (params) => {
+    const { data } = await axios
+        .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${appStore.token}`,
+            },
+        })
+        .catch((err) => {
+            loadingCommitment.value = false
 
+            if (err.response) {
+                let data = err.response?.data
+                if (data) {
+                    messageErrorCommitment.value = data.message
+                } else {
+                    messageErrorCommitment.value = err.message
+                }
+            } else {
+                messageErrorCommitment.value = err.message
+            }
+            toast(messageErrorCommitment, {
+                theme: 'auto',
+                type: 'default',
+                dangerouslyHTMLString: true,
+            })
+        })
+    if (data) {
+        loadingCommitment.value = false
+        toast(data.message, {
+            theme: 'auto',
+            type: 'default',
+            dangerouslyHTMLString: true,
+        })
+    }
+}
+const updateCommitmentDate = async (row) => {
+    console.log('updateCommitmentDate', resultCommitment.value);
+    const bill = resultCommitment.value.data
+    const { data } = await api.post(`/v2/bills/${bill.bill_id}/commitment`, bill);
+    console.log(data);
+    if (data) {
+        if (data) {
+            toast(data.message, {
+                theme: 'auto',
+                type: 'default',
+                dangerouslyHTMLString: true,
+            })
+            confirmCommitmentToKanban(bill)
+        }
+    }
+}
 onMounted(() => {
     if (billCode.value) {
         api.get('/v2/bills/code/' + billCode.value).then((rs) => {
@@ -191,16 +235,24 @@ onUpdated(() => {
                         <!-- #####################START######################## -->
                         <form @submit.prevent="onSearch()">
                             <div class="my-2 table-responsive">
-                                <div class="row g-2">
-                                    <div class="col-12 col-lg-4 col-xl-3">
+                                <div class="row g-3">
+                                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                                         <label>วันที่</label>
                                         <input type="date" v-model="form.document_date" name="document_date"
-                                            id="document_date" class="form-control form-control-sm">
+                                            id="document_date" class="form-control form-control-sm" readonly>
                                     </div>
-                                    <div class="col-12 col-lg-4 col-xl-3">
+                                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                                         <label>Commitment Date</label>
-                                        <input type="date" v-model="form.commitment_date" name="commitment_date"
-                                            id="commitment_date" disabled class="form-control form-control-sm">
+                                        <template v-if="form.commitment_date">
+                                            <p>
+                                                {{ DateTime(form.commitment_date) }}
+                                            </p>
+                                        </template>
+                                        <template v-else>
+                                            <p>-</p>
+                                        </template>
+                                        <!-- <input type="date" v-model="form.commitment_date" name="commitment_date"
+                                            id="commitment_date" class="form-control form-control-sm" readonly> -->
                                     </div>
                                     <div class="col-12 col-lg-4 col-xl-3"></div>
                                     <div class="col-12 col-lg-4 col-xl-3"></div>
@@ -222,6 +274,7 @@ onUpdated(() => {
                                         </tr> -->
                                         <tr>
                                             <th scope="col" class="">#</th>
+                                            <th scope="col" class="">Item Id</th>
                                             <th scope="col" class="">Item Code</th>
                                             <th scope="col" class="">Product</th>
 
@@ -239,6 +292,9 @@ onUpdated(() => {
                                         <tr>
                                             <td>
                                                 {{ index + 1 }})
+                                            </td>
+                                            <td>
+                                                <span>{{ item.item_id }}</span>
                                             </td>
                                             <td nowrap>
                                                 {{ item.item_code }}
@@ -314,6 +370,23 @@ onUpdated(() => {
                     <div class="card-body pt-3">
                         <div class="row g-1">
                             <div class="col-12">
+                                <Spinner :visible="loadingCommitment" />
+                                <div v-if="messageErrorCommitment" class="alert alert-danger">
+                                    {{ messageErrorCommitment }}
+                                </div>
+                                <div v-if="messageSuccessCommitment" class="alert alert-success">
+                                    {{ messageSuccessCommitment }}
+                                    <div>
+                                        <span class="mx-2">วันที่เอกสาร</span> {{
+                                            DateTime(resultCommitment.data.document_date, {
+                                                hideTime: true
+                                            }) }}
+                                        <span class="mx-2">งานเสร็จวันที่</span> {{
+                                            DateTime(resultCommitment.data.commitment_date, {
+                                                hideTime: true
+                                            }) }}
+                                    </div>
+                                </div>
                                 <button class="btn btn-primary btn-sm w-100" @click="submit()">
                                     <i class="float-start bi bi-clock"></i> จองคิวงาน
                                 </button>
@@ -329,7 +402,7 @@ onUpdated(() => {
                 </div>
             </div>
         </div>
-        <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" />
+        <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" @onConfirm="updateCommitmentDate" />
     </section>
 </template>
 

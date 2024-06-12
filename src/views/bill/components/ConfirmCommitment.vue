@@ -32,7 +32,7 @@
           </div>
           <div class="modal-footer">
 
-            <button type="button" class="btn btn-primary btn-sm" @click="onConfirm()">
+            <button type="button" class="btn btn-primary btn-sm" @click="confirm()">
               <i class="bi bi-check"></i> ยืนยัน
             </button>
             <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
@@ -48,11 +48,11 @@
 </template>
 
 <script setup>
-import { ref,onMounted, defineExpose, computed } from 'vue'
+import { ref, onMounted, defineExpose, computed } from 'vue'
 import { Modal } from 'bootstrap'
 import { DateTime } from "@/helpers/myformat"
 import { differenceInDays } from "date-fns"
-const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
+const emit = defineEmits(['onHide', 'onShow', 'onConfirm'])
 const props = defineProps({
   title: {
     type: String,
@@ -76,9 +76,9 @@ const _show = () => {
   modalEl.show()
 }
 
-const onConfirm = () => {
-  emit('confirm', selectedItems.value)
-  selectedItems.value = []
+const confirm = () => {
+  emit('onConfirm', selectedItems.value)
+  selectedItems.value = props.data
   modalEl.hide()
   emit('onHide')
 }

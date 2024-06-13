@@ -158,7 +158,7 @@ const _show = () => {
 }
 
 const existCarts = (data) => {
-  const find = invoiceStore.items.filter((item) => item.item_code == data.item_code)
+  const find = invoiceStore.carts.filter((item) => item.item_code == data.item_code)
   return Boolean(find.length)
 }
 const workorderLoading = ref(false)

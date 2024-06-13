@@ -181,7 +181,7 @@ const select = () => {
   modelEle.hide()
   emit('onHide')
 }
-watchEffect(() => {
+onMounted(() => {
   modelEle = new Modal(modelRef.value)
   loadData()
 })

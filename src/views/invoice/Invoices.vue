@@ -5,11 +5,15 @@ import Spinner from '@/components/Spinner.vue'
 import { DateTime, Number } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
 import MyModal from '@/components/Modal.vue'
+import InvoiceDetail from '@/views/invoice/components/InvoiceDetail.vue'
 import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/appStore'
+
+import { useInvoiceStore } from '@/stores/invoiceStore'
 const row = ref({})
 const items = ref({})
 const appStore = useAppStore()
+const invoiceStore = useInvoiceStore()
 const pagination = ref({
   per_page: appStore.settings.page.perPage,
   current_page: 1,
@@ -52,7 +56,8 @@ const getInvoiceById = async (id) => {
   try {
     const { data } = await api.get('/v2/invoices/' + id)
     if (data) {
-      items.value = data
+      invoice.value = data
+      invoiceStore.setInvoice(data)
       loading.value = false
     }
   } catch (error) {}
@@ -191,12 +196,12 @@ onMounted(() => {
                         <tr>
                           <th scope="col" class="fw-bold text-decoration-underline">#</th>
                           <th scope="col" class="fw-bold text-decoration-underline">Code</th>
-                          <th scope="col" class="fw-bold text-decoration-underline">Date</th>
+                          <th scope="col" class="fw-bold text-decoration-underline">Total Net</th>
+                          <th scope="col" class="fw-bold text-decoration-underline">Issue Date</th>
+                          <th scope="col" class="fw-bold text-decoration-underline">Due Date</th>
 
                           <th scope="col" class="fw-bold text-decoration-underline">Customer</th>
-                          <th scope="col" class="fw-bold text-decoration-underline">
-                            Approve Status
-                          </th>
+                          <th scope="col" class="fw-bold text-decoration-underline">Contact</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -211,30 +216,36 @@ onMounted(() => {
                               {{ item.code }}
                             </a>
                           </td>
+                          <td>{{ parseFloat(item.totalnet).toLocaleString()}}</td>
 
                           <td>
                             <span class="badge bg-light text-dark">{{
-                              DateTime(new Date(item.date_starts))
+                              item.issue_date ? DateTime(item.issue_date) : ''
+                            }}</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-light text-dark">{{
+                              item.due_date ? DateTime(item?.due_date) : ''
                             }}</span>
                           </td>
 
                           <td>
-                            <div>{{ item.customer?.companyname }}</div>
-                            <small class="text-danger">({{ item.customer?.taxnumber }})</small>
+                            <div>{{ item.customer_name }}</div>
+                            <small v-if="item.customer" class="text-danger">({{ item.customer?.taxnumber }})</small>
                           </td>
-                          <td>{{ item.status }}</td>
+                          <td>{{ item.contact_name }}</td>
                         </tr>
-                      </tbody>+
+                      </tbody>
+                      +
                     </table>
                   </div>
                   <vue-awesome-paginate
-                :total-items="pagination.total"
-                :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow"
-                v-model="pagination.current_page"
-                :on-click="onChangePage"
-        
-              />
+                    :total-items="pagination.total"
+                    :items-per-page="pagination.per_page"
+                    :max-pages-shown="appStore.settings.page.maxPageShow"
+                    v-model="pagination.current_page"
+                    :on-click="onChangePage"
+                  />
                   <!-- End small tables -->
                 </div>
 
@@ -599,7 +610,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
     <!-- <MyModal v-model:visible="visibleModal" header="xxx"></MyModal> -->
 
     <div class="modal" ref="modalViewRef">
-      <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
+      <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Invoice</h5>
@@ -610,7 +621,9 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body"></div>
+          <div class="modal-body">
+            <InvoiceDetail />
+          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>

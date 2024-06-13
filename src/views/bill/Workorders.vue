@@ -41,40 +41,60 @@
               <div class="tab-pane fade show active qt-index" id="qt-index">
                 <form @submit.prevent="search" class="rounded bg-info p-2">
                   <div class="row">
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-3 col-xxl-1">
                       <label>Tax Number</label>
                       <input
                         type="search"
-                        v-model="taxnumber"
+                        v-model="formSearch.taxnumber"
                         name="taxnumber"
                         class="form-control form-control-sm"
                         placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
                         @keyup.enter="search"
                       />
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-3 col-xxl-1">
                       <label>Item Code</label>
                       <input
                         type="search"
-                        v-model="item_code"
+                        v-model="formSearch.item_code"
                         class="form-control form-control-sm"
                         placeholder="Item Code"
                         @keyup.enter="search"
                         autofocus
                       />
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-3 col-xxl-1">
                       <label>เลขที่ใบขอรับบริการ</label>
                       <input
                         type="search"
-                        v-model="bill_code"
+                        v-model="formSearch.bill_code"
                         class="form-control form-control-sm"
                         placeholder="Bill Code"
                         @keyup.enter="search"
                         autofocus
                       />
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-3 col-xxl-1" v-if="labs">
+                      <label>Lab</label>
+
+                      <select class="form-select form-select-sm" @change="onSelectLab">
+                        <option value="">--Lab--</option>
+                        <option v-for="(item, key) in labs" :key="item.id" :value="item.id">
+                          {{ item.name_th }} - {{ item.name }} ({{ item.sublabs.length }})
+                        </option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-3 col-xxl-1" v-if="labs">
+                      <label>Sub Lab</label>
+                      <select class="form-select form-select-sm" v-model="formSearch.sublab_id">
+                        <option value="">--SubLab--</option>
+                        <option v-for="(item, key) in sublabs" :key="item" :value="item.id">
+                          {{item.code}} : {{ item.name_th }} - {{ item.name }}
+                        </option>
+                      </select>
+
+                    </div>
+                    <div class="col-12 col-md-3 col-xxl-1">
                       <button type="submit" class="btn btn-sm btn-primary mt-4">
                         <i class="bi bi-search"></i>
                       </button>
@@ -97,7 +117,7 @@
                         <th scope="col" class="fw-bold text-decoration-underline">Product</th>
                         <th scope="col" class="fw-bold text-decoration-underline">Date</th>
                         <th scope="col" class="fw-bold text-decoration-underline">Customer</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Status</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">EMS Receive</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -105,9 +125,12 @@
                         <th scope="row">{{ index + 1 }}</th>
                         <td>{{ item.item_id }}</td>
                         <td nowrap>
-                          <span class="fw-bold border bg-dark text-white p-1">{{
-                            item.item_code
-                          }}</span>
+                          <small
+                            class="border bg-dark text-white p-1 w-full"
+                            role="button"
+                            @click="openModalWorkOrder(item)"
+                            >{{ item.item_code }}</small
+                          >
                         </td>
                         <td>
                           <div>{{ item.product_name }}</div>
@@ -144,7 +167,7 @@
                           <small class="text-danger mx-1">({{ item.bill.agent_name }})</small>
                           <small class="text-dark mx-1">({{ item.customer.taxnumber }})</small>
                         </td>
-                        <td>{{}}</td>
+                        <td>{{ item.ems_receive }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -499,20 +522,27 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
         </div>
       </div>
     </div>
+    <WorderOrderDetail ref="modalWorkOrder" :data="row" :title="billStore.workorder?.item_code" />
   </section>
 </template>
 
 <script setup>
 import { onMounted, onBeforeMount, computed, ref } from 'vue'
-import avatar from '@/assets/img/profile-img.jpg'
+
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { DateTime, Number } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
-
+import WorderOrderDetail from './components/WorderOrderDetail.vue'
+import { useBillStore } from '@/stores/billStore'
 const appStore = useAppStore()
+const modalWorkOrder = ref(null)
 const row = ref({})
 const items = ref({})
+
+const billStore = useBillStore()
+const labs = ref([])
+const sublabs = ref([])
 const pagination = ref({
   total: 0,
   current_page: 1,
@@ -520,14 +550,34 @@ const pagination = ref({
 })
 const loading = ref(true)
 
+const formSearch = ref({
+  q: '',
+  item_code: '',
+  taxnumber: '',
+  bill_code: '',
+  barcode_no: '',
+})
+const getLabs = async () => {
+  const { data } = await api.get('/v2/labs/all')
+  if (data) {
+    labs.value = data
+  }
+}
+
+const getSublabs = (labid) => {
+  formSearch.value.sublab_id = ""
+  sublabs.value = []
+  const x = labs.value.filter((i) => i.id == labid)
+  if(x[0] != undefined ) {
+    sublabs.value = x[0].sublabs
+  }
+}
 const loadData = async () => {
   loading.value = true
   let params = {
     page: pagination.value.current_page,
     per_page: pagination.value.per_page,
-    taxnumber: taxnumber.value,
-    item_code: item_code.value,
-    bill_code: bill_code.value,
+    ...formSearch.value,
   }
   const { data } = await api.get('/v2/workorders', {
     params: params,
@@ -544,12 +594,12 @@ const loadData = async () => {
     loading.value = false
   }
 }
-const q = ref('')
-const taxnumber = ref('')
-const item_code = ref('')
-const barcode_no = ref('')
-const bill_code = ref('')
-
+const onSelectLab = (e) => {
+  console.log(e.target.value)
+  const id = e.target.value
+  getSublabs(id)
+  
+}
 const search = async () => {
   pagination.value.current_page = 1
   loadData()
@@ -558,8 +608,18 @@ const onChangePage = (page) => {
   pagination.value.current_page = page
   loadData()
 }
-
+const openModalWorkOrder = async (row) => {
+  console.log(row)
+  billStore.setWorkOrder(row)
+  modalWorkOrder.value.show()
+  const { data } = await api.get('v2/workorders/code/' + row.item_code)
+  if (data) {
+    console.log(data)
+    billStore.setWorkOrder(data)
+  }
+}
 onBeforeMount(() => {
+  getLabs()
   search()
 })
 </script>

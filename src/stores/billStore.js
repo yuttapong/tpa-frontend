@@ -7,6 +7,7 @@ export const useBillStore = defineStore('invoice', {
       formMode: 'add',
       selectedItems: [],
       form: {},
+      workorder:{}
     }
   },
   getters: {
@@ -47,6 +48,9 @@ export const useBillStore = defineStore('invoice', {
     },
     setForm(data) {
       this.form = data
+    },
+    setWorkOrder(data) {
+      this.workorder = data
     },
   },
   persist: {

@@ -21,7 +21,10 @@
             <ul class="nav nav-tabs nav-tabs-bordered">
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
-                  ใบขอรับบริการ <span v-if="pagination">({{ parseInt(pagination.total).toLocaleString() || 0 }})</span>
+                  ใบขอรับบริการ
+                  <span v-if="pagination"
+                    >({{ parseInt(pagination.total).toLocaleString() || 0 }})</span
+                  >
                 </button>
               </li>
             </ul>
@@ -30,21 +33,43 @@
                 <form @submit.prevent="onSearch()" class="mb-3">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
-                        placeholder="Code" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.code"
+                        name="code"
+                        class="form-control form-control-sm"
+                        placeholder="Code"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
-                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.taxnumber"
+                        name="taxnumber"
+                        class="form-control form-control-sm"
+                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.q"
+                        name="q"
+                        class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
+                      <input
+                        type="reset"
+                        class="btn btn-secondary btn-sm mx-2"
+                        value="Reset"
+                        @click="resetFormSearch"
+                      />
                       <router-link class="btn btn-sm btn-success" to="/bills/form">
                         <i class="bi bi-plus"></i> สร้าง
                       </router-link>
@@ -52,9 +77,13 @@
                   </div>
                 </form>
                 <!-- Small tables -->
-                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-                  :on-click="onChangePage" />
+                <vue-awesome-paginate
+                  :total-items="pagination.total"
+                  :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow"
+                  v-model="pagination.current_page"
+                  :on-click="onChangePage"
+                />
                 <div class="table-responsive">
                   <table class="table table-sm">
                     <thead>
@@ -72,18 +101,27 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="(item, index) in     items    " :key="index">
+                      <tr v-for="(item, index) in items" :key="index">
                         <th scope="row" nowrap>
-                          <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }">
-                            <i class="bi bi-calendar mx-1" role="button"></i></router-link>
-                          <router-link :to="{ name: 'bills.formEdit', params: { code: item.code } }">
-                            <i class="bi bi-pencil mx-1" role="button"></i></router-link>
+                          <router-link
+                            :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
+                          >
+                            <i class="bi bi-calendar mx-1" role="button"></i
+                          ></router-link>
+                          <router-link
+                            :to="{ name: 'bills.formEdit', params: { code: item.code } }"
+                          >
+                            <i class="bi bi-pencil mx-1" role="button"></i
+                          ></router-link>
                           <i class="bi bi-search mx-1" @click="showDetail(item)" role="button"></i>
                         </th>
                         <!-- <th scope="row">{{ index + 1 }}</th> -->
                         <td align="left" nowrap>
-                          <router-link :to="`/bills/code/${item.code}`"
-                            class="w-full d-block fw-bold border bg-dark text-white p-1" target="_blank">
+                          <router-link
+                            :to="`/bills/code/${item.code}`"
+                            class="w-full d-block fw-bold border bg-dark text-white p-1"
+                            target="_blank"
+                          >
                             {{ item.code }}
                           </router-link>
                         </td>
@@ -108,243 +146,17 @@
                     </tbody>
                   </table>
                 </div>
-                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-                  :on-click="onChangePage" />
+                <vue-awesome-paginate
+                  :total-items="pagination.total"
+                  :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow"
+                  v-model="pagination.current_page"
+                  :on-click="onChangePage"
+                />
                 <!-- End small tables -->
-
               </div>
 
-              <div class="tab-pane fade pt-3 qt-detail" id="qt-detail">
-                <!--  Detail -->
 
-                <h5 class="card-title">About</h5>
-                <p class="small fst-italic">
-                  Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus.
-                  Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam
-                  autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.
-                </p>
-
-                <h5 class="card-title">Profile Details</h5>
-
-                <div class="row">
-                  <div class="col-lg-3 col-md-4 label">รหัสพนัก</div>
-                  <div class="col-lg-9 col-md-8"></div>
-                </div>
-                <div class="row">
-                  <div class="col-lg-3 col-md-4 label">Full Name</div>
-                  <div class="col-lg-9 col-md-8"></div>
-                </div>
-
-                <div class="row">
-                  <div class="col-lg-3 col-md-4 label">Company</div>
-                  <div class="col-lg-9 col-md-8">Lueilwitz, Wisoky and Leuschke</div>
-                </div>
-
-                <div class="row">
-                  <div class="col-lg-3 col-md-4 label">Job</div>
-                  <div class="col-lg-9 col-md-8">Web Designer</div>
-                </div>
-
-                <div class="row">
-                  <div class="col-lg-3 col-md-4 label">Country</div>
-                  <div class="col-lg-9 col-md-8">USA</div>
-                </div>
-
-                <div class="row">
-                  <div class="col-lg-3 col-md-4 label">Address</div>
-                  <div class="col-lg-9 col-md-8">A108 Adam Street, New York, NY 535022</div>
-                </div>
-
-                <div class="row">
-                  <div class="col-lg-3 col-md-4 label">Phone</div>
-                  <div class="col-lg-9 col-md-8">(436) 486-3538 x29071</div>
-                </div>
-
-                <div class="row">
-                  <div class="col-lg-3 col-md-4 label">Email</div>
-                  <div class="col-lg-9 col-md-8">k.anderson@example.com</div>
-                </div>
-                <div class="row">
-                  <div class="col-lg-3 col-md-4 label">Permissions</div>
-                  <div class="col-lg-9 col-md-8">
-                    <span class="badge bg-light text-dark mx-1" v-for="(    name, key    ) in     row.permisions    "
-                      :key="key">
-                      {{ name }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="tab-pane fade pt-3 qt-edit" id="qt-edit">
-                <!-- Profile Edit Form -->
-                <form>
-                  <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="fullName" type="text" class="form-control" id="fullName" value="Kevin Anderson" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
-                    <div class="col-md-8 col-lg-9">
-                      <textarea name="about" class="form-control" id="about" style="height: 100px">
-Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="company" type="text" class="form-control" id="company"
-                        value="Lueilwitz, Wisoky and Leuschke" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="job" type="text" class="form-control" id="Job" value="Web Designer" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="Country" class="col-md-4 col-lg-3 col-form-label">Country</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="country" type="text" class="form-control" id="Country" value="USA" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="Address" class="col-md-4 col-lg-3 col-form-label">Address</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="address" type="text" class="form-control" id="Address"
-                        value="A108 Adam Street, New York, NY 535022" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="phone" type="text" class="form-control" id="Phone" value="(436) 486-3538 x29071" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="email" type="email" class="form-control" id="Email" value="k.anderson@example.com" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="facebook" type="text" class="form-control" id="Facebook"
-                        value="https://facebook.com/#" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="instagram" type="text" class="form-control" id="Instagram"
-                        value="https://instagram.com/#" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="linkedin" type="text" class="form-control" id="Linkedin"
-                        value="https://linkedin.com/#" />
-                    </div>
-                  </div>
-
-                  <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                  </div>
-                </form>
-                <!-- End Profile Edit Form -->
-              </div>
-
-              <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
-                <!-- Settings Form -->
-                <form @submit.prevent="() => { }">
-                  <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
-                    <div class="col-md-8 col-lg-9">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="changesMade" checked />
-                        <label class="form-check-label" for="changesMade">
-                          Changes made to your account
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="newProducts" checked />
-                        <label class="form-check-label" for="newProducts">
-                          Information on new products and services
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="proOffers" />
-                        <label class="form-check-label" for="proOffers">
-                          Marketing and promo offers
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled />
-                        <label class="form-check-label" for="securityNotify">
-                          Security alerts
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                  </div>
-                </form>
-                <!-- End settings Form -->
-              </div>
-
-              <div class="tab-pane fade pt-3" id="profile-change-password">
-                <!-- Change Password Form -->
-                <form>
-                  <div class="row mb-3">
-                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="password" type="password" class="form-control" id="currentPassword" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="newpassword" type="password" class="form-control" id="newPassword" />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="renewpassword" type="password" class="form-control" id="renewPassword" />
-                    </div>
-                  </div>
-
-                  <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Change Password</button>
-                  </div>
-                </form>
-                <!-- End Change Password Form -->
-              </div>
             </div>
             <!-- End Bordered Tabs -->
           </div>
@@ -358,7 +170,12 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Bill เลขที่ : {{ bill.code }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -394,8 +211,6 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             </div>
           </div>
 
-          <CommitmentBooking :data="dataCommitment" @onSearch="onSearchCommitment"></CommitmentBooking>
-
           <div class="" v-if="loadingItems">
             <div class="spinner-grow" role="status">
               <span class="visually-hidden">Loading...</span>
@@ -417,9 +232,14 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(    row, rowIndex    ) in     bill.items    " :key="row">
+                <tr v-for="(row, rowIndex) in bill.items" :key="row">
                   <th>
-                    <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
+                    <input
+                      type="checkbox"
+                      v-model="itemsSelected"
+                      name="itemsSelected[]"
+                      :value="row"
+                    />
                   </th>
                   <th>{{ rowIndex + 1 }}</th>
                   <td>{{ row.item_code }}</td>
@@ -441,7 +261,8 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             </table>
           </div>
           <p>
-            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label>{{ bill.note_customers }}
+            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label
+            >{{ bill.note_customers }}
           </p>
         </div>
         <div class="modal-footer d-block">
@@ -453,15 +274,23 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             </div>
 
             <div class="p-1">
-              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
-                itemsSelected.length }} รายการ</span>
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
+                >{{ itemsSelected.length }} รายการ</span
+              >
             </div>
           </div>
 
           <div class="row g-2">
-            <div class="col-12 col-lg-12 col-xl-12"></div>
+            <div class="col-12 col-lg-12 col-xl-12">
+              <Spinner :visible="loadingCancelCommitment"/>
+              <span v-if="resultCancelCommitment.success === true" class="text-success">{{resultCancelCommitment.message}}</span>
+              <span v-if="resultCancelCommitment.success === false" class="text-danger">{{resultCancelCommitment.message}}</span>
+            </div>
 
             <div class="col-12 col-lg-6 col-xl-6">
+              <button type="button" class="btn btn-danger btn-sm mx-1" @click="cancelBill(bill)">
+                <i class="bi bi-x"></i> ยกเลิก
+              </button>
               <button type="button" class="btn btn-success btn-sm mx-1" @click="newInvoice">
                 <i class="bi bi-plus"></i> Invoice Cart
               </button>
@@ -482,7 +311,12 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -493,13 +327,21 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>
-                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.customer_name"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
+                <input
+                  type="date"
+                  v-model="invoice.document_date"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
           </div>
@@ -507,13 +349,21 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>
-                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.contact_name"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
             <div class="col-8">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.address_detail"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
           </div>
@@ -530,7 +380,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(    row, rowIndex    ) in     invoice.items    " :key="row">
+                <tr v-for="(row, rowIndex) in invoice.items" :key="row">
                   <th>{{ rowIndex + 1 }}</th>
                   <th>{{ row.item_code }}</th>
                   <th>{{ row.product_name }}</th>
@@ -540,12 +390,22 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                     }}</span>
                   </th>
                   <th>
-                    <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
-                      style="width: 100px" />
+                    <input
+                      type="number"
+                      name="price[]"
+                      v-model="row.price"
+                      class="form-control form-control-sm"
+                      style="width: 100px"
+                    />
                   </th>
                   <th>
-                    <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
-                      style="width: 100px" />
+                    <input
+                      type="number"
+                      name="price[]"
+                      v-model="row.discount"
+                      class="form-control form-control-sm"
+                      style="width: 100px"
+                    />
                   </th>
                 </tr>
               </tbody>
@@ -576,7 +436,7 @@ import { DateTime, Number } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import router from '@/router'
-
+import { toast } from 'vue3-toastify'
 import { timezone } from '@/config'
 import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
 import { formatISO } from 'date-fns'
@@ -593,7 +453,7 @@ const pagination = ref({
   per_page: appStore.settings.page.perPage,
   current_page: 1,
 })
-const loadingCommitment = ref(false)
+const loadingCancelCommitment = ref(false)
 const loading = ref(true)
 const loadingItems = ref(true)
 const bill = ref({})
@@ -602,9 +462,8 @@ const modalViewRef = ref(null)
 const modalView = ref(null)
 const modalInvoiceRef = ref(null)
 const modalInvoice = ref(null)
-const messageSuccessCommitment = ref()
-const messageErrorCommitment = ref()
-const resultCommitment = ref({})
+
+const resultCancelCommitment = ref({})
 const formSearch = ref({
   code: '',
   taxnumber: '',
@@ -613,27 +472,7 @@ const formSearch = ref({
 
 const invoiceStore = useInvoiceStore()
 
-const commitmentPriority = [
-  {
-    code: 'low',
-    text: 'ต่ำ',
-    default: false,
-  },
-  {
-    code: 'medium',
-    text: 'ปานกลาง',
-    default: true,
-  },
-  {
-    code: 'height',
-    text: 'สูง (ไม่มีการจองคิว)',
-    default: false,
-  },
-]
-const formCommitment = ref({
-  prority: 'medium',
-  commitment_date: '',
-})
+
 const loadData = async () => {
   loading.value = true
   let params = {
@@ -680,24 +519,65 @@ const showDetail = (item) => {
   modalView.value.show()
   getBillById(item.id)
 }
-const dataCommitment = computed(() => {
-  let d1 = bill.value.document_date ? new Date(`${bill.value.document_date} 00:00:00`) : ''
-  // let d2 = new Date(`${formCommitment.value.commitment_date} 00:00:00`)
-  const params = {
-    bill_id: bill.value.id,
-    code: bill.value.code,
-    document_date: d1 ? formatISO(toZonedTime(d1, timezone)) : '',
-    commitment_date: '',
-    items: bill.value.items,
-  }
-  return params
-})
-const onSearchCommitment = (data) => {
-  console.log('onSearchCommitment', data);
-}
+
 const errorMsg = ref()
 const itemsSelected = ref([])
 
+const cancelBill = async (item) => {
+  resultCancelCommitment.value = {}
+  let params = {
+    bill_id: item.id,
+    bill_code: item.code,
+  }
+  loadingCancelCommitment.value = true
+  const { data } = await axios
+    .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${appStore.token}`,
+      },
+    })
+    .catch((err) => {
+      resultCancelCommitment.value.success = false
+      loadingCancelCommitment.value = false
+      if (err.response) {
+        let data = err.response?.data
+        if (data) {
+          resultCancelCommitment.value.message = data.message
+          toast(data.message, {
+            theme: 'auto',
+            type: 'default',
+            dangerouslyHTMLString: true,
+          })
+        } else {
+          resultCancelCommitment.value.message = err.message
+          toast(err.message, {
+            theme: 'auto',
+            type: 'default',
+            dangerouslyHTMLString: true,
+          })
+        }
+      } else {
+        resultCancelCommitment.value.message = err.message
+        toast(err.message, {
+          theme: 'auto',
+          type: 'default',
+          dangerouslyHTMLString: true,
+        })
+      }
+    })
+  if (data) {
+    resultCancelCommitment.value.success = true
+    resultCancelCommitment.value.message = data.message
+    loadingCancelCommitment.value = false
+    toast(data.message, {
+      theme: 'auto',
+      type: 'success',
+      dangerouslyHTMLString: true,
+    })
+  }
+  return
+}
 const newInvoice = () => {
   errorMsg.value = ''
   const i = bill.value
@@ -753,7 +633,7 @@ const createInvoice = () => {
 const onSearch = async () => {
   try {
     await loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 const onChangePage = (page) => {
   pagination.value.current_page = page
@@ -764,75 +644,6 @@ const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
   formSearch.value.q = ''
 }
-
-const seachCommitmentDate = async () => {
-  messageErrorCommitment.value = ''
-  messageSuccessCommitment.value = ''
-
-  if (!formCommitment.value.commitment_date || !formCommitment.value.priority) {
-    messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
-    return
-  }
-  loadingCommitment.value = true
-  let d1 = new Date(`${bill.value.document_date} 00:00:00`)
-  let d2 = new Date(`${formCommitment.value.commitment_date} 00:00:00`)
-  const params = {
-    bill_id: bill.value.id,
-    code: bill.value.code,
-    document_date: formatISO(toZonedTime(d1, timezone)),
-    commitment_date: formatISO(toZonedTime(d2, timezone)),
-    // document_date: format(toZonedTime(d1, timezone), 'yyyy-MM-dd'),
-    // commitment_date: format(toZonedTime(d2, timezone), 'yyyy-MM-dd'),
-    items: bill.value.items,
-    priority: formCommitment.value.priority,
-  }
-  // console.log(params)
-  try {
-    errorMsg.value = ''
-    const { data, status } = await axios
-      .post(import.meta.env.VITE_KANBAN_API_URL + '/bills/inquiry', params, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${appStore.token}`,
-        },
-      })
-      .catch((err) => {
-        loadingCommitment.value = false
-        const x = err.toJSON()
-        console.log(x)
-        if (err.response) {
-          let data = err.response?.data
-          if (data) {
-            messageErrorCommitment.value = data.message
-          } else {
-            messageErrorCommitment.value = err.message
-          }
-        } else {
-          messageErrorCommitment.value = err.message
-        }
-      })
-    setTimeout(() => {
-      loadingCommitment.value = false
-    }, 2000)
-    resultCommitment.value = data
-    if (data) {
-      console.log('=>', data)
-      if (data.success) {
-        let message = `สำเร็จค้นพบวันที่ ${formatISO(data.data?.commitment_date)}`
-        resultCommitment.value.message = message
-        console.log(message)
-        messageSuccessCommitment.value = message
-      } else {
-        messageErrorCommitment.value = data.message
-      }
-    }
-  } catch (error) {
-    console.log('error', error)
-
-    loadingCommitment.value = false
-  }
-}
-
 
 onMounted(() => {
   errorMsg.value = ''
@@ -859,8 +670,6 @@ onMounted(() => {
 }
 
 .checkbox {
-  transform: scale(
-      /*desired magnification*/
-    );
+  transform: scale(/*desired magnification*/);
 }
 </style>

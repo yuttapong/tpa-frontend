@@ -3,21 +3,20 @@ import { defineStore } from 'pinia'
 export const useInvoiceStore = defineStore('invoice', {
   state: () => {
     return {
-      form:{},
+      form: {},
       carts: [],
+      invoice: {},
+      items: [],
     }
   },
   getters: {
-    items(state) {
-      return state.carts
-    },
-    countItems(state) {
+    countCartItems(state) {
       return state.carts.length
     },
   },
   actions: {
     hasSelectedItem(item) {
-      console.log("hassl", item);
+      console.log('hassl', item.item_code)
       let find = this.carts.filter((row) => {
         if (item.item_code == row.item_code) {
           return row
@@ -45,12 +44,18 @@ export const useInvoiceStore = defineStore('invoice', {
     updateItems(items) {
       this.carts = items
     },
+    emptyCart() {
+      this.carts = []
+    },
     setForm(data) {
       this.form = data
+    },
+    setInvoice(data) {
+      this.invoice = data
     },
   },
   persist: {
     enabled: true,
-    strategies: [{ storage: localStorage, paths: ['form','carts'] }],
+    strategies: [{ storage: localStorage, paths: ['form', 'carts'] }],
   },
 })

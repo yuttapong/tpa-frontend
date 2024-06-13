@@ -23,7 +23,7 @@
               </button>
             </div>
             <div class="card-body">
-              <slot>{{ modelValue }}</slot>
+              <slot></slot>
             </div>
           </div>
         </div>
@@ -33,10 +33,7 @@
 </template>
 
 <script setup>
-import { ref} from 'vue'
-const emit = defineEmits()
-
-const isVisible = ref(false)
+import { ref } from 'vue'
 
 const backdropClick = (event) => {
   if (event.target.id == 'backdrop' && props.closeable == true) {
@@ -53,7 +50,7 @@ const props = defineProps({
   closeable: {
     type: Boolean,
     required: false,
-    default: true,
+    default: false,
   },
   header: {
     type: String,
@@ -71,6 +68,10 @@ const props = defineProps({
     default: null,
   },
 })
+
+const emit = defineEmit()
+
+const isVisible = ref(false)
 </script>
 
 <style scoped>
@@ -78,7 +79,6 @@ const props = defineProps({
 .fade-leave-active {
   transition: opacity 0.5s;
 }
-
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

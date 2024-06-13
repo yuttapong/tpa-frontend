@@ -13,6 +13,8 @@ import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
 import { formatDate, formatISO } from 'date-fns'
 import { timezone } from '@/config'
 import { useAppStore } from '@/stores/appStore'
+import { toast } from 'vue3-toastify'
+
 const route = useRoute()
 const appStore = useAppStore()
 const loading = ref(false)
@@ -258,15 +260,18 @@ const createBill = () => {
       console.log(err)
     })
 }
-const saveBill = () => {
+const saveBill = async () => {
   form.value.items = billStore.selectedItems
-  console.log('formCommitment', formCommitment.value)
-  console.log('saveBill', form.value)
-  billStore.setForm(form.value)
   if (form.value.id > 0) {
-    api.put('v2/bills/' + form.value.id, form.value).then((rs) => {
-      console.log(rs)
-    })
+    const {data} = await api.put('v2/bills/' + form.value.id, form.value)
+    console.log("=>",data.message)
+    if (data.success) {
+      toast(data.message, {
+        theme: 'auto',
+        type: 'success',
+        dangerouslyHTMLString: true,
+      })
+    }
   }
 }
 
@@ -613,7 +618,8 @@ onUpdated(() => {
                                 <tr>
                                   <td>{{ index + 1 }})</td>
                                   <td colspan="5">
-                                    <h5 class="h6 text-primary my-0 fw-bolder">
+                                    <h5 class="h6 my-0 fw-bolder">
+                                      <span class="text-danger me-3">{{ item?.item_code }}</span>
                                       {{ item?.product_name }}
                                     </h5>
                                     <div class="text-danger">{{ item?.product_code }}</div>

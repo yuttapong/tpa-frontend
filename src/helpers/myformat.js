@@ -7,12 +7,12 @@ export const DateTime = (date, options) => {
   }
   let op = {
     dateStyle: 'medium', //  full, long, medium, short
-    timeStyle: 'short', //  full, long, medium, short
     timeZone: 'Asia/Bangkok',
     hourCycle: 'h24',
-    hideTime: true,
   }
-  if (date) {
+
+  if (date && date != '0000-00-00') {
+    console.log('ddd', date)
     let _date = new Date(date)
     return new Intl.DateTimeFormat(myFormatLang, { ...op, ...options }).format(_date)
   }

@@ -7,7 +7,7 @@
         "name": "Yuttapong Napikun",
         "email": "yuttaponk@gmail.com"
     },
-    "homepage": "https://test-appscal.tpacal.or.th/appcal",
+    "homepage": "https://test-appscal.tpacal.or.th/appcal002",
     "scripts": {
         "dev": "vite",
         "build": "vite build",

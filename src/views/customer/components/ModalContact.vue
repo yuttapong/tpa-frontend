@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="modal" ref="modalElement">
-      <div class="modal-dialog modal-dialog-scrollable modal-lg modal-fullscreen-lg-down">
+      <div class="modal-dialog modal-dialog-scrollable modal-xl modal-fullscreen-lg-down">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">รายชื่อ/ผู้ติดต่อ</h5>
@@ -20,7 +20,7 @@
                   <div class="col-6 col-md-4 col-lg-3">
                     <input
                       type="search"
-                      v-model="formSearchProduct.q"
+                      v-model="formSearch.q"
                       class="form-control form-control-sm"
                       placeholder="ชื่อ, สกุล"
                       autofocus
@@ -30,7 +30,7 @@
                   <div class="col-6 col-md-4 col-lg-3">
                     <input
                       type="search"
-                      v-model="formSearchProduct.taxnumber"
+                      v-model="formSearch.taxnumber"
                       class="form-control form-control-sm"
                       placeholder="taxnumber"
                       @keyup.enter="onSearch()"
@@ -83,9 +83,12 @@
                     <td>
                       <div class="">
                         {{ item.contactname }}
-                        <span v-if="item.contactposition" class="mx-1 p-1 text-danger">{{
+                        <div style="font-size:12px;" v-if="item.contactposition" class="mx-1 p-1 text-danger">{{
                           item.contactposition
-                        }}</span>
+                        }}</div>
+                        <div style="font-size:12px;" v-if="item.company" class="mx-1 p-1 text-info">{{
+                          item.company.companyname
+                        }}</div>
                       </div>
 
                       <!-- <span v-if="item.model" class="mx-1 p-1">{{ item.model }}</span>
@@ -104,7 +107,15 @@
             </div>
             <!-- End small tables -->
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer d-block">
+            <vue-awesome-paginate
+              :total-items="pagination.total"
+              :items-per-page="pagination.per_page"
+              :max-pages-shown="appStore.settings.page.maxPageShow"
+              v-model="pagination.current_page"
+              :on-click="onChangePage"
+              class=""
+            />
             
 
             <button type="button" class="btn btn-primary" @click="select">
@@ -124,26 +135,35 @@
 import { ref, defineEmits, defineProps, onMounted, defineExpose } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
+import { useAppStore } from '@/stores/appStore'
 const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
 const props = defineProps(['visible', 'perPage', 'data'])
 
+const appStore = useAppStore()
 let modal = null
 let modalElement = ref(null)
 const items = ref([])
 const selectedItems = ref([])
 const loading = ref(false)
 const pagination = ref({
-  per_page: props.perPage || 8,
-  curent_page: 1,
+  total: 0,
+  per_page: appStore.settings.page.perPage,
+  current_page: 1,
 })
-const formSearchProduct = ref({
+const formSearch = ref({
   code: '',
   q: '',
 })
 
 const onSearch = async () => {
-  pagination.value.curent_page = 1
+  pagination.value.current_page = 1
   pagination.value.total = 0
+  try {
+    loadData()
+  } catch (error) {}
+}
+const onChangePage = async (page) => {
+  pagination.value.current_page = page
   try {
     loadData()
   } catch (error) {}
@@ -151,17 +171,16 @@ const onSearch = async () => {
 const loadData = async () => {
   let params = {
     per_page: pagination.value.per_page,
-    page: pagination.value.curent_page,
-    ...formSearchProduct.value,
+    page: pagination.value.current_page,
+    ...formSearch.value,
   }
-  loading.value = true
   const { data } = await api.get('/v2/contacts', {
     params: params,
   })
   if (data) {
     const p = {
       total: data?.total,
-      page: data?.curent_page,
+      current_page: data?.current_page,
       per_page: data?.per_page,
       page_count: data?.last_page,
     }
@@ -170,6 +189,7 @@ const loadData = async () => {
     loading.value = false
   }
 }
+
 
 const _show = () => {
   emit('onShow', selectedItems.value)

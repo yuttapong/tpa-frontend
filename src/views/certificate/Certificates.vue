@@ -54,7 +54,7 @@
                         <td>
                           <button
                             type="button"
-                            class="fw-bold border bg-dark text-white p-1"
+                            class="fw-bold border bg-dark text-white p-1 w-full d-block"
                             @click="viewCert(item)"
                           >
                             {{ item.cerno }}

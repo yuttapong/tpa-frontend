@@ -8,6 +8,9 @@ import { useInvoiceStore } from '@/stores/invoiceStore'
 import { useAppStore } from '@/stores/appStore'
 import ProductMeta from '@/views/invoice/components/ProductMeta.vue'
 import ModalWorkOrder from '@/views/invoice/components/ModalWorkOrder.vue'
+import ModalCustomer from '@/views/customer/components/ModalCustomer.vue'
+import ModalContact from '@/views/customer/components/ModalContact.vue'
+import { useRouter } from 'vue-router'
 const items = ref({})
 const appStore = useAppStore()
 const pagination = ref({
@@ -15,11 +18,10 @@ const pagination = ref({
   current_page: 1,
 })
 const loading = ref(false)
-const workorderLoading = ref(false)
-const modalView = ref(null)
-const modalViewRef = ref(null)
+const router = useRouter()
 const modalProduct = ref(null)
-const modalProductRef = ref(null)
+const modalContact = ref(null)
+const modalCustomer = ref(null)
 const invoiceStore = useInvoiceStore()
 
 const formSearch = ref({
@@ -27,13 +29,14 @@ const formSearch = ref({
   taxnumber: '',
   q: '',
 })
-const invoiceItems = computed(() => invoiceStore.items)
+const invoiceItems = computed(() => invoiceStore.carts)
 const formInvoice = ref({
   bill_code: '',
-  document_date: '',
+  issue_date: '',
+  due_date: '',
   items: [],
-  agent_id: '',
-  agent_name: '',
+  contact_id: '',
+  contact_name: '',
   status: '',
 })
 
@@ -59,50 +62,6 @@ const loadData = async () => {
   }
 }
 
-const formSearchProduct = ref({
-  q: '',
-  item_code: '',
-  bill_code: '',
-  alltype: 'yes',
-})
-const onChangePage = (page) => {
-  pagination.value.current_page = page
-  loadWorkOrders()
-}
-
-const loadWorkOrders = async () => {
-  workorderLoading.value = true
-  let params = {
-    per_page: pagination.value.per_page,
-    page: pagination.value.current_page,
-    ...formSearchProduct.value,
-  }
-  const { data } = await api.get('/v2/workorders', {
-    params: params,
-  })
-  if (data) {
-    const p = {
-      total: data?.total,
-      current_page: data?.current_page,
-      per_page: data?.per_page,
-      page_count: data?.last_page,
-    }
-    pagination.value = p
-    items.value = data.data
-    loading.value = false
-  }
-  workorderLoading.value = false
-}
-const getInvoiceById = async (id) => {
-  try {
-    const { data } = await api.get('/v2/invoices/' + id)
-    if (data) {
-      items.value = data
-      loading.value = false
-    }
-  } catch (error) {}
-}
-
 const onSearch = async () => {
   pagination.value.curent_page = 1
   pagination.value.total = 0
@@ -115,7 +74,7 @@ const addItem = () => {
   modalProduct.value.show()
 }
 const clearItem = () => {
-  invoiceStore.updateItems([])
+  invoiceStore.emptyCart()
   const { data } = api.delete('v2/invoices/cart').then((rs) => {})
   toast('ล้างรายการสำเร็จ', {
     theme: 'auto',
@@ -124,8 +83,12 @@ const clearItem = () => {
   })
 }
 
-const selectProduct = async (item) => {
+const onSelectProduct = async (item) => {
   let row = {
+    item_code: item.item_code,
+    item_id: item.item_id,
+    bill_id: item.bill_id,
+    bill_code: item?.bill.code,
     product_name: item.product_name,
     product_id: item.product_id,
     product: item,
@@ -135,8 +98,9 @@ const selectProduct = async (item) => {
     barcode_no: item?.barcode_no,
     manufaturer_name: item?.manufaturer_name,
     lab: item.lab,
-    discount: 0,
+    test_point: item.test_point,
     price: item.total,
+    discount: 0,
     qty: 1,
   }
   const data = await api.post('v2/invoices/cart', row)
@@ -146,7 +110,7 @@ const selectProduct = async (item) => {
       type: 'default',
       dangerouslyHTMLString: true,
     })
-    invoiceStore.addItem(item)
+    invoiceStore.addItem(row)
   }
 }
 const emptyCart = () => {
@@ -167,21 +131,83 @@ const removeItem = async (item, index) => {
     invoiceStore.removeItem(item)
   }
 }
+const totalPrice = computed(() => {
+  return invoiceItems.value.reduce((total, item) => (total += parseFloat(item.price)), 0)
+})
+const totalDiscount = computed(() => {
+  return invoiceItems.value.reduce((total, item) => (total += parseFloat(item.discount)), 0)
+})
+const totalNet = computed(() => {
+  return totalPrice.value - totalDiscount.value
+  // return invoiceItems.value.reduce(
+  //   (total, item) => (total += parseFloat(item.price) - parseFloat(item.discount)),
+  //   0,
+  // )
+})
+const openModalCustomer = () => {
+  modalCustomer.value.show()
+}
+const onSelectCustomer = (data) => {
+  formInvoice.value.customer_id = data.id
+  formInvoice.value.customer_name = data.companyname
 
+  let address = `${data.address} ${data.subdistrict} ${data.district} ${data.province} ${data.postalcode}`
+  formInvoice.value.address = address.trim()
+}
+const openModalContact = () => {
+  modalContact.value.show()
+}
+const onSelectContact = (data) => {
+  formInvoice.value.contact_id = data.id
+  formInvoice.value.contact_name = data.contactname
+}
+
+const resetData = () => {
+  formInvoice.value = {}
+  invoiceStore.setForm({})
+  invoiceStore.updateItems([])
+}
 const save = async () => {
-  loading.value = true
-  const { data } = await api.post('v2/invoices', formInvoice.value)
-  if (data) {
-    loading.value = false
-    emptyCart()
-    toast(data.message, {
-      theme: 'auto',
-      type: 'default',
-      dangerouslyHTMLString: true,
-    })
+  formInvoice.value.items = invoiceStore.carts
+
+  formInvoice.value.totalprice = totalPrice.value
+  formInvoice.value.totaldiscount = totalDiscount.value
+  formInvoice.value.totalvat = (totalPrice.value * 7) / 100
+  formInvoice.value.totalnet = totalNet.value
+
+  if (formInvoice.value.id !== undefined && formInvoice.value.id > 0) {
+    loading.value = true
+    const { data } = await api.put('v2/invoices', formInvoice.value)
+    if (data) {
+      loading.value = false
+      emptyCart()
+      resetData()
+      toast(data.message, {
+        theme: 'auto',
+        type: 'default',
+        dangerouslyHTMLString: true,
+      })
+    } else {
+      loading.value = false
+    }
   } else {
-    loading.value = false
+    loading.value = true
+    const { data } = await api.post('v2/invoices', formInvoice.value)
+    if (data) {
+      loading.value = false
+      emptyCart()
+      resetData()
+      router.push('/invoices')
+      toast(data.message, {
+        theme: 'auto',
+        type: 'default',
+        dangerouslyHTMLString: true,
+      })
+    } else {
+      loading.value = false
+    }
   }
+  loading.value = false
 }
 
 onMounted(() => {
@@ -220,8 +246,7 @@ onUpdated(() => {
                   <label>วันที่</label>
                   <input
                     type="date"
-                    v-model="formInvoice.document_date"
-                    name="code"
+                    v-model="formInvoice.issue_date"
                     class="form-control form-control-sm"
                     placeholder="Code"
                   />
@@ -231,7 +256,6 @@ onUpdated(() => {
                   <input
                     type="date"
                     v-model="formInvoice.due_date"
-                    name="code"
                     class="form-control form-control-sm"
                     placeholder="Code"
                   />
@@ -241,30 +265,37 @@ onUpdated(() => {
                   <input
                     type="text"
                     v-model="formInvoice.code"
-                    name="code"
                     class="form-control form-control-sm"
                     placeholder="Code"
                     disabled="disabled"
                   />
                 </div>
                 <div class="col-6 col-md-4 col-lg-3">
-                  <label>ลูกค้า</label>
+                  <label
+                    >ลูกค้า
+                    <span v-if="formInvoice.customer_id"
+                      >({{ formInvoice.customer_id }})</span
+                    ></label
+                  >
                   <input
                     type="text"
                     v-model="formInvoice.customer_name"
-                    name="customer_name"
                     class="form-control form-control-sm"
-                    placeholder=""
+                    placeholder="บริษัท"
+                    @click="openModalCustomer"
                   />
                 </div>
                 <div class="col-6 col-md-4 col-lg-3">
-                  <label>ผู้ติดต่อ</label>
+                  <label
+                    >ผู้ติดต่อ
+                    <span v-if="formInvoice.contact_id">({{ formInvoice.contact_id }})</span></label
+                  >
                   <input
                     type="text"
-                    v-model="formInvoice.agent_name"
-                    name="agent_name"
+                    v-model="formInvoice.contact_name"
                     class="form-control form-control-sm"
                     placeholder=""
+                    @click="openModalContact"
                   />
                 </div>
                 <div class="col-12 col-lg-6">
@@ -272,70 +303,109 @@ onUpdated(() => {
                   <input
                     type="text"
                     v-model="formInvoice.address"
-                    name="address"
                     class="form-control form-control-sm"
-                    placeholder=""
+                    placeholder="ที่อยู่"
                   />
                 </div>
+              </div>
 
-                <div class="col-12">
-                  <div class="table-responsive">
-                    <table class="table table-sm table-bordered">
-                      <thead>
-                        <tr>
-                          <th class="fw-bold"># Item</th>
-                          <th class="fw-bold">รายการ</th>
-                          <th class="fw-bold text-end">จำนวนเงิน</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr class="" v-for="(item, index) in invoiceItems" :key="index">
-                          <td scope="row" nowrap>
-                            <button
-                              type="button"
-                              class="btn btn-text text-danger"
-                              @click="removeItem(item, index)"
-                            >
-                              <i class="bi bi-x-circle"></i>
-                            </button>
-                            {{ index + 1 }})
-                            <span class="ms-2 text-primary fw-bold" style="font-size: 13px">{{
-                              item.item_code
-                            }}</span>
-                          </td>
-                          <td class="">
-                            <div class="fw-bold">
-                              <i class="text-danger">{{ item.manufaturer_name }}</i>
-                              {{ item.product_name }}
-                            </div>
+              <div class="">
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered">
+                    <thead>
+                      <tr>
+                        <th class="fw-bold"># Item</th>
+                        <th class="fw-bold text-end">Discount</th>
+                        <th class="fw-bold text-end" style="width: 100px">Price</th>
+                        <th class="fw-bold">รายการ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="" v-for="(item, index) in invoiceItems" :key="index">
+                        <td scope="row" nowrap>
+                          <button
+                            type="button"
+                            class="btn btn-text text-danger"
+                            @click="removeItem(item, index)"
+                          >
+                            <i class="bi bi-x-circle"></i>
+                          </button>
+                          {{ index + 1 }})
+                          <span class="ms-2 text-primary fw-bold" style="font-size: 13px">{{
+                            item.item_code
+                          }}</span>
+                        </td>
+                        <td class="text-end">
+                          <input
+                            type="number"
+                            v-model="item.discount"
+                            class="form-control form-control-sm text-end"
+                            style="width: 100px"
+                          />
+                        </td>
+                        <td class="text-end" style="width: 100px">
+                          <input
+                            type="number"
+                            v-model="item.price"
+                            class="form-control form-control-sm text-end"
+                            style="width: 100px"
+                          />
+                        </td>
+                        <td class="">
+                          <div class="fw-bold">
+                            <i class="text-danger">{{ item.manufaturer_name }}</i>
+                            {{ item.product_name }}
+                          </div>
 
-                            <div class="">
-                              <ProductMeta :item="item" />
-                            </div>
-                          </td>
-
-                          <td class="text-end">
-                            {{ parseFloat(item.total).toLocaleString() }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                          <div class="">
+                            <ProductMeta :item="item" />
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th class="text-center">{{}}</th>
+                        <th class="text-end fw-bold">
+                          {{ parseFloat(totalDiscount).toLocaleString() }}
+                        </th>
+                        <th class="text-end fw-bold">
+                          {{ parseFloat(totalPrice).toLocaleString() }}
+                        </th>
+                        <th>{{}}</th>
+                        <th>{{}}</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <div class="row g-3">
+                  <!-- <div class="col-3  fw-bold">
+                    Qty : {{ parseFloat(invoiceStore.countCartItems).toLocaleString() }}
                   </div>
+
+                  <div class="col-3 fw-bold">
+                    Total Discount : {{ parseFloat(totalDiscount).toLocaleString() }}
+                  </div> -->
+                  <!-- <div class="col-3 fw-bold">
+                    Total Price : {{ parseFloat(totalPrice).toLocaleString() }}
+                  </div> -->
+
+                  <div class="col-3 fw-bold">
+                    Total Net : {{ parseFloat(totalNet).toLocaleString() }}</div>
                 </div>
-                <div class="col-12">
-                  <button type="button" class="btn btn-sm btn-success" @click="addItem()">
-                    <i class="bi bi-plus" role="button"></i>
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-danger ms-3"
-                    v-if="invoiceStore.items.length > 0"
-                    @click="clearItem()"
-                  >
-                    <i class="bi bi-trash" role="button"></i>
-                  </button>
-                </div>
-                <div class="col-12">Total Items : {{ invoiceStore.countItems }}</div>
+              </div>
+              <div class="">
+                <button type="button" class="btn btn-sm btn-success" @click="addItem()">
+                  <i class="bi bi-plus" role="button"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-danger ms-3"
+                  v-if="invoiceStore.carts.length > 0"
+                  @click="clearItem()"
+                >
+                  <i class="bi bi-trash" role="button"></i>
+                </button>
               </div>
             </form>
           </div>
@@ -357,10 +427,16 @@ onUpdated(() => {
                   Preview ดูตัวอย่าง</router-link
                 >
               </div>
-              <div class="col-12">
+              <!-- <div class="col-12">
                 <a class="btn btn-sm btn-secondary d-block">
                   <i class="bi bi-printer"></i>
                   พิมพ์</a
+                >
+              </div> -->
+              <div class="col-12">
+                <a class="btn btn-sm btn-secondary d-block" @click="emptyCart">
+                  <i class="bi bi-printer"></i>
+                  Reset</a
                 >
               </div>
             </div>
@@ -368,40 +444,42 @@ onUpdated(() => {
         </div>
       </div>
     </div>
-    <ModalWorkOrder ref="modalProduct" @select="selectProduct" />
+    <ModalWorkOrder ref="modalProduct" @select="onSelectProduct" />
+    <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
+    <ModalContact ref="modalContact" @select="onSelectContact" />
   </section>
 </template>
 
 <style lang="scss" scoped>
-div[size='A4'] {
-  width: 21cm;
-  height: 29.7cm;
-  padding: 10px;
-  background: white;
-  display: block;
-  margin: 0 auto;
-  margin-bottom: 0.5cm;
-  box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+// div[size='A4'] {
+//   width: 21cm;
+//   height: 29.7cm;
+//   padding: 10px;
+//   background: white;
+//   display: block;
+//   margin: 0 auto;
+//   margin-bottom: 0.5cm;
+//   box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
 
-  > p,
-  span,
-  li,
-  td {
-    font-size: 12px;
-    font-family: Arial;
-  }
-}
+//   > p,
+//   span,
+//   li,
+//   td {
+//     font-size: 12px;
+//     font-family: Arial;
+//   }
+// }
 
-div[size='A4'][layout='portrait'] {
-  width: 29.7cm;
-  height: 21cm;
-}
+// div[size='A4'][layout='portrait'] {
+//   width: 29.7cm;
+//   height: 21cm;
+// }
 
-@media print {
-  body,
-  page {
-    margin: 0;
-    box-shadow: 0;
-  }
-}
+// @media print {
+//   body,
+//   page {
+//     margin: 0;
+//     box-shadow: 0;
+//   }
+// }
 </style>

@@ -52,9 +52,9 @@ const loadData = async () => {
     loading.value = false
   }
 }
-const getInvoiceById = async (id) => {
+const getInvoiceById = async (item) => {
   try {
-    const { data } = await api.get('/v2/invoices/' + id)
+    const { data } = await api.get('/v2/invoices/' + item.id)
     if (data) {
       invoice.value = data
       invoiceStore.setInvoice(data)
@@ -63,9 +63,11 @@ const getInvoiceById = async (id) => {
   } catch (error) {}
 }
 const showDetail = (item) => {
+  invoice.value = item
+  invoiceStore.setInvoice(item)
   modalView.value.show()
   visibleModal.value = true
-  getInvoiceById(item.id)
+  getInvoiceById(item)
 }
 
 const onSearch = async () => {
@@ -252,7 +254,7 @@ onMounted(() => {
                                       type="button"
                                       @click="showDetail(item)"
                                     >
-                                    <i class="bi bi-file-earmark-spreadsheet"></i> ส่งออก Excel
+                                      <i class="bi bi-file-earmark-spreadsheet"></i> ส่งออก Excel
                                     </button>
                                   </li>
                                   <li>

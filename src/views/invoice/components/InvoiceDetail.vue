@@ -53,7 +53,7 @@ onMounted(() => {})
           <p>{{ data?.address }}</p>
         </div>
       </div>
-
+      <spinner :visible="!data.items"/>
       <div size="">
         <table class="table table-sm table-condensed table-bordered">
           <thead>

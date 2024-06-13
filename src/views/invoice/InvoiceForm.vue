@@ -18,6 +18,7 @@ const pagination = ref({
   current_page: 1,
 })
 const loading = ref(false)
+const hasError = ref(false)
 const router = useRouter()
 const modalProduct = ref(null)
 const modalContact = ref(null)
@@ -169,6 +170,7 @@ const resetData = () => {
   invoiceStore.updateItems([])
 }
 const save = async () => {
+  hasError.value = false
   formInvoice.value.items = invoiceStore.carts
 
   formInvoice.value.totalprice = totalPrice.value
@@ -197,6 +199,7 @@ const save = async () => {
       console.error(err)
       errors.value = err.response.data.errors
       loading.value = false
+      hasError.value = true
     })
     if (data) {
       loading.value = false
@@ -209,6 +212,7 @@ const save = async () => {
         dangerouslyHTMLString: true,
       })
     } else {
+      hasError.value = true
       errors.value = loading.value = false
     }
   }
@@ -414,7 +418,7 @@ onUpdated(() => {
                 >
                   <i class="bi bi-trash" role="button"></i>
                 </button>
-                <div v-if="errors" class="alert alert-danger my-2">
+                <div v-if="errors && hasError" class="alert alert-danger my-2">
                   <li v-for="(message, key) in errors" :key="key" class="px-1">
                     {{ message }}
                   </li>

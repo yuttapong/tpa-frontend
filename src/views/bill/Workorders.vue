@@ -64,7 +64,7 @@
                       />
                     </div>
                     <div class="col-12 col-md-3 col-xxl-1">
-                      <label>เลขที่ใบขอรับบริการ</label>
+                      <label>Bill Code</label>
                       <input
                         type="search"
                         v-model="formSearch.bill_code"
@@ -74,7 +74,7 @@
                         autofocus
                       />
                     </div>
-                    <div class="col-12 col-md-3 col-xxl-1" v-if="labs">
+                    <div class="col-12 col-md-6 col-xxl-1" v-if="labs">
                       <label>Lab</label>
 
                       <select class="form-select form-select-sm" @change="onSelectLab">
@@ -84,7 +84,7 @@
                         </option>
                       </select>
                     </div>
-                    <div class="col-12 col-md-3 col-xxl-1" v-if="labs">
+                    <div class="col-12 col-md-5 col-xxl-1" v-if="labs">
                       <label>Sub Lab</label>
                       <select class="form-select form-select-sm" v-model="formSearch.sublab_id">
                         <option value="">--SubLab--</option>
@@ -94,7 +94,7 @@
                       </select>
 
                     </div>
-                    <div class="col-12 col-md-3 col-xxl-1">
+                    <div class="col-12 col-md-2 col-xxl-1">
                       <button type="submit" class="btn btn-sm btn-primary mt-4">
                         <i class="bi bi-search"></i>
                       </button>
@@ -158,7 +158,7 @@
                         </td>
                         <td>
                           <span class="badge bg-light text-dark">{{
-                            DateTime(new Date(item.bill?.document_date))
+                            item.bill?DateTime(new Date(item.bill?.document_date)):''
                           }}</span>
                         </td>
 

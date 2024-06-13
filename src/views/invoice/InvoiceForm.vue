@@ -22,6 +22,7 @@ const router = useRouter()
 const modalProduct = ref(null)
 const modalContact = ref(null)
 const modalCustomer = ref(null)
+const errors = ref([])
 const invoiceStore = useInvoiceStore()
 
 const formSearch = ref({
@@ -192,7 +193,11 @@ const save = async () => {
     }
   } else {
     loading.value = true
-    const { data } = await api.post('v2/invoices', formInvoice.value)
+    const { data } = await api.post('v2/invoices', formInvoice.value).catch((err) => {
+      console.error(err)
+      errors.value = err.response.data.errors
+      loading.value = false
+    })
     if (data) {
       loading.value = false
       emptyCart()
@@ -204,7 +209,7 @@ const save = async () => {
         dangerouslyHTMLString: true,
       })
     } else {
-      loading.value = false
+      errors.value = loading.value = false
     }
   }
   loading.value = false
@@ -242,22 +247,22 @@ onUpdated(() => {
 
             <form @submit.prevent="onSearch()">
               <div class="row g-2">
-                <div class="col-6 col-md-4 col-lg-3">
+                <div class="col-6 col-md-4 col-lg-3" :class="[{'text-danger': errors.issue_date}]">
                   <label>วันที่</label>
                   <input
                     type="date"
                     v-model="formInvoice.issue_date"
                     class="form-control form-control-sm"
-                    placeholder="Code"
+                    placeholder="issue date"
                   />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3">
+                <div class="col-6 col-md-4 col-lg-3" :class="[{'text-danger': errors.due_date}]">
                   <label>Due Date</label>
                   <input
                     type="date"
                     v-model="formInvoice.due_date"
                     class="form-control form-control-sm"
-                    placeholder="Code"
+                    placeholder="due date"
                   />
                 </div>
                 <div class="col-6 col-md-4 col-lg-3" v-if="formInvoice.code">
@@ -270,8 +275,9 @@ onUpdated(() => {
                     disabled="disabled"
                   />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3">
+                <div class="col-6 col-md-4 col-lg-3" :class="[{'text-danger': errors.customer_id, 'text-danger' : errors.customer_name}]">
                   <label
+                  
                     >ลูกค้า
                     <span v-if="formInvoice.customer_id"
                       >({{ formInvoice.customer_id }})</span
@@ -285,7 +291,7 @@ onUpdated(() => {
                     @click="openModalCustomer"
                   />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3">
+                <div class="col-6 col-md-4 col-lg-3" :class="[{'text-danger': errors.contact_name}]">
                   <label
                     >ผู้ติดต่อ
                     <span v-if="formInvoice.contact_id">({{ formInvoice.contact_id }})</span></label
@@ -298,7 +304,7 @@ onUpdated(() => {
                     @click="openModalContact"
                   />
                 </div>
-                <div class="col-12 col-lg-6">
+                <div class="col-12 col-lg-6" :class="[{'text-danger': errors.address}]">
                   <label>ที่อยู่</label>
                   <input
                     type="text"
@@ -310,7 +316,8 @@ onUpdated(() => {
               </div>
 
               <div class="">
-                <div class="table-responsive">
+                <div v-if="errors.items" :class="[{'text-danger mt-2': errors.items}]">โปรดระบุรายการเครื่องมือ</div>
+                <div class="table-responsive mt-2">
                   <table class="table table-sm table-bordered">
                     <thead>
                       <tr>
@@ -391,7 +398,8 @@ onUpdated(() => {
                   </div> -->
 
                   <div class="col-3 fw-bold">
-                    Total Net : {{ parseFloat(totalNet).toLocaleString() }}</div>
+                    Total Net : {{ parseFloat(totalNet).toLocaleString() }}
+                  </div>
                 </div>
               </div>
               <div class="">
@@ -406,6 +414,11 @@ onUpdated(() => {
                 >
                   <i class="bi bi-trash" role="button"></i>
                 </button>
+                <div v-if="errors" class="alert alert-danger my-2">
+                  <li v-for="(message, key) in errors" :key="key" class="px-1">
+                    {{ message }}
+                  </li>
+                </div>
               </div>
             </form>
           </div>

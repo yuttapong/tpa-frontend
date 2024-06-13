@@ -208,15 +208,63 @@ onMounted(() => {
                         <tr v-for="(item, index) in items" :key="index">
                           <th scope="row">{{ index + 1 }}</th>
                           <td>
-                            <a
+                            <!-- <a
                               class="btn btn-light btn-sm fw-bold"
                               role="button"
                               @click="showDetail(item)"
                             >
                               {{ item.code }}
-                            </a>
+                            </a> -->
+                            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                              <button
+                                class="btn btn-outline-secondary btn-sm"
+                                type="button"
+                                :id="`button-view${item.id}`"
+                                @click="showDetail(item)"
+                              >
+                                {{ item.code }}
+                              </button>
+                              <div class="btn-group" role="group">
+                                <button
+                                  class="btn btn-outline-secondary dropdown-toggle btn-sm"
+                                  type="button"
+                                  :id="`dropdownMenu${item.id}`"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                ></button>
+                                <ul
+                                  class="dropdown-menu"
+                                  :aria-labelledby="`dropdownMenu${item.id}`"
+                                >
+                                  <li>
+                                    <button
+                                      class="dropdown-item"
+                                      type="button"
+                                      @click="showDetail(item)"
+                                    >
+                                      <i class="bi bi-search"></i>
+                                      ดูรายละเอียด
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      class="dropdown-item"
+                                      type="button"
+                                      @click="showDetail(item)"
+                                    >
+                                    <i class="bi bi-file-earmark-spreadsheet"></i> ส่งออก Excel
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button class="dropdown-item" type="button">
+                                      <i class="bi bi-printer"></i> พิมพ์
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
                           </td>
-                          <td>{{ parseFloat(item.totalnet).toLocaleString()}}</td>
+                          <td>{{ parseFloat(item.totalnet).toLocaleString() }}</td>
 
                           <td>
                             <span class="badge bg-light text-dark">{{
@@ -231,7 +279,9 @@ onMounted(() => {
 
                           <td>
                             <div>{{ item.customer_name }}</div>
-                            <small v-if="item.customer" class="text-danger">({{ item.customer?.taxnumber }})</small>
+                            <small v-if="item.customer" class="text-danger"
+                              >({{ item.customer?.taxnumber }})</small
+                            >
                           </td>
                           <td>{{ item.contact_name }}</td>
                         </tr>

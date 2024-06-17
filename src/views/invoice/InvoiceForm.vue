@@ -20,7 +20,7 @@ const pagination = ref({
 const loading = ref(false)
 const hasError = ref(false)
 const router = useRouter()
-const modalProduct = ref(null)
+const modalWorkOrder = ref(null)
 const modalContact = ref(null)
 const modalCustomer = ref(null)
 const errors = ref([])
@@ -35,6 +35,7 @@ const invoiceItems = computed(() => invoiceStore.carts)
 const formInvoice = ref({
   bill_code: '',
   issue_date: '',
+  due_within: 30,
   due_date: '',
   items: [],
   contact_id: '',
@@ -72,13 +73,14 @@ const onSearch = async () => {
   } catch (error) {}
 }
 
-const addItem = () => {
-  modalProduct.value.show()
+const openModalWorkOrder = () => {
+  modalWorkOrder.value.show()
 }
-const clearItem = () => {
+const clearItem = async () => {
   invoiceStore.emptyCart()
-  const { data } = api.delete('v2/invoices/cart').then((rs) => {})
+  const { data } = await api.delete('v2/invoices/cart')
   toast('ล้างรายการสำเร็จ', {
+    autoClose: 200,
     theme: 'auto',
     type: 'default',
     dangerouslyHTMLString: true,
@@ -105,46 +107,47 @@ const onSelectProduct = async (item) => {
     discount: 0,
     qty: 1,
   }
-  const data = await api.post('v2/invoices/cart', row)
+  invoiceStore.addItem(row)
+  toast(`เพิ่มรายการ (${item.item_code}) สำเร็จ`, {
+    autoClose: 200,
+    theme: 'auto',
+    type: 'success',
+    dangerouslyHTMLString: true,
+  })
+  const { data } = await api.post('v2/invoices/cart', row)
   if (data) {
-    toast(`เพิ่มรายการ (${item.item_code}) สำเร็จ`, {
-      theme: 'auto',
-      type: 'default',
-      dangerouslyHTMLString: true,
-    })
-    invoiceStore.addItem(row)
   }
 }
-const emptyCart = () => {
+
+const emptyCart = async () => {
   formInvoice.value = {}
   invoiceStore.setForm({})
   invoiceStore.updateItems([])
+  const { data } = await api.delete('v2/invoices/cart/', {
+    staff_id: appStore.user?.id,
+  })
 }
+
 const removeItem = async (item, index) => {
-  const { data } = await api.delete('v2/invoices/cart/' + item.item_id, {
+  invoiceStore.removeItem(item)
+  toast(`ลบ ${item.item_code} สำเร็จ`, {
+    autoClose: 100,
+    theme: 'auto',
+    type: 'default',
+    dangerouslyHTMLString: true,
+  })
+  await api.delete('v2/invoices/cart/' + item.item_id, {
     item_i: item.item_id,
   })
-  if (data.success) {
-    toast(`ลบ ${item.item_code} สำเร็จ`, {
-      theme: 'auto',
-      type: 'default',
-      dangerouslyHTMLString: true,
-    })
-    invoiceStore.removeItem(item)
-  }
 }
 const totalPrice = computed(() => {
-  return invoiceItems.value.reduce((total, item) => (total += parseFloat(item.price)), 0)
+  return invoiceItems.value ? invoiceItems.value.reduce((total, item) => (total += parseFloat(item.price)), 0) : 0
 })
 const totalDiscount = computed(() => {
-  return invoiceItems.value.reduce((total, item) => (total += parseFloat(item.discount)), 0)
+  return invoiceItems.value ? invoiceItems.value.reduce((total, item) => (total += parseFloat(item.discount)), 0) : 0
 })
 const totalNet = computed(() => {
   return totalPrice.value - totalDiscount.value
-  // return invoiceItems.value.reduce(
-  //   (total, item) => (total += parseFloat(item.price) - parseFloat(item.discount)),
-  //   0,
-  // )
 })
 const openModalCustomer = () => {
   modalCustomer.value.show()
@@ -230,6 +233,7 @@ onUpdated(() => {
 })
 </script>
 <template>
+<div>
   <div class="pagetitle">
     <h1>ใบแจ้งหนี้</h1>
     <nav>
@@ -244,14 +248,17 @@ onUpdated(() => {
 
   <section class="section">
     <div class="row">
-      <div class="col-12 col-md-9">
+      <div class="col-12 col-md-12">
         <div class="card">
           <div class="card-body pt-3">
             <spinner :visible="loading" />
 
             <form @submit.prevent="onSearch()">
               <div class="row g-2">
-                <div class="col-6 col-md-4 col-lg-3" :class="[{'text-danger': errors.issue_date}]">
+                <div
+                  class="col-6 col-md-4 col-lg-3"
+                  :class="[{ 'text-danger': errors.issue_date }]"
+                >
                   <label>วันที่</label>
                   <input
                     type="date"
@@ -260,11 +267,11 @@ onUpdated(() => {
                     placeholder="issue date"
                   />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3" :class="[{'text-danger': errors.due_date}]">
-                  <label>Due Date</label>
+                <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.due_date }]">
+                  <label>กำหนดชำระภายใน</label>
                   <input
-                    type="date"
-                    v-model="formInvoice.due_date"
+                    type="number"
+                    v-model="formInvoice.due_within"
                     class="form-control form-control-sm"
                     placeholder="due date"
                   />
@@ -279,9 +286,13 @@ onUpdated(() => {
                     disabled="disabled"
                   />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3" :class="[{'text-danger': errors.customer_id, 'text-danger' : errors.customer_name}]">
+                <div
+                  class="col-6 col-md-4 col-lg-3"
+                  :class="[
+                    { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
+                  ]"
+                >
                   <label
-                  
                     >ลูกค้า
                     <span v-if="formInvoice.customer_id"
                       >({{ formInvoice.customer_id }})</span
@@ -295,7 +306,10 @@ onUpdated(() => {
                     @click="openModalCustomer"
                   />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3" :class="[{'text-danger': errors.contact_name}]">
+                <div
+                  class="col-6 col-md-4 col-lg-3"
+                  :class="[{ 'text-danger': errors.contact_name }]"
+                >
                   <label
                     >ผู้ติดต่อ
                     <span v-if="formInvoice.contact_id">({{ formInvoice.contact_id }})</span></label
@@ -308,7 +322,7 @@ onUpdated(() => {
                     @click="openModalContact"
                   />
                 </div>
-                <div class="col-12 col-lg-6" :class="[{'text-danger': errors.address}]">
+                <div class="col-12 col-lg-6" :class="[{ 'text-danger': errors.address }]">
                   <label>ที่อยู่</label>
                   <input
                     type="text"
@@ -320,19 +334,24 @@ onUpdated(() => {
               </div>
 
               <div class="">
-                <div v-if="errors.items" :class="[{'text-danger mt-2': errors.items}]">โปรดระบุรายการเครื่องมือ</div>
-                <div class="table-responsive mt-2">
-                  <table class="table table-sm table-bordered">
-                    <thead>
+                <div v-if="errors.items" :class="[{ 'text-danger mt-2': errors.items }]">
+                  โปรดระบุรายการเครื่องมือ
+                </div>
+                <div class="table-responsives mt-2 items-containers" style="height:290px; overflow-y:scroll;">
+                  <table class="table table-sm table-bordered tableFixHead">
+                    <thead class="">
                       <tr>
                         <th class="fw-bold"># Item</th>
-                        <th class="fw-bold text-end">Discount</th>
-                        <th class="fw-bold text-end" style="width: 100px">Price</th>
-                        <th class="fw-bold">รายการ</th>
+                 
+                        <th class="fw-bold text-center text-danger">ส่วนลดสินค้า</th>
+                        <th class="fw-bold text-center text-danger">ส่วนลดลูกค้า</th>
+                        <th class="fw-bold text-end">ราคาต่อหน่อย</th>
+                        <th class="fw-bold text-end" style="width: 100px">รวม</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr class="" v-for="(item, index) in invoiceItems" :key="index">
+                    <tbody v-if="invoiceItems" >
+                      <template v-for="(item, index) in invoiceItems" :key="index">
+                      <tr class="" >
                         <td scope="row" nowrap>
                           <button
                             type="button"
@@ -342,17 +361,50 @@ onUpdated(() => {
                             <i class="bi bi-x-circle"></i>
                           </button>
                           {{ index + 1 }})
-                          <span class="ms-2 text-primary fw-bold" style="font-size: 13px">{{
+                          <span class="ms-2 text-dark" style="font-size: 13px">{{
                             item.item_code
                           }}</span>
                         </td>
-                        <td class="text-end">
-                          <input
-                            type="number"
-                            v-model="item.discount"
-                            class="form-control form-control-sm text-end"
-                            style="width: 100px"
-                          />
+                        <td class="">
+   
+                        </td>
+                        <td class="text-end" style="width: 250px" nowrap>
+                          <div class="input-group input-group-sm">
+                            <input
+                              type="number"
+                              v-model="item.discount_percen"
+                              class="form-control form-control-sm text-end text-danger"
+                              style="width: 80px"
+                                    placeholder="%"
+                            />
+                            <span class="input-group-text">%</span>
+                            <input
+                              type="number"
+                              v-model="item.discount"
+                              class="form-control form-control-sm text-end text-danger"
+                              style="width: 90px"
+                              placeholder="บาท"
+                            />
+                          </div>
+                        </td>
+                        <td class="text-end" style="width: 250px" nowrap>
+                          <div class="input-group input-group-sm">
+                            <input
+                              type="number"
+                              v-model="item.discount_customer_percent"
+                              class="form-control form-control-sm text-end text-danger"
+                              style="width: 80px"
+                              placeholder="%"
+                            />
+                            <span class="input-group-text">%</span>
+                            <input
+                              type="number"
+                              v-model="item.discount_customer"
+                              class="form-control form-control-sm text-end text-danger"
+                              style="width: 90px"
+                                    placeholder="บาท"
+                            />
+                          </div>
                         </td>
                         <td class="text-end" style="width: 100px">
                           <input
@@ -362,17 +414,35 @@ onUpdated(() => {
                             style="width: 100px"
                           />
                         </td>
-                        <td class="">
-                          <div class="fw-bold">
-                            <i class="text-danger">{{ item.manufaturer_name }}</i>
-                            {{ item.product_name }}
-                          </div>
-
-                          <div class="">
-                            <ProductMeta :item="item" />
-                          </div>
+                        <td class="text-end" style="width: 90px">
+                          <input
+                            type="number"
+                            v-model="item.price"
+                            class="form-control form-control-sm text-end"
+                            style="width: 100px"
+                          />
                         </td>
                       </tr>
+                      <tr>
+                      <td colspan=6>
+
+                    <div class="fw-normal float-start ">
+                            <!-- <i class="text-danger">{{ item.manufaturer_name }}</i> -->
+
+                                   <span class="fw-bold fs-65 text-danger">
+                              {{ item.product?.product?.code }}
+                            </span> : 
+                            {{ item.product_name }}
+                     
+                          </div>
+
+                          <!-- <div class="">
+                            <ProductMeta :item="item" />
+                          </div> -->
+                      <input type="text" placeholder="รายละเอียด..." class="float-end form-control form-control-sm"/>
+                      </td>
+                      </tr>
+                      </template>
                     </tbody>
                     <tfoot>
                       <tr>
@@ -383,6 +453,7 @@ onUpdated(() => {
                         <th class="text-end fw-bold">
                           {{ parseFloat(totalPrice).toLocaleString() }}
                         </th>
+                        <th>{{}}</th>
                         <th>{{}}</th>
                         <th>{{}}</th>
                       </tr>
@@ -407,16 +478,28 @@ onUpdated(() => {
                 </div>
               </div>
               <div class="">
-                <button type="button" class="btn btn-sm btn-success" @click="addItem()">
-                  <i class="bi bi-plus" role="button"></i>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary"
+                  @click="openModalWorkOrder()"
+                >
+                  <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary ms-1"
+                  @click="openModalWorkOrder()"
+                >
+                  <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
                 </button>
                 <button
                   type="button"
                   class="btn btn-sm btn-danger ms-3"
-                  v-if="invoiceStore.carts.length > 0"
+                  v-if="invoiceStore.carts"
                   @click="clearItem()"
                 >
                   <i class="bi bi-trash" role="button"></i>
+                  ล้างรายการ ({{invoiceStore.countCartItems}})
                 </button>
                 <div v-if="errors && hasError" class="alert alert-danger my-2">
                   <li v-for="(message, key) in errors" :key="key" class="px-1">
@@ -428,14 +511,14 @@ onUpdated(() => {
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-3">
+      <div class="col-12 col-md-12">
         <div class="card">
           <div class="card-body pt-3">
             <div class="row g-1">
-              <div class="col-12">
-                <button class="btn btn-primary btn-sm w-100" @click="save()">บันทึก</button>
+              <div class="col">
+                <button class="btn btn-primary btn-sm" @click="save()">บันทึก</button>
               </div>
-              <div class="col-12">
+              <div class="col">
                 <router-link
                   :to="{ name: 'invoices.preview' }"
                   class="btn btn-sm btn-secondary d-block"
@@ -450,7 +533,7 @@ onUpdated(() => {
                   พิมพ์</a
                 >
               </div> -->
-              <div class="col-12">
+              <div class="col">
                 <a class="btn btn-sm btn-secondary d-block" @click="emptyCart">
                   <i class="bi bi-printer"></i>
                   Reset</a
@@ -461,42 +544,25 @@ onUpdated(() => {
         </div>
       </div>
     </div>
-    <ModalWorkOrder ref="modalProduct" @select="onSelectProduct" />
+    <ModalWorkOrder ref="modalWorkOrder" @select="onSelectProduct" />
     <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
-    <ModalContact ref="modalContact" @select="onSelectContact" />
+    <ModalContact
+      ref="modalContact"
+      @select="onSelectContact"
+      v-model:customerId="formInvoice.customer_id"
+    />
   </section>
+</div>
 </template>
 
 <style lang="scss" scoped>
-// div[size='A4'] {
-//   width: 21cm;
-//   height: 29.7cm;
-//   padding: 10px;
-//   background: white;
-//   display: block;
-//   margin: 0 auto;
-//   margin-bottom: 0.5cm;
-//   box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+input {
+  border: solid 1px #5f5e5e;
+  padding: 1px;
+}
 
-//   > p,
-//   span,
-//   li,
-//   td {
-//     font-size: 12px;
-//     font-family: Arial;
-//   }
-// }
-
-// div[size='A4'][layout='portrait'] {
-//   width: 29.7cm;
-//   height: 21cm;
-// }
-
-// @media print {
-//   body,
-//   page {
-//     margin: 0;
-//     box-shadow: 0;
-//   }
-// }
+.items-container table tbody {
+  height: 200px;
+  overflow: scroll;
+}
 </style>

@@ -20,12 +20,12 @@ export const useBillStore = defineStore('invoice', {
   },
   actions: {
     hasSelectedItem(item) {
+      if(this.selectedItems.length === 0) return false
       let find = this.selectedItems.filter((row) => {
         if (item.code == row.code) {
           return row
         }
       })
-      console.log(find)
       return find.length > 0 ? true : false
     },
 

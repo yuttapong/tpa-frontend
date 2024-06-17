@@ -49,6 +49,7 @@
                     <thead>
                       <tr>
                         <th scope="col">#</th>
+                        <th scope="col">Action</th>
                         <th scope="col">Code</th>
                         <th scope="col">Date</th>
                         <th scope="col">Price</th>
@@ -59,6 +60,9 @@
                       <tr v-for="(item, index) in items" :key="index">
                         <th scope="row">{{ index + 1 }}</th>
                         <td>
+                          <button type="type" class="btn btn-sm btn-secondary" @click="openModalQuotation(item)"><i class="bi bi-search"></i></button>
+                        </td>
+                        <td>
                           <span class="fw-bold border bg-dark text-white p-1">{{ item.code }}</span>
                         </td>
                         <td>
@@ -66,7 +70,7 @@
                             DateTime(new Date(item.document_date))
                           }}</span>
                         </td>
-                        <td>{{ item.total_price }}</td>
+                        <td>{{ Number(item.total_price).toLocaleString() }}</td>
                         <td>
                           <div>{{ item.address_name }}</div>
                           <small class="text-danger">({{ item.agent_name }})</small>
@@ -424,24 +428,31 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
         </div>
       </div>
     </div>
+    <ModalQuotationDetail ref="modalQuotation" :data="quotation"/>
   </section>
 </template>
 
 <script setup>
 import { onMounted, computed, ref } from 'vue'
-import avatar from '@/assets/img/profile-img.jpg'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { DateTime, Number } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
+import ModalQuotationDetail from "@/views/quotation/components/ModalQuotationDetail.vue"
 const appStore = useAppStore()
 const row = ref({})
 const items = ref({})
 const pagination = ref({
+  total:0,
   per_page: appStore.settings.page.perPage,
   current_page: 1,
 })
 const loading = ref(true)
+const quotation = ref({})
+const modalQuotation = ref(null)
+
+
+
 const onChangePage = (page) => {
   pagination.value.current_page = page
   loadData()
@@ -468,6 +479,13 @@ const loadData = async () => {
 const fullname = computed(() =>
   row.value ? `${row.value?.name_th} ${row.value?.lastname_th}` : null,
 )
+
+const openModalQuotation = async (row) => {
+  quotation.value = row
+  modalQuotation.value.show()
+  const {data} = await api.get("v2/quotations/" + row.id)
+  if(data) quotation.value = data
+}
 onMounted(() => {
   loadData()
 })

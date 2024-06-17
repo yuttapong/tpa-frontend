@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps, onMounted, defineExpose } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])

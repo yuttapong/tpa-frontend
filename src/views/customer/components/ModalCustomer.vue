@@ -80,8 +80,9 @@
                     </td>
                     <td>
                       <div class="">{{ item.companyname }}</div>
-                      <div v-if="item.companynameen" class="mx-1 p-1 text-danger">
-                        <small> {{ item.companynameen }}</small>
+                      <div v-if="item.companynameen" class="mx-1 p-1 ">
+                        <small class="text-danger"> {{ item.companynameen }}</small>
+                        <small class="mx-2"> ID#{{ item.id }}</small>
                       </div>
                       <!-- <span v-if="item.model" class="mx-1 p-1">{{ item.model }}</span>
                       <span v-if="item.serialnumber" class="mx-1 p-1">{{ item.serialnumber }}</span> -->
@@ -120,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps, onMounted, defineExpose } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'

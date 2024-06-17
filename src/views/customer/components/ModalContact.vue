@@ -4,7 +4,7 @@
       <div class="modal-dialog modal-dialog-scrollable modal-xl modal-fullscreen-lg-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">รายชื่อ/ผู้ติดต่อ</h5>
+            <h5 class="modal-title">รายชื่อ/ผู้ติดต่อ <span v-if="_companyId">CustomerID: {{_companyId}}</span></h5>
             <button
               type="button"
               class="btn-close"
@@ -33,6 +33,15 @@
                       v-model="formSearch.taxnumber"
                       class="form-control form-control-sm"
                       placeholder="taxnumber"
+                      @keyup.enter="onSearch()"
+                    />
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-3">
+                    <input
+                      type="search"
+                      v-model="formSearch.customer_id"
+                      class="form-control form-control-sm"
+                      placeholder="Customer ID"
                       @keyup.enter="onSearch()"
                     />
                   </div>
@@ -132,12 +141,12 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps, onMounted, defineExpose } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'
 const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
-const props = defineProps(['visible', 'perPage', 'data'])
+const props = defineProps(['visible', 'perPage', 'data','customerId'])
 
 const appStore = useAppStore()
 let modal = null
@@ -145,6 +154,7 @@ let modalElement = ref(null)
 const items = ref([])
 const selectedItems = ref([])
 const loading = ref(false)
+const _companyId = computed(() => props.customerId)
 const pagination = ref({
   total: 0,
   per_page: appStore.settings.page.perPage,
@@ -174,6 +184,9 @@ const loadData = async () => {
     page: pagination.value.current_page,
     ...formSearch.value,
   }
+  if(props.customerId) {
+    params.customer_id = props.customerId
+  }
   const { data } = await api.get('/v2/contacts', {
     params: params,
   })
@@ -202,9 +215,16 @@ const select = () => {
   modal.hide()
   emit('onHide')
 }
+watch(props,(p) => {
+  console.log('watch cm', p.customerId);
+  if( p.customerId) {
+    formSearch.value.customer_id = p.customerId
+    onSearch()
+  }
+})
 onMounted(() => {
   modal = new Modal(modalElement.value)
-  loadData()
+  onSearch()
 })
 defineExpose({ show: _show })
 </script>

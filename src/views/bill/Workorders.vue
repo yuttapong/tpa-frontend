@@ -77,7 +77,9 @@
                     <div class="col-12 col-md-6 col-xxl-1" v-if="labs">
                       <label>Lab</label>
 
-                      <select class="form-select form-select-sm" @change="onSelectLab">
+                      <select 
+                      v-model="formSearch.lab_id" 
+                      class="form-select form-select-sm" @change="onSelectLab">
                         <option value="">--Lab--</option>
                         <option v-for="(item, key) in labs" :key="item.id" :value="item.id">
                           {{ item.name_th }} - {{ item.name }} ({{ item.sublabs.length }})
@@ -163,9 +165,9 @@
                         </td>
 
                         <td>
-                          <div>{{ item.customer.companyname }}</div>
-                          <small class="text-danger mx-1">({{ item.bill.agent_name }})</small>
-                          <small class="text-dark mx-1">({{ item.customer.taxnumber }})</small>
+                          <div v-if="item.customer">{{ item.customer?.companyname }}</div>
+                          <small class="text-danger mx-1">({{ item.bill?.agent_name }})</small>
+                          <small class="text-dark mx-1">({{ item.customer?.taxnumber }})</small>
                         </td>
                         <td>{{ item.ems_receive }}</td>
                       </tr>
@@ -556,6 +558,7 @@ const formSearch = ref({
   taxnumber: '',
   bill_code: '',
   barcode_no: '',
+  lab_id: "",
 })
 const getLabs = async () => {
   const { data } = await api.get('/v2/labs/all')

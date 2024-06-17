@@ -53,7 +53,7 @@ onMounted(() => {})
           <p>{{ data?.address }}</p>
         </div>
       </div>
-      <spinner :visible="!data.items"/>
+      <spinner :visible="data && !data.items"/>
       <div size="">
         <table class="table table-sm table-condensed table-bordered">
           <thead>
@@ -66,7 +66,7 @@ onMounted(() => {})
               <th scope="col" class="fw-bold" nowrap>ราคารวม</th>
             </tr>
           </thead>
-          <tbody v-if="data.items">
+          <tbody v-if="data && data.items">
             <tr v-for="(item, index) in data.items" :key="index">
               <th scope="row" class="text-center">{{ index + 1 }}</th>
               <!-- <td> {{ item.item_code }}</td> -->

@@ -38,6 +38,7 @@ pinia.use(({ store }) => {
 app.use(abilitiesPlugin, ability)
 app.use(pinia)
 app.use(router)
+
 app.use(VueAwesomePaginate)
 app.use(Vue3Toasity, {
   autoClose: 3000,

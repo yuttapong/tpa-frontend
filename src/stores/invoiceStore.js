@@ -56,6 +56,6 @@ export const useInvoiceStore = defineStore('invoice', {
   },
   persist: {
     enabled: true,
-    strategies: [{ storage: localStorage, paths: ['form', 'carts'] }],
+    strategies: [{ storage: localStorage, paths: ['carts'] }],
   },
 })

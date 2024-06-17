@@ -888,7 +888,7 @@ onUpdated(() => {
     </div>
     <ModalProduct ref="modalProduct" @select="onSelectProducts" />
     <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
-    <ModalContact ref="modalContact" @select="onSelectContact" />
+    <ModalContact ref="modalContact" @select="onSelectContact" v-model:customerId="form.company_id"/>
   </section>
 </template>
 

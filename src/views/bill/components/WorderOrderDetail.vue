@@ -56,12 +56,11 @@
         </div>
       </div>
     </div>
-    {{ data }}
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, defineExpose, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
 import { DateTime } from '@/helpers/myformat'
 import { differenceInDays } from 'date-fns'

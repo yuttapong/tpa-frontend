@@ -114,7 +114,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, defineExpose, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { DateTime } from '@/helpers/myformat'
@@ -158,6 +158,7 @@ const _show = () => {
 }
 
 const existCarts = (data) => {
+  if(!invoiceStore.carts) return 0
   const find = invoiceStore.carts.filter((item) => item.item_code == data.item_code)
   return Boolean(find.length)
 }

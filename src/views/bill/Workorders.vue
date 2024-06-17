@@ -612,12 +612,11 @@ const onChangePage = (page) => {
   loadData()
 }
 const openModalWorkOrder = async (row) => {
-  console.log(row)
-  billStore.setWorkOrder(row)
   modalWorkOrder.value.show()
+
+   billStore.setWorkOrder(row)
   const { data } = await api.get('v2/workorders/code/' + row.item_code)
   if (data) {
-    console.log(data)
     billStore.setWorkOrder(data)
   }
 }

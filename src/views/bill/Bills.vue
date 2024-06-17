@@ -22,9 +22,7 @@
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
                   ใบขอรับบริการ
-                  <span v-if="pagination"
-                    >({{ parseInt(pagination.total).toLocaleString() || 0 }})</span
-                  >
+                  <span v-if="pagination">({{ parseInt(pagination.total).toLocaleString() || 0 }})</span>
                 </button>
               </li>
             </ul>
@@ -33,43 +31,21 @@
                 <form @submit.prevent="onSearch()" class="mb-3">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.code"
-                        name="code"
-                        class="form-control form-control-sm"
-                        placeholder="Code"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
+                        placeholder="Code" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        name="taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.q"
-                        name="q"
-                        class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input
-                        type="reset"
-                        class="btn btn-secondary btn-sm mx-2"
-                        value="Reset"
-                        @click="resetFormSearch"
-                      />
+                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
                       <router-link class="btn btn-sm btn-success" to="/bills/form">
                         <i class="bi bi-plus"></i> สร้าง
                       </router-link>
@@ -77,13 +53,9 @@
                   </div>
                 </form>
                 <!-- Small tables -->
-                <vue-awesome-paginate
-                  :total-items="pagination.total"
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                />
+                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                  :on-click="onChangePage" />
                 <div class="table-responsive">
                   <table class="table table-sm">
                     <thead>
@@ -103,25 +75,16 @@
                     <tbody>
                       <tr v-for="(item, index) in items" :key="index">
                         <th scope="row" nowrap>
-                          <router-link
-                            :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
-                          >
-                            <i class="bi bi-calendar mx-1" role="button"></i
-                          ></router-link>
-                          <router-link
-                            :to="{ name: 'bills.formEdit', params: { code: item.code } }"
-                          >
-                            <i class="bi bi-pencil mx-1" role="button"></i
-                          ></router-link>
+                          <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }">
+                            <i class="bi bi-calendar mx-1" role="button"></i></router-link>
+                          <router-link :to="{ name: 'bills.formEdit', params: { code: item.code } }">
+                            <i class="bi bi-pencil mx-1" role="button"></i></router-link>
                           <i class="bi bi-search mx-1" @click="showDetail(item)" role="button"></i>
                         </th>
                         <!-- <th scope="row">{{ index + 1 }}</th> -->
                         <td align="left" nowrap>
-                          <router-link
-                            :to="`/bills/code/${item.code}`"
-                            class="w-full d-block fw-bold border bg-dark text-white p-1"
-                            target="_blank"
-                          >
+                          <router-link :to="`/bills/code/${item.code}`"
+                            class="w-full d-block fw-bold border bg-dark text-white p-1" target="_blank">
                             {{ item.code }}
                           </router-link>
                         </td>
@@ -137,7 +100,7 @@
                         </td>
 
                         <td>
-                          <div>{{ item.customer.companyname }}</div>
+                          <div>{{ item.customer?.companyname }}</div>
                           <small class="text-danger mx-1">({{ item.agent_name }})</small>
                           <small class="text-secondary mx-1">({{ item.customer.taxnumber }})</small>
                         </td>
@@ -146,13 +109,9 @@
                     </tbody>
                   </table>
                 </div>
-                <vue-awesome-paginate
-                  :total-items="pagination.total"
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                />
+                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                  :on-click="onChangePage" />
                 <!-- End small tables -->
               </div>
 
@@ -170,12 +129,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Bill เลขที่ : {{ bill.code }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -234,12 +188,7 @@
               <tbody>
                 <tr v-for="(row, rowIndex) in bill.items" :key="row">
                   <th>
-                    <input
-                      type="checkbox"
-                      v-model="itemsSelected"
-                      name="itemsSelected[]"
-                      :value="row"
-                    />
+                    <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
                   </th>
                   <th>{{ rowIndex + 1 }}</th>
                   <td>{{ row.item_code }}</td>
@@ -261,8 +210,7 @@
             </table>
           </div>
           <p>
-            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label
-            >{{ bill.note_customers }}
+            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label>{{ bill.note_customers }}
           </p>
         </div>
         <div class="modal-footer d-block">
@@ -274,17 +222,18 @@
             </div>
 
             <div class="p-1">
-              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
-                >{{ itemsSelected.length }} รายการ</span
-              >
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
+                itemsSelected.length }} รายการ</span>
             </div>
           </div>
 
           <div class="row g-2">
             <div class="col-12 col-lg-12 col-xl-12">
-              <Spinner :visible="loadingCancelCommitment"/>
-              <span v-if="resultCancelCommitment.success === true" class="text-success">{{resultCancelCommitment.message}}</span>
-              <span v-if="resultCancelCommitment.success === false" class="text-danger">{{resultCancelCommitment.message}}</span>
+              <Spinner :visible="loadingCancelCommitment" />
+              <span v-if="resultCancelCommitment.success === true"
+                class="text-success">{{ resultCancelCommitment.message }}</span>
+              <span v-if="resultCancelCommitment.success === false"
+                class="text-danger">{{ resultCancelCommitment.message }}</span>
             </div>
 
             <div class="col-12 col-lg-6 col-xl-6">
@@ -311,12 +260,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -327,21 +271,13 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.customer_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="date"
-                  v-model="invoice.document_date"
-                  class="form-control form-control-sm"
-                />
+                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -349,21 +285,13 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.contact_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-8">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.address_detail"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -390,22 +318,12 @@
                     }}</span>
                   </th>
                   <th>
-                    <input
-                      type="number"
-                      name="price[]"
-                      v-model="row.price"
-                      class="form-control form-control-sm"
-                      style="width: 100px"
-                    />
+                    <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
+                      style="width: 100px" />
                   </th>
                   <th>
-                    <input
-                      type="number"
-                      name="price[]"
-                      v-model="row.discount"
-                      class="form-control form-control-sm"
-                      style="width: 100px"
-                    />
+                    <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
+                      style="width: 100px" />
                   </th>
                 </tr>
               </tbody>
@@ -633,7 +551,7 @@ const createInvoice = () => {
 const onSearch = async () => {
   try {
     await loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const onChangePage = (page) => {
   pagination.value.current_page = page
@@ -670,6 +588,8 @@ onMounted(() => {
 }
 
 .checkbox {
-  transform: scale(/*desired magnification*/);
+  transform: scale(
+      /*desired magnification*/
+    );
 }
 </style>

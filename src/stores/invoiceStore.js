@@ -1,8 +1,12 @@
 import { defineStore } from 'pinia'
-
+import { api } from '@/helpers/api'
+import { toast } from 'vue3-toastify'
 export const useInvoiceStore = defineStore('invoice', {
   state: () => {
     return {
+      cartLoading: false,
+      cartMsgError: '',
+      cartMsgSuccess: '',
       form: {},
       carts: [],
       invoice: {},
@@ -16,16 +20,17 @@ export const useInvoiceStore = defineStore('invoice', {
   },
   actions: {
     hasSelectedItem(item) {
-      console.log('hassl', item.item_code)
+      if (!this.carts) return false
       let find = this.carts.filter((row) => {
-        if (item.item_code == row.item_code) {
+        if (item.item_id == row.item_id) {
           return row
         }
       })
       return find.length > 0 ? true : false
     },
 
-    addItem(item) {
+    async addItem(item) {
+      this.cartLoading = true
       const exist = this.hasSelectedItem(item)
       if (item.discount === undefined) {
         item.discount = 0
@@ -34,18 +39,52 @@ export const useInvoiceStore = defineStore('invoice', {
         item.price = 0
       }
       if (!exist) {
-        this.carts.push(item)
+        const { data } = await api.post('v2/invoices/cart', item).catch((err) => {
+          this.cartMsgError = err.response.data?.message
+          this.cartLoading = false
+          toast(this.cartMsgError, {
+            autoclose: 5000,
+            theme: 'auto',
+            type: 'danger',
+            dangerouslyHTMLString: true,
+          })
+        })
+        if (data) {
+          this.cartLoading = false
+          this.cartMsgSuccess = data?.message
+          this.carts.push(data.data)
+        }
+      } else {
+        this.cartLoading = false
       }
     },
-    removeItem(item) {
-      let index = this.carts.indexOf(item)
-      this.carts.splice(index, 1)
+    async removeItem(item) {
+      this.cartLoading = true
+      const { data } = await api
+        .delete('v2/invoices/cart', item.item_id)
+        .catch(() => (this.cartLoading = false))
+      if (data) {
+        let index = this.carts.indexOf(item)
+        this.carts.splice(index, 1)
+      }
+      this.cartLoading = false
+    },
+    async loadCart() {
+      this.cartLoading = true
+      const { data } = await api.get('v2/invoices/cart').catch(() => (this.cartLoading = false))
+      this.carts = data
+      this.cartLoading = false
     },
     updateItems(items) {
       this.carts = items
     },
-    emptyCart() {
-      this.carts = []
+    async emptyCart() {
+      this.cartLoading = true
+      const { data } = await api.delete('v2/invoices/cart/').catch(() => (this.cartLoading = false))
+      if (data) {
+        this.carts = []
+      }
+      this.cartLoading = false
     },
     setForm(data) {
       this.form = data

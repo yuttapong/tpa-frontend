@@ -35,6 +35,16 @@
                     <div class="col-6 col-md-4 col-lg-3">
                       <input
                         type="search"
+                        v-model="formSearch.id"
+                        name="id"
+                        class="form-control form-control-sm"
+                        placeholder="ID"
+                        @keyup.enter="search"
+                      />
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-3">
+                      <input
+                        type="search"
                         v-model="formSearch.code"
                         name="code"
                         class="form-control form-control-sm"
@@ -89,7 +99,7 @@
                     <thead>
                       <tr>
                         <th scope="col" class="fw-bold text-decoration-underline">Action</th>
-                        <!-- <th scope="col" class="fw-bold text-decoration-underline">#</th> -->
+                        <th scope="col" class="fw-bold text-decoration-underline">#ID</th>
                         <th scope="col" class="fw-bold text-decoration-underline">Code</th>
                         <th scope="col" class="fw-bold text-decoration-underline">Date</th>
                         <th scope="col" class="fw-bold text-decoration-underline" nowrap>
@@ -115,7 +125,7 @@
                           ></router-link>
                           <i class="bi bi-search mx-1" @click="showDetail(item)" role="button"></i>
                         </th>
-                        <!-- <th scope="row">{{ index + 1 }}</th> -->
+                        <th scope="row">{{ item.id }}</th>
                         <td align="left" nowrap>
                           <router-link
                             :to="`/bills/code/${item.code}`"

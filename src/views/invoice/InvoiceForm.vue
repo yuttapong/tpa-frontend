@@ -357,6 +357,7 @@ onUpdated(() => {
                   </div>
 
                   <EasyDataTable
+                    class="my-3"
                     :headers="headers"
                     :items="invoiceItems"
                     alternating
@@ -391,35 +392,38 @@ onUpdated(() => {
                     Total Price : {{ parseFloat(totalPrice).toLocaleString() }}
                   </div> -->
 
-                    <div class="col-3 fw-bold">
+                    <div class="col-12 col-md-7">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger"
+                        v-if="invoiceStore.carts"
+                        @click="clearItems()"
+                      >
+                        <i class="bi bi-trash" role="button"></i>
+                        ล้างรายการ ({{ invoiceStore.countCartItems }})
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-secondary  ms-1"
+                        @click="openModalWorkOrder()"
+                      >
+                        <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-secondary ms-1"
+                        @click="openModalWorkOrder()"
+                      >
+                        <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
+                      </button>
+                    </div>
+                    <div class="col-12 col-md-5">
                       Total Net : {{ parseFloat(totalNet).toLocaleString() }}
+                      รวมเป็นเงิน : {{ parseFloat(totalNet).toLocaleString() }}
                     </div>
                   </div>
                 </div>
                 <div class="">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-secondary"
-                    @click="openModalWorkOrder()"
-                  >
-                    <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-secondary ms-1"
-                    @click="openModalWorkOrder()"
-                  >
-                    <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-danger ms-3"
-                    v-if="invoiceStore.carts"
-                    @click="clearItems()"
-                  >
-                    <i class="bi bi-trash" role="button"></i>
-                    ล้างรายการ ({{ invoiceStore.countCartItems }})
-                  </button>
                   <div v-if="errors && hasError" class="alert alert-danger my-2">
                     <li v-for="(message, key) in errors" :key="key" class="px-1">
                       {{ message }}
@@ -437,7 +441,7 @@ onUpdated(() => {
                 <div class="col">
                   <button class="btn btn-primary btn-sm" @click="save()">บันทึก</button>
                 </div>
-                <div class="col">
+                <!-- <div class="col">
                   <router-link
                     :to="{ name: 'invoices.preview' }"
                     class="btn btn-sm btn-secondary d-block"
@@ -446,18 +450,12 @@ onUpdated(() => {
                     Preview ดูตัวอย่าง</router-link
                   >
                 </div>
-                <!-- <div class="col-12">
-                <a class="btn btn-sm btn-secondary d-block">
-                  <i class="bi bi-printer"></i>
-                  พิมพ์</a
-                >
-              </div> -->
                 <div class="col">
                   <a class="btn btn-sm btn-secondary d-block" @click="emptyCart">
                     <i class="bi bi-printer"></i>
                     Reset</a
                   >
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -476,8 +474,9 @@ onUpdated(() => {
 
 <style lang="scss" scoped>
 input {
-  border: solid 1px #5f5e5e;
-  padding: 1px;
+  border: solid 1px #bbb8b8;
+  padding: 2px;
+  border-radius: 1px;
 }
 
 .items-container table tbody {

@@ -81,18 +81,14 @@ const openModalWorkOrder = () => {
 
 const removeCart = async () => {
   let items = itemsSelected.value.map((i) => i.item_id)
-  const { data } = await api.delete('v2/invoices/cart', {
-    data: {
-      items: items
-    }
-
-  })
+  const data = await invoiceStore.removeCart(items)
   toast(data.message, {
     autoClose: 200,
     theme: 'auto',
     type: 'success',
     dangerouslyHTMLString: true,
   })
+  itemsSelected.value = []
   invoiceStore.loadCart()
 }
 
@@ -124,7 +120,7 @@ const onSelectProduct = async (item) => {
 }
 
 const emptyCart = async () => {
-  invoiceStore.emptyMyCart()
+  invoiceStore.emptyCart()
 }
 
 const loadCart = async () => {
@@ -175,20 +171,20 @@ const save = async () => {
   formInvoice.value.totalnet = totalNet.value
 
   if (formInvoice.value.id !== undefined && formInvoice.value.id > 0) {
-    loading.value = true
-    const { data } = await api.put('v2/invoices', formInvoice.value)
-    if (data) {
-      loading.value = false
-      emptyCart()
-      resetData()
-      toast(data.message, {
-        theme: 'auto',
-        type: 'default',
-        dangerouslyHTMLString: true,
-      })
-    } else {
-      loading.value = false
-    }
+    // loading.value = true
+    // const { data } = await api.put('v2/invoices', formInvoice.value)
+    // if (data) {
+    //   loading.value = false
+    //   resetData()
+    //   loadCart()
+    //   toast(data.message, {
+    //     theme: 'auto',
+    //     type: 'default',
+    //     dangerouslyHTMLString: true,
+    //   })
+    // } else {
+    //   loading.value = false
+    // }
   } else {
     loading.value = true
     const { data } = await api.post('v2/invoices', formInvoice.value).catch((err) => {
@@ -201,6 +197,7 @@ const save = async () => {
       loading.value = false
       emptyCart()
       resetData()
+      loadCart()
       router.push('/invoices')
       toast(data.message, {
         theme: 'auto',
@@ -326,10 +323,10 @@ onUpdated(() => {
                         <i class="bi bi-trash" role="button"></i>
                         ลบ ({{ itemsSelected.length }})
                       </button>
-                      <button type="button" class="btn btn-sm btn-danger ms-1" @click="removeCart()">
+                      <!-- <button type="button" class="btn btn-sm btn-danger ms-1" @click="emptyCart()">
                         <i class="bi bi-x" role="button"></i>
                         ล้าง
-                      </button>
+                      </button> -->
                     </template>
 
                     <button type="button" class="btn btn-sm btn-secondary  ms-1" @click="openModalWorkOrder()">

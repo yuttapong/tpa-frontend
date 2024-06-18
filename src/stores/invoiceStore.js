@@ -84,29 +84,51 @@ export const useInvoiceStore = defineStore('invoice', {
     updateItems(items) {
       this.carts = items
     },
-    async emptyCart() {
+    async resetCart() {
       this.cartLoading = true
-      const { data } = await api.delete('v2/invoices/cart').catch(() => (this.cartLoading = false))
-      if (data) {
-        this.carts = []
-      }
-      this.cartLoading = false
-    },
-    async emptyMyCart() {
-      this.cartLoading = true
-      if (!this.myCartItems) {
-        return false
-      }
       const { data } = await api
-        .delete('v2/invoices/cart', {
+        .delete('v2/invoices/cart/empty', {
           data: {
-            items: this.myCartItems.map((i) => item.item_id),
+            reset: 'yes',
           },
         })
         .catch(() => (this.cartLoading = false))
       if (data) {
         this.carts = []
       }
+      this.cartLoading = false
+    },
+
+    async emptyCart() {
+      let items = this.myCartItems ? this.myCartItems.map((i) => i.item_id) : []
+      if (items.length === 0) return false
+
+      this.cartLoading = true
+      const { data } = await api
+        .delete('v2/invoices/cart', {
+          data: {
+            items: items,
+          },
+        })
+        .catch(() => (this.cartLoading = false))
+      if (data) {
+        this.carts = []
+      }
+      this.cartLoading = false
+    },
+    async removeCart(items) {
+      this.cartLoading = true
+      const { data } = await api
+        .delete('v2/invoices/cart', {
+          data: {
+            items: items,
+          },
+        })
+        .catch(() => (this.cartLoading = false))
+      if (data) {
+        this.loadCart()
+      }
+      return data
       this.cartLoading = false
     },
     setForm(data) {

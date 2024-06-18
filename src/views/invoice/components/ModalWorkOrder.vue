@@ -5,39 +5,25 @@
         <div class="modal-header">
           <h5 class="modal-title">Work Orders</h5>
 
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="my-2">
             <form @submit.prevent="search()">
               <div class="row g-2">
                 <div class="col-6 col-md-4 col-lg-4">
-                  <input
-                    type="search"
-                    v-model="formSearchProduct.bill_code"
-                    class="form-control form-control-sm"
-                    placeholder="เลขที่ใบขอรับบริการ"
-                    @keyup.enter="search()"
-                  />
+                  <input type="search" v-model="formSearchProduct.bill_code" class="form-control form-control-sm"
+                    placeholder="เลขที่ใบขอรับบริการ" @keyup.enter="search()" />
                 </div>
                 <div class="col-6 col-md-4 col-lg-4">
-                  <input
-                    type="search"
-                    v-model="formSearchProduct.item_code"
-                    class="form-control form-control-sm"
-                    placeholder="เลขที่ WorderOrder"
-                    @keyup.enter="search()"
-                  />
+                  <input type="search" v-model="formSearchProduct.item_code" class="form-control form-control-sm"
+                    placeholder="เลขที่ WorderOrder" @keyup.enter="search()" />
                 </div>
                 <div class="col-6 col-md-4 col-lg-3"></div>
                 <div class="col-6 col-md-4 col-lg-3">
                   <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
                   <spinner :visible="workorderLoading" class="mx-2 p-0" />
+                  <spinner :visible="invoiceStore.cartLoading" class="mx-2 p-0" />
                 </div>
               </div>
             </form>
@@ -91,18 +77,13 @@
         <div class="modal-footer m-0 p-1 d-block">
           <div class="row">
             <div class="col-xs-10 col-md-10">
-              <vue-awesome-paginate
-                :total-items="pagination.total"
-                :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow"
-                v-model="pagination.current_page"
-                :on-click="onChangePage"
-                class=""
-              />
+              <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                :on-click="onChangePage" class="" />
             </div>
 
             <div class="col-xs-2 col-md-2">
-              
+
               <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal">
                 ปิด
               </button>
@@ -121,6 +102,8 @@ import { DateTime } from '@/helpers/myformat'
 import { differenceInDays } from 'date-fns'
 import { useAppStore } from '@/stores/appStore'
 import { useInvoiceStore } from '@/stores/invoiceStore'
+import Spinner from '@/components/Spinner.vue';
+
 const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
 const props = defineProps({
   title: {
@@ -129,7 +112,7 @@ const props = defineProps({
   },
   data: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
 })
 const appStore = useAppStore()
@@ -139,6 +122,7 @@ let modalRef = ref(null)
 const selectedItems = ref([])
 const items = ref([])
 const loading = ref(false)
+const workorderLoading = ref(false)
 const formSearchProduct = ref({
   bill_code: '',
   item_code: '',
@@ -158,11 +142,11 @@ const _show = () => {
 }
 
 const existCarts = (data) => {
-  if(!invoiceStore.carts) return 0
-  const find = invoiceStore.carts.filter((item) => item.item_code == data.item_code)
+  if (!invoiceStore.carts) return 0
+  const find = invoiceStore.carts.filter((item) => item.item_id == data.item_id)
   return Boolean(find.length)
 }
-const workorderLoading = ref(false)
+
 
 
 const loadData = async () => {
@@ -200,7 +184,6 @@ const selectItem = (data) => {
   selectedItems.value = data
   emit('select', selectedItems.value)
   selectedItems.value = []
-  console.log(selectedItems.value);
 }
 
 onMounted(() => {

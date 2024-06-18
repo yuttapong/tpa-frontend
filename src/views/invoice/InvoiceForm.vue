@@ -70,7 +70,7 @@ const onSearch = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 
 const openModalWorkOrder = () => {
@@ -127,10 +127,29 @@ const emptyCart = async () => {
       dangerouslyHTMLString: true,
     })
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
 }
 
 const removeItem = async (item, index) => {
   invoiceStore.removeItem(item)
+<<<<<<< HEAD
+=======
+
+  // const { data } = await api.delete('v2/invoices/cart/' + item.item_id, {
+  //   item_i: item.item_id,
+  // })
+  // if (data) {
+  //   toast(data.message, {
+  //     autoClose: 100,
+  //     theme: 'auto',
+  //     type: 'success',
+  //     dangerouslyHTMLString: true,
+  //   })
+  // }
+>>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
 }
 const loadCart = async () => {
   invoiceStore.loadCart()
@@ -236,6 +255,7 @@ const headers = [
 loadCart()
 const itemsSelected = ref([])
 onMounted(() => {
+  loadCart()
   if (invoiceStore.form) {
     formInvoice.value = invoiceStore.form
   }
@@ -392,6 +412,7 @@ onUpdated(() => {
                     Total Price : {{ parseFloat(totalPrice).toLocaleString() }}
                   </div> -->
 
+<<<<<<< HEAD
                     <div class="col-12 col-md-7">
                       <button
                         type="button"
@@ -420,10 +441,28 @@ onUpdated(() => {
                     <div class="col-12 col-md-5">
                       Total Net : {{ parseFloat(totalNet).toLocaleString() }}
                       รวมเป็นเงิน : {{ parseFloat(totalNet).toLocaleString() }}
+=======
+                    <div class="col-3 fw-bold">
+                      Total Net : {{ parseFloat(totalNet).toLocaleString() }}
+>>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
                     </div>
                   </div>
                 </div>
                 <div class="">
+<<<<<<< HEAD
+=======
+                  <button type="button" class="btn btn-sm btn-secondary" @click="openModalWorkOrder()">
+                    <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
+                  </button>
+                  <button type="button" class="btn btn-sm btn-secondary ms-1" @click="openModalWorkOrder()">
+                    <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
+                  </button>
+                  <button type="button" class="btn btn-sm btn-danger ms-3" v-if="invoiceStore.carts"
+                    @click="clearItems()">
+                    <i class="bi bi-trash" role="button"></i>
+                    ล้างรายการ ({{ invoiceStore.countCartItems }})
+                  </button>
+>>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
                   <div v-if="errors && hasError" class="alert alert-danger my-2">
                     <li v-for="(message, key) in errors" :key="key" class="px-1">
                       {{ message }}
@@ -441,6 +480,7 @@ onUpdated(() => {
                 <div class="col">
                   <button class="btn btn-primary btn-sm" @click="save()">บันทึก</button>
                 </div>
+<<<<<<< HEAD
                 <!-- <div class="col">
                   <router-link
                     :to="{ name: 'invoices.preview' }"
@@ -456,6 +496,24 @@ onUpdated(() => {
                     Reset</a
                   >
                 </div> -->
+=======
+                <div class="col">
+                  <router-link :to="{ name: 'invoices.preview' }" class="btn btn-sm btn-secondary d-block">
+                    <i class="bi bi-eye"></i>
+                    Preview ดูตัวอย่าง</router-link>
+                </div>
+                <!-- <div class="col-12">
+                <a class="btn btn-sm btn-secondary d-block">
+                  <i class="bi bi-printer"></i>
+                  พิมพ์</a
+                >
+              </div> -->
+                <div class="col">
+                  <a class="btn btn-sm btn-secondary d-block" @click="emptyCart">
+                    <i class="bi bi-printer"></i>
+                    Reset</a>
+                </div>
+>>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
               </div>
             </div>
           </div>
@@ -463,11 +521,15 @@ onUpdated(() => {
       </div>
       <ModalWorkOrder ref="modalWorkOrder" @select="onSelectProduct" />
       <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
+<<<<<<< HEAD
       <ModalContact
         ref="modalContact"
         @select="onSelectContact"
         v-model:customerId="formInvoice.customer_id"
       />
+=======
+      <ModalContact ref="modalContact" @select="onSelectContact" v-model:customerId="formInvoice.customer_id" />
+>>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
     </section>
   </div>
 </template>

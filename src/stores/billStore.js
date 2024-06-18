@@ -7,7 +7,7 @@ export const useBillStore = defineStore('invoice', {
       formMode: 'add',
       selectedItems: [],
       form: {},
-      workorder:{}
+      workorder: {},
     }
   },
   getters: {
@@ -20,7 +20,7 @@ export const useBillStore = defineStore('invoice', {
   },
   actions: {
     hasSelectedItem(item) {
-      if(this.selectedItems.length === 0) return false
+      if (this.selectedItems.length === 0) return false
       let find = this.selectedItems.filter((row) => {
         if (item.code == row.code) {
           return row
@@ -39,6 +39,7 @@ export const useBillStore = defineStore('invoice', {
       }
       this.selectedItems.push(item)
     },
+
     removeItem(item) {
       let index = this.selectedItems.indexOf(item)
       this.selectedItems.splice(index, 1)
@@ -55,6 +56,6 @@ export const useBillStore = defineStore('invoice', {
   },
   persist: {
     enabled: true,
-    strategies: [{ storage: localStorage, paths: ['selectedItems','form'] }],
+    strategies: [{ storage: localStorage, paths: ['selectedItems', 'form'] }],
   },
 })

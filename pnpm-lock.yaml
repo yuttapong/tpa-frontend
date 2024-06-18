@@ -83,6 +83,9 @@ importers:
       vue-router:
         specifier: ^4.3.2
         version: 4.3.2(vue@3.4.27)
+      vue3-easy-data-table:
+        specifier: ^1.5.47
+        version: 1.5.47
       vue3-toastify:
         specifier: ^0.2.1
         version: 0.2.1(vue@3.4.27)
@@ -2200,6 +2203,9 @@ packages:
     resolution: {integrity: sha512-hKQJ1vDAZ5LVkKEnHhmm1f9pMiWIBNGF5AwU67PdH7TyXCj/a4hTccuUuYCAMgJK6rO/NVYtQIEN3yL8CECa7Q==}
     peerDependencies:
       vue: ^3.2.0
+
+  vue3-easy-data-table@1.5.47:
+    resolution: {integrity: sha512-q0bZBlWIwQ3FIhB+F98ylFPfBJWiS3Xv7QqBe3xS5MbRNZP96RFjaQn7C0Pi0J/aaucNW8gFWxPyh9NESS1ehw==}
 
   vue3-toastify@0.2.1:
     resolution: {integrity: sha512-u4i5LCu1q5qs4L4Kbjb4u8NipCS8ox1fCHQ6XFS62676xnA6Q/AJRpZEkAurTMp723LeH6eQX6k9+24bKf1T4Q==}
@@ -4323,6 +4329,12 @@ snapshots:
     dependencies:
       '@vue/devtools-api': 6.6.1
       vue: 3.4.27
+
+  vue3-easy-data-table@1.5.47:
+    dependencies:
+      vue: 3.4.27
+    transitivePeerDependencies:
+      - typescript
 
   vue3-toastify@0.2.1(vue@3.4.27):
     optionalDependencies:

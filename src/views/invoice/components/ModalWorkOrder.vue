@@ -22,8 +22,8 @@
                 <div class="col-6 col-md-4 col-lg-3"></div>
                 <div class="col-6 col-md-4 col-lg-3">
                   <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                  <spinner :visible="workorderLoading" class="mx-2 p-0" />
-                  <spinner :visible="invoiceStore.cartLoading" class="mx-2 p-0" />
+                  <spinner :visible="workorderLoading || invoiceStore.cartLoading" class="mx-2 p-0" />
+
                 </div>
               </div>
             </form>
@@ -137,6 +137,7 @@ const pagination = ref({
 
 
 const _show = () => {
+  invoiceStore.loadCart()
   emit('show', selectedItems.value)
   modalEl.show()
 }
@@ -174,6 +175,7 @@ const loadData = async () => {
 }
 const search = () => {
   pagination.value.current_page = 1
+  invoiceStore.loadCart()
   loadData()
 }
 const onChangePage = (page) => {

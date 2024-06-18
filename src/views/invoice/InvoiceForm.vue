@@ -31,7 +31,9 @@ const formSearch = ref({
   taxnumber: '',
   q: '',
 })
-const invoiceItems = computed(() => invoiceStore.carts)
+const invoiceItems = computed(() => {
+  return invoiceStore.myCartItems
+})
 const formInvoice = ref({
   bill_code: '',
   issue_date: '',
@@ -76,15 +78,22 @@ const onSearch = async () => {
 const openModalWorkOrder = () => {
   modalWorkOrder.value.show()
 }
-const clearItems = async () => {
-  invoiceStore.emptyCart()
-  const { data } = await api.delete('v2/invoices/cart')
+
+const removeCart = async () => {
+  let items = itemsSelected.value.map((i) => i.item_id)
+  const { data } = await api.delete('v2/invoices/cart', {
+    data: {
+      items: items
+    }
+
+  })
   toast(data.message, {
     autoClose: 200,
     theme: 'auto',
     type: 'success',
     dangerouslyHTMLString: true,
   })
+  invoiceStore.loadCart()
 }
 
 const onSelectProduct = async (item) => {
@@ -115,42 +124,9 @@ const onSelectProduct = async (item) => {
 }
 
 const emptyCart = async () => {
-  const { data } = await api.delete('v2/invoices/cart/', {
-    staff_id: appStore.user?.id,
-  })
-  if (data) {
-    invoiceStore.updateItems([])
-    toast(data.message, {
-      autoClose: 100,
-      theme: 'auto',
-      type: 'success',
-      dangerouslyHTMLString: true,
-    })
-  }
-<<<<<<< HEAD
-=======
-
->>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
+  invoiceStore.emptyMyCart()
 }
 
-const removeItem = async (item, index) => {
-  invoiceStore.removeItem(item)
-<<<<<<< HEAD
-=======
-
-  // const { data } = await api.delete('v2/invoices/cart/' + item.item_id, {
-  //   item_i: item.item_id,
-  // })
-  // if (data) {
-  //   toast(data.message, {
-  //     autoClose: 100,
-  //     theme: 'auto',
-  //     type: 'success',
-  //     dangerouslyHTMLString: true,
-  //   })
-  // }
->>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
-}
 const loadCart = async () => {
   invoiceStore.loadCart()
 }
@@ -188,8 +164,6 @@ const onSelectContact = (data) => {
 const resetData = () => {
   formInvoice.value = {}
   invoiceStore.setForm({})
-  invoiceStore.updateItems([])
-  clearItems()
 }
 const save = async () => {
   hasError.value = false
@@ -241,7 +215,7 @@ const save = async () => {
   loading.value = false
 }
 const headers = [
-  { text: 'Item code', value: 'item_code', fixed: true, width: 150 },
+  { text: 'Item code', value: 'item_code', width: 150 },
   { text: 'เครื่องมือ', value: 'product', width: 200 },
   { text: 'ส่วนลด', value: 'number' },
   { text: 'ส่วนลด Order Type', value: 'discount_order' },
@@ -261,8 +235,7 @@ onMounted(() => {
   }
 })
 onUpdated(() => {
-  invoiceStore.updateItems(invoiceItems.value)
-  invoiceStore.setForm(formInvoice.value)
+  // invoiceStore.setForm(formInvoice.value)
 })
 </script>
 <template>
@@ -288,106 +261,51 @@ onUpdated(() => {
 
               <form @submit.prevent="onSearch()">
                 <div class="row g-2">
-                  <div
-                    class="col-6 col-md-4 col-lg-3"
-                    :class="[{ 'text-danger': errors.issue_date }]"
-                  >
+                  <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.issue_date }]">
                     <label>วันที่</label>
-                    <input
-                      type="date"
-                      v-model="formInvoice.issue_date"
-                      class="form-control form-control-sm"
-                      placeholder="issue date"
-                    />
+                    <input type="date" v-model="formInvoice.issue_date" class="form-control form-control-sm"
+                      placeholder="issue date" />
                   </div>
-                  <div
-                    class="col-6 col-md-4 col-lg-3"
-                    :class="[{ 'text-danger': errors.due_date }]"
-                  >
+                  <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.due_date }]">
                     <label>กำหนดชำระภายใน</label>
-                    <input
-                      type="number"
-                      v-model="formInvoice.due_within"
-                      class="form-control form-control-sm"
-                      placeholder="due date"
-                    />
+                    <input type="number" v-model="formInvoice.due_within" class="form-control form-control-sm"
+                      placeholder="due date" />
                   </div>
                   <div class="col-6 col-md-4 col-lg-3" v-if="formInvoice.code">
                     <label>Invoice Code</label>
-                    <input
-                      type="text"
-                      v-model="formInvoice.code"
-                      class="form-control form-control-sm"
-                      placeholder="Code"
-                      disabled="disabled"
-                    />
+                    <input type="text" v-model="formInvoice.code" class="form-control form-control-sm" placeholder="Code"
+                      disabled="disabled" />
                   </div>
-                  <div
-                    class="col-6 col-md-4 col-lg-3"
-                    :class="[
-                      { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
-                    ]"
-                  >
-                    <label
-                      >ลูกค้า
-                      <span v-if="formInvoice.customer_id"
-                        >({{ formInvoice.customer_id }})</span
-                      ></label
-                    >
-                    <input
-                      type="text"
-                      v-model="formInvoice.customer_name"
-                      class="form-control form-control-sm"
-                      placeholder="บริษัท"
-                      @click="openModalCustomer"
-                    />
+                  <div class="col-6 col-md-4 col-lg-3" :class="[
+                    { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
+                  ]">
+                    <label>ลูกค้า
+                      <span v-if="formInvoice.customer_id">({{ formInvoice.customer_id }})</span></label>
+                    <input type="text" v-model="formInvoice.customer_name" class="form-control form-control-sm"
+                      placeholder="บริษัท" @click="openModalCustomer" />
                   </div>
-                  <div
-                    class="col-6 col-md-4 col-lg-3"
-                    :class="[{ 'text-danger': errors.contact_name }]"
-                  >
-                    <label
-                      >ผู้ติดต่อ
-                      <span v-if="formInvoice.contact_id"
-                        >({{ formInvoice.contact_id }})</span
-                      ></label
-                    >
-                    <input
-                      type="text"
-                      v-model="formInvoice.contact_name"
-                      class="form-control form-control-sm"
-                      placeholder=""
-                      @click="openModalContact"
-                    />
+                  <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.contact_name }]">
+                    <label>ผู้ติดต่อ
+                      <span v-if="formInvoice.contact_id">({{ formInvoice.contact_id }})</span></label>
+                    <input type="text" v-model="formInvoice.contact_name" class="form-control form-control-sm"
+                      placeholder="" @click="openModalContact" />
                   </div>
                   <div class="col-12 col-lg-6" :class="[{ 'text-danger': errors.address }]">
                     <label>ที่อยู่</label>
-                    <input
-                      type="text"
-                      v-model="formInvoice.address"
-                      class="form-control form-control-sm"
-                      placeholder="ที่อยู่"
-                    />
+                    <input type="text" v-model="formInvoice.address" class="form-control form-control-sm"
+                      placeholder="ที่อยู่" />
                   </div>
                 </div>
 
                 <div class="">
+
                   <div v-if="errors.items" :class="[{ 'text-danger mt-2': errors.items }]">
                     โปรดระบุรายการเครื่องมือ
                   </div>
 
-                  <EasyDataTable
-                    class="my-3"
-                    :headers="headers"
-                    :items="invoiceItems"
-                    alternating
-                    rowsPerPage="5"
-                    v-model:items-selected="itemsSelected"
-                    show-index
-                    border-cell
-                    buttons-pagination
-                    :loading="invoiceStore.cartLoading"
-                  >
+                  <EasyDataTable class="my-3" :headers="headers" :items="invoiceItems" alternating rowsPerPage="5"
+                    v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination
+                    :loading="invoiceStore.cartLoading" fixed-header>
                     <template #loading>
                       <Spinner :visible="invoiceStore.cartLoading" />
                     </template>
@@ -399,76 +317,37 @@ onUpdated(() => {
                       <div class="fw-bold text-dark">{{ item.product?.code }}</div>
                     </template>
                   </EasyDataTable>
+                </div>
 
-                  <div class="row g-3">
-                    <!-- <div class="col-3  fw-bold">
-                    Qty : {{ parseFloat(invoiceStore.countCartItems).toLocaleString() }}
-                  </div>
-
-                  <div class="col-3 fw-bold">
-                    Total Discount : {{ parseFloat(totalDiscount).toLocaleString() }}
-                  </div> -->
-                    <!-- <div class="col-3 fw-bold">
-                    Total Price : {{ parseFloat(totalPrice).toLocaleString() }}
-                  </div> -->
-
-<<<<<<< HEAD
-                    <div class="col-12 col-md-7">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-danger"
-                        v-if="invoiceStore.carts"
-                        @click="clearItems()"
-                      >
+                <div class="row g-3">
+                  <div class="col-12 col-md-7">
+                    <template v-if="itemsSelected.length">
+                      <button type="button" class="btn btn-sm btn-danger" @click="removeCart()">
                         <i class="bi bi-trash" role="button"></i>
-                        ล้างรายการ ({{ invoiceStore.countCartItems }})
+                        ลบ ({{ itemsSelected.length }})
                       </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-secondary  ms-1"
-                        @click="openModalWorkOrder()"
-                      >
-                        <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
+                      <button type="button" class="btn btn-sm btn-danger ms-1" @click="removeCart()">
+                        <i class="bi bi-x" role="button"></i>
+                        ล้าง
                       </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-secondary ms-1"
-                        @click="openModalWorkOrder()"
-                      >
-                        <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
-                      </button>
-                    </div>
-                    <div class="col-12 col-md-5">
-                      Total Net : {{ parseFloat(totalNet).toLocaleString() }}
-                      รวมเป็นเงิน : {{ parseFloat(totalNet).toLocaleString() }}
-=======
-                    <div class="col-3 fw-bold">
-                      Total Net : {{ parseFloat(totalNet).toLocaleString() }}
->>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
-                    </div>
+                    </template>
+
+                    <button type="button" class="btn btn-sm btn-secondary  ms-1" @click="openModalWorkOrder()">
+                      <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary ms-1" @click="openModalWorkOrder()">
+                      <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
+                    </button>
+                  </div>
+                  <div class="col-12 col-md-5">
+                    Total Net : {{ parseFloat(totalNet).toLocaleString() }}
+                    รวมเป็นเงิน : {{ parseFloat(totalNet).toLocaleString() }}
+
+
                   </div>
                 </div>
-                <div class="">
-<<<<<<< HEAD
-=======
-                  <button type="button" class="btn btn-sm btn-secondary" @click="openModalWorkOrder()">
-                    <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
-                  </button>
-                  <button type="button" class="btn btn-sm btn-secondary ms-1" @click="openModalWorkOrder()">
-                    <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
-                  </button>
-                  <button type="button" class="btn btn-sm btn-danger ms-3" v-if="invoiceStore.carts"
-                    @click="clearItems()">
-                    <i class="bi bi-trash" role="button"></i>
-                    ล้างรายการ ({{ invoiceStore.countCartItems }})
-                  </button>
->>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
-                  <div v-if="errors && hasError" class="alert alert-danger my-2">
-                    <li v-for="(message, key) in errors" :key="key" class="px-1">
-                      {{ message }}
-                    </li>
-                  </div>
-                </div>
+
+
               </form>
             </div>
           </div>
@@ -480,40 +359,6 @@ onUpdated(() => {
                 <div class="col">
                   <button class="btn btn-primary btn-sm" @click="save()">บันทึก</button>
                 </div>
-<<<<<<< HEAD
-                <!-- <div class="col">
-                  <router-link
-                    :to="{ name: 'invoices.preview' }"
-                    class="btn btn-sm btn-secondary d-block"
-                  >
-                    <i class="bi bi-eye"></i>
-                    Preview ดูตัวอย่าง</router-link
-                  >
-                </div>
-                <div class="col">
-                  <a class="btn btn-sm btn-secondary d-block" @click="emptyCart">
-                    <i class="bi bi-printer"></i>
-                    Reset</a
-                  >
-                </div> -->
-=======
-                <div class="col">
-                  <router-link :to="{ name: 'invoices.preview' }" class="btn btn-sm btn-secondary d-block">
-                    <i class="bi bi-eye"></i>
-                    Preview ดูตัวอย่าง</router-link>
-                </div>
-                <!-- <div class="col-12">
-                <a class="btn btn-sm btn-secondary d-block">
-                  <i class="bi bi-printer"></i>
-                  พิมพ์</a
-                >
-              </div> -->
-                <div class="col">
-                  <a class="btn btn-sm btn-secondary d-block" @click="emptyCart">
-                    <i class="bi bi-printer"></i>
-                    Reset</a>
-                </div>
->>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
               </div>
             </div>
           </div>
@@ -521,28 +366,15 @@ onUpdated(() => {
       </div>
       <ModalWorkOrder ref="modalWorkOrder" @select="onSelectProduct" />
       <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
-<<<<<<< HEAD
-      <ModalContact
-        ref="modalContact"
-        @select="onSelectContact"
-        v-model:customerId="formInvoice.customer_id"
-      />
-=======
       <ModalContact ref="modalContact" @select="onSelectContact" v-model:customerId="formInvoice.customer_id" />
->>>>>>> da797ce257aa79be99e9f313dcf9cc0ad6c7fbc2
     </section>
   </div>
 </template>
 
 <style lang="scss" scoped>
 input {
-  border: solid 1px #bbb8b8;
+  border: solid 1px #cbc8c8;
   padding: 2px;
   border-radius: 1px;
-}
-
-.items-container table tbody {
-  height: 200px;
-  overflow: scroll;
 }
 </style>

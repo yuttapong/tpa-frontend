@@ -5,12 +5,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ title }}</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="row g-2">
@@ -56,6 +51,7 @@
         </div>
       </div>
     </div>
+    {{ data }}
   </div>
 </template>
 
@@ -69,19 +65,18 @@ const emit = defineEmits(['onHide', 'onShow', 'onConfirm'])
 const props = defineProps({
   title: {
     type: String,
-    default: 'ยืนยันข้อมูล Commitment Date ?',
+    default: '',
   },
   data: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
 })
 const billStore = useBillStore()
 let modalEl = null
 let modalRef = ref(null)
 
-const job = computed(() => props.data?.data)
-const workorder = computed(() => billStore.workorder)
+const workorder = computed(() => props.data)
 
 const _show = () => {
   modalEl.show()

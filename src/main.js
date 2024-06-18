@@ -7,7 +7,7 @@ import App from './App.vue'
 import router from './router'
 import piniaPersist from 'pinia-plugin-persist'
 // Import our custom CSS
-import './scss/styles.scss'
+import '@/assets/scss/styles.scss'
 
 // Import all of Bootstrap's JS
 import 'bootstrap'
@@ -24,8 +24,8 @@ import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
 import Vue3Toasity from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
-import Vue3EasyDataTable from 'vue3-easy-data-table';
-import 'vue3-easy-data-table/dist/style.css';
+import Vue3EasyDataTable from 'vue3-easy-data-table'
+import 'vue3-easy-data-table/dist/style.css'
 
 const ability = createMongoAbility()
 
@@ -46,7 +46,7 @@ app.use(Vue3Toasity, {
   autoClose: 3000,
   // ...
 })
-app.component('EasyDataTable', Vue3EasyDataTable);
+app.component('EasyDataTable', Vue3EasyDataTable)
 app.mount('#app')
 
 if (import.meta.env.DEV) {

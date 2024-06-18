@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia'
 import { api } from '@/helpers/api'
 import { toast } from 'vue3-toastify'
+import { useAppStore } from './appStore'
+
+const appStore = useAppStore()
 export const useInvoiceStore = defineStore('invoice', {
   state: () => {
     return {
@@ -16,6 +19,9 @@ export const useInvoiceStore = defineStore('invoice', {
   getters: {
     countCartItems(state) {
       return state.carts.length
+    },
+    myCartItems(state) {
+      return state.carts ? state.carts.filter((i) => i.staff_id == appStore.user?.id) : []
     },
   },
   actions: {
@@ -80,7 +86,24 @@ export const useInvoiceStore = defineStore('invoice', {
     },
     async emptyCart() {
       this.cartLoading = true
-      const { data } = await api.delete('v2/invoices/cart/').catch(() => (this.cartLoading = false))
+      const { data } = await api.delete('v2/invoices/cart').catch(() => (this.cartLoading = false))
+      if (data) {
+        this.carts = []
+      }
+      this.cartLoading = false
+    },
+    async emptyMyCart() {
+      this.cartLoading = true
+      if (!this.myCartItems) {
+        return false
+      }
+      const { data } = await api
+        .delete('v2/invoices/cart', {
+          data: {
+            items: this.myCartItems.map((i) => item.item_id),
+          },
+        })
+        .catch(() => (this.cartLoading = false))
       if (data) {
         this.carts = []
       }

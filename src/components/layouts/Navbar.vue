@@ -164,7 +164,7 @@
               </li>
 
               <li>
-                <router-link class="dropdown-item d-flex align-items-center" to="profile">
+                <router-link class="dropdown-item d-flex align-items-center" to="/profile">
                   <i class="bi bi-person"></i>
                   <span>โปรไฟล์</span>
                 </router-link>

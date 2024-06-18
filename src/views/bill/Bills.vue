@@ -31,24 +31,12 @@
                 <form @submit.prevent="onSearch()" class="mb-3">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.id"
-                        name="id"
-                        class="form-control form-control-sm"
-                        placeholder="ID"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.id" name="id" class="form-control form-control-sm"
+                        placeholder="ID" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.code"
-                        name="code"
-                        class="form-control form-control-sm"
-                        placeholder="Code"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
+                        placeholder="Code" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
@@ -246,10 +234,10 @@
           <div class="row g-2">
             <div class="col-12 col-lg-12 col-xl-12">
               <Spinner :visible="loadingCancelCommitment" />
-              <span v-if="resultCancelCommitment.success === true"
-                class="text-success">{{ resultCancelCommitment.message }}</span>
-              <span v-if="resultCancelCommitment.success === false"
-                class="text-danger">{{ resultCancelCommitment.message }}</span>
+              <span v-if="resultCancelCommitment.success === true" class="text-success">{{ resultCancelCommitment.message
+              }}</span>
+              <span v-if="resultCancelCommitment.success === false" class="text-danger">{{ resultCancelCommitment.message
+              }}</span>
             </div>
 
             <div class="col-12 col-lg-6 col-xl-6">
@@ -566,6 +554,7 @@ const createInvoice = () => {
 
 const onSearch = async () => {
   try {
+    pagination.value.current_page = 1
     await loadData()
   } catch (error) { }
 }
@@ -578,12 +567,11 @@ const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
   formSearch.value.q = ''
 }
-
+onSearch()
 onMounted(() => {
   errorMsg.value = ''
   modalView.value = new Modal(modalViewRef.value)
   modalInvoice.value = new Modal(modalInvoiceRef.value)
-  loadData()
 })
 </script>
 <style lang="scss" scoped>

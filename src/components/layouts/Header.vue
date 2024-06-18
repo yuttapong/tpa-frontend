@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <router-link to="/" class="logo d-flex align-items-center">
         <img :src="logo" alt="" />
-        <span class="d-none d-lg-block">AppCAL+</span>
+        <span class="d-none d-lg-block">สัญญาจะซื้อจะขาย+</span>
       </router-link>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>
@@ -73,15 +73,14 @@ onMounted(() => {
   transition: all 0.5s;
   z-index: 997;
   height: 60px;
-//   box-shadow: 0px 2px 20px rgba(97, 150, 241, 0.1);
+  //   box-shadow: 0px 2px 20px rgba(97, 150, 241, 0.1);
   background-color: #051a5e;
   padding-left: 20px;
-//   border-bottom: solid 2px #2790cf;
-  box-shadow: 0px 3px 10px 3px rgba(10, 103, 179, 0.644)
-//   -webkit-box-shadow: 2px 8px 5px 2px rgba(67, 144, 214, 0.5);
-//   -moz-box-shadow: 2px 8px 5px 2px rgba(67, 144, 214, 0.5);
-  /* Toggle Sidebar Button */
-  /* Search Bar */
+  //   border-bottom: solid 2px #2790cf;
+  box-shadow: 0px 3px 10px 3px rgba(10, 103, 179, 0.644) //   -webkit-box-shadow: 2px 8px 5px 2px rgba(67, 144, 214, 0.5);
+    //   -moz-box-shadow: 2px 8px 5px 2px rgba(67, 144, 214, 0.5);
+    /* Toggle Sidebar Button */
+    /* Search Bar */
 }
 
 .header .toggle-sidebar-btn {
@@ -151,5 +150,4 @@ onMounted(() => {
 .header .search-form button i {
   color: #012970;
 }
-
 </style>

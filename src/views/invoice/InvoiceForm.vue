@@ -100,7 +100,7 @@ const onSearch = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 
 const openModalWorkOrder = () => {
@@ -108,6 +108,9 @@ const openModalWorkOrder = () => {
 }
 
 const removeCart = async () => {
+  if (itemsSelected.value.length === 0) {
+    return false
+  }
   let items = itemsSelected.value.map((i) => i.item_id)
   const data = await invoiceStore.removeCart(items)
   toast(data.message, {
@@ -138,12 +141,12 @@ const onSelectProduct = async (item) => {
     test_point: item.test_point,
     discount: 0,
     discount_percent: 0,
-    discount_order: 0,
-    discount_order_percent: 0,
     discount_lab: 0,
     discount_lab_percent: 0,
-    discount_cust: 0,
-    discount_cust_percent: 0,
+    discount_order: 0,
+    discount_order_percent: 0,
+    discount_customer: 0,
+    discount_customer_percent: 0,
     qty: 1,
     price: item.total,
     vat: 0,
@@ -162,6 +165,27 @@ const loadCart = async () => {
 const totalPrice = computed(() => {
   return invoiceItems.value
     ? invoiceItems.value.reduce((total, item) => (total += parseFloat(item.price)), 0)
+    : 0
+})
+const totalBillDiscount = computed(() => {
+  return invoiceItems.value
+    ? invoiceItems.value.reduce((total, item) => (total += parseFloat(item.discount)), 0)
+    : 0
+})
+const totalLabDiscount = computed(() => {
+  return invoiceItems.value
+    ? invoiceItems.value.reduce((total, item) => (total += parseFloat(item.discount_lab)), 0)
+    : 0
+})
+
+const totalOrderTypeDiscount = computed(() => {
+  return invoiceItems.value
+    ? invoiceItems.value.reduce((total, item) => (total += parseFloat(item.discount_order)), 0)
+    : 0
+})
+const totalCustomerTypeDiscount = computed(() => {
+  return invoiceItems.value
+    ? invoiceItems.value.reduce((total, item) => (total += parseFloat(item.discount_customer)), 0)
     : 0
 })
 const totalDiscount = computed(() => {
@@ -196,8 +220,7 @@ const resetData = () => {
 }
 const save = async () => {
   hasError.value = false
-  formInvoice.value.items = invoiceStore.carts
-
+  formInvoice.value.items = invoiceStore.myCartItems
   formInvoice.value.totalprice = totalPrice.value
   formInvoice.value.totaldiscount = totalDiscount.value
   formInvoice.value.totalvat = (totalPrice.value * 7) / 100
@@ -245,6 +268,11 @@ const headers = [
   { text: 'หมายเหตุ', value: 'remark' },
 ]
 
+const updateCartRow = async (index, row) => {
+  const { data } = await api.patch("v2/invoices/cart/" + row.id, row);
+
+}
+
 loadCart()
 const itemsSelected = ref([])
 onMounted(() => {
@@ -278,22 +306,12 @@ onUpdated(() => {
               <form @submit.prevent="onSearch()">
                 <div class="border p-2">
                   <div class="row g-2">
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                      :class="[{ 'text-danger': errors.issue_date }]"
-                    >
+                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.issue_date }]">
                       <label>วันที่</label>
-                      <input
-                        type="date"
-                        v-model="formInvoice.issue_date"
-                        class="form-control form-control-sm"
-                        placeholder="issue date"
-                      />
+                      <input type="date" v-model="formInvoice.issue_date" class="form-control form-control-sm"
+                        placeholder="issue date" />
                     </div>
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                      :class="[{ 'text-danger': errors.due_date }]"
-                    >
+                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.due_date }]">
                       <label>กำหนดชำระภายใน</label>
 
                       <select class="form-select form-select-sm" v-model="formInvoice.due_within">
@@ -305,60 +323,38 @@ onUpdated(() => {
                     </div>
                     <div class="col-6 col-md-4 col-lg-3" v-if="formInvoice.code">
                       <label>Invoice Code</label>
-                      <input
-                        type="text"
-                        v-model="formInvoice.code"
-                        class="form-control form-control-sm"
-                        placeholder="Code"
-                        disabled="disabled"
-                      />
+                      <input type="text" v-model="formInvoice.code" class="form-control form-control-sm"
+                        placeholder="Code" disabled="disabled" />
                     </div>
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                      :class="[
-                        { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
-                      ]"
-                    >
-                      <label
-                        >ลูกค้า
-                        <span v-if="formInvoice.customer_id"
-                          >({{ formInvoice.customer_id }})</span
-                        ></label
-                      >
-                      <input
-                        type="text"
-                        v-model="formInvoice.customer_name"
-                        class="form-control form-control-sm"
-                        placeholder="บริษัท"
-                        @click="openModalCustomer"
-                      />
+                    <div class="col-6 col-md-4 col-lg-3" :class="[
+                      { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
+                    ]">
+                      <label>ลูกค้า
+                        <span v-if="formInvoice.customer_id">({{ formInvoice.customer_id }})</span></label>
+                      <input type="text" v-model="formInvoice.customer_name" class="form-control form-control-sm"
+                        placeholder="บริษัท" @click="openModalCustomer" />
                     </div>
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                      :class="[{ 'text-danger': errors.contact_name }]"
-                    >
-                      <label
-                        >ผู้ติดต่อ
-                        <span v-if="formInvoice.contact_id"
-                          >({{ formInvoice.contact_id }})</span
-                        ></label
-                      >
-                      <input
-                        type="text"
-                        v-model="formInvoice.contact_name"
-                        class="form-control form-control-sm"
-                        placeholder=""
-                        @click="openModalContact"
-                      />
+                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.contact_name }]">
+                      <label>ผู้ติดต่อ
+                        <span v-if="formInvoice.contact_id">({{ formInvoice.contact_id }})</span></label>
+                      <input type="text" v-model="formInvoice.contact_name" class="form-control form-control-sm"
+                        placeholder="" @click="openModalContact" />
                     </div>
                     <div class="col-12 col-lg-6" :class="[{ 'text-danger': errors.address }]">
                       <label>ที่อยู่</label>
-                      <textarea
-                        type="text"
-                        v-model="formInvoice.address"
-                        class="form-control form-control-sm"
-                        placeholder="ที่อยู่"
-                      />
+                      <textarea type="text" v-model="formInvoice.address" class="form-control form-control-sm"
+                        placeholder="ที่อยู่" />
+                    </div>
+                    <div class="col-12 col-lg-6" :class="[{ 'text-danger': errors.address }]">
+
+                      <button type="button" class="btn bg-secondary text-white border position-relative mt-4">
+                        <i class="bi bi-cart"></i>
+                        <span v-if="invoiceStore.countMyCart"
+                          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                          {{ invoiceStore.countMyCart }}
+                          <span class="visually-hidden">unread messages</span>
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -367,19 +363,9 @@ onUpdated(() => {
                     โปรดระบุรายการเครื่องมือ
                   </div>
 
-                  <EasyDataTable
-                    class="my-3"
-                    :headers="headers"
-                    :items="invoiceItems"
-                    alternating
-                    rowsPerPage="5"
-                    v-model:items-selected="itemsSelected"
-                    show-index
-                    border-cell
-                    buttons-pagination
-                    :loading="invoiceStore.cartLoading"
-                    fixed-header
-                  >
+                  <EasyDataTable class="my-3" :headers="headers" :items="invoiceItems" alternating rowsPerPage="5"
+                    v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination
+                    :loading="invoiceStore.cartLoading" fixed-header>
                     <template #loading>
                       <Spinner :visible="invoiceStore.cartLoading" />
                     </template>
@@ -399,16 +385,29 @@ onUpdated(() => {
                     <template #item-discount_order="item">
                       <input type="number" v-model="item.discount_order" class="text-end" />
                     </template>
-                    <template #item-discount_cust="item">
-                      <input type="number" v-model="item.discount_cust" class="text-end" />
+                    <template #item-discount_customer="item">
+                      <input type="number" v-model="item.discount_customer" class="text-end" />
+                    </template>
+                    <template #item-qty="item">
+                      <input type="number" v-model="item.qty" class="text-end" />
+                    </template>
+                    <template #item-price="item">
+                      <input type="number" v-model="item.price" class="text-end" />
+                    </template>
+                    <template #item-total="item">
+                      <input type="number" v-model="item.total" class="text-end" />
+                    </template>
+                    <template #item-remark="item">
+                      <input type="number" v-model="item.remark" class="text-end" />
                     </template>
                   </EasyDataTable>
                 </div>
 
                 <div class="row g-2">
                   <div class="col-12 col-md-4">
-                    <template v-if="itemsSelected.length">
-                      <button type="button" class="btn btn-sm btn-danger" @click="removeCart()">
+                    <div class="d-flex flex-column gap-1 bd-highlight mb-3">
+                      <!-- <template v-if="itemsSelected.length"> -->
+                      <button type="button" class="btn btn-sm btn-danger d-block w-50 text-start" @click="removeCart()">
                         <i class="bi bi-trash" role="button"></i>
                         ลบ ({{ itemsSelected.length }})
                       </button>
@@ -416,72 +415,50 @@ onUpdated(() => {
                         <i class="bi bi-x" role="button"></i>
                         ล้าง
                       </button> -->
-                    </template>
+                      <!-- </template> -->
 
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-secondary ms-1"
-                      @click="openModalWorkOrder()"
-                    >
-                      <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-secondary ms-1"
-                      @click="openModalWorkOrder()"
-                    >
-                      <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
-                    </button>
+                      <button type="button" class="btn btn-sm btn-secondary d-block w-50 text-start"
+                        @click="openModalWorkOrder()">
+                        <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
+                      </button>
+                      <button type="button" class="btn btn-sm btn-secondary d-block w-50 text-start"
+                        @click="openModalWorkOrder()">
+                        <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
+                      </button>
+                      <button type="button" class="btn btn-sm btn-success d-block w-50 text-start" @click="calculate()">
+                        <i class="bi bi-calculator" role="button"></i> คำนวณ
+                      </button>
+                    </div>
                   </div>
                   <div class="col-12 col-md-4 bg-light" style="font-size: 14px">
                     <div class="row">
                       <div class="col-6 text-end">ส่วนลดท้ายบิล</div>
                       <div class="col-6">
-                        <input
-                          type="number"
-                          v-model="formInvoice.total_bill_discount"
-                          class="text-end"
-                        />
+                        <input type="number" v-model="formInvoice.total_bill_discount" class="text-end" />
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-6 text-end">รวมส่วนลดท้ายบิลทั้งหมด</div>
                       <div class="col-6">
-                        <input
-                          type="number"
-                          v-model="formInvoice.total_bill_discount"
-                          class="text-end"
-                        />
+                        <input type="number" v-model="formInvoice.total_bill_discount" class="text-end" />
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-6 text-end">รวมส่วนลด Order Type</div>
                       <div class="col-6">
-                        <input
-                          type="number"
-                          v-model="formInvoice.total_order_discount"
-                          class="text-end"
-                        />
+                        <input type="number" v-model="formInvoice.total_order_discount" class="text-end" />
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-6 text-end">รวมส่วนลด Customer</div>
                       <div class="col-6">
-                        <input
-                          type="number"
-                          v-model="formInvoice.total_cus_discount"
-                          class="text-end"
-                        />
+                        <input type="number" v-model="formInvoice.total_cus_discount" class="text-end" />
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-6 text-end">รวมส่วนลดทั้งหมด</div>
                       <div class="col-6">
-                        <input
-                          type="number"
-                          v-model="formInvoice.total_all_discount"
-                          class="text-end"
-                        />
+                        <input type="number" v-model="formInvoice.total_all_discount" class="text-end" />
                       </div>
                     </div>
                   </div>
@@ -489,11 +466,7 @@ onUpdated(() => {
                     <div class="row">
                       <div class="col-6 text-end">รวม</div>
                       <div class="col-6">
-                        <input
-                          type="number"
-                          v-model="formInvoice.total_bill_discount"
-                          class="text-end"
-                        />
+                        <input type="number" v-model="formInvoice.total_bill_discount" class="text-end" />
                       </div>
                     </div>
                     <div class="row">
@@ -505,11 +478,7 @@ onUpdated(() => {
                     <div class="row">
                       <div class="col-6 text-end">จำนวนเงินทั้งสิ้น</div>
                       <div class="col-6">
-                        <input
-                          type="number"
-                          v-model="formInvoice.total_order_discount"
-                          class="text-end"
-                        />
+                        <input type="number" v-model="formInvoice.total_order_discount" class="text-end" />
                       </div>
                     </div>
                   </div>
@@ -538,11 +507,7 @@ onUpdated(() => {
       </div>
       <ModalWorkOrder ref="modalWorkOrder" @select="onSelectProduct" />
       <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
-      <ModalContact
-        ref="modalContact"
-        @select="onSelectContact"
-        v-model:customerId="formInvoice.customer_id"
-      />
+      <ModalContact ref="modalContact" @select="onSelectContact" v-model:customerId="formInvoice.customer_id" />
     </section>
   </div>
 </template>

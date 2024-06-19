@@ -17,11 +17,14 @@ export const useInvoiceStore = defineStore('invoice', {
     }
   },
   getters: {
-    countCartItems(state) {
+    countCart(state) {
       return state.carts.length
     },
     myCartItems(state) {
       return state.carts ? state.carts.filter((i) => i.staff_id == appStore.user?.id) : []
+    },
+    countMyCart(state) {
+      return state.myCartItems.length || 0
     },
   },
   actions: {

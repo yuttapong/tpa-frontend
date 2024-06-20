@@ -399,7 +399,7 @@ onUpdated(() => {
                         aria-label="Toolbar with button groups"
                       >
                         <div class="btn-group me-2" role="group" aria-label="">
-                          <button type="button" class="btn btn-danger" @click="removeCart()">
+                          <button type="button" class="btn btn-sm btn-danger" @click="removeCart()">
                             <i class="bi bi-trash" role="button"></i>
                             <span v-if="itemsSelected.length">({{ itemsSelected.length }})</span>
                           </button>
@@ -416,14 +416,14 @@ onUpdated(() => {
                   
                           <button
                             type="button"
-                            class="btn btn-sm btn-outline-dark text-primary"
+                            class="btn btn-sm btn-outline-secondary"
                             @click="openModalWorkOrder()"
                           >
                             <i class="bi bi-plus" role="button"></i> ดึงข้อมูลใบขอรับ
                           </button>
                           <button
                             type="button"
-                            class="btn btn-sm btn-outline-dark text-primary"
+                            class="btn btn-sm btn-outline-secondary"
                             @click="openModalWorkOrder()"
                           >
                             <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก

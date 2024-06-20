@@ -14,11 +14,7 @@ import 'bootstrap'
 import '@popperjs/core'
 import '@/assets/js/layout.js'
 import 'bootstrap-icons/font/bootstrap-icons.min.css'
-
-// import the package
 import VueAwesomePaginate from 'vue-awesome-paginate'
-
-// import the necessary css file
 import 'vue-awesome-paginate/dist/style.css'
 import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
@@ -44,7 +40,6 @@ app.use(router)
 app.use(VueAwesomePaginate)
 app.use(Vue3Toasity, {
   autoClose: 3000,
-  // ...
 })
 app.component('EasyDataTable', Vue3EasyDataTable)
 app.mount('#app')

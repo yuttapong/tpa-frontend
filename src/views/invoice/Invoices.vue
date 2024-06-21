@@ -82,7 +82,7 @@ const getInvoiceById = async (item) => {
       invoice.value = data
       loading.value = false
     }
-  } catch (error) {}
+  } catch (error) { }
 }
 const showDetail = (item) => {
   invoice.value = item
@@ -97,7 +97,7 @@ const onSearch = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
@@ -147,9 +147,7 @@ watch(
             <div class="card-body pt-3">
               <button type="button" class="btn bg-secondary text-white border position-relative">
                 <i class="bi bi-cart"></i>
-                <span
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                >
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {{ invoiceStore.countCart }}
                   <span class="visually-hidden">unread messages</span>
                 </span>
@@ -188,47 +186,23 @@ watch(
                   <form @submit.prevent="onSearch()">
                     <div class="row g-2">
                       <div class="col-6 col-md-4 col-lg-2">
-                        <input
-                          type="search"
-                          v-model="formSearch.code"
-                          name="code"
-                          class="form-control form-control-sm"
-                          placeholder="Code"
-                          @keyup.enter="search"
-                        />
+                        <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
+                          placeholder="Code" @keyup.enter="search" />
                       </div>
                       <div class="col-6 col-md-4 col-lg-3">
-                        <input
-                          type="search"
-                          v-model="formSearch.taxnumber"
-                          name="taxnumber"
-                          class="form-control form-control-sm"
-                          placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                          @keyup.enter="search"
-                        />
+                        <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                          class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                          @keyup.enter="search" />
                       </div>
                       <div class="col-6 col-md-4 col-lg-3">
-                        <input
-                          type="search"
-                          v-model="formSearch.q"
-                          name="q"
-                          class="form-control form-control-sm"
-                          placeholder="ลูกค้า/ผู้ติดต่อ"
-                          @keyup.enter="search"
-                        />
+                        <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
+                          placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                       </div>
                       <div class="col-12 col-md-6 col-lg-4">
                         <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                        <input
-                          type="reset"
-                          class="btn btn-secondary btn-sm mx-2"
-                          value="Reset"
-                          @click="resetFormSearch"
-                        />
-                        <router-link
-                          class="btn btn-sm btn-success"
-                          :to="{ name: 'invoices.create' }"
-                        >
+                        <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset"
+                          @click="resetFormSearch" />
+                        <router-link class="btn btn-sm btn-success" :to="{ name: 'invoices.create' }">
                           <i class="bi bi-plus"></i> สร้างใบแจ้งหนี้
                         </router-link>
                       </div>
@@ -237,23 +211,12 @@ watch(
 
                   <!-- tables -->
 
-                  <EasyDataTable
-                    @update-page-items="onChangePage"
-                    class="my-3"
-                    :headers="headers"
-                    :items="items"
-                    alternating
-                    v-model:server-options="serverOptions"
-                    :server-items-length="4"
-                    v-model:items-selected="itemsSelected"
-                    show-index
-                    border-cell
-                    buttons-pagination
-                    :loading="invoiceStore.cartLoading"
-                    fixed-header
-                  />
+                  <EasyDataTable @update-page-items="onChangePage" class="my-3" :headers="headers" :items="items"
+                    alternating v-model:server-options="serverOptions" :server-items-length="4"
+                    v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination
+                    :loading="invoiceStore.cartLoading" fixed-header />
 
-                  {{ pagination }}
+
 
                   <!--  tables -->
 
@@ -274,12 +237,7 @@ watch(
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Invoice</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <InvoiceDetail />

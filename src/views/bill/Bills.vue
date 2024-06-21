@@ -175,6 +175,12 @@
             </div>
           </div>
 
+
+          <EasyDataTable @update-page-items="onChangePage" class="my-3" :headers="headers" :items="items" alternating
+            v-model:server-options="serverOptions" :server-items-length="4" v-model:items-selected="itemsSelected"
+            show-index border-cell buttons-pagination :loading="loading" fixed-header />
+
+
           <div class="table-responsive">
             <table class="table table-condensed" v-if="!loadingItems">
               <thead>
@@ -573,6 +579,27 @@ onMounted(() => {
   modalView.value = new Modal(modalViewRef.value)
   modalInvoice.value = new Modal(modalInvoiceRef.value)
 })
+
+const headers = [
+  { text: 'ID', value: 'id', width: 150 },
+  { text: 'วันที่', value: 'issue_date', width: 200 },
+  { text: 'Code', value: 'code' },
+  { text: 'บริษัท/ลูกค้า', value: 'customer_name' },
+  // { text: 'ส่วนลด Lab', value: 'discount_lab' },
+  // { text: 'ส่วนลด Order.', value: 'discount_order' },
+  // { text: 'ส่วนลด Cust.', value: 'discount_customer' },
+  // { text: 'จำนวน', value: 'qty' },
+  // { text: 'ราคา', value: 'price' },
+
+  // { text: 'รวมเป็นเงิน', value: 'total' },
+  // { text: 'หมายเหตุ', value: 'remark' },
+]
+
+const serverOptions = ref({
+  page: pagination.value.current_page,
+  rowsPerPage: appStore.settings.page.perPage,
+})
+
 </script>
 <style lang="scss" scoped>
 .qt-detail {

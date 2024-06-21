@@ -103,7 +103,7 @@ export const useInvoiceStore = defineStore('invoice', {
     },
 
     async emptyCart() {
-      let items = this.myCartItems ? this.myCartItems.map((i) => i.item_id) : []
+      let items = this.carts ? this.carts.map((i) => i.item_id) : []
       if (items.length === 0) return false
 
       this.cartLoading = true

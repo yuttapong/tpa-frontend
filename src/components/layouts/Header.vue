@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <router-link to="/" class="logo d-flex align-items-center">
         <img :src="logo" alt="" />
-        <span class="d-none d-lg-block">สัญญาจะซื้อจะขาย+</span>
+        <span class="d-none d-lg-block">AppCal+</span>
       </router-link>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>

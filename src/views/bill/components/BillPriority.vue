@@ -32,7 +32,7 @@ const commitmentPriority = [
     default: true,
   },
   {
-    code: 'height',
+    code: 'high',
     text: 'สูง (ไม่มีการจองคิว)',
     default: false,
   },

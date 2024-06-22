@@ -11,8 +11,6 @@
   <!-- End Page Title -->
 
   <section class="section profile">
-    <spinner :visible="loading" />
-
     <div class="row" v-if="items">
       <div class="col-xl-12">
         <div class="card">
@@ -22,7 +20,9 @@
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
                   ใบขอรับบริการ
-                  <span v-if="pagination">({{ parseInt(pagination.total).toLocaleString() || 0 }})</span>
+                  <span v-if="pagination"
+                    >({{ parseInt(pagination.total).toLocaleString() || 0 }})</span
+                  >
                 </button>
               </li>
             </ul>
@@ -31,25 +31,53 @@
                 <form @submit.prevent="onSearch()" class="mb-3">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.id" name="id" class="form-control form-control-sm"
-                        placeholder="ID" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.id"
+                        name="id"
+                        class="form-control form-control-sm"
+                        placeholder="ID"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
-                        placeholder="Code" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.code"
+                        name="code"
+                        class="form-control form-control-sm"
+                        placeholder="Code"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
-                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.taxnumber"
+                        name="taxnumber"
+                        class="form-control form-control-sm"
+                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.q"
+                        name="q"
+                        class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
+                      <input
+                        type="reset"
+                        class="btn btn-secondary btn-sm mx-2"
+                        value="Reset"
+                        @click="resetFormSearch"
+                      />
                       <router-link class="btn btn-sm btn-success" to="/bills/form">
                         <i class="bi bi-plus"></i> สร้าง
                       </router-link>
@@ -57,10 +85,46 @@
                   </div>
                 </form>
                 <!-- Small tables -->
-                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                <!-- <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
                   :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-                  :on-click="onChangePage" />
-                <div class="table-responsive">
+                  :on-click="onChangePage" /> -->
+                <EasyDataTable
+                  class="my-3"
+                  :headers="headers"
+                  :items="items"
+                  alternating
+                  v-model:server-options="serverOptions"
+                  :server-items-length="pagination.total"
+                  v-model:items-selected="itemsSelected"
+                  show-index
+                  border-cell
+                  buttons-pagination
+                  :loading="loading"
+                  fixed-header
+                >
+                  <template #item-code="item"
+                    >
+                  <div class="fw-bold">{{ item.code }}</div>
+                  <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)"><i class="bi bi-search"></i></button>
+                  <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)"><i class="bi bi-pencil"></i></button>
+                  <router-link
+                            :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
+                          >
+                            <i class="bi bi-calendar mx-1" role="button"></i
+                          ></router-link>
+                          <router-link
+                            :to="{ name: 'bills.formEdit', params: { code: item.code } }"
+                          >
+                            <i class="bi bi-pencil mx-1" role="button"></i
+                          ></router-link>
+                  </template>
+                  <template #item-address_name="item"
+                    >{{ item.address_name }}
+
+                    <div>{{ item.customer.taxnumber }}</div>
+                  </template>
+                </EasyDataTable>
+                <!-- <div class="table-responsive">
                   <table class="table table-sm">
                     <thead>
                       <tr>
@@ -79,16 +143,25 @@
                     <tbody>
                       <tr v-for="(item, index) in items" :key="index">
                         <th scope="row" nowrap>
-                          <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }">
-                            <i class="bi bi-calendar mx-1" role="button"></i></router-link>
-                          <router-link :to="{ name: 'bills.formEdit', params: { code: item.code } }">
-                            <i class="bi bi-pencil mx-1" role="button"></i></router-link>
+                          <router-link
+                            :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
+                          >
+                            <i class="bi bi-calendar mx-1" role="button"></i
+                          ></router-link>
+                          <router-link
+                            :to="{ name: 'bills.formEdit', params: { code: item.code } }"
+                          >
+                            <i class="bi bi-pencil mx-1" role="button"></i
+                          ></router-link>
                           <i class="bi bi-search mx-1" @click="showDetail(item)" role="button"></i>
                         </th>
                         <th scope="row">{{ item.id }}</th>
                         <td align="left" nowrap>
-                          <router-link :to="`/bills/code/${item.code}`"
-                            class="w-full d-block fw-bold border bg-dark text-white p-1" target="_blank">
+                          <router-link
+                            :to="`/bills/code/${item.code}`"
+                            class="w-full d-block fw-bold border bg-dark text-white p-1"
+                            target="_blank"
+                          >
                             {{ item.code }}
                           </router-link>
                         </td>
@@ -113,13 +186,15 @@
                     </tbody>
                   </table>
                 </div>
-                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-                  :on-click="onChangePage" />
+                <vue-awesome-paginate
+                  :total-items="pagination.total"
+                  :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow"
+                  v-model="pagination.current_page"
+                  :on-click="onChangePage"
+                /> -->
                 <!-- End small tables -->
               </div>
-
-
             </div>
             <!-- End Bordered Tabs -->
           </div>
@@ -133,7 +208,12 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Bill เลขที่ : {{ bill.code }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -175,12 +255,6 @@
             </div>
           </div>
 
-
-          <EasyDataTable @update-page-items="onChangePage" class="my-3" :headers="headers" :items="items" alternating
-            v-model:server-options="serverOptions" :server-items-length="4" v-model:items-selected="itemsSelected"
-            show-index border-cell buttons-pagination :loading="loading" fixed-header />
-
-
           <div class="table-responsive">
             <table class="table table-condensed" v-if="!loadingItems">
               <thead>
@@ -198,7 +272,12 @@
               <tbody>
                 <tr v-for="(row, rowIndex) in bill.items" :key="row">
                   <th>
-                    <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
+                    <input
+                      type="checkbox"
+                      v-model="itemsSelected"
+                      name="itemsSelected[]"
+                      :value="row"
+                    />
                   </th>
                   <th>{{ rowIndex + 1 }}</th>
                   <td>{{ row.item_code }}</td>
@@ -220,7 +299,8 @@
             </table>
           </div>
           <p>
-            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label>{{ bill.note_customers }}
+            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label
+            >{{ bill.note_customers }}
           </p>
         </div>
         <div class="modal-footer d-block">
@@ -232,17 +312,20 @@
             </div>
 
             <div class="p-1">
-              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
-                itemsSelected.length }} รายการ</span>
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
+                >{{ itemsSelected.length }} รายการ</span
+              >
             </div>
           </div>
 
           <div class="row g-2">
             <div class="col-12 col-lg-12 col-xl-12">
               <Spinner :visible="loadingCancelCommitment" />
-              <span v-if="resultCancelCommitment.success === true" class="text-success">{{ resultCancelCommitment.message
+              <span v-if="resultCancelCommitment.success === true" class="text-success">{{
+                resultCancelCommitment.message
               }}</span>
-              <span v-if="resultCancelCommitment.success === false" class="text-danger">{{ resultCancelCommitment.message
+              <span v-if="resultCancelCommitment.success === false" class="text-danger">{{
+                resultCancelCommitment.message
               }}</span>
             </div>
 
@@ -270,7 +353,12 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -281,13 +369,21 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>
-                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.customer_name"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
+                <input
+                  type="date"
+                  v-model="invoice.document_date"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
           </div>
@@ -295,13 +391,21 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>
-                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.contact_name"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
             <div class="col-8">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.address_detail"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
           </div>
@@ -328,12 +432,22 @@
                     }}</span>
                   </th>
                   <th>
-                    <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
-                      style="width: 100px" />
+                    <input
+                      type="number"
+                      name="price[]"
+                      v-model="row.price"
+                      class="form-control form-control-sm"
+                      style="width: 100px"
+                    />
                   </th>
                   <th>
-                    <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
-                      style="width: 100px" />
+                    <input
+                      type="number"
+                      name="price[]"
+                      v-model="row.discount"
+                      class="form-control form-control-sm"
+                      style="width: 100px"
+                    />
                   </th>
                 </tr>
               </tbody>
@@ -356,7 +470,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import avatar from '@/assets/img/profile-img.jpg'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
@@ -374,8 +488,7 @@ import CommitmentBooking from './components/CommitmentBooking.vue'
 
 const appStore = new useAppStore()
 
-const row = ref({})
-const items = ref({})
+const items = ref([])
 const pagination = ref({
   total: 0,
   per_page: appStore.settings.page.perPage,
@@ -399,7 +512,6 @@ const formSearch = ref({
 })
 
 const invoiceStore = useInvoiceStore()
-
 
 const loadData = async () => {
   loading.value = true
@@ -562,11 +674,7 @@ const onSearch = async () => {
   try {
     pagination.value.current_page = 1
     await loadData()
-  } catch (error) { }
-}
-const onChangePage = (page) => {
-  pagination.value.current_page = page
-  loadData()
+  } catch (error) {}
 }
 
 const resetFormSearch = () => {
@@ -581,17 +689,17 @@ onMounted(() => {
 })
 
 const headers = [
-  { text: 'ID', value: 'id', width: 150 },
-  { text: 'วันที่', value: 'issue_date', width: 200 },
-  { text: 'Code', value: 'code' },
-  { text: 'บริษัท/ลูกค้า', value: 'customer_name' },
-  // { text: 'ส่วนลด Lab', value: 'discount_lab' },
+  // { text: 'ID', value: 'id' },
+  { text: 'วันที่', value: 'document_date', width: 100, sortable: true },
+  { text: 'Code', value: 'code', width: 120 },
+  { text: 'บริษัท/ลูกค้า', value: 'address_name' },
+  { text: 'ผู้ติดต่อ', value: 'agent_name' },
   // { text: 'ส่วนลด Order.', value: 'discount_order' },
   // { text: 'ส่วนลด Cust.', value: 'discount_customer' },
   // { text: 'จำนวน', value: 'qty' },
   // { text: 'ราคา', value: 'price' },
 
-  // { text: 'รวมเป็นเงิน', value: 'total' },
+  { text: 'รวมเป็นเงิน', value: 'total' },
   // { text: 'หมายเหตุ', value: 'remark' },
 ]
 
@@ -600,6 +708,19 @@ const serverOptions = ref({
   rowsPerPage: appStore.settings.page.perPage,
 })
 
+watch(
+  serverOptions,
+  (data) => {
+    console.log(data)
+    pagination.value.current_page = data.page
+    ;(pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
+    formSearch.value.orderBy = data.sortType
+    loadData()
+  },
+  {
+    deep: true,
+  },
+)
 </script>
 <style lang="scss" scoped>
 .qt-detail {
@@ -619,8 +740,6 @@ const serverOptions = ref({
 }
 
 .checkbox {
-  transform: scale(
-      /*desired magnification*/
-    );
+  transform: scale(/*desired magnification*/);
 }
 </style>

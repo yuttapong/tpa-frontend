@@ -106,13 +106,15 @@
                     >
                   <div class="fw-bold">{{ item.code }}</div>
                   <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)"><i class="bi bi-search"></i></button>
-                  <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)"><i class="bi bi-pencil"></i></button>
+                  
                   <router-link
                             :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
+                             title="จองคิวห้อง Lab"
                           >
                             <i class="bi bi-calendar mx-1" role="button"></i
                           ></router-link>
                           <router-link
+                           
                             :to="{ name: 'bills.formEdit', params: { code: item.code } }"
                           >
                             <i class="bi bi-pencil mx-1" role="button"></i
@@ -691,6 +693,7 @@ onMounted(() => {
 const headers = [
   // { text: 'ID', value: 'id' },
   { text: 'วันที่', value: 'document_date', width: 100, sortable: true },
+  { text: 'commitment Date', value: 'commitment_date', width: 110, sortable: true },
   { text: 'Code', value: 'code', width: 120 },
   { text: 'บริษัท/ลูกค้า', value: 'address_name' },
   { text: 'ผู้ติดต่อ', value: 'agent_name' },

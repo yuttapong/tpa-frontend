@@ -240,11 +240,10 @@ const clearCommitmentDate = async (billId) => {
   await api.delete(`/v2/bills/${billId}/commitment`)
 }
 
-const loadData = () => {
+const loadData = async () => {
   if (billCode.value) {
-    api.get('/v2/bills/code/' + billCode.value).then((rs) => {
-      form.value = rs.data
-    })
+    const { data } = await api.get('/v2/bills/code/' + billCode.value)
+    if (data) form.value = data
   }
 }
 onMounted(() => {
@@ -407,11 +406,9 @@ onUpdated(() => {})
                       <th scope="col" class="">Product</th>
 
                       <th scope="col" class="fw-bold">Barcode</th>
-               
 
                       <th scope="col" class="fw-bold">S/N.</th>
                       <th scope="col" class="fw-bold">ID No.</th>
-                     
                     </tr>
                   </thead>
 
@@ -436,7 +433,6 @@ onUpdated(() => {})
                       <td>
                         <span>{{ item.barcode_no }}</span>
                       </td>
-                   
 
                       <td>
                         <span>{{ item.serialnumber }}</span>
@@ -444,7 +440,6 @@ onUpdated(() => {})
                       <td>
                         <span>{{ item.id_no }}</span>
                       </td>
-              
                     </tr>
                   </tbody>
                 </table>

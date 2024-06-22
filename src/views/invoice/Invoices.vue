@@ -33,9 +33,12 @@ const formSearch = ref({
 })
 
 const headers = [
-  { text: 'ID', value: 'id', width: 150 },
-  { text: 'วันที่', value: 'issue_date', width: 200 },
+  { text: "Action", value: "action" },
+  { text: 'ID', value: 'id' },
+  { text: 'Total', value: 'totalnet' },
   { text: 'Code', value: 'code' },
+  { text: 'วันที่', value: 'issue_date' },
+  { text: 'ผู้ติดต่อ', value: 'contact_name' },
   { text: 'บริษัท/ลูกค้า', value: 'customer_name' },
   // { text: 'ส่วนลด Lab', value: 'discount_lab' },
   // { text: 'ส่วนลด Order.', value: 'discount_order' },
@@ -75,15 +78,19 @@ const loadData = async () => {
     loading.value = false
   }
 }
+
 const getInvoiceById = async (item) => {
   try {
     const { data } = await api.get('/v2/invoices/' + item.id)
+
     if (data) {
       invoice.value = data
+      invoiceStore.setInvoice(data)
       loading.value = false
     }
   } catch (error) { }
 }
+
 const showDetail = (item) => {
   invoice.value = item
   invoiceStore.setInvoice(item)
@@ -105,8 +112,8 @@ const resetFormSearch = () => {
 }
 onSearch()
 onMounted(() => {
-  // modalView.value = new Modal(modalViewRef.value)
-  // modalView.value.hide()
+  modalView.value = new Modal(modalViewRef.value)
+  modalView.value.hide()
   invoiceStore.loadCart()
 })
 watch(
@@ -136,7 +143,7 @@ watch(
     <section class="section profile">
       <spinner :visible="loading" />
 
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-xl-8">
           <div class="card">
             <div class="card-body pt-3"></div>
@@ -155,7 +162,7 @@ watch(
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="row" v-if="items">
         <div class="col-xl-12">
@@ -214,7 +221,21 @@ watch(
                   <EasyDataTable @update-page-items="onChangePage" class="my-3" :headers="headers" :items="items"
                     alternating v-model:server-options="serverOptions" :server-items-length="4"
                     v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination
-                    :loading="invoiceStore.cartLoading" fixed-header />
+                    :loading="invoiceStore.cartLoading" fixed-header>
+                    >
+                    <template #item-action="item">
+
+
+                      <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)"><i
+                          class="bi bi-search"></i></button>
+                      <!-- 
+                      <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
+                        title="จองคิวห้อง Lab">
+                        <i class="bi bi-calendar mx-1" role="button"></i></router-link>
+                      <router-link :to="{ name: 'bills.formEdit', params: { code: item.code } }">
+                        <i class="bi bi-pencil mx-1" role="button"></i></router-link> -->
+                    </template>
+                  </EasyDataTable>
 
 
 

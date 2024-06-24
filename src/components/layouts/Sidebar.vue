@@ -125,23 +125,23 @@
           </li>
         </ul>
       </li>
-      <li class="nav-heading">Pages</li>
+      <!-- <li class="nav-heading">Pages</li>
       <li class="nav-item">
         <router-link to="register" class="nav-link collapsed">
           <i class="bi bi-card-list"></i>
           <span>Register</span>
         </router-link>
-      </li>
+      </li> -->
       <!-- End Register Page Nav -->
 
-      <li class="nav-item" v-if="!appStore.isLoggedIn">
+      <!-- <li class="nav-item" v-if="!appStore.isLoggedIn">
         <router-link to="/login" class="nav-link collapsed">
           <i class="bi bi-box-arrow-in-right"></i>
           <span>เข้าสู่ระบบ</span>
         </router-link>
-      </li>
+      </li> -->
       <!-- End Login Page Nav -->
-      <li class="nav-item" v-if="!appStore.isLoggedIn">
+      <!-- <li class="nav-item" v-if="!appStore.isLoggedIn">
         <router-link to="/profile" class="nav-link collapsed">
           <i class="bi bi-person-lines-fill"></i>
           <span>โปร์ไฟล์</span>
@@ -171,7 +171,7 @@
           <i class="bi bi-file-earmark"></i>
           <span>Blank</span>
         </router-link>
-      </li>
+      </li> -->
       <!-- End Blank Page Nav -->
     </ul>
   </aside>

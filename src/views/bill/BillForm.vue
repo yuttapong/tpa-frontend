@@ -636,7 +636,7 @@ onUpdated(() => {
                         </div>
                       </div>
                     </div>
-                    {{ itemsSelected }}
+                 
                     <!-- <div class="accordion-item">
                       <h2 class="accordion-header" id="headingCommitmentDate">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"

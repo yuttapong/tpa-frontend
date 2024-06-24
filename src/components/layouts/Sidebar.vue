@@ -50,15 +50,22 @@
         </router-link>
       </li>
       <li class="nav-item">
+        <router-link to="/data/contacts" class="nav-link collapsed">
+          <i class="bi bi-person-vcard"></i>
+          <span>รายชื่อ/ผู้ติดต่อ</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
         <router-link to="/data/labs" class="nav-link collapsed">
           <i class="bi bi-people"></i>
           <span>Lab/Sub Lab</span>
         </router-link>
       </li>
+
       <li class="nav-item">
-        <router-link to="/data/contacts" class="nav-link collapsed">
-          <i class="bi bi-person-vcard"></i>
-          <span>รายชื่อ/ผู้ติดต่อ</span>
+        <router-link to="/data/promotions" class="nav-link collapsed">
+          <i class="bi bi-box"></i>
+          <span>โปรโมชั่น/ส่วนลด</span>
         </router-link>
       </li>
       <li class="nav-item">
@@ -82,7 +89,7 @@
       <li class="nav-item">
         <router-link to="/data/company" class="nav-link collapsed">
           <i class="bi bi-person-circle"></i>
-          <span>บริษัท</span>
+          <span>องค์กร</span>
         </router-link>
       </li>
       <li class="nav-heading">สำหรับผู้ดูแลระบบ</li>
@@ -99,12 +106,7 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <a
-          class="nav-link collapsed"
-          data-bs-target="#setting-nav"
-          data-bs-toggle="collapse"
-          href="#"
-        >
+        <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-gear"></i>
           <span>ตั้งค่า</span>
         </a>
@@ -246,6 +248,7 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
+
   #main,
   #footer {
     margin-left: 300px;
@@ -259,6 +262,7 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
+
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;

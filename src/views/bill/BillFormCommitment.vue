@@ -180,9 +180,9 @@ const cancelBook = async () => {
       bill_id: form.value.id,
     }
     const { data } = await axios
-      .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', {
+      .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + params.bill_id, {
         data: {
-          ...params,
+
         },
         headers: {
           'Content-Type': 'application/json',
@@ -249,7 +249,7 @@ const loadData = async () => {
 onMounted(() => {
   loadData()
 })
-onUpdated(() => {})
+onUpdated(() => { })
 </script>
 <template>
   <div class="pagetitle">
@@ -289,14 +289,8 @@ onUpdated(() => {})
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                   <label>วันที่</label>
-                  <input
-                    type="date"
-                    v-model="form.document_date"
-                    name="document_date"
-                    id="document_date"
-                    class="form-control form-control-sm"
-                    readonly
-                  />
+                  <input type="date" v-model="form.document_date" name="document_date" id="document_date"
+                    class="form-control form-control-sm" readonly />
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                   <label>Commitment Date</label>
@@ -317,11 +311,7 @@ onUpdated(() => {})
               </div>
 
               <div class="border p-2">
-                <input
-                  type="checkbox"
-                  v-model="searchCommitmentDate"
-                  @change="onChangeConditionCommitment"
-                />
+                <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
                 จองคิวห้อง Lab
                 <div class="row g-2">
                   <div class="col-12 col-lg-8">
@@ -330,12 +320,8 @@ onUpdated(() => {})
                   </div>
                   <div class="col-12 col-lg-4">
                     <label>เลือกวันที่</label>
-                    <input
-                      type="date"
-                      class="form-control-sm form-control"
-                      v-model="commitmentDate"
-                      placeholder="เลือกวันที่"
-                    />
+                    <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
+                      placeholder="เลือกวันที่" />
                   </div>
 
                   <div class="col-12">
@@ -368,11 +354,7 @@ onUpdated(() => {})
                       <i class="float-start bi bi-clock me-2"></i> จองคิว
                     </button>
                     <template v-if="form.id > 0">
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-sm ms-2"
-                        @click="cancelBook()"
-                      >
+                      <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
                         <i class="float-start bi bi-x me-2"></i> ยกเลิกคิวจอง
                       </button>
                     </template>
@@ -450,11 +432,7 @@ onUpdated(() => {})
         </div>
       </div>
     </div>
-    <ConfirmCommitment
-      ref="modalConfirm"
-      :data="resultCommitment"
-      @onConfirm="updateCommitmentDate"
-    />
+    <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" @onConfirm="updateCommitmentDate" />
   </section>
 </template>
 

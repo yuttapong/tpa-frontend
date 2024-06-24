@@ -34,7 +34,7 @@
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
-                        placeholder="Code" @keyup.enter="search" />
+                        placeholder="Code" @keyup.enter="search" autofocus />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
@@ -62,8 +62,8 @@
                   v-model:server-options="serverOptions" :server-items-length="pagination.total"
                   v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination :loading="loading"
                   fixed-header>
-                  <template #item-code="item">
-                    <div class="fw-bold">{{ item.code }}</div>
+                  <template #item-action="item">
+
                     <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)"><i
                         class="bi bi-search"></i></button>
 
@@ -76,6 +76,10 @@
                   <template #item-address_name="item">{{ item.address_name }}
 
                     <div>{{ item.customer.taxnumber }}</div>
+                  </template>
+                  <template #item-code="item">
+                    <div class="fw-bold">{{ item.code }}</div>
+
                   </template>
                 </EasyDataTable>
                 <!-- <div class="table-responsive">
@@ -395,7 +399,7 @@ import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
 import { formatISO } from 'date-fns'
 import { useAppStore } from '@/stores/appStore'
 import axios from 'axios'
-import CommitmentBooking from './components/CommitmentBooking.vue'
+
 
 const appStore = new useAppStore()
 
@@ -601,18 +605,13 @@ onMounted(() => {
 
 const headers = [
   // { text: 'ID', value: 'id' },
+  { text: 'Action', value: 'action', width: 100 },
   { text: 'วันที่', value: 'document_date', width: 100, sortable: true },
   { text: 'commitment Date', value: 'commitment_date', width: 110, sortable: true },
   { text: 'Code', value: 'code', width: 120 },
   { text: 'บริษัท/ลูกค้า', value: 'address_name' },
   { text: 'ผู้ติดต่อ', value: 'agent_name' },
-  // { text: 'ส่วนลด Order.', value: 'discount_order' },
-  // { text: 'ส่วนลด Cust.', value: 'discount_customer' },
-  // { text: 'จำนวน', value: 'qty' },
-  // { text: 'ราคา', value: 'price' },
-
   { text: 'รวมเป็นเงิน', value: 'total' },
-  // { text: 'หมายเหตุ', value: 'remark' },
 ]
 
 const serverOptions = ref({

@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useBillStore = defineStore('invoice', {
+export const useBillStore = defineStore('bill', {
   state: () => {
     return {
       formMode: 'add',

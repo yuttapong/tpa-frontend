@@ -89,7 +89,7 @@
             <vue-awesome-paginate
               :total-items="pagination.total"
               :items-per-page="pagination.per_page"
-              :max-pages-shown="appStore.settings.page.maxPageShow"
+              :max-pages-shown="5"
               v-model="pagination.current_page"
               :on-click="onChangePage"
               class=""
@@ -101,7 +101,7 @@
                 <span class="badge text-bg-danger"> {{ selectedItems.length }}</span>
               </button>
               <button type="button" class="btn btn-secondary btn-sm ms-2" data-bs-dismiss="modal">
-                <i class="bi bi-times"></i> ปิด
+                <i class="bi bi-x"></i> ปิด
               </button>
             </div>
           </div>

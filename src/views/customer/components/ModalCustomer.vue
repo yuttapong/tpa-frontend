@@ -1,10 +1,45 @@
 <template>
   <div>
     <div class="modal" ref="modalElement">
-      <div class="modal-dialog modal-dialog-scrollable modal-xl modal-fullscreen-lg-down">
+      <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-lg-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">บริษัท</h5>
+            <!-- <h5 class="modal-title">{{ title }}</h5> -->
+            <div class="modal-toolbar">
+              <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link active"
+                    id="home-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#home"
+                    type="button"
+                    role="tab"
+                    aria-controls="home"
+                    aria-selected="true"
+                  >
+                  <i class="bi bi-person"></i>
+                    Customer
+                  </button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link"
+                    id="contact-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#contact"
+                    type="button"
+                    role="tab"
+                    aria-controls="contact"
+                    aria-selected="false"
+                  >
+                  <i class="bi bi-person-vcard"></i>
+                    Contact
+                  </button>
+                </li>
+              </ul>
+            </div>
             <button
               type="button"
               class="btn-close"
@@ -12,106 +47,126 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body">
-            <!-- Small tables -->
-            <div class="table table-responsive">
-              <form @submit.prevent="onSearch()">
-                <div class="row g-2">
-                  <div class="col-6 col-md-4 col-lg-3">
-                    <input
-                      type="search"
-                      v-model="formSearch.q"
-                      class="form-control form-control-sm"
-                      placeholder="ชื่อบริษัท"
-                      autofocus
-                      @keyup.enter="onSearch()"
-                    />
-                  </div>
-                  <div class="col-6 col-md-4 col-lg-3">
-                    <input
-                      type="search"
-                      v-model="formSearch.taxnumber"
-                      class="form-control form-control-sm"
-                      placeholder="taxnumber"
-                      @keyup.enter="onSearch()"
-                    />
-                  </div>
-
-                  <div class="col-6 col-md-4 col-lg-3">
-                    <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading" />
-                  </div>
+          <div class="modal-body p-2">
+            <form @submit.prevent="onSearch()">
+              <div class="row g-2 mb-2">
+                <div class="col-6 col-md-4 col-lg-3">
+                  <input
+                    type="search"
+                    v-model="formSearch.q"
+                    class="form-control form-control-sm"
+                    placeholder="ชื่อบริษัท"
+                    autofocus
+                    @keyup.enter="onSearch()"
+                  />
                 </div>
-              </form>
-              <div class="spinner-border" role="status" v-if="loading">
-                <span class="visually-hidden">Loading...</span>
+                <div class="col-6 col-md-4 col-lg-3">
+                  <input
+                    type="search"
+                    v-model="formSearch.taxnumber"
+                    class="form-control form-control-sm"
+                    placeholder="taxnumber"
+                    @keyup.enter="onSearch()"
+                  />
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                  <input
+                    type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="ค้นหา"
+                    :disabled="loading"
+                  />
+                </div>
               </div>
+            </form>
+            <div class="spinner-border" role="status" v-if="loading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
 
-              <table class="table table-sm table-striped table-bordered">
-                <thead>
-                  <tr>
-                    <th scope="col"></th>
-                    <!-- <th scope="col">#</th> -->
-                    <th scope="col">Tax number</th>
-                    <th scope="col">บริษัท</th>
-
-                    <th scope="col">เบอร์โทร</th>
-                    <th scope="col">จังหวัด</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
+            <div class="tab-content" id="myTabContent">
+              <div
+                class="tab-pane fade show active"
+                id="home"
+                role="tabpanel"
+                aria-labelledby="home-tab"
+              >
+                <ul class="list-unstyled">
+                  <li
                     v-for="(item, index) in items"
                     :key="index"
-                    :class="{ 'table-success': item.id == selectedItems.id }"
+                    :class="
+                      { 'bg-info': item.id == selectedCustomers.id } + ' border-bottom my-2 ps-2'
+                    "
                   >
-                    <th scope="row">
-                      <!-- <button class="btn btn-secondary btn-sm d-block" @click="selectProduct(item)">
-                        <i class="bi bi-plus"></i>
-                      </button> -->
+                    <div class="float-start d-inline-block">
                       <input
                         class="form-check-input"
                         type="radio"
-                        v-model="selectedItems"
+                        v-model="selectedCustomers"
+                        :value="item"
+                        @click="clickCustomer(item)"
+                      />
+                    </div>
+
+                    <div class="d-inline-block ms-4">
+                      <i class="bi bi-person-fill"></i> {{ item.companyname }}
+                      <div v-if="item.companynameen" class="mx-1 p-1">
+                        <small class="text-danger"> {{ item.companynameen }}</small>
+                        <small class="mx-2"> TaxID : {{ item.taxnumber }}</small>
+                        <small class="mx-2" v-if=" item.idcard"> IDCard : {{ item.idcard }}</small>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                <ul class="list-unstyled">
+                  <li
+                    v-for="(item, index) in contacts"
+                    :key="index"
+                    :class="
+                      { 'bg-info': item.id == selectedContacts.id } + ' border-bottom my-2 ps-2'
+                    "
+                  >
+                    <div class="float-start d-inline-block">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        v-model="selectedContacts"
                         :value="item"
                       />
-                    </th>
-                    <td>
-                      <span class="">{{ item.taxnumber }}</span>
-                    </td>
-                    <td>
-                      <div class="">{{ item.companyname }}</div>
-                      <div v-if="item.companynameen" class="mx-1 p-1 ">
-                        <small class="text-danger"> {{ item.companynameen }}</small>
-                        <small class="mx-2"> ID#{{ item.id }}</small>
-                      </div>
-                      <!-- <span v-if="item.model" class="mx-1 p-1">{{ item.model }}</span>
-                      <span v-if="item.serialnumber" class="mx-1 p-1">{{ item.serialnumber }}</span> -->
-                    </td>
+                    </div>
 
-                    <td>{{ item.phone }}</td>
-                    <td>{{ item.province }}</td>
-                  </tr>
-                </tbody>
-              </table>
+                    <div class="d-inline-block ms-4">
+                      <i class="bi bi-person-vcard"></i> {{ item.contactname }}
+                      <div v-if="item.contactname" class="mx-1 p-1">
+                        <small class="text-danger"> {{ item.contactname }}</small>
+                        <small class="mx-2"> tel1#{{ item.contacttel1 }}</small>
+                        <small class="mx-2"> tel2#{{ item.contacttel2 }}</small>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
-            <!-- End small tables -->
           </div>
           <div class="modal-footer d-block">
+            <!-- <span class="fw-bold bg-danger text-white p-1"> {{ selectedItems.length }}</span> -->
             <vue-awesome-paginate
               :total-items="pagination.total"
               :items-per-page="pagination.per_page"
-              :max-pages-shown="appStore.settings.page.maxPageShow"
+              :max-pages-shown="5"
               v-model="pagination.current_page"
               :on-click="onChangePage"
               class=""
             />
-            <!-- <span class="fw-bold bg-danger text-white p-1"> {{ selectedItems.length }}</span> -->
-
             <button type="button" class="btn btn-primary" @click="select">
-              <i class="bi bi-save"></i> ตกลง
+              <i class="bi bi-check-circle"></i> เลือก
             </button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="bi bi-times"></i> ปิด
+              <i class="bi bi-x"></i> ยกเลิก
             </button>
           </div>
         </div>
@@ -126,13 +181,31 @@ import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'
 const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
-const props = defineProps(['visible', 'perPage', 'data'])
+const props = defineProps({
+  visible: {
+    type: Boolean,
+  },
+  perPage: {
+    type: Number,
+    default: 10,
+  },
+  data: {
+    type: Object,
+    default: () => {},
+  },
+  title: {
+    type: String,
+    default: 'บริษัท',
+  },
+})
 
 let modal = null
-const appStore = useAppStore();
+const appStore = useAppStore()
 let modalElement = ref(null)
 const items = ref([])
-const selectedItems = ref([])
+const contacts = ref([])
+const selectedCustomers = ref([])
+const selectedContacts = ref([])
 const loading = ref(false)
 const pagination = ref({
   total: 0,
@@ -178,17 +251,31 @@ const loadData = async () => {
     loading.value = false
   }
 }
+const loadContactByCustomerId = async (customerId) => {
+  const { data } = await api.get(`/v2/customers/${customerId}/contacts`)
+  if (data) {
+    contacts.value = data
+  }
+}
 
 const _show = () => {
-  emit('onShow', selectedItems.value)
+  emit('onShow', selectedCustomers.value)
   modal.show()
 }
 
 const select = () => {
-  emit('select', selectedItems.value)
-  selectedItems.value = []
+  emit('select', {
+    customers: selectedCustomers.value,
+    contacts: selectedContacts.value,
+  })
+  selectedCustomers.value = []
+  selectedContacts.value = []
   modal.hide()
   emit('onHide')
+}
+const clickCustomer = (item) => {
+  console.log(item)
+  loadContactByCustomerId(item.id)
 }
 onMounted(() => {
   modal = new Modal(modalElement.value)
@@ -196,3 +283,13 @@ onMounted(() => {
 })
 defineExpose({ show: _show })
 </script>
+<style lang="scss" scoped>
+td,
+th {
+  font-size: 13px;
+}
+input[type='radio'] {
+  transform: scale(2);
+  margin: 3px;
+}
+</style>

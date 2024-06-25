@@ -27,6 +27,10 @@
               <div class="col-8">
                 <span class="">{{ workorder?.product_name }}</span>
               </div>
+              <div class="col-4 text-decoration-underline">สถานะ</div>
+              <div class="col-8">
+                <span class=""><JobStatus v-model="workorder.job_status"></JobStatus></span>
+              </div>
               <div class="col-4 text-decoration-underline">Lab</div>
               <div class="col-8">
                 <span class="d-block">{{ workorder?.lab?.name_th }}</span>
@@ -44,9 +48,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary btn-sm" @click="confirm()">
-              <i class="bi bi-check"></i> ยืนยัน
-            </button>
+ 
           </div>
         </div>
       </div>
@@ -60,6 +62,7 @@ import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
 import { MyFormatDate } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
+import JobStatus from '@/views/bill/components/JobStatus.vue'
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm'])
 const props = defineProps({
   title: {

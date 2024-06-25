@@ -19,35 +19,72 @@
             <ul class="nav nav-tabs nav-tabs-bordered">
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
-                  ใบขอรับบริการ
-                  <span v-if="pagination">({{ parseInt(pagination.total).toLocaleString() || 0 }})</span>
+                  <i class="bi bi-book"></i> ใบขอรับบริการ
+                  <span v-if="pagination"
+                    >({{ parseInt(pagination.total).toLocaleString() || 0 }})</span
+                  >
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-status">
+                  <i class="bi bi-wifi"></i> สถานะ
                 </button>
               </li>
             </ul>
+
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-index" id="qt-index">
                 <form @submit.prevent="onSearch()" class="mb-3">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.id" name="id" class="form-control form-control-sm"
-                        placeholder="ID" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.id"
+                        name="id"
+                        class="form-control form-control-sm"
+                        placeholder="ID"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
-                        placeholder="Code" @keyup.enter="search" autofocus />
+                      <input
+                        type="search"
+                        v-model="formSearch.code"
+                        name="code"
+                        class="form-control form-control-sm"
+                        placeholder="Code"
+                        @keyup.enter="search"
+                        autofocus
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
-                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.taxnumber"
+                        name="taxnumber"
+                        class="form-control form-control-sm"
+                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.q"
+                        name="q"
+                        class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
+                      <input
+                        type="reset"
+                        class="btn btn-secondary btn-sm mx-2"
+                        value="Reset"
+                        @click="resetFormSearch"
+                      />
                       <router-link class="btn btn-sm btn-success" to="/bills/form">
                         <i class="bi bi-plus"></i> สร้าง
                       </router-link>
@@ -58,36 +95,53 @@
                 <!-- <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
                   :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
                   :on-click="onChangePage" /> -->
-                <EasyDataTable class="my-3" :headers="headers" :items="items" alternating
-                  v-model:server-options="serverOptions" :server-items-length="pagination.total"
-                  v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination :loading="loading"
-                  fixed-header>
+                <EasyDataTable
+                  class="my-3"
+                  :headers="headers"
+                  :items="items"
+                  alternating
+                  v-model:server-options="serverOptions"
+                  :server-items-length="pagination.total"
+                  v-model:items-selected="itemsSelected"
+                  show-index
+                  border-cell
+                  buttons-pagination
+                  :loading="loading"
+                  fixed-header
+                >
                   <template #item-action="item">
+                    <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)">
+                      <i class="bi bi-search"></i>
+                    </button>
 
-                    <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)"><i
-                        class="bi bi-search"></i></button>
-
-                    <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
-                      title="จองคิวห้อง Lab">
-                      <i class="bi bi-calendar mx-1" role="button"></i></router-link>
+                    <router-link
+                      :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
+                      title="คำนวณวันนัดรับ"
+                    >
+                      <i class="bi bi-calendar mx-1" role="button"></i
+                    ></router-link>
                     <router-link :to="{ name: 'bills.formEdit', params: { code: item.code } }">
-                      <i class="bi bi-pencil mx-1" role="button"></i></router-link>
+                      <i class="bi bi-pencil mx-1" role="button"></i
+                    ></router-link>
                   </template>
-                  <template #item-address_name="item">{{ item.address_name }}
+                  <template #item-address_name="item"
+                    >{{ item.address_name }}
 
                     <div>{{ item.customer.taxnumber }}</div>
                   </template>
                   <template #item-code="item">
-                    <div class="fw-bold">{{ item.code }}</div>
-
+                    <div>{{ item.code }}</div>
+                    <BillStatus v-model="item.bill_status" />
                   </template>
                   <template #item-document_date="item">
-                    <div class="fw-bold" v-if="item.document_date">{{ MyFormatDate(item.document_date) }}</div>
-
+                    <div class="fw-bold" v-if="item.document_date">
+                      {{ MyFormatDate(item.document_date) }}
+                    </div>
                   </template>
                   <template #item-commitment_date="item">
-                    <div class="fw-bold" v-if="item.commitment_date">{{ MyFormatDate(item.commitment_date) }}</div>
-
+                    <div class="fw-bold" v-if="item.commitment_date">
+                      {{ MyFormatDate(item.commitment_date) }}
+                    </div>
                   </template>
                 </EasyDataTable>
                 <!-- <div class="table-responsive">
@@ -162,6 +216,110 @@
                 <!-- End small tables -->
               </div>
             </div>
+            <div class="tab-content pt-2">
+              <div class="tab-pane fade qt-status" id="qt-status">
+                <table class="table table-sm table-border">
+                  <thead>
+                    <tr>
+                      <th>สถานะ</th>
+                      <th>คำอธิบาย</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>New Request</td>
+                      <td>
+                        <ul>
+                          <li>สร้างใบขอรับบริการใหม่</li>
+                          <li>รอเพิ่มเครื่องมือต่างๆ</li>
+                          <li>สามารถเปลี่ยนเป็น Pending / Canceled</li>
+                        </ul>
+                      </td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Pending</td>
+                      <td>
+                        <ul>
+                          <li>
+                            เมื่อมีการระบุ [วันที่ทดสอบ] และ [วันนัดรับ] สถานะของงานจะถูกเปลี่ยนเป็น
+                            Pending
+                          </li>
+                          <li>สามารถเปลี่ยนสถานะเป็น In Progress / Canceled / Void</li>
+                        </ul>
+                      </td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>In Progress</td>
+                      <td>
+                        <ul>
+                          <li>
+                            เมื่อมีการเริ่มดำเนินการ หรืองานเข้าห้องทดลอง สถานะเปลี่ยนเป็น In
+                            Progress
+                          </li>
+                          <li>สามารถเปลี่ยนเป็น Completed / Canceled / Void</li>
+                        </ul>
+                      </td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Completed</td>
+                      <td>
+                        <ul>
+                          <li>ใบขอรับบริการที่งานเสร็จหมดแล้ว สถานะเปลี่ยนเป็น Completed</li>
+                          <li>ใบขอรับบริการที่มีสถานะเป็น Completed สามารถดึงไปออกใบรับรอง</li>
+                          <li>สามารถเปลี่ยน Closed</li>
+                        </ul>
+                      </td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Closed</td>
+                      <td>
+                        <ul>
+                          <li>
+                            มีการสร้างใบรับรอง หรือ Invoice แล้ว เอกสารทุกอย่างเรียบร้อย มีสถานะเป็น
+                            Closed
+                          </li>
+
+                          <li>
+                            ใบขอรับบริการที่มีสถานะเป็น Closed
+                            ไม่สามารถเปลี่ยนสถานะเป็นอย่างอื่นได้อีก
+                          </li>
+                        </ul>
+                      </td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Canceled</td>
+                      <td>
+                        <ul>
+                          <li>ใบขอรับบริการที่ถูกเลิก สถานะถูกเปลี่ยนเป็น Canceled</li>
+                          <li>
+                            ใบขอรับบริการที่มีสถานะเป็น Canceled
+                            ไม่สามารถเปลี่ยนสถานะเป็นอย่างอื่นได้อีก
+                          </li>
+                        </ul>
+                      </td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Void</td>
+                      <td>
+                        <ul>
+                          <li>
+                            ใบขอรับบริการที่สถานะเป็น Void จะไม่สามารถนำไปใช้งานจริงและออกรายงาน
+                          </li>
+                          <li>ใช้สำหรับในการทดสอบระบบ</li>
+                        </ul>
+                      </td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
             <!-- End Bordered Tabs -->
           </div>
         </div>
@@ -173,42 +331,51 @@
     <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Bill เลขที่ : {{ bill.code }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title">Bill ID#{{ bill.id }}</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="row">
-            <div class="col-4">
+            <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">เลขที่</label>
               <p>{{ bill.code }}</p>
             </div>
-            <div class="col-4">
+            <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>{{ bill?.customer?.companyname }}</p>
             </div>
-            <div class="col-4">
+            <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">วันที่</label>
-              <p>{{ bill.document_date ? MyFormatDate( bill.document_date): '' }}</p>
+              <p>{{ bill.document_date ? MyFormatDate(bill.document_date) : '' }}</p>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-4">
+
+            <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>{{ bill.agent_name }}</p>
             </div>
-            <div class="col-4">
-              <label class="fw-bold text-decoration-underline">เลขที่</label>
+            <div class="col-4 col-lg-3">
+              <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>{{ bill.address_name }} {{ bill.address_detail }}</p>
             </div>
-            <div class="col-4">
+
+            <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">เวลาทำรายการ</label>
-              <p>{{ bill.date_start }}</p>
+              <p>{{ MyFormatDate(bill.date_start) }}</p>
             </div>
-            <div class="col-4">
+            <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">วันนัดรับเครื่องมือ</label>
               <p v-if="bill.commitment_date">
-                {{ MyFormatDate( bill.commitment_date) }}
+                {{ MyFormatDate(bill.commitment_date) }}
               </p>
+            </div>
+            <div class="col-12">
+              <label class="fw-bold text-decoration-underline">Note Customer</label>
+              <p>{{ bill.note_customers }}</p>
             </div>
           </div>
 
@@ -219,51 +386,77 @@
           </div>
 
           <div class="table-responsive">
-            <table class="table table-condensed" v-if="!loadingItems">
+            <table class="table table-condensed table-sm table-border border" v-if="!loadingItems">
               <thead>
                 <tr>
                   <th class="fw-bold text-decoration-underline">#</th>
                   <th class="fw-bold text-decoration-underline">NO</th>
                   <th class="fw-bold text-decoration-underline">ItemCode</th>
+                  <th class="fw-bold text-decoration-underline">Status</th>
                   <th class="fw-bold text-decoration-underline">Reserved at</th>
-                  <th class="fw-bold text-decoration-underline">รายการ</th>
+                  <th class="fw-bold text-decoration-underline">Item Name</th>
+                  <th class="fw-bold text-decoration-underline">Test Point</th>
                   <th class="fw-bold text-decoration-underline">SN.</th>
-                  <th class="fw-bold text-decoration-underline">ID No.</th>
-                  <th class="fw-bold text-decoration-underline">Model</th>
-                  <th class="fw-bold text-decoration-underline">Point</th>
-                  <th class="fw-bold text-decoration-underline">Point Price</th>
-           
+
+                  <th class="fw-bold text-decoration-underline text-end">Qty</th>
+                  <th class="fw-bold text-decoration-underline text-end">Total</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(row, rowIndex) in bill.items" :key="row">
                   <th>
-                    <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
+                    <input
+                      type="checkbox"
+                      v-model="itemsSelected"
+                      name="itemsSelected[]"
+                      :value="row"
+                    />
                   </th>
                   <th>{{ rowIndex + 1 }}</th>
                   <td>{{ row.item_code }}</td>
-                  <td>{{ MyFormatDate( row.reserved_date) }}</td>
+                  <td><JobStatus v-model="row.job_status"/></td>
+                  <td>{{ MyFormatDate(row.reserved_date) }}</td>
                   <td>{{ row.product_name }}</td>
+                  <td>{{ row.test_point }}</td>
                   <td>{{ row.serialnumber }}</td>
-                  <td>
-                    <span class="mx-2 badge badge-light text-dark d-inline-block">{{
-                      row.id_no
-                    }}</span>
-                  </td>
-                  <td>
-                    <span class="mx-2 badge badge-light text-dark d-inline-block">{{
-                      row.model
-                    }}</span>
-                  </td>
-                  <td>{{ row.point }}</td>
-                  <td>{{ row.point_price }}</td>
-       
+                  <td class="text-end">{{ row.qty }}</td>
+                  <td class="text-end">{{ row.total }}</td>
                 </tr>
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="8">
+                    ค่าบริการ Onsite
+                    <span class="ms-3">{{ parseFloat(bill.cost_onsite).toLocaleString() }}</span>
+
+                    <label class="ms-5">ค่าขนส่ง</label>
+                    <span class="ms-3">{{ parseFloat(bill.cost_travel).toLocaleString() }}</span>
+                  </td>
+                  
+                  <td>รวม</td>
+                  <td colspan="2" class="text-end fw-bold">
+                    {{ parseFloat(bill.total_price).toLocaleString() }}
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="8"></td>
+                  <td>VAT ({{ parseFloat(bill.vat_percent).toLocaleString() }}%)</td>
+                  <td colspan="2" class="text-end fw-bold">
+                    {{ parseFloat(bill.vat_total).toLocaleString() }}
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="8"></td>
+                  <td>รวมเป็นเงินทั้งหมด</td>
+                  <td colspan="2" class="text-end fw-bolder text-decoration-underline">
+                    {{ Number(bill.grand_total).toLocaleString() }}
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
           <p>
-            <label class="me-3 fw-bold text-decoration-underline">NOTE:</label>{{ bill.note_customers }}
+            <label class="me-3 fw-bold text-decoration-underline">หมายเหตุ:</label>{{ bill.remark }}
           </p>
         </div>
         <div class="modal-footer d-block">
@@ -275,8 +468,9 @@
             </div>
 
             <div class="p-1">
-              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
-                itemsSelected.length }} รายการ</span>
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
+                >{{ itemsSelected.length }} รายการ</span
+              >
             </div>
           </div>
 
@@ -315,7 +509,12 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -326,13 +525,21 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>
-                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.customer_name"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
+                <input
+                  type="date"
+                  v-model="invoice.document_date"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
           </div>
@@ -340,13 +547,21 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>
-                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.contact_name"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
             <div class="col-8">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
+                <input
+                  type="text"
+                  v-model="invoice.address_detail"
+                  class="form-control form-control-sm"
+                />
               </p>
             </div>
           </div>
@@ -373,12 +588,22 @@
                     }}</span>
                   </th>
                   <th>
-                    <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
-                      style="width: 100px" />
+                    <input
+                      type="number"
+                      name="price[]"
+                      v-model="row.price"
+                      class="form-control form-control-sm"
+                      style="width: 100px"
+                    />
                   </th>
                   <th>
-                    <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
-                      style="width: 100px" />
+                    <input
+                      type="number"
+                      name="price[]"
+                      v-model="row.discount"
+                      class="form-control form-control-sm"
+                      style="width: 100px"
+                    />
                   </th>
                 </tr>
               </tbody>
@@ -411,7 +636,8 @@ import { toast } from 'vue3-toastify'
 import { useAppStore } from '@/stores/appStore'
 import axios from 'axios'
 import { MyFormatDate } from '@/helpers/myformat.js'
-
+import BillStatus from '@/views/bill/components/BillStatus.vue'
+import JobStatus from '@/views/bill/components/JobStatus.vue'
 const appStore = new useAppStore()
 
 const items = ref([])
@@ -600,7 +826,7 @@ const onSearch = async () => {
   try {
     pagination.value.current_page = 1
     await loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 
 const resetFormSearch = () => {
@@ -636,7 +862,7 @@ watch(
   (data) => {
     console.log(data)
     pagination.value.current_page = data.page
-      ; (pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
+    ;(pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
     formSearch.value.orderBy = data.sortType
     loadData()
   },
@@ -663,8 +889,6 @@ watch(
 }
 
 .checkbox {
-  transform: scale(
-      /*desired magnification*/
-    );
+  transform: scale(/*desired magnification*/);
 }
 </style>

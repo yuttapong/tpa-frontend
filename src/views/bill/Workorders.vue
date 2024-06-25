@@ -152,7 +152,7 @@
                             >{{ item.item_code }}</small
                           >
                         </td>
-                        <td><JobStatus v-model="item.job_status"/></td>
+                        <td><JobStatus v-model="item.job_status" /></td>
                         <td>
                           <div>{{ item.product_name }}</div>
                           <span
@@ -395,11 +395,11 @@ const onChangePage = (page) => {
   pagination.value.current_page = page
   loadData()
 }
+
 const openModalWorkOrder = async (row) => {
   workorder.value = row
-  console.log(row)
   modalWorkOrder.value.show()
-  const { data } = await api.get('v2/workorders/code/' + row.item_code)
+  const { data } = await api.get('v2/workorders/' + row.item_id)
   if (data) {
     workorder.value = data
   }

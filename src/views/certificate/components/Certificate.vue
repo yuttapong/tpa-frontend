@@ -129,7 +129,6 @@ import avatar from '@/assets/img/profile-img.jpg'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { Tab, Modal } from 'bootstrap'
-import { DateTime, Number } from '@/helpers/myformat'
 import { object } from 'yup'
 
 const props = defineProps({

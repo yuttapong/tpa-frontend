@@ -72,7 +72,7 @@
                         <td>{{ item.level }}</td>
                         <td>
                           <span class="badge bg-light text-dark">{{
-                            DateTime(new Date(item.date_starts))
+                            MyFormatDate(new Date(item.date_starts))
                           }}</span>
                         </td>
                       </tr>

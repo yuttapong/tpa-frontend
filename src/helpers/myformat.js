@@ -1,7 +1,7 @@
 const locales = localStorage.getItem('lang')
 const myFormatLang = locales ? locales : 'th-TH'
 
-export const DateTime = (date, options) => {
+export const MyFormatDate = (date, options) => {
   if (!date) {
     return
   }

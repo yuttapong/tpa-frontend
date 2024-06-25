@@ -67,13 +67,12 @@
 import logo from '@/assets/img/logo.png'
 import { useForm, useField } from 'vee-validate'
 import * as yup from 'yup'
-import { DateTime } from '@/helpers/myformat'
 import { ref, computed } from 'vue'
 import { api } from '@/helpers/api'
-import Cookies from 'js-cookie'
 import { useRouter } from 'vue-router'
-import { baseUrl } from '@/config'
 import { useAppStore } from '@/stores/appStore'
+import {MyFormatDate} from '@/helpers/myformat'
+
 const appStore = new useAppStore()
 
 const schema = yup.object({
@@ -121,7 +120,7 @@ const login = (e) => {
 }
 
 const nowDat = computed(() => {
-  return DateTime(new Date(), {
+  return MyFormatDate(new Date(), {
     dateStyle: 'medium',
     timeStyle: 'short',
   })

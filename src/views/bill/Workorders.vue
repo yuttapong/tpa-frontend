@@ -128,7 +128,7 @@
                         </td>
                         <td>
                           <span class="badge bg-light text-dark">{{
-                            item.bill ? DateTime(new Date(item.bill?.document_date)) : ''
+                            item.bill ? MyFormatDate(new Date(item.bill.document_date)) : ''
                           }}</span>
                         </td>
 
@@ -190,7 +190,7 @@ import { onMounted, onBeforeMount, computed, ref } from 'vue'
 
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { DateTime, Number } from '@/helpers/myformat'
+import { MyFormatDate, Number } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
 import WorderOrderDetail from './components/WorderOrderDetail.vue'
 import { useBillStore } from '@/stores/billStore'

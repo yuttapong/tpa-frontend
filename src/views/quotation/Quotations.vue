@@ -67,7 +67,7 @@
                         </td>
                         <td>
                           <span class="badge bg-light text-dark">{{
-                            DateTime(new Date(item.document_date))
+                            MyFormatDate(new Date(item.document_date))
                           }}</span>
                         </td>
                         <td>{{ Number(item.total_price).toLocaleString() }}</td>
@@ -436,7 +436,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
 import { onMounted, computed, ref } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { DateTime, Number } from '@/helpers/myformat'
+import {MyFormatDate} from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
 import ModalQuotationDetail from "@/views/quotation/components/ModalQuotationDetail.vue"
 const appStore = useAppStore()

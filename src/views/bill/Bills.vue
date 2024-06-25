@@ -81,6 +81,14 @@
                     <div class="fw-bold">{{ item.code }}</div>
 
                   </template>
+                  <template #item-document_date="item">
+                    <div class="fw-bold" v-if="item.document_date">{{ MyFormatDate(item.document_date) }}</div>
+
+                  </template>
+                  <template #item-commitment_date="item">
+                    <div class="fw-bold" v-if="item.commitment_date">{{ MyFormatDate(item.commitment_date) }}</div>
+
+                  </template>
                 </EasyDataTable>
                 <!-- <div class="table-responsive">
                   <table class="table table-sm">
@@ -125,12 +133,12 @@
                         </td>
                         <td>
                           <span class="badge bg-light text-dark" v-if="item.document_date">{{
-                            DateTime(new Date(item?.document_date))
+                            MyFormatDate(new Date(item?.document_date))
                           }}</span>
                         </td>
                         <td>
                           <span class="badge bg-light text-dark" v-if="item.commitment_date">{{
-                            DateTime(new Date(item?.commitment_date))
+                            MyFormatDate(new Date(item?.commitment_date))
                           }}</span>
                         </td>
 
@@ -162,7 +170,7 @@
   </section>
 
   <div class="modal" ref="modalViewRef" v-if="bill">
-    <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Bill เลขที่ : {{ bill.code }}</h5>
@@ -180,7 +188,7 @@
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">วันที่</label>
-              <p>{{ bill.document_date }}</p>
+              <p>{{ bill.document_date ? MyFormatDate( bill.document_date): '' }}</p>
             </div>
           </div>
           <div class="row">
@@ -197,8 +205,10 @@
               <p>{{ bill.date_start }}</p>
             </div>
             <div class="col-4">
-              <label class="fw-bold text-decoration-underline">Commitment Date</label>
-              <p>{{ bill.commitment_date }}</p>
+              <label class="fw-bold text-decoration-underline">วันนัดรับเครื่องมือ</label>
+              <p v-if="bill.commitment_date">
+                {{ MyFormatDate( bill.commitment_date) }}
+              </p>
             </div>
           </div>
 
@@ -215,11 +225,14 @@
                   <th class="fw-bold text-decoration-underline">#</th>
                   <th class="fw-bold text-decoration-underline">NO</th>
                   <th class="fw-bold text-decoration-underline">ItemCode</th>
+                  <th class="fw-bold text-decoration-underline">Reserved at</th>
                   <th class="fw-bold text-decoration-underline">รายการ</th>
+                  <th class="fw-bold text-decoration-underline">SN.</th>
                   <th class="fw-bold text-decoration-underline">ID No.</th>
                   <th class="fw-bold text-decoration-underline">Model</th>
                   <th class="fw-bold text-decoration-underline">Point</th>
                   <th class="fw-bold text-decoration-underline">Point Price</th>
+           
                 </tr>
               </thead>
               <tbody>
@@ -229,7 +242,9 @@
                   </th>
                   <th>{{ rowIndex + 1 }}</th>
                   <td>{{ row.item_code }}</td>
+                  <td>{{ MyFormatDate( row.reserved_date) }}</td>
                   <td>{{ row.product_name }}</td>
+                  <td>{{ row.serialnumber }}</td>
                   <td>
                     <span class="mx-2 badge badge-light text-dark d-inline-block">{{
                       row.id_no
@@ -242,6 +257,7 @@
                   </td>
                   <td>{{ row.point }}</td>
                   <td>{{ row.point_price }}</td>
+       
                 </tr>
               </tbody>
             </table>
@@ -276,15 +292,15 @@
             </div>
 
             <div class="col-12 col-lg-6 col-xl-6">
-              <button type="button" class="btn btn-danger btn-sm mx-1" @click="cancelBill(bill)">
+              <!-- <button type="button" class="btn btn-danger btn-sm mx-1" @click="cancelBill(bill)">
                 <i class="bi bi-x"></i> ยกเลิก
-              </button>
-              <button type="button" class="btn btn-success btn-sm mx-1" @click="newInvoice">
+              </button> -->
+              <!-- <button type="button" class="btn btn-success btn-sm mx-1" @click="newInvoice">
                 <i class="bi bi-plus"></i> Invoice Cart
-              </button>
-              <button type="button" class="btn btn-secondary btn-sm mx-1" data-bs-dismiss="modal">
+              </button> -->
+              <!-- <button type="button" class="btn btn-secondary btn-sm mx-1" data-bs-dismiss="modal">
                 <i class="bi bi-x-circle"></i> ปิดหน้าต่าง
-              </button>
+              </button> -->
             </div>
           </div>
 
@@ -386,20 +402,15 @@
 
 <script setup>
 import { onMounted, computed, ref, watch } from 'vue'
-import avatar from '@/assets/img/profile-img.jpg'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { DateTime, Number } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import router from '@/router'
 import { toast } from 'vue3-toastify'
-import { timezone } from '@/config'
-import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
-import { formatISO } from 'date-fns'
 import { useAppStore } from '@/stores/appStore'
 import axios from 'axios'
-
+import { MyFormatDate } from '@/helpers/myformat.js'
 
 const appStore = new useAppStore()
 
@@ -606,12 +617,13 @@ onMounted(() => {
 const headers = [
   // { text: 'ID', value: 'id' },
   { text: 'Action', value: 'action', width: 100 },
-  { text: 'วันที่', value: 'document_date', width: 100, sortable: true },
-  { text: 'commitment Date', value: 'commitment_date', width: 110, sortable: true },
   { text: 'Code', value: 'code', width: 120 },
+  { text: 'วันที่', value: 'document_date', width: 100, sortable: true },
+  { text: 'นัดรับ', value: 'commitment_date', width: 110, sortable: true },
+
   { text: 'บริษัท/ลูกค้า', value: 'address_name' },
   { text: 'ผู้ติดต่อ', value: 'agent_name' },
-  { text: 'รวมเป็นเงิน', value: 'total' },
+  { text: 'รวมเป็นเงิน', value: 'grand_total' },
 ]
 
 const serverOptions = ref({

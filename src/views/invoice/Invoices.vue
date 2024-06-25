@@ -2,9 +2,9 @@
 import { onMounted, computed, ref, watch } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { DateTime, Number } from '@/helpers/myformat'
+import {  MyFormatDate } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
-import MyModal from '@/components/Modal.vue'
+
 import InvoiceDetail from '@/views/invoice/components/InvoiceDetail.vue'
 import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/appStore'

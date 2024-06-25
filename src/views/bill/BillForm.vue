@@ -2,13 +2,13 @@
 import { onMounted, computed, ref, onUpdated } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { DateTime, Number } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 import ModalProduct from '@/views/product/components/ModalProduct.vue'
 import ModalCustomer from '@/views/customer/components/ModalCustomer.vue'
 import ModalContact from '@/views/customer/components/ModalContact.vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import { MyFormatDate } from '@/helpers/myformat'
 import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
 import { formatDate, formatISO } from 'date-fns'
 import { timezone } from '@/config'
@@ -18,7 +18,7 @@ import { toast } from 'vue3-toastify'
 const route = useRoute()
 const appStore = useAppStore()
 const loading = ref(false)
-const searchCommitmentDate = ref(true)
+
 
 const modalProduct = ref(null)
 const modalContact = ref(null)
@@ -675,13 +675,13 @@ onUpdated(() => {
                     <div>
                       <span class="mx-2">วันที่เอกสาร</span>
                       {{
-                        DateTime(resultCommitment.data.document_date, {
+                        MyFormatDate(resultCommitment.data.document_date, {
                           hideTime: true,
                         })
                       }}
                       <span class="mx-2">งานเสร็จวันที่</span>
                       {{
-                        DateTime(resultCommitment.data.commitment_date, {
+                        MyFormatDate(resultCommitment.data.commitment_date, {
                           hideTime: true,
                         })
                       }}

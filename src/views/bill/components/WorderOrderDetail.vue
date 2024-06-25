@@ -16,12 +16,12 @@
 
               <div class="col-4 text-decoration-underline">วันที่เอกสาร</div>
               <div class="col-8">
-                <span class="">{{ DateTime(workorder?.document_date) }}</span>
+                <span class="">{{ MyFormatDate(workorder?.document_date) }}</span>
               </div>
 
               <div class="col-4 text-decoration-underline">วันที่งานเสร็จ</div>
               <div class="col-8">
-                <span class="">{{ DateTime(workorder?.reserved_at) }}</span>
+                <span class="">{{ MyFormatDate(workorder?.reserved_at) }}</span>
               </div>
               <div class="col-4 text-decoration-underline">เครื่องมือ</div>
               <div class="col-8">
@@ -51,15 +51,14 @@
         </div>
       </div>
     </div>
-    {{ data }}
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
-import { DateTime } from '@/helpers/myformat'
-import { differenceInDays } from 'date-fns'
+import { MyFormatDate } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm'])
 const props = defineProps({

@@ -1,6 +1,6 @@
 <template>
   <div class="pagetitle">
-    <h1>Certificates ({{ parseInt(pagination.total).toLocaleString() }})</h1>
+    <h3>Certificates ({{ parseInt(pagination.total).toLocaleString() }})</h3>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><router-lin to="/">Home</router-lin></li>
@@ -178,11 +178,10 @@
 
 <script setup>
 import { onMounted, computed, ref } from 'vue'
-import avatar from '@/assets/img/profile-img.jpg'
+
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { Tab, Modal } from 'bootstrap'
-import { DateTime, Number } from '@/helpers/myformat'
 import Certificate from './components/Certificate.vue'
 import { useAppStore } from '@/stores/appStore'
 

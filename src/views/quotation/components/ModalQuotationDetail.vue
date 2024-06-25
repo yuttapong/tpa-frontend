@@ -2,7 +2,7 @@
 import { onMounted, computed, ref } from 'vue'
 import Spinner from '@/components/Spinner.vue'
 import ProductMeta from '@/views/invoice/components/ProductMeta.vue'
-import { DateTime } from '@/helpers/myformat.js'
+import { MyFormatDate } from '@/helpers/myformat.js'
 
 import { Modal } from 'bootstrap'
 const props = defineProps(['data'])
@@ -67,11 +67,11 @@ defineExpose({ show: _show })
               <div class="row g-2">
                 <div class="col-6 col-md-4 col-lg-3">
                   <label class="fw-bold text-danger">วันที่</label>
-                  <p>{{ DateTime(data?.document_date) }}</p>
+                  <p>{{ MyFormatDate(data?.document_date) }}</p>
                 </div>
                 <div class="col-6 col-md-4 col-lg-3">
                   <label class="fw-bold text-danger">Due Date</label>
-                  <p>{{ DateTime(data?.due_date) }}</p>
+                  <p>{{ MyFormatDate(data?.due_date) }}</p>
                 </div>
                 <div class="col-6 col-md-4 col-lg-3">
                   <label class="fw-bold text-danger">Code</label>

@@ -2,7 +2,7 @@
 import { onMounted, computed, ref, onUpdated } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { DateTime, Number } from '@/helpers/myformat'
+import { MyFormatDate } from '@/helpers/myformat'
 import { toast } from 'vue3-toastify'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import { useAppStore } from '@/stores/appStore'

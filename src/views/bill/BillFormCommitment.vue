@@ -2,14 +2,10 @@
 import { onMounted, computed, ref, onUpdated } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { DateTime, Number } from '@/helpers/myformat'
-import { useBillStore } from '@/stores/billStore'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
-import { formatInTimeZone, toZonedTime, toDate, format } from 'date-fns-tz'
-import { formatDate, formatISO, isValid, parse } from 'date-fns'
-import { timezone } from '@/config'
+import { MyFormatDate } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
 import ConfirmCommitment from './components/ConfirmCommitment.vue'
 import { toast } from 'vue3-toastify'
@@ -293,10 +289,10 @@ onUpdated(() => { })
                     class="form-control form-control-sm" readonly />
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                  <label>Commitment Date</label>
+                  <label>วันนัดรับเครื่องมือ</label>
                   <template v-if="form.commitment_date">
                     <p>
-                      {{ DateTime(form.commitment_date) }}
+                      {{ MyFormatDate(form.commitment_date) }}
                     </p>
                   </template>
                   <template v-else>
@@ -312,7 +308,7 @@ onUpdated(() => { })
 
               <div class="border p-2">
                 <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
-                จองคิวห้อง Lab
+                หาวันนัดรับเครื่องมือ
                 <div class="row g-2">
                   <div class="col-12 col-lg-8">
                     <label>Priority</label>
@@ -333,13 +329,13 @@ onUpdated(() => { })
                       <div>
                         <span class="mx-2">วันที่เอกสาร</span>
                         {{
-                          DateTime(resultCommitment.data.document_date, {
+                          MyFormatDate(resultCommitment.data.document_date, {
                             hideTime: true,
                           })
                         }}
                         <span class="mx-2">งานเสร็จวันที่</span>
                         {{
-                          DateTime(resultCommitment.data.commitment_date, {
+                          MyFormatDate(resultCommitment.data.commitment_date, {
                             hideTime: true,
                           })
                         }}
@@ -351,11 +347,11 @@ onUpdated(() => { })
                 <div class="row g-1">
                   <div class="col-12">
                     <button type="button" class="btn btn-primary btn-sm" @click="submit()">
-                      <i class="float-start bi bi-clock me-2"></i> จองคิว
+                      <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                     </button>
-                    <template v-if="form.id > 0">
+                    <template v-if="form.commitment_date">
                       <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
-                        <i class="float-start bi bi-x me-2"></i> ยกเลิกคิวจอง
+                        <i class="float-start bi bi-x me-2"></i> ยกเลิกวัน
                       </button>
                     </template>
 

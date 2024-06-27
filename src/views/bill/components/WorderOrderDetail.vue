@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="modal" ref="modalRef">
-      <div class="modal-dialog modal-dialog-scrollable modal-md">
+      <div class="modal-dialog modal-dialog-scrollable modal-xl">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ title }}</h5>
@@ -32,6 +32,15 @@
               <div class="col-8">
                 <span class="">
                   <JobStatus v-model="workorder.job_status"></JobStatus>
+
+                </span>
+              </div>
+              <div class="col-4 text-decoration-underline">สถานะ Tracking</div>
+              <div class="col-8">
+                <span class="fw-bold text-danger">
+                  <div v-if="workorder.current_service_status">
+                    {{ workorder.current_service_status.status_name }}
+                  </div>
                 </span>
               </div>
               <div class="col-4 text-decoration-underline">Lab</div>

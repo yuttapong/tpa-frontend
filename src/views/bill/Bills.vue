@@ -85,7 +85,7 @@
                   </template>
                   <template #item-code="item">
                     <div>{{ item.code }}</div>
-                    <BillStatus v-model="item.bill_status" />
+
                   </template>
                   <template #item-document_date="item">
                     <div class="fw-bold" v-if="item.document_date">
@@ -95,6 +95,11 @@
                   <template #item-commitment_date="item">
                     <div class="fw-bold" v-if="item.commitment_date">
                       {{ MyFormatDate(item.commitment_date) }}
+                    </div>
+                  </template>
+                  <template #item-bill_status="item">
+                    <div class="fw-bold">
+                      <BillStatus v-model="item.bill_status" />
                     </div>
                   </template>
                 </EasyDataTable>
@@ -347,8 +352,8 @@
                   <th class="fw-bold text-decoration-underline">#</th>
                   <th class="fw-bold text-decoration-underline">NO</th>
                   <th class="fw-bold text-decoration-underline">ItemCode</th>
-                  <th class="fw-bold text-decoration-underline">Status</th>
-                  <th class="fw-bold text-decoration-underline">Reserved at</th>
+                  <th class="fw-bold text-decoration-underline">Tracking Status</th>
+                  <th class="fw-bold text-decoration-underline">วันจองคิว</th>
                   <th class="fw-bold text-decoration-underline">Item Name</th>
                   <th class="fw-bold text-decoration-underline">Test Point</th>
                   <th class="fw-bold text-decoration-underline">SN.</th>
@@ -363,9 +368,16 @@
                     <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
                   </th>
                   <th>{{ rowIndex + 1 }}</th>
-                  <td>{{ row.item_code }}</td>
-                  <td>
+                  <td nowrap>
+                    {{ row.item_code }}
+                    <div><small>#<span class="text-primary fw-bold">{{ row.item_id }}</span></small></div>
+                  </td>
+                  <td nowrap>
                     <!-- <JobStatus v-model="row.job_status" /> -->
+
+                    <div v-if="row.current_service_status" class="border-bottom text-danger fw-bold">
+                      {{ row.current_service_status.status_name }}
+                    </div>
                     <JobButtonStatus v-model="row.job_status" :data="row" @on-change="onChangeJobStatus" />
                   </td>
                   <td>{{ MyFormatDate(row.reserved_date) }}</td>
@@ -789,12 +801,14 @@ const headers = [
   // { text: 'ID', value: 'id' },
   { text: 'Action', value: 'action', width: 100 },
   { text: 'Code', value: 'code', width: 120 },
+  { text: 'ID', value: 'id' },
   { text: 'วันที่', value: 'document_date', width: 100, sortable: true },
   { text: 'นัดรับ', value: 'commitment_date', width: 110, sortable: true },
 
   { text: 'บริษัท/ลูกค้า', value: 'address_name' },
   { text: 'ผู้ติดต่อ', value: 'agent_name' },
   { text: 'รวมเป็นเงิน', value: 'grand_total' },
+  { text: 'Bill Status', value: 'bill_status' },
 ]
 
 const serverOptions = ref({
@@ -817,6 +831,11 @@ watch(
 )
 </script>
 <style lang="scss" scoped>
+td,
+th {
+  font-size: 14px;
+}
+
 .qt-detail {
   .row {
     margin-bottom: 20px;

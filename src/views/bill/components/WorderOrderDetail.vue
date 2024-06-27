@@ -8,18 +8,19 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+
             <div class="row g-2">
               <div class="col-4 text-decoration-underline">Item Code</div>
               <div class="col-8">
                 <span class="">{{ workorder?.item_code }}</span>
               </div>
 
-              <div class="col-4 text-decoration-underline">วันที่เอกสาร</div>
+              <div class="col-4 text-decoration-underline">วันที่รับเครื่องมือ</div>
               <div class="col-8">
                 <span class="">{{ MyFormatDate(workorder?.document_date) }}</span>
               </div>
 
-              <div class="col-4 text-decoration-underline">วันที่งานเสร็จ</div>
+              <div class="col-4 text-decoration-underline">วันทีจองคิว</div>
               <div class="col-8">
                 <span class="">{{ MyFormatDate(workorder?.reserved_at) }}</span>
               </div>
@@ -29,7 +30,9 @@
               </div>
               <div class="col-4 text-decoration-underline">สถานะ</div>
               <div class="col-8">
-                <span class=""><JobStatus v-model="workorder.job_status"></JobStatus></span>
+                <span class="">
+                  <JobStatus v-model="workorder.job_status"></JobStatus>
+                </span>
               </div>
               <div class="col-4 text-decoration-underline">Lab</div>
               <div class="col-8">
@@ -46,9 +49,12 @@
                 <span class="d-block">{{ workorder?.test_point }}</span>
               </div>
             </div>
+            <hr />
+            <h5 class="h6 text-decoration-underline">Tracking Status</h5>
+            <JobTimeline :statuses="workorder?.service_statuses" />
           </div>
           <div class="modal-footer">
- 
+
           </div>
         </div>
       </div>
@@ -63,6 +69,7 @@ import { Modal } from 'bootstrap'
 import { MyFormatDate } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
+import JobTimeline from './JobTimeline.vue'
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm'])
 const props = defineProps({
   title: {

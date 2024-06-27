@@ -4,109 +4,60 @@
       <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-lg-down">
         <div class="modal-content">
           <div class="modal-header">
-            <!-- <h5 class="modal-title">{{ title }}</h5> -->
+
             <div class="modal-toolbar">
               <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link active"
-                    id="home-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#home"
-                    type="button"
-                    role="tab"
-                    aria-controls="home"
-                    aria-selected="true"
-                  >
-                  <i class="bi bi-person"></i>
-                    Customer
+                  <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
+                    role="tab" aria-controls="home" aria-selected="true">
+                    <i class="bi bi-person"></i>
+                    Customer ({{ pagination.total }})
                   </button>
                 </li>
 
                 <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link"
-                    id="contact-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#contact"
-                    type="button"
-                    role="tab"
-                    aria-controls="contact"
-                    aria-selected="false"
-                  >
-                  <i class="bi bi-person-vcard"></i>
+                  <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+                    role="tab" aria-controls="contact" aria-selected="false">
+                    <i class="bi bi-person-vcard"></i>
                     Contact
                   </button>
                 </li>
               </ul>
             </div>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-2">
-            <form @submit.prevent="onSearch()">
-              <div class="row g-2 mb-2">
-                <div class="col-6 col-md-4 col-lg-3">
-                  <input
-                    type="search"
-                    v-model="formSearch.q"
-                    class="form-control form-control-sm"
-                    placeholder="ชื่อบริษัท"
-                    autofocus
-                    @keyup.enter="onSearch()"
-                  />
-                </div>
-                <div class="col-6 col-md-4 col-lg-3">
-                  <input
-                    type="search"
-                    v-model="formSearch.taxnumber"
-                    class="form-control form-control-sm"
-                    placeholder="taxnumber"
-                    @keyup.enter="onSearch()"
-                  />
+
+
+            <div class="tab-content" id="customer">
+              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+                <form @submit.prevent="onSearch()">
+                  <div class="row g-2 mb-2">
+                    <div class="col-6 col-md-4 col-lg-3">
+                      <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
+                        placeholder="ชื่อบริษัท" autofocus @keyup.enter="onSearch()" />
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-3">
+                      <input type="search" v-model="formSearch.taxnumber" class="form-control form-control-sm"
+                        placeholder="taxnumber" @keyup.enter="onSearch()" />
+                    </div>
+
+                    <div class="col-6 col-md-4 col-lg-3">
+                      <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading" />
+                    </div>
+                  </div>
+                </form>
+                <div class="spinner-border" role="status" v-if="loading">
+                  <span class="visually-hidden">Loading...</span>
                 </div>
 
-                <div class="col-6 col-md-4 col-lg-3">
-                  <input
-                    type="submit"
-                    class="btn btn-primary btn-sm"
-                    value="ค้นหา"
-                    :disabled="loading"
-                  />
-                </div>
-              </div>
-            </form>
-            <div class="spinner-border" role="status" v-if="loading">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-
-            <div class="tab-content" id="myTabContent">
-              <div
-                class="tab-pane fade show active"
-                id="home"
-                role="tabpanel"
-                aria-labelledby="home-tab"
-              >
                 <ul class="list-unstyled">
-                  <li
-                    v-for="(item, index) in items"
-                    :key="index"
-                    :class="
-                      { 'bg-info': item.id == selectedCustomers.id } + ' border-bottom my-2 ps-2'
-                    "
-                  >
+                  <li v-for="(item, index) in items" :key="index" :class="{ 'bg-info': item.id == selectedCustomers.id } + ' border-bottom my-2 ps-2'
+                    ">
                     <div class="float-start d-inline-block">
-                      <input
-                        class="form-check-input"
-                        type="radio"
-                        v-model="selectedCustomers"
-                        :value="item"
-                        @click="clickCustomer(item)"
-                      />
+                      <input class="form-check-input" type="radio" v-model="selectedCustomers" :value="item"
+                        @click="clickCustomer(item)" />
                     </div>
 
                     <div class="d-inline-block ms-4">
@@ -114,7 +65,7 @@
                       <div v-if="item.companynameen" class="mx-1 p-1">
                         <small class="text-danger"> {{ item.companynameen }}</small>
                         <small class="mx-2"> TaxID : {{ item.taxnumber }}</small>
-                        <small class="mx-2" v-if=" item.idcard"> IDCard : {{ item.idcard }}</small>
+                        <small class="mx-2" v-if="item.idcard"> IDCard : {{ item.idcard }}</small>
                       </div>
                     </div>
                   </li>
@@ -123,20 +74,10 @@
 
               <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                 <ul class="list-unstyled">
-                  <li
-                    v-for="(item, index) in contacts"
-                    :key="index"
-                    :class="
-                      { 'bg-info': item.id == selectedContacts.id } + ' border-bottom my-2 ps-2'
-                    "
-                  >
+                  <li v-for="(item, index) in contacts" :key="index" :class="{ 'bg-info': item.id == selectedContacts.id } + ' border-bottom my-2 ps-2'
+                    ">
                     <div class="float-start d-inline-block">
-                      <input
-                        class="form-check-input"
-                        type="radio"
-                        v-model="selectedContacts"
-                        :value="item"
-                      />
+                      <input class="form-check-input" type="radio" v-model="selectedContacts" :value="item" />
                     </div>
 
                     <div class="d-inline-block ms-4">
@@ -154,14 +95,8 @@
           </div>
           <div class="modal-footer d-block">
             <!-- <span class="fw-bold bg-danger text-white p-1"> {{ selectedItems.length }}</span> -->
-            <vue-awesome-paginate
-              :total-items="pagination.total"
-              :items-per-page="pagination.per_page"
-              :max-pages-shown="5"
-              v-model="pagination.current_page"
-              :on-click="onChangePage"
-              class=""
-            />
+            <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+              :max-pages-shown="5" v-model="pagination.current_page" :on-click="onChangePage" class="" />
             <button type="button" class="btn btn-primary" @click="select">
               <i class="bi bi-check-circle"></i> เลือก
             </button>
@@ -191,7 +126,7 @@ const props = defineProps({
   },
   data: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
   title: {
     type: String,
@@ -222,13 +157,13 @@ const onSearch = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const onChangePage = async (page) => {
   pagination.value.current_page = page
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const loadData = async () => {
   let params = {
@@ -288,6 +223,7 @@ td,
 th {
   font-size: 13px;
 }
+
 input[type='radio'] {
   transform: scale(2);
   margin: 3px;

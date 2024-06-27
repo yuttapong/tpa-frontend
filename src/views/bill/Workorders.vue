@@ -45,56 +45,29 @@
                   <div class="row">
                     <div class="col-12 col-md-2">
                       <label>Tax Number</label>
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        name="taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search" />
                     </div>
                     <div class="col-12 col-md-2">
                       <label>Item ID</label>
-                      <input
-                        type="search"
-                        v-model="formSearch.item_id"
-                        class="form-control form-control-sm"
-                        placeholder="Item ID"
-                        @keyup.enter="search"
-                        autofocus
-                      />
+                      <input type="search" v-model="formSearch.item_id" class="form-control form-control-sm"
+                        placeholder="Item ID" @keyup.enter="search" autofocus />
                     </div>
                     <div class="col-12 col-md-2">
                       <label>Item Code</label>
-                      <input
-                        type="search"
-                        v-model="formSearch.item_code"
-                        class="form-control form-control-sm"
-                        placeholder="Item Code"
-                        @keyup.enter="search"
-                        autofocus
-                      />
+                      <input type="search" v-model="formSearch.item_code" class="form-control form-control-sm"
+                        placeholder="Item Code" @keyup.enter="search" autofocus />
                     </div>
                     <div class="col-12 col-md-2">
                       <label>Bill Code</label>
-                      <input
-                        type="search"
-                        v-model="formSearch.bill_code"
-                        class="form-control form-control-sm"
-                        placeholder="Bill Code"
-                        @keyup.enter="search"
-                        autofocus
-                      />
+                      <input type="search" v-model="formSearch.bill_code" class="form-control form-control-sm"
+                        placeholder="Bill Code" @keyup.enter="search" autofocus />
                     </div>
                     <div class="col-12 col-md-6" v-if="labs">
                       <label>Lab</label>
 
-                      <select
-                        v-model="formSearch.lab_id"
-                        class="form-select form-select-sm"
-                        @change="onSelectLab"
-                      >
+                      <select v-model="formSearch.lab_id" class="form-select form-select-sm" @change="onSelectLab">
                         <option value="">--Lab--</option>
                         <option v-for="(item, key) in labs" :key="item.id" :value="item.id">
                           {{ item.name_th }} - {{ item.name }} ({{ item.sublabs.length }})
@@ -121,10 +94,7 @@
                   </div>
                 </form>
                 <!-- Small tables -->
-                <div
-                  class="my-3 p-2 bg-light text-danger"
-                  v-if="taxnumber && Number(pagination.total) > 0"
-                ></div>
+                <div class="my-3 p-2 bg-light text-danger" v-if="taxnumber && Number(pagination.total) > 0"></div>
                 <div class="table-responsive">
                   <table class="table table-sm table-striped table-bordered">
                     <thead>
@@ -145,37 +115,23 @@
                         <th scope="row">{{ index + 1 }}</th>
                         <td>{{ item.item_id }}</td>
                         <td nowrap>
-                          <small
-                            class="border bg-dark text-white p-1 w-full"
-                            role="button"
-                            @click="openModalWorkOrder(item)"
-                            >{{ item.item_code }}</small
-                          >
+                          <small class="border bg-dark text-white p-1 w-full" role="button"
+                            @click="openModalWorkOrder(item)">{{ item.item_code }}</small>
                         </td>
-                        <td><JobStatus v-model="item.job_status"/></td>
+                        <td>
+                          <JobStatus v-model="item.job_status" />
+                        </td>
                         <td>
                           <div>{{ item.product_name }}</div>
-                          <span
-                            v-if="item.id_no"
-                            class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
-                            style="min-width: 100px"
-                          >
-                            <i>IdNo.</i> {{ item.id_no }}</span
-                          >
-                          <span
-                            v-if="item.model"
-                            class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
-                            style="min-width: 100px"
-                          >
-                            <i>Model.</i> {{ item.model }}</span
-                          >
-                          <span
-                            v-if="item.serialnumber"
-                            class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
-                            style="min-width: 100px"
-                          >
-                            <i>S/N.</i> {{ item.serialnumber }}</span
-                          >
+                          <span v-if="item.id_no" class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
+                            style="min-width: 100px">
+                            <i>IdNo.</i> {{ item.id_no }}</span>
+                          <span v-if="item.model" class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
+                            style="min-width: 100px">
+                            <i>Model.</i> {{ item.model }}</span>
+                          <span v-if="item.serialnumber" class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
+                            style="min-width: 100px">
+                            <i>S/N.</i> {{ item.serialnumber }}</span>
                         </td>
                         <td>
                           <span class="badge bg-light text-dark">{{
@@ -193,14 +149,9 @@
                     </tbody>
                   </table>
                 </div>
-                <vue-awesome-paginate
-                  :total-items="pagination.total"
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                  class="mt-3"
-                />
+                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                  :on-click="onChangePage" class="mt-3" />
                 <!-- End small tables -->
               </div>
 
@@ -304,11 +255,7 @@
         </div>
       </div>
     </div>
-    <WorderOrderDetail
-      ref="modalWorkOrder"
-      v-model:data="workorder"
-      :title="workorder?.item_code"
-    />
+    <WorderOrderDetail ref="modalWorkOrder" v-model:data="workorder" :title="workorder?.item_code" />
   </section>
 </template>
 
@@ -379,6 +326,9 @@ const loadData = async () => {
     }
     pagination.value = p
     items.value = data.data
+    loading.value = false
+  } else {
+    items.value = []
     loading.value = false
   }
 }

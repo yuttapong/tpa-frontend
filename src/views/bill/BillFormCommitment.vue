@@ -9,6 +9,9 @@ import { MyFormatDate } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
 import ConfirmCommitment from './components/ConfirmCommitment.vue'
 import { toast } from 'vue3-toastify'
+import BillButtonStatus from '@/views/bill/components/BillButtonStatus.vue'
+import JobButtonStatus from '@/views/bill/components/JobButtonStatus.vue'
+
 const route = useRoute()
 const appStore = useAppStore()
 const loading = ref(false)
@@ -238,7 +241,9 @@ const clearCommitmentDate = async (billId) => {
 
 const loadData = async () => {
   if (billCode.value) {
-    const { data } = await api.get('/v2/bills/code/' + billCode.value)
+    const { data } = await api.get('/v2/bills/code/' + billCode.value, {
+      onlyjob: "yes"
+    })
     if (data) form.value = data
   }
 }
@@ -394,10 +399,13 @@ onUpdated(() => { })
                     <tr>
                       <td>{{ index + 1 }})</td>
                       <td>
-                        <span>{{ item.sublab.name_th }}</span>
+                        <span>{{ item.sublab?.name_th }}</span>
                       </td>
                       <td nowrap>
                         <span>{{ item?.reserved_date }}</span>
+                        <!-- <JobButtonStatus :data="item?.service_status_id"/> -->
+
+                        <div v-if="item.current_service_status">{{ item?.current_service_status.status_name }}</div>
                       </td>
                       <td>
                         <span>{{ item.item_id }}</span>
@@ -407,16 +415,17 @@ onUpdated(() => { })
                       </td>
                       <td>
                         {{ item.product_name }}
+                        <span>{{ item.is_job }}</span>
                       </td>
                       <td>
-                        <span>{{ item.barcode_no }}</span>
+                        <span>{{ item?.barcode_no }}</span>
                       </td>
 
                       <td>
-                        <span>{{ item.serialnumber }}</span>
+                        <span>{{ item?.serialnumber }}</span>
                       </td>
                       <td>
-                        <span>{{ item.id_no }}</span>
+                        <span>{{ item?.id_no }}</span>
                       </td>
                     </tr>
                   </tbody>

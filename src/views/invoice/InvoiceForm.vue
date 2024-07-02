@@ -131,7 +131,6 @@ const onSelectProduct = async (item) => {
     bill_code: item?.bill.code,
     product_name: item.product_name,
     product_id: item.product_id,
-    product: item,
     id_no: item?.id_no,
     model: item?.model,
     serialnumber: item?.serialnumber,

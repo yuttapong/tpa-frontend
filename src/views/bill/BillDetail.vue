@@ -41,10 +41,7 @@ onBeforeMount(() => {
               <div class="row">
                 <div class="col-6">
                   <p>
-                    <img
-                      src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg"
-                      height="60"
-                    />
+                    <img src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg" height="60" />
                   </p>
                 </div>
                 <div class="col-6">
@@ -95,22 +92,14 @@ onBeforeMount(() => {
           <div class="card-body pt-3">
             <div class="row g-2">
               <div class="col-12">
-                <router-link
-                  :to="{ name: 'bills.formEdit' }"
-                  class="btn btn-sm btn-secondary w-100"
-                >
+                <router-link :to="{ name: 'bills.formEdit' }" class="btn btn-sm btn-secondary w-100">
                   <i class="bi bi-pencil float-start"></i>
-                  แก้ไข</router-link
-                >
+                  แก้ไข</router-link>
               </div>
               <div class="col-12">
-                <router-link
-                  :to="{ name: 'bills.commitmentForm' }"
-                  class="btn btn-sm btn-secondary w-100"
-                >
+                <router-link :to="{ name: 'bills.commitmentForm' }" class="btn btn-sm btn-secondary w-100">
                   <i class="bi bi-clock float-start"></i>
-                  จองคิวงาน</router-link
-                >
+                  จองคิวงาน</router-link>
               </div>
             </div>
           </div>
@@ -131,7 +120,7 @@ div[size='A4'] {
   margin-bottom: 0.5cm;
   box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
 
-  > p,
+  >p,
   span,
   li,
   td {
@@ -146,6 +135,7 @@ div[size='A4'][layout='portrait'] {
 }
 
 @media print {
+
   body,
   page {
     margin: 0;

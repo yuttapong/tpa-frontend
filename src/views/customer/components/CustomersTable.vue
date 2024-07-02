@@ -21,17 +21,14 @@
           <th scope="row">{{ item.id }}</th>
 
           <td>
-            <router-link role="button" class="btn btn-link" :to="`/data/customers/${item.id}`"> {{ item.companyname }}</router-link
-            ><br />
+            <router-link role="button" class="btn btn-link" :to="`/data/customers/${item.id}`"> {{ item.companyname
+            }}</router-link><br />
             <span class="company-name">{{ item.companynameen }}</span>
             <p>
               <span class="badge bg-info text-white" v-if="item.is_company == 'yes'">Company</span>
-              <span class="badge bg-light text-dark p-2 mx-1"
-                ><i class="bt bi-phone"></i> {{ item.phone }}</span
-              >
+              <span class="badge bg-light text-dark p-2 mx-1"><i class="bt bi-phone"></i> {{ item.phone }}</span>
               <span class="badge bg-war text-dark p-2 mx-1">
-                <i class="bi bi-person-vcard"></i> {{ item.taxnumber }}</span
-              >
+                <i class="bi bi-person-vcard"></i> {{ item.taxnumber }}</span>
             </p>
           </td>
           <td>{{ item.province }}</td>

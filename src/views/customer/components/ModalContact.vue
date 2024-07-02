@@ -4,56 +4,41 @@
       <div class="modal-dialog modal-dialog-scrollable modal-xl modal-fullscreen-lg-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">รายชื่อ/ผู้ติดต่อ <span v-if="_companyId">CustomerID: {{_companyId}}</span></h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <h5 class="modal-title">รายชื่อ <span v-if="_companyId">CustomerID: {{ _companyId }}</span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <div class="d-flex gap-5">
+              <div v-if="customer.id"><input type="radio" v-model="onlyOne" value="yes"> เฉพาะ ({{ customer.name }})
+                เท่านั้น
+              </div>
+              <div><input type="radio" v-model="onlyOne" value="no"> ทั้งหมด</div>
+            </div>
             <!-- Small tables -->
             <div class="table table-responsive">
-              <form @submit.prevent="onSearch()">
+              <form @submit.prevent="search()">
                 <div class="row g-2">
                   <div class="col-6 col-md-4 col-lg-3">
-                    <input
-                      type="search"
-                      v-model="formSearch.q"
-                      class="form-control form-control-sm"
-                      placeholder="ชื่อ, สกุล"
-                      autofocus
-                      @keyup.enter="onSearch()"
-                    />
+                    <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
+                      placeholder="ชื่อ, สกุล" autofocus @keyup.enter="search()" />
                   </div>
                   <div class="col-6 col-md-4 col-lg-3">
-                    <input
-                      type="search"
-                      v-model="formSearch.taxnumber"
-                      class="form-control form-control-sm"
-                      placeholder="taxnumber"
-                      @keyup.enter="onSearch()"
-                    />
+                    <input type="search" v-model="formSearch.taxnumber" class="form-control form-control-sm"
+                      placeholder="taxnumber" @keyup.enter="search()" />
                   </div>
                   <div class="col-6 col-md-4 col-lg-3">
-                    <input
-                      type="search"
-                      v-model="formSearch.customer_id"
-                      class="form-control form-control-sm"
-                      placeholder="Customer ID"
-                      @keyup.enter="onSearch()"
-                    />
+                    <input type="search" v-model="formSearch.customer_id" class="form-control form-control-sm"
+                      placeholder="Customer ID" @keyup.enter="search()" />
                   </div>
 
                   <div class="col-6 col-md-4 col-lg-3">
-                    <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading"/>
-                  
+                    <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading" />
+
                   </div>
                 </div>
               </form>
               <div class="spinner-border" role="status" v-if="loading">
-                      <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden">Loading...</span>
               </div>
 
               <table class="table table-sm table-striped table-bordered">
@@ -66,25 +51,17 @@
 
                     <th scope="col">อีเมล์</th>
                     <th scope="col">เบอร์โทร</th>
-            
+
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(item, index) in items"
-                    :key="index"
-                    :class="{ 'table-success': item.id == selectedItems.id }"
-                  >
+                  <tr v-for="(item, index) in items" :key="index"
+                    :class="{ 'table-success': item.id == selectedItems.id }">
                     <th scope="row">
                       <!-- <button class="btn btn-secondary btn-sm d-block" @click="selectProduct(item)">
                         <i class="bi bi-plus"></i>
                       </button> -->
-                      <input
-                        class="form-check-input"
-                        type="radio"
-                        v-model="selectedItems"
-                        :value="item"
-                      />
+                      <input class="form-check-input" type="radio" v-model="selectedItems" :value="item" />
                     </th>
                     <td>
                       <span class="">{{ item.id }}</span>
@@ -109,7 +86,7 @@
                       {{ item.contacttel1 }}
                       <div>{{ item.contacttel2 }}</div>
                     </td>
-    
+
                   </tr>
                 </tbody>
               </table>
@@ -117,15 +94,10 @@
             <!-- End small tables -->
           </div>
           <div class="modal-footer d-block">
-            <vue-awesome-paginate
-              :total-items="pagination.total"
-              :items-per-page="pagination.per_page"
-              :max-pages-shown="appStore.settings.page.maxPageShow"
-              v-model="pagination.current_page"
-              :on-click="onChangePage"
-              class=""
-            />
-            
+            <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+              :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+              :on-click="onChangePage" class="" />
+
 
             <button type="button" class="btn btn-primary" @click="select">
               <i class="bi bi-save"></i> ตกลง
@@ -145,13 +117,32 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'
-const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
-const props = defineProps(['visible', 'perPage', 'data','customerId'])
+const emit = defineEmits(['search', 'onHide', 'onShow', 'select'])
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => { }
+  },
+  title: {
+    type: Object,
+    default: ""
+  },
+  customer: {
+    type: Object,
+    default: () => {
+      return {
+        id: 0,
+        name: ""
+      }
+    }
+  }
+})
 
 const appStore = useAppStore()
 let modal = null
 let modalElement = ref(null)
 const items = ref([])
+const onlyOne = ref("no")
 const selectedItems = ref([])
 const loading = ref(false)
 const _companyId = computed(() => props.customerId)
@@ -163,20 +154,22 @@ const pagination = ref({
 const formSearch = ref({
   code: '',
   q: '',
+  sortBy: 'id',
+  orderBy: 'desc'
 })
 
-const onSearch = async () => {
+const search = async () => {
   pagination.value.current_page = 1
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const onChangePage = async (page) => {
   pagination.value.current_page = page
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const loadData = async () => {
   let params = {
@@ -184,8 +177,9 @@ const loadData = async () => {
     page: pagination.value.current_page,
     ...formSearch.value,
   }
-  if(props.customerId) {
-    params.customer_id = props.customerId
+  if (props.customer && onlyOne.value == 'yes') {
+    params.customer_id = props.customer?.id
+    params.customer_name = props.customer?.name
   }
   const { data } = await api.get('/v2/contacts', {
     params: params,
@@ -204,9 +198,13 @@ const loadData = async () => {
 }
 
 
-const _show = () => {
+const show = () => {
   emit('onShow', selectedItems.value)
   modal.show()
+}
+const hide = () => {
+  emit('onHide', selectedItems.value)
+  modal.hide()
 }
 
 const select = () => {
@@ -215,16 +213,26 @@ const select = () => {
   modal.hide()
   emit('onHide')
 }
-watch(props,(p) => {
+watch(props, (p) => {
   console.log('watch cm', p.customerId);
-  if( p.customerId) {
+  if (p.customerId) {
     formSearch.value.customer_id = p.customerId
-    onSearch()
+    search()
   }
+})
+watch(onlyOne, () => {
+  if (onlyOne.value === 'yes') {
+    formSearch.value.customer_id = props.customer.id
+    formSearch.value.customer_name = props.customer.name
+  } else {
+    formSearch.value.customer_id = ""
+    formSearch.value.customer_name = ""
+  }
+  search()
 })
 onMounted(() => {
   modal = new Modal(modalElement.value)
-  onSearch()
+  search()
 })
-defineExpose({ show: _show })
+defineExpose({ show, hide })
 </script>

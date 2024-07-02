@@ -96,17 +96,19 @@ let modalRef = ref(null)
 
 const workorder = computed(() => props.data)
 
-const _show = () => {
+const show = () => {
   modalEl.show()
+}
+const hide = () => {
+  modalEl.hide()
 }
 
 const confirm = () => {
-  modalEl.hide()
-  emit('onHide')
+
 }
 
 onMounted(() => {
   modalEl = new Modal(modalRef.value)
 })
-defineExpose({ show: _show })
+defineExpose({ show, hide })
 </script>

@@ -16,49 +16,15 @@
 
 
         <div v-if="items">
-            <div class="row gy-2 gx-2">
-                <div class="col-12 col-md-4 col-xl-4 col-xxl-3" v-for="(item, index) in items" :key="index">
-
-                    <div class="card rounded-5" style="height: 100%; font-size: 13px;">
-                        <!-- <div>
-                            <img src="https://placehold.co/220x350" class="rounded-start" />
-                        </div> -->
-                        <div class="">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <i class="bi bi-person-vcard"></i>
-                                    {{ item.contactname }}
-                                </h5>
-                                <p class="card-text">
-                                <div class="row">
-                                    <div class="col-4"><i class="bi bi-person-bounding-box"></i></div>
-                                    <div class="col-8">{{ item.contactposition }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4"><i class="bi bi-envelope"></i></div>
-                                    <div class="col-8">{{ item.contactemail }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4"><i class="bi bi-telephone"></i> <i class="bi bi-1-circle"></i></div>
-                                    <div class="col-8">{{ item.contacttel1 }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4"><i class="bi bi-telephone"></i> <i class="bi bi-2-circle"></i></div>
-                                    <div class="col-8">{{ item.contacttel2 }}</div>
-                                </div>
-                                </p>
-
-                                <router-link tag="a" :to="`/contacts/${item.id}`"
-                                    class="btn btn-info text-light btn-sm">Contact</router-link>
-                            </div>
-                        </div>
-                    </div>
 
 
-                </div>
-            </div>
+            <ContactsTable v-model:items="items" @show="viewContact" />
 
+            <ModalContactDetail ref="modalContact" v-model:data="dataView" :title="dataView?.contactname" />
 
+            <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                :on-click="onChangePage" />
 
         </div>
     </section>
@@ -69,19 +35,45 @@ import { onMounted, computed, ref } from "vue";
 import avatar from "@/assets/img/profile-img.jpg"
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
-const row = ref({})
+import ContactsTable from "@/views/contact/components/ContactsTable.vue";
+import ModalContactDetail from "@/views/contact/components/ModalContactDetail.vue";
+import { useAppStore } from "@/stores/appStore";
+
+const dataView = ref({})
 const items = ref([])
-const pagination = ref({})
+const appStore = useAppStore()
+const pagination = ref({
+    total: 0,
+    current_page: 1,
+    last_page: 0,
+    per_page: appStore.settings.page.perPage,
+})
 const loading = ref(true)
+const modalContact = ref(null)
+
+const viewContact = async (row) => {
+    console.log('view', row);
+    modalContact.value.show()
+    dataView.value = row
+    const { data } = await api.get("/v2/contacts/" + row.id)
+    if (data) dataView.value = data
+}
+
 const loadData = async () => {
-    const { data } = await api.get("/v2/contacts")
+    let params = {
+        page: pagination.value.current_page,
+        per_page: pagination.value.per_page,
+    }
+    const { data } = await api.get("/v2/contacts", {
+        params
+    })
     if (data) {
 
         const p = {
             total: data.total,
-            page: data.curent_page,
+            current_page: data.current_page,
             per_page: data.per_page,
-            page_count: data.last_page
+            last_page: data.last_page,
         }
         pagination.value = p
         items.value = data.data
@@ -89,9 +81,17 @@ const loadData = async () => {
     }
 
 }
-const fullname = computed(() => row.value ? `${row.value?.name_th} ${row.value?.lastname_th}` : null)
-onMounted(() => {
+
+const onChangePage = (page) => {
+    pagination.value.current_page = page
     loadData()
+}
+const search = (page) => {
+    pagination.value.current_page = 1
+    loadData()
+}
+onMounted(() => {
+    search()
 })
 </script>
 <style lang="scss" scoped>

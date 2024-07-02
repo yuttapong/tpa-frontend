@@ -255,7 +255,7 @@
         </div>
       </div>
     </div>
-    <WorderOrderDetail ref="modalWorkOrder" v-model:data="workorder" :title="workorder?.item_code" />
+    <ModalWorderOrderDetail ref="modalWorkOrder" v-model:data="workorder" :title="workorder?.item_code" />
   </section>
 </template>
 
@@ -265,7 +265,7 @@ import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { MyFormatDate, Number } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
-import WorderOrderDetail from './components/WorderOrderDetail.vue'
+import ModalWorderOrderDetail from './components/ModalWorderOrderDetail.vue'
 import { useBillStore } from '@/stores/billStore'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
 

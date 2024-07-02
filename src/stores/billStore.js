@@ -5,23 +5,23 @@ export const useBillStore = defineStore('bill', {
   state: () => {
     return {
       formMode: 'add',
-      selectedItems: [],
       form: {},
       workorder: {},
+      items: [],
     }
   },
   getters: {
-    items(state) {
-      return state.selectedItems
+    formItems(state) {
+      return state.items
     },
-    countItems(state) {
-      return state.selectedItems.length
+    countFormItems(state) {
+      return state.items ? state.formItems.length : 0
     },
   },
   actions: {
     hasSelectedItem(item) {
-      if (this.selectedItems.length === 0) return false
-      let find = this.selectedItems.filter((row) => {
+      if (this.formItems.length === 0) return false
+      let find = this.items.filter((row) => {
         if (item.code == row.code) {
           return row
         }
@@ -37,15 +37,15 @@ export const useBillStore = defineStore('bill', {
       if (item.price === undefined) {
         item.price = 0
       }
-      this.selectedItems.push(item)
+      this.items.push(item)
     },
 
     removeItem(item) {
-      let index = this.selectedItems.indexOf(item)
-      this.selectedItems.splice(index, 1)
+      let index = this.items.indexOf(item)
+      this.items.splice(index, 1)
     },
     updateItems(items) {
-      this.selectedItems = items
+      this.items = items
     },
     setForm(data) {
       this.form = data
@@ -56,6 +56,6 @@ export const useBillStore = defineStore('bill', {
   },
   persist: {
     enabled: true,
-    strategies: [{ storage: localStorage, paths: ['selectedItems', 'form'] }],
+    strategies: [{ storage: localStorage, paths: [] }],
   },
 })

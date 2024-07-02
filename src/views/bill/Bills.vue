@@ -20,9 +20,7 @@
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
                   <i class="bi bi-book"></i> ใบขอรับบริการ
-                  <span v-if="pagination"
-                    >({{ parseInt(pagination.total).toLocaleString() || 0 }})</span
-                  >
+                  <span v-if="pagination">({{ parseInt(pagination.total).toLocaleString() || 0 }})</span>
                 </button>
               </li>
               <li class="nav-item">
@@ -37,57 +35,28 @@
                 <form @submit.prevent="onSearch()" class="mb-3">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.id"
-                        name="id"
-                        class="form-control form-control-sm"
-                        placeholder="ID"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.id" name="id" class="form-control form-control-sm"
+                        placeholder="ID" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.code"
-                        name="code"
-                        class="form-control form-control-sm"
-                        placeholder="Code"
-                        @keyup.enter="search"
-                        autofocus
-                      />
+                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
+                        placeholder="Code" @keyup.enter="search" autofocus />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        name="taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.q"
-                        name="q"
-                        class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input
-                        type="reset"
-                        class="btn btn-secondary btn-sm mx-2"
-                        value="Reset"
-                        @click="resetFormSearch"
-                      />
-                      <router-link class="btn btn-sm btn-success" to="/bills/form">
+                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
+                      <button type="button" class="btn btn-sm btn-success" @click="newBill">
                         <i class="bi bi-plus"></i> สร้าง
-                      </router-link>
+                      </button>
                     </div>
                   </div>
                 </form>
@@ -95,42 +64,27 @@
                 <!-- <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
                   :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
                   :on-click="onChangePage" /> -->
-                <EasyDataTable
-                  class="my-3"
-                  :headers="headers"
-                  :items="items"
-                  alternating
-                  v-model:server-options="serverOptions"
-                  :server-items-length="pagination.total"
-                  v-model:items-selected="itemsSelected"
-                  show-index
-                  border-cell
-                  buttons-pagination
-                  :loading="loading"
-                  fixed-header
-                >
+                <EasyDataTable class="my-3" :headers="headers" :items="items" alternating
+                  v-model:server-options="serverOptions" :server-items-length="pagination.total"
+                  v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination :loading="loading"
+                  fixed-header>
                   <template #item-action="item">
                     <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)">
                       <i class="bi bi-search"></i>
                     </button>
 
-                    <router-link
-                      :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
-                      title="คำนวณวันนัดรับ"
-                    >
-                      <i class="bi bi-calendar mx-1" role="button"></i
-                    ></router-link>
+                    <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
+                      title="คำนวณวันนัดรับ">
+                      <i class="bi bi-calendar mx-1" role="button"></i></router-link>
                     <router-link :to="{ name: 'bills.formEdit', params: { code: item.code } }">
-                      <i class="bi bi-pencil mx-1" role="button"></i
-                    ></router-link>
+                      <i class="bi bi-pencil mx-1" role="button"></i></router-link>
                   </template>
-                  <template #item-address_name="item"
-                    >{{ item.address_name }}
+                  <template #item-address_name="item">{{ item.address_name }}
 
                     <div>{{ item.customer.taxnumber }}</div>
                   </template>
                   <template #item-code="item">
-                    <div>{{ item.code }}</div>
+                    <BillCode :data="item.code" role="button" @click="showDetail(item)" />
                   </template>
                   <template #item-document_date="item">
                     <div class="fw-bold" v-if="item.document_date">
@@ -329,19 +283,20 @@
         </div>
       </div>
     </div>
+
+    <ModalBillCreate ref="modalBillCreateRef" title="สร้างใบขอรับบริการใหม่" :billTypes="billTypes" />
+
   </section>
+
+
+
 
   <div class="modal" ref="modalViewRef" v-if="bill">
     <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Bill ID#{{ bill.id }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -380,11 +335,7 @@
             <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">สถานะ</label>
               <p>
-                <BillButtonStatus
-                  v-model="bill.bill_status"
-                  :data="bill"
-                  @on-change="onChangeBillStatus"
-                />
+                <BillButtonStatus v-model="bill.bill_status" :data="bill" @on-change="onChangeBillStatus" />
               </p>
             </div>
             <div class="col-12 col-md-6">
@@ -423,42 +374,28 @@
               <tbody>
                 <tr v-for="(row, rowIndex) in bill.items" :key="row">
                   <th>
-                    <input
-                      type="checkbox"
-                      v-model="itemsSelected"
-                      name="itemsSelected[]"
-                      :value="row"
-                    />
+                    <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
                   </th>
                   <th>{{ rowIndex + 1 }}</th>
                   <td nowrap>
                     {{ row.item_code }}
                     <div>
-                      <small
-                        >#<span class="text-primary fw-bold">{{ row.item_id }}</span></small
-                      >
+                      <small>#<span class="text-primary fw-bold">{{ row.item_id }}</span></small>
                     </div>
                   </td>
                   <td nowrap>
                     <!-- <JobStatus v-model="row.job_status" /> -->
                     <div>
-                      {{row.lab.name_th}} #{{row.lab.id}}
+                      {{ row.lab.name_th }} #{{ row.lab.id }}
                     </div>
-                    <div  class="ms-2 border-bottom">
-                     <small class="fs-italic"> {{row.sublab.name_th}} #{{row.sublab.id}}</small>
+                    <div class="ms-2 border-bottom">
+                      <small class="fs-italic"> {{ row.sublab.name_th }} #{{ row.sublab.id }}</small>
                     </div>
-                    <div
-                      v-if="row.current_service_status"
-                      style="font-size: 12px"
-                      class="border-bottom text-danger fw-bold"
-                    >
-                    {{ row.current_service_status.status_name }} #{{ row.current_service_status.status_id }}
+                    <div v-if="row.current_service_status" style="font-size: 12px"
+                      class="border-bottom text-danger fw-bold">
+                      {{ row.current_service_status.status_name }} #{{ row.current_service_status.status_id }}
                     </div>
-                    <JobButtonStatus
-                      v-model="row.job_status"
-                      :data="row"
-                      @on-change="onChangeJobStatus"
-                    />
+                    <JobButtonStatus v-model="row.job_status" :data="row" @on-change="onChangeJobStatus" />
                   </td>
                   <td nowrap>{{ MyFormatDate(row.reserved_date) }}</td>
                   <td>{{ row.product_name }}</td>
@@ -502,7 +439,8 @@
           </div>
           <p>
             <label class="me-3 fw-bold text-decoration-underline">ที่อยู่ในการจัดส่งใบรับรอง:</label>
-            <span class="text-wrap"> {{ (`${bill.cert_address_name} ${bill.cert_address_detail} ${bill.cert_address_province} ${bill.cert_address_zipcode} ${bill.cert_address_phone}`).trim() }}</span>
+            <span class="text-wrap"> {{ (`${bill.cert_address_name} ${bill.cert_address_detail}
+                          ${bill.cert_address_province} ${bill.cert_address_zipcode} ${bill.cert_address_phone}`).trim() }}</span>
           </p>
         </div>
         <div class="modal-footer d-block">
@@ -514,9 +452,8 @@
             </div>
 
             <div class="p-1">
-              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
-                >{{ itemsSelected.length }} รายการ</span
-              >
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
+                itemsSelected.length }} รายการ</span>
             </div>
           </div>
 
@@ -555,12 +492,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -571,21 +503,13 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.customer_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="date"
-                  v-model="invoice.document_date"
-                  class="form-control form-control-sm"
-                />
+                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -593,21 +517,13 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.contact_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-8">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.address_detail"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -634,22 +550,12 @@
                     }}</span>
                   </th>
                   <th>
-                    <input
-                      type="number"
-                      name="price[]"
-                      v-model="row.price"
-                      class="form-control form-control-sm"
-                      style="width: 100px"
-                    />
+                    <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
+                      style="width: 100px" />
                   </th>
                   <th>
-                    <input
-                      type="number"
-                      name="price[]"
-                      v-model="row.discount"
-                      class="form-control form-control-sm"
-                      style="width: 100px"
-                    />
+                    <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
+                      style="width: 100px" />
                   </th>
                 </tr>
               </tbody>
@@ -668,6 +574,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -686,6 +593,9 @@ import BillStatus from '@/views/bill/components/BillStatus.vue'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
 import BillButtonStatus from '@/views/bill/components/BillButtonStatus.vue'
 import JobButtonStatus from '@/views/bill/components/JobButtonStatus.vue'
+import BillCode from '@/views/bill/components/BillCode.vue'
+import ModalBillCreate from '@/views/bill/components/ModalBillCreate.vue'
+
 const appStore = new useAppStore()
 
 const items = ref([])
@@ -698,11 +608,14 @@ const loadingCancelCommitment = ref(false)
 const loading = ref(true)
 const loadingItems = ref(true)
 const bill = ref({})
+const billTypes = ref([])
 const invoice = ref({})
 const modalViewRef = ref(null)
 const modalView = ref(null)
 const modalInvoiceRef = ref(null)
 const modalInvoice = ref(null)
+const modalBillCreateRef = ref(null)
+
 
 const resultCancelCommitment = ref({})
 const formSearch = ref({
@@ -736,6 +649,13 @@ const loadData = async () => {
   }
   loading.value = false
 }
+const getBillTypes = async () => {
+  const { data } = await api.get('/v2/bills/types')
+  if (data) billTypes.value = data
+}
+
+getBillTypes()
+
 
 const getBillById = async (id) => {
   try {
@@ -891,12 +811,14 @@ const createInvoice = () => {
   modalView.value.hide()
   modalInvoice.value.hide()
 }
-
+const newBill = () => {
+  modalBillCreateRef.value.show()
+}
 const onSearch = async () => {
   try {
     pagination.value.current_page = 1
     await loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 
 const resetFormSearch = () => {
@@ -934,7 +856,7 @@ watch(
   (data) => {
     console.log(data)
     pagination.value.current_page = data.page
-    ;(pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
+      ; (pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
     formSearch.value.orderBy = data.sortType
     loadData()
   },
@@ -966,6 +888,8 @@ th {
 }
 
 .checkbox {
-  transform: scale(/*desired magnification*/);
+  transform: scale(
+      /*desired magnification*/
+    );
 }
 </style>

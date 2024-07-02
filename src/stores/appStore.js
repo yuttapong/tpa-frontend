@@ -1,8 +1,7 @@
-import { ref, computed  } from 'vue'
+import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
-import {AbilityBuilder} from "@casl/ability"
-
+import { AbilityBuilder } from '@casl/ability'
 
 export const useAppStore = defineStore('app', () => {
   const permissions = useLocalStorage('permissions', [])
@@ -13,7 +12,7 @@ export const useAppStore = defineStore('app', () => {
     lang: 'th_TH',
     timezone: 'Asia/Bangkok',
     page: {
-      perPage: 20,
+      perPage: 10,
       maxPageShow: 10,
     },
   })

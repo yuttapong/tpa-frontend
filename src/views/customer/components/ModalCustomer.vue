@@ -4,7 +4,7 @@
       <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-lg-down">
         <div class="modal-content">
           <div class="modal-header">
-            
+
             <div class="modal-toolbar">
               <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -45,6 +45,7 @@
 
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading" />
+                      <button type="reset" class="btn btn-secondary btn-sm ms-1"><i class="bi bi-plus"></i></button>
                     </div>
                   </div>
                 </form>
@@ -68,6 +69,10 @@
                         <small class="mx-2" v-if="item.idcard"> IDCard : {{ item.idcard }}</small>
                       </div>
                     </div>
+                    <div class="d-inline-block float-end">
+                      <button class="btn btn-link btn-sm" @click="editCustomer(item, index)"><i
+                          class="bi bi-pencil"></i></button>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -88,6 +93,7 @@
                         <small class="mx-2"> tel2#{{ item.contacttel2 }}</small>
                       </div>
                     </div>
+
                   </li>
                 </ul>
               </div>
@@ -193,9 +199,17 @@ const loadContactByCustomerId = async (customerId) => {
   }
 }
 
-const _show = () => {
+const editCustomer = (row, index) => {
+  console.log(row, index);
+}
+
+const show = () => {
   emit('onShow', selectedCustomers.value)
   modal.show()
+}
+const hide = () => {
+  emit('onHide', selectedCustomers.value)
+  modal.hide()
 }
 
 const select = () => {
@@ -216,7 +230,7 @@ onMounted(() => {
   modal = new Modal(modalElement.value)
   loadData()
 })
-defineExpose({ show: _show })
+defineExpose({ show, hide })
 </script>
 <style lang="scss" scoped>
 td,

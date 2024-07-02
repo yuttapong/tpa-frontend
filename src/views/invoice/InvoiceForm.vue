@@ -222,10 +222,13 @@ const calculate = () => {
   loadCart()
 }
 const onSelectCustomer = (data) => {
-  formInvoice.value.customer_id = data.id
-  formInvoice.value.customer_name = data.companyname
+  console.log("c", data);
+  formInvoice.value.customer_id = data?.customers.id
+  formInvoice.value.customer_name = data.customers.companyname
+  formInvoice.value.contact_name = data.contacts.contactname
+  formInvoice.value.contact_id = data.contacts.id
 
-  let address = `${data.address} ${data.subdistrict} ${data.district} ${data.province} ${data.postalcode}`
+  let address = (`${data.address} ${data.subdistrict} ${data.district} ${data.province} ${data.postalcode}`).trim()
   formInvoice.value.address = address.trim()
 }
 const openModalContact = () => {
@@ -478,6 +481,7 @@ onUpdated(() => {
                   <div v-if="errors.items" :class="[{ 'text-danger my-2': errors.items }]">
                     โปรดระบุรายการเครื่องมือ
                   </div>
+                 
 
                   <EasyDataTable
                     class="my-3"
@@ -652,7 +656,11 @@ onUpdated(() => {
           </div>
         </div>
       </div>
-      <ModalWorkOrder ref="modalWorkOrder" @select="onSelectProduct" />
+      
+      <ModalWorkOrder ref="modalWorkOrder" @select="onSelectProduct" 
+       v-model:customer_id="formInvoice.customer_id"
+       title="xxx"
+      />
       <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
       <ModalContact
         ref="modalContact"

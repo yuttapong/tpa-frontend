@@ -4,7 +4,7 @@
       <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-lg-down">
         <div class="modal-content">
           <div class="modal-header">
-
+            
             <div class="modal-toolbar">
               <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -209,7 +209,7 @@ const select = () => {
   emit('onHide')
 }
 const clickCustomer = (item) => {
-  console.log(item)
+  console.log('click', item)
   loadContactByCustomerId(item.id)
 }
 onMounted(() => {

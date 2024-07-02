@@ -70,7 +70,7 @@
                       <select v-model="formSearch.lab_id" class="form-select form-select-sm" @change="onSelectLab">
                         <option value="">--Lab--</option>
                         <option v-for="(item, key) in labs" :key="item.id" :value="item.id">
-                          {{ item.name_th }} - {{ item.name }} ({{ item.sublabs.length }})
+                          {{ item.id }} : {{ item.name_th }} - {{ item.name }} ({{ item.sublabs.length }})
                         </option>
                       </select>
                     </div>
@@ -79,7 +79,7 @@
                       <select class="form-select form-select-sm" v-model="formSearch.sublab_id">
                         <option value="">--SubLab--</option>
                         <option v-for="(item, key) in sublabs" :key="item" :value="item.id">
-                          {{ item.code }} : {{ item.name_th }} - {{ item.name }}
+                          {{ item.id }} : {{ item.code }} : {{ item.name_th }} - {{ item.name }}
                         </option>
                       </select>
                     </div>

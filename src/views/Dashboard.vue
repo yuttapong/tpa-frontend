@@ -271,7 +271,7 @@
                             </div>
 
                             <div class="card-body">
-                                <router-link to="/customers">
+                                <router-link to="/data/customers">
                                     <h5 class="card-title">Customers <span>| This Year</span></h5>
                                 </router-link>
 
@@ -311,7 +311,7 @@
                             </div>
 
                             <div class="card-body">
-                                <router-link to="/staffs">
+                                <router-link to="/data/staffs">
                                     <h5 class="card-title">Staffs / พนักงาน <span>| This Year</span></h5>
                                 </router-link>
 

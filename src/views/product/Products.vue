@@ -1,10 +1,11 @@
 <template>
     <div class="pagetitle">
-        <h1>Products</h1>
+        <h1>เครื่องมือ</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
-                <li class="breadcrumb-item active">Products</li>
+                <li class="breadcrumb-item">ข้อมูล</li>
+                <li class="breadcrumb-item active">เครื่องมือ</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -24,11 +25,11 @@
 
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#qt-index">List</button>
+                                    data-bs-target="#qt-index">เครื่องมือ</button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab"
-                                    data-bs-target="#tab-category">Category</button>
+                                    data-bs-target="#tab-category">หมวดหมู่</button>
                             </li>
 
                             <!-- <li class="nav-item">
@@ -51,12 +52,12 @@
                             <div class="tab-pane fade show active qt-index" id="qt-index">
 
 
-                                <form @submit.prevent="onSearch()">
+                                <form @submit.prevent="search()">
                                     <div class="row g-2">
                                         <div class="col-6 col-md-4 col-lg-3">
                                             <input type="search" v-model="formSearchProduct.q" name="q"
                                                 class="form-control form-control-sm" placeholder="keyword..."
-                                                @keyup.enter="onSearch()" />
+                                                @keyup.enter="search()" />
                                         </div>
 
                                         <div class="col-6 col-md-4 col-lg-3">
@@ -100,7 +101,14 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <!-- End small tables -->
+                                <!-- End small tables -->                <vue-awesome-paginate
+                  :total-items="pagination.total"
+                  :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow"
+                  v-model="pagination.current_page"
+                  :on-click="onChangePage"
+                  class="mt-3"
+                />
                             </div>
                             <div class="tab-pane fade  tab-category" id="tab-category">
 
@@ -149,12 +157,16 @@ import { onMounted, computed, ref } from "vue";
 import avatar from "@/assets/img/profile-img.jpg"
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
+import { useAppStore } from '@/stores/appStore'
+
 
 const row = ref({})
+const appStore = useAppStore()
 const items = ref({})
 const pagination = ref({
-    per_page: 15,
-    curent_page: 1,
+  current_page: 1,
+  total: 0,
+  per_page: appStore.settings.page.perPage
 })
 const loading = ref(true)
 const formSearchProduct = ref({
@@ -163,20 +175,22 @@ const formSearchProduct = ref({
 
 const loadData = async () => {
     loading.value = true
-    const { data, curent_page, last_page, per_page, total } = await api.get("/v2/products", {
-        params: {
-            ...pagination.value,
-            ...formSearchProduct.value
-        }
+    let params = {
+    page: pagination.value.current_page,
+    per_page: pagination.value.per_page,
+    ...formSearchProduct.value
+  }
+    const { data, current_page, last_page, per_page, total } = await api.get("/v2/products", {
+        params: params,
     })
     if (data) {
 
         const p = {
-            total: total,
-            page: curent_page,
-            per_page: per_page,
-            page_count: last_page
-        }
+      total: data?.total,
+      current_page: data?.current_page,
+      per_page: data?.per_page,
+      page_count: data?.last_page,
+    }
         pagination.value = p
         items.value = data.data
 
@@ -185,18 +199,19 @@ const loadData = async () => {
     loading.value = false
 
 }
-const onSearch = async () => {
-    pagination.value.curent_page = 1;
-    pagination.value.total = 0;
-    try {
-        loadData();
-    } catch (error) {
-        loading.value = false
-    }
+
+const search = () => {
+  pagination.value.current_page = 1
+  loadData()
+}
+const onChangePage = (page) => {
+  pagination.value.current_page = page
+  loadData()
 }
 
+
 onMounted(() => {
-    loadData()
+    search()
 })
 </script>
 <style lang="scss" scoped>

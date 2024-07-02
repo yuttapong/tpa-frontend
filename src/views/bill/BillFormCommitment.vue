@@ -51,16 +51,10 @@ const findCommitmentDate = async () => {
   }
   // let d1 = form.value?.document_date ? new Date(`${form.value?.document_date} 00:00:00`) : ''
   // let d2 = new Date(`${commitmentDate.value} 00:00:00`)
-  const params = {
-    priority: commitmentPriority.value,
-    bill_id: form.value.id,
-    code: form.value.code,
-    // document_date: d1 ? formatISO(toZonedTime(form.value.document_date, timezone)) : '',
-    // commitment_date: d2 ? formatISO(toZonedTime(d2, timezone)) : '',
-    document_date: form.value.document_date,
-    commitment_date: commitmentDate.value,
-    items: form.value.items.map((item) => {
-      return {
+  let _items = []
+  form.value.items.filter((item) => {
+    if (Number(item.product.is_job) == 1) {
+      let filteredItem = {
         duration: parseInt(item.product?.duration),
         item_code: item.item_code,
         lab_id: item.lab_id,
@@ -72,8 +66,22 @@ const findCommitmentDate = async () => {
         sorter: item.sorter,
         sublab_id: item.sublab_id,
         workorder_id: item.item_id,
+        service_status_id: item.service_status_id,
+        is_job: item.product.is_job,
+        // product: item.product,
       }
-    }),
+      _items.push(filteredItem)
+    }
+  })
+  const params = {
+    priority: commitmentPriority.value,
+    bill_id: form.value.id,
+    code: form.value.code,
+    // document_date: d1 ? formatISO(toZonedTime(form.value.document_date, timezone)) : '',
+    // commitment_date: d2 ? formatISO(toZonedTime(d2, timezone)) : '',
+    document_date: form.value.document_date,
+    commitment_date: commitmentDate.value,
+    items: _items,
   }
 
   messageErrorCommitment.value = ''
@@ -180,9 +188,7 @@ const cancelBook = async () => {
     }
     const { data } = await axios
       .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + params.bill_id, {
-        data: {
-
-        },
+        data: {},
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${appStore.token}`,
@@ -231,7 +237,9 @@ const updateCommitmentDate = async () => {
         dangerouslyHTMLString: true,
       })
       confirmCommitmentToKanban(bill)
-      loadData()
+      setTimeout(() => {
+        loadData()
+      }, 3000)
     }
   }
 }
@@ -242,7 +250,7 @@ const clearCommitmentDate = async (billId) => {
 const loadData = async () => {
   if (billCode.value) {
     const { data } = await api.get('/v2/bills/code/' + billCode.value, {
-      onlyjob: "yes"
+      onlyjob: 'yes',
     })
     if (data) form.value = data
   }
@@ -250,7 +258,7 @@ const loadData = async () => {
 onMounted(() => {
   loadData()
 })
-onUpdated(() => { })
+onUpdated(() => {})
 </script>
 <template>
   <div class="pagetitle">
@@ -290,8 +298,14 @@ onUpdated(() => { })
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                   <label>วันที่</label>
-                  <input type="date" v-model="form.document_date" name="document_date" id="document_date"
-                    class="form-control form-control-sm" readonly />
+                  <input
+                    type="date"
+                    v-model="form.document_date"
+                    name="document_date"
+                    id="document_date"
+                    class="form-control form-control-sm"
+                    readonly
+                  />
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                   <label>วันนัดรับเครื่องมือ</label>
@@ -312,7 +326,11 @@ onUpdated(() => { })
               </div>
 
               <div class="border p-2">
-                <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
+                <input
+                  type="checkbox"
+                  v-model="searchCommitmentDate"
+                  @change="onChangeConditionCommitment"
+                />
                 หาวันนัดรับเครื่องมือ
                 <div class="row g-2">
                   <div class="col-12 col-lg-8">
@@ -321,8 +339,12 @@ onUpdated(() => { })
                   </div>
                   <div class="col-12 col-lg-4">
                     <label>เลือกวันที่</label>
-                    <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
-                      placeholder="เลือกวันที่" />
+                    <input
+                      type="date"
+                      class="form-control-sm form-control"
+                      v-model="commitmentDate"
+                      placeholder="เลือกวันที่"
+                    />
                   </div>
 
                   <div class="col-12">
@@ -351,11 +373,18 @@ onUpdated(() => { })
 
                 <div class="row g-1">
                   <div class="col-12">
-                    <button type="button" class="btn btn-primary btn-sm" @click="submit()">
+                    <button type="button" class="btn btn-secondary btn-sm" @click="loadData()">
+                      <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลดข้อมูล
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm  ms-2" @click="submit()">
                       <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                     </button>
                     <template v-if="form.commitment_date">
-                      <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm ms-2"
+                        @click="cancelBook()"
+                      >
                         <i class="float-start bi bi-x me-2"></i> ยกเลิกวัน
                       </button>
                     </template>
@@ -396,16 +425,19 @@ onUpdated(() => { })
                   </thead>
 
                   <tbody v-for="(item, index) in items" :key="index">
-                    <tr>
+                    <tr :class="item.product.is_job != 1 ? 'text-decoration-line-through' : ''">
                       <td>{{ index + 1 }})</td>
                       <td>
-                        <span>{{ item.sublab?.name_th }}</span>
+                        <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
+                        <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
                       </td>
                       <td nowrap>
                         <span>{{ item?.reserved_date }}</span>
                         <!-- <JobButtonStatus :data="item?.service_status_id"/> -->
 
-                        <div v-if="item.current_service_status">{{ item?.current_service_status.status_name }}</div>
+                        <div v-if="item.current_service_status">
+                          {{item.current_service_status.status_id}} : {{ item?.current_service_status.status_name }}
+                        </div>
                       </td>
                       <td>
                         <span>{{ item.item_id }}</span>
@@ -414,8 +446,8 @@ onUpdated(() => { })
                         {{ item.item_code }}
                       </td>
                       <td>
-                        {{ item.product_name }}
-                        <span>{{ item.is_job }}</span>
+                        <div v-if="item.product.is_job">{{ item.product_name }}</div>
+                        <div>{{ item.product_name }}</div>
                       </td>
                       <td>
                         <span>{{ item?.barcode_no }}</span>
@@ -437,7 +469,11 @@ onUpdated(() => { })
         </div>
       </div>
     </div>
-    <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" @onConfirm="updateCommitmentDate" />
+    <ConfirmCommitment
+      ref="modalConfirm"
+      :data="resultCommitment"
+      @onConfirm="updateCommitmentDate"
+    />
   </section>
 </template>
 

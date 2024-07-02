@@ -1,11 +1,11 @@
 <template>
   <div class="pagetitle">
-    <h1>บริษัท</h1>
+    <h1>องค์กร</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><router-link tag="a" to="/dashboard">Home</router-link></li>
         <li class="breadcrumb-item">ข้อมูล</li>
-        <li class="breadcrumb-item active">บริษัท</li>
+        <li class="breadcrumb-item active">องค์กร</li>
       </ol>
     </nav>
   </div>
@@ -35,12 +35,7 @@
                 ตำแหน่งงาน
               </button>
             </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                role="tab" aria-controls="contact" aria-selected="false">
-                Contact
-              </button>
-            </li>
+
           </ul>
           <div class="tab-content pt-2" id="companyTabContent">
             <div class="tab-pane show active fade" id="department" role="tabpanel" aria-labelledby="department-tab">

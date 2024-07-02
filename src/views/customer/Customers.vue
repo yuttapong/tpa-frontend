@@ -4,7 +4,8 @@
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
-        <li class="breadcrumb-item active">บริษัท/ลูกค้า</li>
+        <li class="breadcrumb-item">ข้อมูล</li>
+        <li class="breadcrumb-item active">ลูกค้า</li>
       </ol>
     </nav>
   </div>

@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Work Orders</h5>
+          <h5 class="modal-title">{{props}}</h5>
 
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -18,6 +18,10 @@
                 <div class="col-6 col-md-4 col-lg-4">
                   <input type="search" v-model="formSearchProduct.item_code" class="form-control form-control-sm"
                     placeholder="เลขที่ WorderOrder" @keyup.enter="search()" />
+                </div>
+                <div class="col-6 col-md-4 col-lg-4">
+                  <input type="search" v-model="formSearchProduct.customer_id" class="form-control form-control-sm"
+                    placeholder="Customer ID" @keyup.enter="search()" />
                 </div>
                 <div class="col-6 col-md-4 col-lg-3"></div>
                 <div class="col-6 col-md-4 col-lg-3">
@@ -41,6 +45,7 @@
                   <th scope="col" class="fw-bold">จำนวนเงิน</th>
 
                   <th scope="col" class="fw-bold">Barcode</th>
+                  <th scope="col" class="fw-bold">CustomerID</th>
                 </tr>
               </thead>
               <tbody>
@@ -67,6 +72,11 @@
                   <td>{{ parseFloat(item.total).toLocaleString() }}</td>
 
                   <td>{{ item.barcode_no }}</td>
+                  <td>{{ item.company_id }}<br>
+                    {{item.customer.companyname}}
+
+                    {{item.customer.companynameen}}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -95,7 +105,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { differenceInDays } from 'date-fns'
@@ -107,11 +117,15 @@ const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
 const props = defineProps({
   title: {
     type: String,
-    default: 'ยืนยันข้อมูล Commitment Date ?',
+    default: 'Work Order',
   },
   data: {
     type: Object,
     default: () => { },
+  },
+  customer_id: {
+    type: Number,
+    default: 0,
   },
 })
 const appStore = useAppStore()
@@ -127,6 +141,7 @@ const formSearchProduct = ref({
   item_code: '',
   q: '',
   taxnumber: '',
+  customer_id: '',
 })
 const pagination = ref({
   total: 0,
@@ -155,6 +170,9 @@ const loadData = async () => {
     per_page: pagination.value.per_page,
     page: pagination.value.current_page,
     ...formSearchProduct.value,
+  }
+  if(props.customer_id) {
+    params.customer_id = props.customer_id
   }
   const { data } = await api.get('/v2/workorders', {
     params: params,
@@ -192,4 +210,8 @@ onMounted(() => {
   search()
 })
 defineExpose({ show: _show })
+
+watch(props, (data) => {
+  console.log('dataxxx', data);
+})
 </script>

@@ -77,13 +77,14 @@ const formCommitment = ref({
 const headers = [
   // { text: 'ID', value: 'id' },
   // { text: 'ItemCode', value: 'item_code' },
-  { text: 'Productcode', value: 'product_code' },
-  { text: 'Product', value: 'product_name' },
-  { text: 'Qty', value: 'qty' },
-  { text: 'Discount', value: 'discount' },
+  // { text: 'Productcode', value: 'product_code' },
+  { text: 'เครื่องมือ', value: 'product_name' },
+  { text: 'Test Point', value: 'test_point' },
+  { text: 'จำนวน', value: 'qty' },
+  { text: 'ส่วนลด', value: 'discount' },
   { text: 'Price', value: 'price' },
   { text: 'Total', value: 'total' },
-  { text: 'Remark', value: 'remark' },
+  { text: 'หมายเหตุ', value: 'remark' },
   // { text: 'Total', value: 'total' },
 ]
 const totalPrice = computed(() => {
@@ -161,8 +162,8 @@ const onSelectCustomer = (data) => {
     let t2 = data.contacts.contacttel2 !== undefined ? data.contacts.contacttel2 : ''
     form.value.sender_tel = `${t1} ${t2}`.trim()
     form.value.sender_email = data.contacts.contactemail
-    loadAddress(data.customers.id)
-    loadCertAddress(data.customers.id)
+    loadAddress(form.value.company_id )
+    loadCertAddress(form.value.company_id )
   }
 }
 const onSelectContact = (data) => {
@@ -397,7 +398,7 @@ onUpdated(() => {
 
   <section class="section">
     <div class="row">
-      <div class="col-12 col-md-9">
+      <div class="col-12 col-md-12">
         <div class="card">
           <div class="card-body pt-3">
             <spinner :visible="loading" />
@@ -406,8 +407,8 @@ onUpdated(() => {
 
             <!-- #####################START######################## -->
             <form @submit.prevent="onSearch()">
-              <div class="row g-2">
-                <div class="col-12 bg-info-subtle p-1">
+              <div class="row gap-0">
+                <div class="col-12  p-0">
                   <div class="accordion" id="accordionBill">
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingCustomer">
@@ -553,15 +554,18 @@ onUpdated(() => {
                         aria-labelledby="headingCertAddress" data-bs-parent="#accordionBill">
                         <div class="accordion-body">
                           <ul v-if="certAddresses" class="list-unstyled">
-                            <li v-for="a in certAddresses" :key="a" class="">
-                              <input type="radio" class="form-radio me-3" @click="fillCertAddress(a)" />
+                            <li v-for="a in certAddresses" :key="a" class="border border-bottom">
+                              <input type="radio" class="form-radio me-2" @click="fillCertAddress(a)" />
                               <small>
-                                {{ String(a.address).trim() }}
-                                {{ String(a.subdistrict).trim() }}
-                                {{ String(a.district).trim() }}
-                                {{ String(a.province).trim() }}
-                                {{ String(a.postcode).trim() }}
-                                {{ String(a.country).trim() }}
+                                {{ (a.customer_name).trim() }}<br>
+                                <div class="ms-2">
+                                  {{ (a.address).trim() }}
+                                {{ (a.subdistrict).trim() }}
+                                {{ (a.district).trim() }}
+                                {{ (a.province).trim() }}
+                                {{ (a.postcode).trim() }}
+                                {{ (a.country)}}
+                                </div>
                               </small>
                             </li>
                           </ul>
@@ -624,9 +628,17 @@ onUpdated(() => {
                                 v-model:items-selected="itemsSelected" show-index border-cell :loading="loading"
                                 :rowsPerPage="10" fixed-header>
                                 <template #empty-message> ไม่มีรายการเครื่องมือใด ๆ </template>
+                                <template #item-product_name="item">
+                                 {{item.product.code}}<br>
+                                 {{item.product_name}}
+                                </template>
                                 <template #item-qty="item">
                                   <input type="number" v-model="item.qty" class="" style="width: 50px"
                                     @change="updateItemField('qty', item)" />
+                                </template>
+                                <template #item-test_point="item">
+                                  <input type="text" v-model="item.test_point" class="w-full w-100"
+                                    @change="updateItemField('test_point', item)" />
                                 </template>
                                 <template #item-discount="item">
                                   <input type="number" v-model="item.discount" class="" style="width: 80px"
@@ -641,7 +653,7 @@ onUpdated(() => {
                                     :value="(item.price - item.discount) * item.qty" disabled />
                                 </template>
                                 <template #item-remark="item">
-                                  <input type="text" v-model="item.remark" class="" />
+                                  <input type="text" v-model="item.remark" class="w-100 w-full" />
                                 </template>
                               </EasyDataTable>
                               <div class="row">
@@ -685,34 +697,34 @@ onUpdated(() => {
                           </div>
 
                           <!-- ############ START BUTTON ################# -->
-                          <div class="row g-2">
+                          <div class="d-flex gap-2">
                             <template v-if="form.id">
-                              <div class="col-6">
+                              <div class="">
                                 <button class="btn btn-primary btn-sm w-100" @click="saveBill()">
-                                  <i class="float-start bi bi-save"></i> บันทึก
+                                  <i class="float-start bi bi-save me-2"></i> บันทึก
                                 </button>
                               </div>
-                              <div class="col-6">
+                              <div class="">
                                 <router-link :to="`/bills/code/${form.code}/commitment`"
                                   class="btn btn-sm btn-secondary d-block">
-                                  <i class="bi bi-clock float-start"></i>
+                                  <i class="bi bi-clock float-start me-2"></i>
                                   จองคิวงาน</router-link>
                               </div>
-                              <div class="col-6">
+                              <div class="">
                                 <a class="btn btn-sm btn-secondary d-block">
-                                  <i class="bi bi-printer float-start"></i>
+                                  <i class="bi bi-printer float-start me-2"></i>
                                   พิมพ์</a>
                               </div>
                             </template>
                             <template v-else>
-                              <div class="col-6">
+                              <div class="">
                                 <button class="btn btn-primary btn-sm w-100" @click="createBill()">
-                                  <i class="float-start bi bi-save"></i> สร้างใบขอรับบริการ
+                                  <i class="float-start bi bi-save me-2"></i> สร้างใบขอรับบริการ
                                 </button>
                               </div>
-                              <div class="col-6">
+                              <div class="">
                                 <router-link to="/bills/preview" class="btn btn-sm btn-secondary d-block">
-                                  <i class="bi bi-eye float-start"></i>
+                                  <i class="bi bi-eye float-start me-2"></i>
                                   ดูตัวอย่าง</router-link>
                               </div>
                             </template>
@@ -779,7 +791,7 @@ onUpdated(() => {
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-3">
+      <div class="col-12 col-md-12">
         <div class="card">
           <div class="card-body pt-3">
             <div class="row g-1"></div>

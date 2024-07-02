@@ -362,7 +362,7 @@
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>{{ bill.agent_name }}</p>
             </div>
-            <div class="col-4 col-lg-3">
+            <div class="col-12 col-lg-3">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>{{ bill.address_name }} {{ bill.address_detail }}</p>
             </div>
@@ -387,9 +387,13 @@
                 />
               </p>
             </div>
-            <div class="col-12">
+            <div class="col-12 col-md-6">
               <label class="fw-bold text-decoration-underline">Note Customer</label>
-              <p>{{ bill.note_customers }}</p>
+              <p class="text-muted text-wrap fst-italic fw-light">{{ bill.note_customers }}</p>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="fw-bold text-decoration-underline">หมายเหตุ</label>
+              <p class="word-wrap">{{ bill.remark }}</p>
             </div>
           </div>
 
@@ -437,13 +441,18 @@
                   </td>
                   <td nowrap>
                     <!-- <JobStatus v-model="row.job_status" /> -->
-
+                    <div>
+                      {{row.lab.name_th}} #{{row.lab.id}}
+                    </div>
+                    <div  class="ms-2 border-bottom">
+                     <small class="fs-italic"> {{row.sublab.name_th}} #{{row.sublab.id}}</small>
+                    </div>
                     <div
                       v-if="row.current_service_status"
                       style="font-size: 12px"
                       class="border-bottom text-danger fw-bold"
                     >
-                      {{ row.current_service_status.status_name }}
+                    {{ row.current_service_status.status_name }} #{{ row.current_service_status.status_id }}
                     </div>
                     <JobButtonStatus
                       v-model="row.job_status"
@@ -451,7 +460,7 @@
                       @on-change="onChangeJobStatus"
                     />
                   </td>
-                  <td>{{ MyFormatDate(row.reserved_date) }}</td>
+                  <td nowrap>{{ MyFormatDate(row.reserved_date) }}</td>
                   <td>{{ row.product_name }}</td>
                   <td>{{ row.test_point }}</td>
                   <td>{{ row.serialnumber }}</td>
@@ -492,7 +501,8 @@
             </table>
           </div>
           <p>
-            <label class="me-3 fw-bold text-decoration-underline">หมายเหตุ:</label>{{ bill.remark }}
+            <label class="me-3 fw-bold text-decoration-underline">ที่อยู่ในการจัดส่งใบรับรอง:</label>
+            <span class="text-wrap"> {{ (`${bill.cert_address_name} ${bill.cert_address_detail} ${bill.cert_address_province} ${bill.cert_address_zipcode} ${bill.cert_address_phone}`).trim() }}</span>
           </p>
         </div>
         <div class="modal-footer d-block">

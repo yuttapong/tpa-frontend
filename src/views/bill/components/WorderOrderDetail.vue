@@ -20,7 +20,7 @@
                 <span class="">{{ MyFormatDate(workorder?.document_date) }}</span>
               </div>
 
-              <div class="col-4 text-decoration-underline">วันทีจองคิว</div>
+              <div class="col-4 text-decoration-underline">วันที่จองคิว</div>
               <div class="col-8">
                 <span class="">{{ MyFormatDate(workorder?.reserved_at) }}</span>
               </div>
@@ -28,14 +28,14 @@
               <div class="col-8">
                 <span class="">{{ workorder?.product_name }}</span>
               </div>
-              <div class="col-4 text-decoration-underline">สถานะ</div>
+              <div class="col-4 text-decoration-underline">สถานะงาน - Job status</div>
               <div class="col-8">
                 <span class="">
                   <JobStatus v-model="workorder.job_status"></JobStatus>
 
                 </span>
               </div>
-              <div class="col-4 text-decoration-underline">สถานะ Tracking</div>
+              <div class="col-4 text-decoration-underline">Tracking Status</div>
               <div class="col-8">
                 <span class="fw-bold text-danger">
                   <div v-if="workorder.current_service_status">
@@ -45,12 +45,12 @@
               </div>
               <div class="col-4 text-decoration-underline">Lab</div>
               <div class="col-8">
-                <span class="d-block">{{ workorder?.lab?.name_th }}</span>
+                <span class="d-inline">{{ workorder?.lab?.name_th }}</span>
                 <span class="text-secondary ms-2 fst-italic">{{ workorder?.lab?.name }}</span>
               </div>
               <div class="col-4 text-decoration-underline">Sub Lab</div>
               <div class="col-8">
-                <span class="d-block">{{ workorder?.sublab?.name_th }}</span>
+                <span class="d-inline">{{ workorder?.sublab?.name_th }}</span>
                 <span class="text-secondary ms-2 fst-italic">{{ workorder?.sublab?.name }}</span>
               </div>
               <div class="col-4 text-decoration-underline">Test Point</div>

@@ -2,7 +2,7 @@
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
     <div class="d-flex align-items-center justify-content-between">
-      <router-link to="/" class="logo d-flex align-items-center">
+      <router-link to="/dashboard" class="logo d-flex align-items-center">
         <img :src="logo" alt="" />
         <span class="d-none d-lg-block">AppCal+</span>
       </router-link>

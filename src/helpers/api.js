@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useAppStore } from '@/stores/appStore'
 import { useRouter } from 'vue-router'
+import router from '@/router'
 const appStore = new useAppStore()
 
 const http = axios.create({
@@ -23,18 +24,23 @@ http.interceptors.request.use(
     return Promise.reject(error)
   },
 )
-http.interceptors.response.use(undefined, (error) => {
-  const router = useRouter()
-  const appStore = new useAppStore()
-  switch (error.response.status) {
-    case 401:
-      appStore.logout()
-      router('/login')
-      break
-    case 403:
-    // your processing here
-    default:
-      return Promise.reject(error)
-  }
-})
+// http.interceptors.response.use(undefined, (error) => {
+//   // const router = useRouter()
+//   console.log(error)
+//   if (error) {
+//     const appStore = new useAppStore()
+
+//     switch (error.response.status) {
+//       case 401:
+//         console.log('ปปปปปปปปปปป')
+//         appStore.logout()
+//         router.replace('/login')
+//         return error.response.data
+//         break
+//       case 403:
+//       // default:
+//       // return Promise.reject(error)
+//     }
+//   }
+// })
 export const api = http

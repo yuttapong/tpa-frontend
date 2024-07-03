@@ -5,7 +5,7 @@
       <li class="nav-item">
         <router-link to="/dashboard" class="nav-link collapsed" href="index.html">
           <i class="bi bi-grid"></i>
-          <span>Dashboard {{ width }}</span>
+          <span>Dashboard</span>
         </router-link>
       </li>
       <!-- End Dashboard Nav -->
@@ -42,7 +42,20 @@
           <span>ใบแจ้งหนี้</span>
         </router-link>
       </li>
+      <!-- ########################### DATA #################################### -->
       <li class="nav-heading">ข้อมูล</li>
+      <li class="nav-item">
+        <router-link to="/data/products" class="nav-link collapsed">
+          <i class="bi bi-box"></i>
+          <span>สินค้า/เครื่องมือ</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/data/stdinstruments" class="nav-link collapsed">
+          <i class="bi bi-box"></i>
+          <span>เครื่องมือมาตรฐาน</span>
+        </router-link>
+      </li>
       <li class="nav-item">
         <router-link to="/data/customers" class="nav-link collapsed">
           <i class="bi bi-people"></i>
@@ -68,63 +81,58 @@
           <span>โปรโมชั่น/ส่วนลด</span>
         </router-link>
       </li>
-      <li class="nav-item">
-        <router-link to="/data/products" class="nav-link collapsed">
-          <i class="bi bi-box"></i>
-          <span>สินค้า/เครื่องมือ</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link to="/data/stdinstruments" class="nav-link collapsed">
-          <i class="bi bi-box"></i>
-          <span>เครื่องมือมาตรฐาน</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
+
+      <!-- <li class="nav-item">
         <router-link to="/data/staffs" class="nav-link collapsed">
           <i class="bi bi-person-circle"></i>
           <span>ผู้ใช้/พนักงาน</span>
         </router-link>
-      </li>
+      </li> -->
       <li class="nav-item">
         <router-link to="/data/company" class="nav-link collapsed">
           <i class="bi bi-person-circle"></i>
           <span>องค์กร</span>
         </router-link>
       </li>
-      <li class="nav-heading">สำหรับผู้ดูแลระบบ</li>
-      <li class="nav-item">
-        <router-link to="/setting/staff" class="nav-link collapsed">
-          <i class="bi bi-gear"></i>
-          <span>ผู้ใช้งานระบบ</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link to="/setting/permission" class="nav-link collapsed">
-          <i class="bi bi-gear"></i>
-          <span>บทบาท && สิทธิ์</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-gear"></i>
-          <span>ตั้งค่า</span>
-        </a>
-        <ul id="setting-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-          <li class="nav-item">
-            <router-link to="/setting/staff" class="nav-link collapsed">
-              <i class="bi bi-gear"></i>
-              <span>ผู้ใช้งานระบบ</span>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/setting/permission" class="nav-link collapsed">
-              <i class="bi bi-gear"></i>
-              <span>Role && Permission</span>
-            </router-link>
-          </li>
-        </ul>
-      </li>
+      <!-- #################### FOR ADMIN SYSTEM ################################# -->
+      <template v-if="(appStore.user.username).toUpperCase() == 'ADMIN'">
+
+
+
+        <li class="nav-heading">สำหรับผู้ดูแลระบบ</li>
+        <li class="nav-item">
+          <router-link to="/setting/staff" class="nav-link collapsed">
+            <i class="bi bi-gear"></i>
+            <span>ผู้ใช้งานระบบ</span>
+          </router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/setting/permission" class="nav-link collapsed">
+            <i class="bi bi-gear"></i>
+            <span>บทบาท && สิทธิ์</span>
+          </router-link>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-gear"></i>
+            <span>ตั้งค่า</span>
+          </a>
+          <ul id="setting-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+            <li class="nav-item">
+              <router-link to="/setting/staff" class="nav-link collapsed">
+                <i class="bi bi-gear"></i>
+                <span>ผู้ใช้งานระบบ</span>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/setting/permission" class="nav-link collapsed">
+                <i class="bi bi-gear"></i>
+                <span>Role && Permission</span>
+              </router-link>
+            </li>
+          </ul>
+        </li>
+      </template>
       <!-- <li class="nav-heading">Pages</li>
       <li class="nav-item">
         <router-link to="register" class="nav-link collapsed">

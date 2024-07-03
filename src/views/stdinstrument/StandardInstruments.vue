@@ -1,6 +1,6 @@
 <template>
   <div class="pagetitle">
-    <h1>เครื่องมือมาตรฐาน</h1>
+    <h1>เครื่องมือมาตรฐาน ({{ pagination.total }})</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
@@ -42,39 +42,17 @@
                 </button>
               </li>
 
-    
+
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active" id="tab-instrument">
-                <!-- <Offcanvas :id="canvas_intrument" v-model="visibleCanvasIntrument">
-                  <template #title>
-                    <h3>เครื่องมือมาตรฐาน</h3>
-                  </template>
-                  <template #body>
-                    Content for the offcanvas goes here. You can place just about any Bootstrap
-                    component or custom elements here.
-                  </template>
-                </Offcanvas> -->
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
-                  <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasLabel">Offcanvas</h5>
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                      aria-label="Close"></button>
-                  </div>
-                  <div class="offcanvas-body">
-                    Content for the offcanvas goes here. You can place just about any Bootstrap
-                    component or custom elements here.
-                  </div>
+
+                <div class="d-flex gap-2">
+                  <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
+                    placeholder="keywork..." @keyup.enter="search" />
+                  <button type="button" @click="search" class="btn btn-sm btn-secondary"><i
+                      class="bi bi-search"></i></button>
                 </div>
-                <!-- <a
-                  class="btn btn-primary"
-                  data-bs-toggle="offcanvas"
-                  href="#canvas_intrument"
-                  role="button"
-                  aria-controls="canvas_intrument"
-                >
-                  Link with href
-                </a> -->
                 <div class="table-responsive">
                   <table class="table table-sm table-striped">
                     <thead>
@@ -105,22 +83,28 @@
                               Model {{ item.model }}</span>
                           </div>
                         </td>
-                        <td>{{ item.group?.name }}</td>
+                        <td>{{ item.group?.groupstdname }}</td>
                         <td>
                           <small>{{ item.currentlocation }}</small>
                         </td>
                         <td>
-                          {{ Number(item.price) }}
+                          {{ Number(item.price).toLocaleString() }}
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
+
+                <vue-awesome-paginate :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                  :on-click="onChangePage" />
+
+
               </div>
               <div class="tab-pane fade tab-category" id="tab-group">
                 <!-- Small tables -->
                 <div class="table-responsive">
-                  <table class="table table-sm">
+                  <table class="table table-sm table-striped">
                     <thead>
                       <tr>
                         <th scope="col" class="fw-bold text-decoration-underline">ID</th>
@@ -128,7 +112,7 @@
                           Name
                         </th>
                         <th scope="col" class="fw-bold text-decoration-underline">Lab</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Sub Lab</th>
+                        <th scope="col" class="fw-bold text-decoration-underline" nowrap>Sub Lab</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -141,11 +125,12 @@
                     </tbody>
                   </table>
                 </div>
+
                 <!-- End small tables -->
               </div>
               <div class="tab-pane fade" id="tab-supplier">
                 <div class="table-responsive">
-                  <table class="table table-sm">
+                  <table class="table table-sm table-striped">
                     <thead>
                       <tr>
                         <th scope="col" class="fw-bold text-decoration-underline">ID</th>
@@ -165,10 +150,12 @@
                     </tbody>
                   </table>
                 </div>
+
+
               </div>
               <div class="tab-pane fade" id="tab-manufacture">
                 <div class="table-responsive">
-                  <table class="table table-sm">
+                  <table class="table table-sm table-striped">
                     <thead>
                       <tr>
                         <th scope="col" class="fw-bold text-decoration-underline">ID</th>
@@ -330,12 +317,20 @@ import Spinner from '@/components/Spinner.vue'
 
 import Offcanvas from '@/components/Offcanvas.vue'
 import { Modal } from 'bootstrap'
+import { useAppStore } from '@/stores/appStore'
 const row = ref({})
 const items = ref([])
 const groups = ref([])
 const suppliers = ref([])
 const manufactures = ref([])
-const pagination = ref({})
+const appStore = useAppStore()
+const pagination = ref({
+  total: 0,
+  current_page: 1,
+  last_page: 0,
+  per_page: appStore.settings.page.perPage,
+})
+
 const loading = ref(true)
 const modalRef = ref(null)
 const modal = ref(null)
@@ -343,21 +338,39 @@ const modal = ref(null)
 const dataInstrument = ref({})
 
 const visibleCanvasIntrument = ref(false)
-
+const formSearch = ref({
+  q: ""
+})
 const loadData = async () => {
   loading.value = true
-  const { data, curent_page, last_page, per_page, total } = await api.get('/v2/stdinstruments')
+  let params = {
+    page: pagination.value.current_page,
+    per_page: pagination.value.per_page,
+    ...formSearch.value
+  }
+  const { data } = await api.get('/v2/stdinstruments', {
+    params: params
+  })
   if (data) {
     const p = {
-      total: total,
-      page: curent_page,
-      per_page: per_page,
-      page_count: last_page,
+      total: data.total,
+      current_page: data.current_page,
+      per_page: data.per_page,
+      last_page: data.last_page,
     }
     pagination.value = p
     items.value = data.data
   }
   loading.value = false
+}
+
+const search = () => {
+  pagination.value.curent_page = 1;
+  loadData();
+}
+const onChangePage = (page) => {
+  pagination.value.curent_page = page;
+  loadData();
 }
 const loadGroups = async () => {
 
@@ -386,7 +399,6 @@ const viewInstrument = (item) => {
   dataInstrument.value = {}
   dataHistories.value = []
   modal.value.show()
-  console.log(item)
   dataInstrument.value = item
   getInstrumentHistoryCal(item.standardid)
 }
@@ -403,7 +415,7 @@ const getInstrumentHistoryCal = async (id) => {
 }
 
 onMounted(() => {
-  loadData()
+  search()
   modal.value = new Modal(modalRef.value)
 })
 </script>

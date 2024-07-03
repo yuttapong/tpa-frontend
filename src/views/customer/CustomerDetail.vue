@@ -4,7 +4,9 @@
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
-        <li class="breadcrumb-item active">บริษัท/ลูกค้า</li>
+        <li class="breadcrumb-item">ข้อมูล</li>
+        <li class="breadcrumb-item">ลูกค้า</li>
+        <li class="breadcrumb-item active">{{ customer?.companyname }}</li>
       </ol>
     </nav>
   </div>
@@ -85,7 +87,7 @@
                     <p>{{ customer.customercode }}</p>
                   </div>
                 </div>
-                {{ customer }}
+
               </div>
 
               <div class="tab-pane fade pt-3 tab-category" id="tab-category">
@@ -353,8 +355,8 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
         </div>
         <div class="modal-footer">
           <spinner :visible="loading" />
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Send message</button>
+          <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Send message</button> -->
         </div>
       </div>
     </div>

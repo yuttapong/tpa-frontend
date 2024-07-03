@@ -25,6 +25,7 @@ import { ref, computed } from 'vue';
 const props = defineProps({
     data: {
         type: Object,
+        default: () => { },
         required: true,
     },
 })

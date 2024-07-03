@@ -70,13 +70,13 @@ const loading = ref(true)
 const route = useRoute()
 const activeTab = ref(route.query.t || 'deparment')
 const loadDepartments = async () => {
-  const { data } = await api.get('/v2/company/departments')
+  const { data } = await api.get('/v2/companies/departments')
 
   departments.value = data
   loading.value = false
 }
 const loadPositions = async () => {
-  const { data } = await api.get('/v2/company/positions')
+  const { data } = await api.get('/v2/companies/positions')
 
   positions.value = data
   loading.value = false

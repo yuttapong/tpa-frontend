@@ -11,7 +11,7 @@
                   <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
                     role="tab" aria-controls="home" aria-selected="true">
                     <i class="bi bi-person"></i>
-                    Customer ({{ pagination.total }})
+                    ลูกค้า ({{ pagination.total }})
                   </button>
                 </li>
 
@@ -19,7 +19,7 @@
                   <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
                     role="tab" aria-controls="contact" aria-selected="false">
                     <i class="bi bi-person-vcard"></i>
-                    Contact
+                    รายชื่อ ({{ contacts.length }})
                   </button>
                 </li>
               </ul>
@@ -44,24 +44,27 @@
                     </div>
 
                     <div class="col-6 col-md-4 col-lg-3">
-                      <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading" />
-                      <button type="reset" class="btn btn-secondary btn-sm ms-1"><i class="bi bi-plus"></i></button>
+                      <button type="submit" class="btn btn-primary btn-sm" :disabled="loading"><i
+                          class="bi bi-search"></i></button>
+                      <button type="reset" class="btn btn-secondary btn-sm ms-1"><i class="bi bi-plus"></i>
+                      </button>
                     </div>
                   </div>
                 </form>
+
                 <div class="spinner-border" role="status" v-if="loading">
                   <span class="visually-hidden">Loading...</span>
                 </div>
 
                 <ul class="list-unstyled">
-                  <li v-for="(item, index) in items" :key="index" :class="{ 'bg-info': item.id == selectedCustomers.id } + ' border-bottom my-2 ps-2'
+                  <li v-for="(item, index) in items" :key="index" :class="{ 'bg-info': item.id == selectedCustomers.id } + ' border bg-light mb-2 row'
                     ">
-                    <div class="float-start d-inline-block">
-                      <input class="form-check-input" type="radio" v-model="selectedCustomers" :value="item"
+                    <div class="col-1">
+                      <input class="form-check-input mt-3 ms-2" type="radio" v-model="selectedCustomers" :value="item"
                         @click="clickCustomer(item)" />
                     </div>
 
-                    <div class="d-inline-block ms-4">
+                    <div class="col-8 ms-4">
                       <i class="bi bi-person-fill"></i> {{ item.companyname }}
                       <div v-if="item.companynameen" class="mx-1 p-1">
                         <small class="text-danger"> {{ item.companynameen }}</small>
@@ -69,29 +72,51 @@
                         <small class="mx-2" v-if="item.idcard"> IDCard : {{ item.idcard }}</small>
                       </div>
                     </div>
-                    <div class="d-inline-block float-end">
-                      <button class="btn btn-link btn-sm" @click="editCustomer(item, index)"><i
-                          class="bi bi-pencil"></i></button>
+                    <div class="col-1">
+                      <button class="btn btn-link btn-sm text-right" @click="editCustomer(item, index)"><i
+                          class="bi bi-pencil"></i>
+                      </button>
                     </div>
                   </li>
                 </ul>
               </div>
 
               <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+
+                <form @submit.prevent="onSearchContact()">
+                  <div class="row g-2 mb-2">
+                    <div class="col-6 col-md-4 col-lg-3">
+                      <input type="search" v-model="formSearchContact.q" class="form-control form-control-sm"
+                        placeholder="ชื่อ" autofocus @keyup.enter="onSearchContact()" />
+                    </div>
+
+
+                    <div class="col-6 col-md-4 col-lg-3">
+                      <button type="submit" class="btn btn-primary btn-sm" :disabled="loadingContact"><i
+                          class="bi bi-search"></i></button>
+                      <button type="reset" class="btn btn-secondary btn-sm ms-1"><i class="bi bi-plus"></i></button>
+                    </div>
+                  </div>
+                </form>
                 <ul class="list-unstyled">
-                  <li v-for="(item, index) in contacts" :key="index" :class="{ 'bg-info': item.id == selectedContacts.id } + ' border-bottom my-2 ps-2'
+                  <li v-for="(item, index) in contacts" :key="index" :class="{ 'bg-info': item.id == selectedContacts.id } + ' border bg-light my-2 ps-2'
                     ">
                     <div class="float-start d-inline-block">
                       <input class="form-check-input" type="radio" v-model="selectedContacts" :value="item" />
                     </div>
 
-                    <div class="d-inline-block ms-4">
-                      <i class="bi bi-person-vcard"></i> {{ item.contactname }}
-                      <div v-if="item.contactname" class="mx-1 p-1">
-                        <small class="text-danger"> {{ item.contactname }}</small>
-                        <small class="mx-2"> tel1#{{ item.contacttel1 }}</small>
-                        <small class="mx-2"> tel2#{{ item.contacttel2 }}</small>
+                    <div class="d-inline-block ms-3">
+                      {{ item.contactname }}
+                      <div class="text-secondary">
+                        <small class="mx-2" v-if="item.contacttel1"><i class="bi bi-phone"></i> {{ item.contacttel1
+                        }}</small>
+                        <small class="mx-2" v-if="item.contacttel2"><i class="bi bi-phone"></i> {{ item.contacttel2
+                        }}</small>
                       </div>
+                    </div>
+                    <div class="float-end d-inline-block">
+                      #{{ item.id }}
+                      <button type="button" class="btn btn-link btn-sm"><i class="bi bi-pencil"></i></button>
                     </div>
 
                   </li>
@@ -104,10 +129,10 @@
             <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
               :max-pages-shown="5" v-model="pagination.current_page" :on-click="onChangePage" class="" />
             <button type="button" class="btn btn-primary" @click="select">
-              <i class="bi bi-check-circle"></i> เลือก
+              <i class="bi bi-check-circle me-2"></i> ตกลง
             </button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="bi bi-x"></i> ยกเลิก
+              <i class="bi bi-x me-2"></i> ยกเลิก
             </button>
           </div>
         </div>
@@ -148,12 +173,17 @@ const contacts = ref([])
 const selectedCustomers = ref([])
 const selectedContacts = ref([])
 const loading = ref(false)
+const loadingContact = ref(false)
 const pagination = ref({
   total: 0,
   per_page: appStore.settings.page.perPage,
   current_page: 1,
 })
 const formSearch = ref({
+  code: '',
+  q: '',
+})
+const formSearchContact = ref({
   code: '',
   q: '',
 })
@@ -193,10 +223,23 @@ const loadData = async () => {
   }
 }
 const loadContactByCustomerId = async (customerId) => {
-  const { data } = await api.get(`/v2/customers/${customerId}/contacts`)
-  if (data) {
-    contacts.value = data
+  if (customerId) {
+    loadingContact.value = true
+    let params = {
+      ...formSearchContact.value
+    }
+    const { data } = await api.get(`/v2/customers/${customerId}/contacts`, {
+      params: params
+    })
+    if (data) {
+      contacts.value = data
+    }
+    loadingContact.value = false
   }
+}
+
+const onSearchContact = () => {
+  loadContactByCustomerId(selectedCustomers.value.id)
 }
 
 const editCustomer = (row, index) => {

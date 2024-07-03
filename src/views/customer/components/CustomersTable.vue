@@ -14,16 +14,17 @@
         <tr v-for="(item, index) in items" :key="index">
           <th scope="row">
             <div class="btn-group">
-              <button class="btn btn-sm" @click="view(item)"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-sm"><i class="bi bi-trash"></i></button>
+              <button class="btn btn-sm" @click="view(item)"><i class="bi bi-search"></i></button>
+              <!-- <button class="btn btn-sm"><i class="bi bi-trash"></i></button> -->
             </div>
           </th>
           <th scope="row">{{ item.id }}</th>
 
           <td>
-            <router-link role="button" class="btn btn-link" :to="`/data/customers/${item.id}`"> {{ item.companyname
-            }}</router-link><br />
-            <span class="company-name">{{ item.companynameen }}</span>
+            <!-- <router-link role="button" class="btn btn-link" :to="`/data/customers/${item.id}`"> {{ item.companyname
+            }}</router-link><br /> -->
+            <a class="btn btn-link" role="button" @click="view(item)">{{ item.companyname }}</a><br>
+            <small class="company-name">{{ item.companynameen }}</small>
             <p>
               <span class="badge bg-info text-white" v-if="item.is_company == 'yes'">Company</span>
               <span class="badge bg-light text-dark p-2 mx-1"><i class="bt bi-phone"></i> {{ item.phone }}</span>

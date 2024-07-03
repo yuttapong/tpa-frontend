@@ -14,29 +14,32 @@
               </div>
               <div><input type="radio" v-model="onlyOne" value="no"> ทั้งหมด</div>
             </div>
+
+            <form @submit.prevent="search()" class="my-2">
+              <div class="row g-2">
+                <div class="col-6 col-md-4 col-lg-3">
+                  <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
+                    placeholder="ชื่อ, สกุล" autofocus @keyup.enter="search()" />
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                  <input type="search" v-model="formSearch.taxnumber" class="form-control form-control-sm"
+                    placeholder="taxnumber" @keyup.enter="search()" />
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                  <input type="search" v-model="formSearch.customer_id" class="form-control form-control-sm"
+                    placeholder="Customer ID" @keyup.enter="search()" />
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                  <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading" />
+
+                </div>
+              </div>
+            </form>
+
             <!-- Small tables -->
             <div class="table table-responsive">
-              <form @submit.prevent="search()">
-                <div class="row g-2">
-                  <div class="col-6 col-md-4 col-lg-3">
-                    <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
-                      placeholder="ชื่อ, สกุล" autofocus @keyup.enter="search()" />
-                  </div>
-                  <div class="col-6 col-md-4 col-lg-3">
-                    <input type="search" v-model="formSearch.taxnumber" class="form-control form-control-sm"
-                      placeholder="taxnumber" @keyup.enter="search()" />
-                  </div>
-                  <div class="col-6 col-md-4 col-lg-3">
-                    <input type="search" v-model="formSearch.customer_id" class="form-control form-control-sm"
-                      placeholder="Customer ID" @keyup.enter="search()" />
-                  </div>
 
-                  <div class="col-6 col-md-4 col-lg-3">
-                    <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading" />
-
-                  </div>
-                </div>
-              </form>
               <div class="spinner-border" role="status" v-if="loading">
                 <span class="visually-hidden">Loading...</span>
               </div>

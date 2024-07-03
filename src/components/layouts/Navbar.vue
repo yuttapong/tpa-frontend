@@ -8,7 +8,7 @@
       </li>
       <!-- End Search Icon-->
 
-      <li class="nav-item dropdown">
+      <li class="nav-item dropdown d-none">
         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
           <i class="bi bi-bell"></i>
           <span class="badge bg-primary badge-number">4</span> </a><!-- End Notification Icon -->
@@ -81,7 +81,7 @@
       </li>
       <!-- End Notification Nav -->
 
-      <li class="nav-item dropdown">
+      <li class="nav-item dropdown  d-none">
         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
           <i class="bi bi-chat-left-text"></i>
           <span class="badge bg-success badge-number">3</span> </a><!-- End Messages Icon -->
@@ -148,7 +148,8 @@
       <template v-if="appStore.isLoggedIn()">
         <li class="nav-item dropdown pe-3">
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img :src="profile" alt="Profile" class="rounded-circle" />
+            <!-- <img :src="profile" alt="Profile" class="rounded-circle" /> -->
+            <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
             <span class="d-none d-md-block dropdown-toggle ps-2">{{ user?.name }}</span>
           </a><!-- End Profile Iamge Icon -->
 
@@ -157,7 +158,7 @@
 
               <li class="dropdown-header">
                 <h6>{{ user?.name }}</h6>
-                <span>{{ user?.level }}</span>
+                <span>ระดับ : {{ user?.level }}</span>
               </li>
               <li>
                 <hr class="dropdown-divider" />

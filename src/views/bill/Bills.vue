@@ -51,10 +51,10 @@
                       <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
                         placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3">
+                    <div class="col-12 col-md-4 col-lg-3">
                       <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch" />
-                      <button type="button" class="btn btn-sm btn-success" @click="newBill">
+                      <input type="reset" class="btn btn-light btn-sm mx-2" value="Reset" @click="resetFormSearch" />
+                      <button type="button" class="btn btn-sm btn-outline-success" @click="newBill">
                         <i class="bi bi-plus"></i> สร้าง
                       </button>
                     </div>
@@ -66,8 +66,7 @@
                   :on-click="onChangePage" /> -->
                 <EasyDataTable class="my-3" :headers="headers" :items="items" alternating
                   v-model:server-options="serverOptions" :server-items-length="pagination.total"
-                  v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination :loading="loading"
-                  fixed-header>
+                  v-model:items-selected="itemsSelected" show-index border-cell :loading="loading" fixed-header>
                   <template #item-action="item">
                     <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)">
                       <i class="bi bi-search"></i>
@@ -76,7 +75,7 @@
                     <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
                       title="คำนวณวันนัดรับ">
                       <i class="bi bi-calendar mx-1" role="button"></i></router-link>
-                    <router-link :to="{ name: 'bills.formEdit', params: { code: item.code } }">
+                    <router-link class="ms-1 btn-" :to="{ name: 'bills.formEdit', params: { code: item.code } }">
                       <i class="bi bi-pencil mx-1" role="button"></i></router-link>
                   </template>
                   <template #item-address_name="item">{{ item.address_name }}

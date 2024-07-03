@@ -5,19 +5,19 @@
 
         <form @submit="submit()">
             <div class="modal" ref="modalRef">
-                <div class="modal-dialog modal-dialog-scrollable modal-xl">
+                <div class="modal-dialog modal-dialog-scrollable modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" v-html="title"></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <Teleport to="body">ddddd
+                            <!-- <Teleport to="body">
                                 <div v-if="visibleConfirm">
                                     <p>Hello from the modal!</p>
                                     <button @click="visibleConfirm = false">Close</button>
                                 </div>
-                            </Teleport>
+                            </Teleport> -->
 
                             <div class="row g-2">
                                 <div class="col-4 text-decoration-underline">ปี</div>
@@ -34,22 +34,22 @@
                                     </select>
                                 </div>
                                 <div class="col-4 text-decoration-underline">ลูกค้า</div>
-                                <div class="col-1 form-inline">
-                                    <button type="button" class="btn btn-link d-inline"><i class="bi bi-search"
+                                <div class="col-1 text-center">
+                                    <button type="button" class="btn btn-link btn-sm"><i class="bi bi-search"
                                             @click="openModalCustomer"></i></button>
                                 </div>
                                 <div class="col-7 form-inline">
-                                    <input type="text" class="form-control form-control-sm d-inline"
-                                        v-model="form.company_name" required>
+                                    <input type="text" class="form-control form-control-sm" v-model="form.company_name"
+                                        required>
                                 </div>
                                 <div class="col-4 text-decoration-underline">ผู้ติดต่อ</div>
-                                <div class="col-1 form-inline">
-                                    <button type="button" class="btn btn-link d-inline"><i class="bi bi-search"
+                                <div class="col-1 text-center">
+                                    <button type="button" class="btn btn-sm btn-link"><i class="bi bi-search"
                                             @click="openModalContact"></i></button>
                                 </div>
                                 <div class="col-7 form-inline">
-                                    <input type="text" class="form-control form-control-sm d-inline"
-                                        v-model="form.agent_name" required>
+                                    <input type="text" class="form-control form-control-sm" v-model="form.agent_name"
+                                        required>
                                 </div>
                             </div>
 

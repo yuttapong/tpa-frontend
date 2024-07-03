@@ -47,6 +47,8 @@ const form = ref({
 })
 
 const headers = [
+  { text: 'Sorter', value: 'sorter' },
+  { text: 'ItemCode', value: 'item_code' },
   { text: 'เครื่องมือ', value: 'product_name' },
   { text: 'Test Point', value: 'test_point' },
   { text: 'จำนวน', value: 'qty' },
@@ -194,10 +196,6 @@ const removeSelectedItems = () => {
   })
 }
 
-const updateItems = () => {
-  billStore.updateItems(carts.value)
-}
-
 
 const createBill = () => {
   form.value.items = billStore.formItems
@@ -214,6 +212,14 @@ const createBill = () => {
 }
 const saveBill = async () => {
   form.value.items = billStore.formItems
+  let msg = 'ยังไม่อนุมัติให้แก้ไขข้อมูลสำหรับดูข้อมูลเท่านั้น'
+  alert(msg)
+  toast(msg, {
+    theme: 'auto',
+    type: 'success',
+    dangerouslyHTMLString: true,
+  })
+  return false;
   if (form.value.id > 0) {
     const { data } = await api.put('v2/bills/' + form.value.id, form.value)
     console.log('=>', data.message)
@@ -472,7 +478,7 @@ onUpdated(() => {
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                   data-bs-target="#collapseTools" aria-expanded="false" aria-controls="collapseTools">
                   <i class="bi bi-tools mx-2"></i>
-                  4) สินค้า/เครื่องมือ ({{ billStore.countItems }})
+                  4) สินค้า/เครื่องมือ ({{ form.items ? form.items.length : 0 }})
                 </button>
               </h2>
               <div id="collapseTools" class="accordion-collapse collapse" aria-labelledby="headingTools"
@@ -499,10 +505,15 @@ onUpdated(() => {
                     <div class="col-12 p-0 m-0">
 
 
-                      <EasyDataTable class="m-0" :headers="headers" :items="billStore.formItems" alternating
+                      <EasyDataTable class="m-0" :headers="headers" :items="form.items" alternating
                         v-model:items-selected="itemsSelected" show-index border-cell :loading="loading" :rowsPerPage="10"
                         fixed-header>
                         <template #empty-message> ไม่มีรายการเครื่องมือใด ๆ </template>
+
+                        <template #item-item_code="item">
+                          <input type="text" v-model="item.item_code" class="" style="width: 115px"
+                            @change="updateItemField('item_code', item)" />
+                        </template>
                         <template #item-product_name="item">
                           {{ item.product.code }}<br>
                           {{ item.product_name }}
@@ -512,7 +523,7 @@ onUpdated(() => {
                             @change="updateItemField('qty', item)" />
                         </template>
                         <template #item-test_point="item">
-                          <input type="text" v-model="item.test_point" class="w-full w-100"
+                          <input type="text" v-model="item.test_point" class="w-100"
                             @change="updateItemField('test_point', item)" />
                         </template>
                         <template #item-discount="item">

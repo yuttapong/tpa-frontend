@@ -2,7 +2,7 @@
 import { onMounted, computed, ref, watch } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import {  MyFormatDate } from '@/helpers/myformat'
+import { MyFormatDate } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
 
 import InvoiceDetail from '@/views/invoice/components/InvoiceDetail.vue'
@@ -130,7 +130,7 @@ watch(
 <template>
   <div>
     <div class="pagetitle">
-      <h1>ใบแจ้งหนี้</h1>
+      <h1>ใบแจ้งหนี้ ({{ pagination.total }})</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
@@ -220,8 +220,8 @@ watch(
 
                   <EasyDataTable @update-page-items="onChangePage" class="my-3" :headers="headers" :items="items"
                     alternating v-model:server-options="serverOptions" :server-items-length="4"
-                    v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination
-                    :loading="invoiceStore.cartLoading" fixed-header>
+                    v-model:items-selected="itemsSelected" show-index border-cell :loading="invoiceStore.cartLoading"
+                    fixed-header>
                     >
                     <template #item-action="item">
 

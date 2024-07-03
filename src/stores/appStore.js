@@ -13,7 +13,7 @@ export const useAppStore = defineStore('app', () => {
     timezone: 'Asia/Bangkok',
     page: {
       perPage: 10,
-      maxPageShow: 10,
+      maxPageShow: 5,
     },
   })
   const ability = ref()

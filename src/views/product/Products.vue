@@ -1,6 +1,6 @@
 <template>
     <div class="pagetitle">
-        <h1>เครื่องมือ</h1>
+        <h1>เครื่องมือ ({{ pagination.total }})</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
@@ -55,6 +55,11 @@
                                 <form @submit.prevent="search()">
                                     <div class="row g-2">
                                         <div class="col-6 col-md-4 col-lg-3">
+                                            <input type="search" v-model="formSearchProduct.code" name="q"
+                                                class="form-control form-control-sm" placeholder="code..."
+                                                @keyup.enter="search()" />
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-3">
                                             <input type="search" v-model="formSearchProduct.q" name="q"
                                                 class="form-control form-control-sm" placeholder="keyword..."
                                                 @keyup.enter="search()" />
@@ -76,6 +81,7 @@
                                             <th scope="col">Name</th>
                                             <th scope="col">CalPoint</th>
                                             <th scope="col">CalHour</th>
+                                            <th scope="col">Duration (Minutes)</th>
                                             <th scope="col">CalPrice</th>
                                             <th scope="col">Lab/Sub Lab</th>
                                             <th scope="col">action</th>
@@ -90,6 +96,7 @@
                                             <td>{{ item.name }}</td>
                                             <td>{{ item.calpoint }}</td>
                                             <td>{{ item.calhour }}</td>
+                                            <td>{{ item.duration }}</td>
                                             <td>{{ item.calprice }}</td>
                                             <td>
                                                 <small class="fw-bold">{{ item.lab.name }}</small>
@@ -101,14 +108,10 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <!-- End small tables -->                <vue-awesome-paginate
-                  :total-items="pagination.total"
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                  class="mt-3"
-                />
+                                <!-- End small tables --> <vue-awesome-paginate :total-items="pagination.total"
+                                    :items-per-page="pagination.per_page"
+                                    :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                                    :on-click="onChangePage" class="mt-3" />
                             </div>
                             <div class="tab-pane fade  tab-category" id="tab-category">
 
@@ -164,33 +167,34 @@ const row = ref({})
 const appStore = useAppStore()
 const items = ref({})
 const pagination = ref({
-  current_page: 1,
-  total: 0,
-  per_page: appStore.settings.page.perPage
+    current_page: 1,
+    total: 0,
+    per_page: appStore.settings.page.perPage
 })
 const loading = ref(true)
 const formSearchProduct = ref({
     q: '',
+    code: ''
 })
 
 const loadData = async () => {
     loading.value = true
     let params = {
-    page: pagination.value.current_page,
-    per_page: pagination.value.per_page,
-    ...formSearchProduct.value
-  }
+        page: pagination.value.current_page,
+        per_page: pagination.value.per_page,
+        ...formSearchProduct.value
+    }
     const { data, current_page, last_page, per_page, total } = await api.get("/v2/products", {
         params: params,
     })
     if (data) {
 
         const p = {
-      total: data?.total,
-      current_page: data?.current_page,
-      per_page: data?.per_page,
-      page_count: data?.last_page,
-    }
+            total: data?.total,
+            current_page: data?.current_page,
+            per_page: data?.per_page,
+            page_count: data?.last_page,
+        }
         pagination.value = p
         items.value = data.data
 
@@ -201,12 +205,12 @@ const loadData = async () => {
 }
 
 const search = () => {
-  pagination.value.current_page = 1
-  loadData()
+    pagination.value.current_page = 1
+    loadData()
 }
 const onChangePage = (page) => {
-  pagination.value.current_page = page
-  loadData()
+    pagination.value.current_page = page
+    loadData()
 }
 
 

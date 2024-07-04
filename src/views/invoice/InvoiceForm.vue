@@ -547,7 +547,7 @@ onUpdated(() => {
 
       <ModalWorkOrder ref="modalWorkOrder" @select="onSelectProduct" v-model:customer_id="formInvoice.customer_id"
         title="xxx" />
-      <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
+      <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
       <ModalContact ref="modalContact" @select="onSelectContact"
         :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
     </section>

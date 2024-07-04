@@ -6,7 +6,7 @@ export const MyFormatDate = (date, options) => {
     return
   }
   let op = {
-    dateStyle: 'medium', //  full, long, medium, short
+    dateStyle: 'short', //  full, long, medium, short
     timeZone: 'Asia/Bangkok',
     hourCycle: 'h24',
   }

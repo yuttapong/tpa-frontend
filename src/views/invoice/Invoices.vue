@@ -99,7 +99,7 @@ const showDetail = (item) => {
   getInvoiceById(item)
 }
 
-const onSearch = async () => {
+const search = async () => {
   pagination.value.current_page = 1
   pagination.value.total = 0
   try {
@@ -110,7 +110,7 @@ const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
   formSearch.value.q = ''
 }
-onSearch()
+search()
 onMounted(() => {
   modalView.value = new Modal(modalViewRef.value)
   modalView.value.hide()
@@ -190,7 +190,7 @@ watch(
               </ul>
               <div class="tab-content pt-2">
                 <div class="tab-pane fade show active qt-index" id="qt-index">
-                  <form @submit.prevent="onSearch()">
+                  <form @submit.prevent="search()">
                     <div class="row g-2">
                       <div class="col-6 col-md-4 col-lg-2">
                         <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"

@@ -36,13 +36,41 @@
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-index" id="qt-index">
+                <form @submit.prevent="search()">
+                  <div class="row g-2">
+                    <div class="col-6 col-md-4 col-lg-2">
+        
+                      <select v-model="filterField" class="form-select form-select-sm">
+                        <option value="cerno">cerno</option>
+                        <option value="cerid">cerid</option>
+                        <option value="bill_code">bill_code</option>
+                        <option value="item_code">item_code</option>
+                      </select>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-3">
+                      <input
+                        type="search"
+                        v-model="filterValue"
+                        class="form-control form-control-sm"
+                        placeholder="keyword..."
+                        @keyup.enter="search"
+                        autofocus
+                      />
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4">
+                      <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
+                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" />
+                    </div>
+                  </div>
+                </form>
                 <div class="table-responsive">
                   <table class="table table-sm">
                     <thead>
                       <tr>
                         <th scope="col" class="fw-bold">CerId</th>
                         <th scope="col" class="fw-bold">CerNo</th>
-                        <th scope="col" class="fw-bold">Date</th>
+                        <th scope="col" class="fw-bold">Issue Date</th>
+                        <th scope="col" class="fw-bold">cal Date</th>
 
                         <th scope="col" class="fw-bold">Product</th>
                         <th scope="col" class="fw-bold">Customer</th>
@@ -65,16 +93,20 @@
                           </router-link> -->
                         </td>
                         <td>
-                          <span class="badge bg-light text-dark">{{ item.caldate }}</span>
+                          <span class="badge bg-light text-dark">{{ MyFormatDate(item.issuedate) }}</span>
+                        </td>
+                        <td>
+                          <span class="badge bg-light text-dark">{{ MyFormatDate(item.caldate) }}</span>
                         </td>
 
                         <td>
                           <div class="fw-bold">{{ item?.equipment?.product_name }}</div>
                           <small class="badge bg-warning text-dark">
-                            <i>Model.</i> {{
-                            item.equipment?.model
-                          }}</small>
-                          <div class="ms-2"><small>{{ item.lab?.name }}</small></div>
+                            <i>Model.</i> {{ item.equipment?.model }}</small
+                          >
+                          <div class="ms-2">
+                            <small>{{ item.lab?.name }}</small>
+                          </div>
                         </td>
                         <td>{{ item.submitted.customer }}</td>
                       </tr>
@@ -184,6 +216,7 @@ import Spinner from '@/components/Spinner.vue'
 import { Tab, Modal } from 'bootstrap'
 import Certificate from './components/Certificate.vue'
 import { useAppStore } from '@/stores/appStore'
+import { MyFormatDate } from '@/helpers/myformat'
 
 const row = ref({})
 const appStore = useAppStore()
@@ -191,26 +224,32 @@ const items = ref({})
 const pagination = ref({
   current_page: 1,
   total: 0,
-  per_page: appStore.settings.page.perPage
+  per_page: appStore.settings.page.perPage,
 })
 const loading = ref(true)
 const viewData = ref({})
 const modalViewRef = ref(null)
 const modalView = ref()
 const tabViewRef = ref(null)
-const tabView = ref(null)
-
+const filterField = ref("cerno")
+const filterValue = ref("")
+const formSearch = ref({
+  q: '',
+})
 const loadData = async () => {
   loading.value = true
   let params = {
     page: pagination.value.current_page,
     per_page: pagination.value.per_page,
   }
+  if (filterField.value) {
+    params[filterField.value] = filterValue.value
+  }
+
   const { data } = await api.get('/v2/certificates', {
     params: params,
   })
   if (data) {
-
     const p = {
       total: data?.total,
       current_page: data?.current_page,

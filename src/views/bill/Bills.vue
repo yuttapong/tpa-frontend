@@ -71,6 +71,9 @@
                     <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)">
                       <i class="bi bi-search"></i>
                     </button>
+                    <button type="button" class="btn btn-link btn-sm" @click="openModalCommitment(item)">
+                      <i class="bi bi-clock"></i>
+                    </button>
 
                     <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
                       title="คำนวณวันนัดรับ">
@@ -284,6 +287,11 @@
     </div>
 
     <ModalBillCreate ref="modalBillCreateRef" title="สร้างใบขอรับบริการใหม่" :billTypes="billTypes" />
+    <ModalCommitmentBooking ref="modalCommitmentRef" :bill="bill" @onSave="(data) => {
+      getBillById(data.id)
+    }" @onReload="(data) => {
+  getBillById(data.id)
+}" />
 
   </section>
 
@@ -574,6 +582,8 @@
       </div>
     </div>
 
+
+
   </div>
 </template>
 
@@ -594,6 +604,7 @@ import BillButtonStatus from '@/views/bill/components/BillButtonStatus.vue'
 import JobButtonStatus from '@/views/bill/components/JobButtonStatus.vue'
 import BillCode from '@/views/bill/components/BillCode.vue'
 import ModalBillCreate from '@/views/bill/components/ModalBillCreate.vue'
+import ModalCommitmentBooking from '@/views/bill/components/ModalCommitmentBooking.vue'
 
 const appStore = new useAppStore()
 
@@ -614,6 +625,7 @@ const modalView = ref(null)
 const modalInvoiceRef = ref(null)
 const modalInvoice = ref(null)
 const modalBillCreateRef = ref(null)
+const modalCommitmentRef = ref(null)
 
 
 const resultCancelCommitment = ref({})
@@ -759,6 +771,7 @@ const cancelBill = async (item) => {
   }
   return
 }
+
 const newInvoice = () => {
   errorMsg.value = ''
   const i = bill.value
@@ -801,17 +814,25 @@ const newInvoice = () => {
   router.push({ name: 'invoices.create' })
 }
 
-const createInvoice = () => {
-  alert('สร้างใบแจ้งนี้สำเร็จ')
-  invoice.value = {}
-  bill.value = {}
-  errorMsg.value = ''
-  itemsSelected.value = []
-  modalView.value.hide()
-  modalInvoice.value.hide()
-}
+// const createInvoice = () => {
+//   alert('สร้างใบแจ้งนี้สำเร็จ')
+//   invoice.value = {}
+//   bill.value = {}
+//   errorMsg.value = ''
+//   itemsSelected.value = []
+//   modalView.value.hide()
+//   modalInvoice.value.hide()
+// }
+
 const newBill = () => {
   modalBillCreateRef.value.show()
+}
+const openModalCommitment = (item) => {
+  console.log('caldate', item.code);
+  errorMsg.value = ''
+  bill.value = item
+  // bill.value.items = []
+  modalCommitmentRef.value.show()
 }
 const onSearch = async () => {
   try {

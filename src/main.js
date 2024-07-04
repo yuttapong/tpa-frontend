@@ -42,6 +42,7 @@ app.use(Vue3Toasity, {
   autoClose: 3000,
 })
 app.component('EasyDataTable', Vue3EasyDataTable)
+
 app.mount('#app')
 
 if (import.meta.env.DEV) {

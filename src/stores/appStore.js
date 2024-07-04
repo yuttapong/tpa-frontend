@@ -4,7 +4,6 @@ import { useLocalStorage } from '@vueuse/core'
 import { AbilityBuilder } from '@casl/ability'
 
 export const useAppStore = defineStore('app', () => {
-  const permissions = useLocalStorage('permissions', [])
   const accesstoken = useLocalStorage('accesstoken', '')
   const expiredAt = useLocalStorage('expiredAt', '')
   const user = useLocalStorage('user', {})
@@ -16,7 +15,9 @@ export const useAppStore = defineStore('app', () => {
       maxPageShow: 5,
     },
   })
+
   const ability = ref()
+  const permissions = computed(() => user.value?.permissions || [])
   const token = computed(() => accesstoken.value)
   function initCasl() {
     const builder = new AbilityBuilder(ability.value)
@@ -46,17 +47,16 @@ export const useAppStore = defineStore('app', () => {
   function setPermissions(data) {
     return (permissions.value = data)
   }
+
   function login(token, user, permissions = []) {
     setExpired('')
     setToken(token)
     setUser(user)
-    setPermissions(permissions)
   }
   function logout() {
     expiredAt.value = ''
     accesstoken.value = ''
     user.value = {}
-    setPermissions([])
   }
 
   return {
@@ -71,7 +71,6 @@ export const useAppStore = defineStore('app', () => {
     login,
     settings,
     setSetting,
-    setPermissions,
     initCasl,
   }
 })

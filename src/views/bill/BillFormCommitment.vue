@@ -255,10 +255,6 @@ const loadData = async () => {
     if (data) form.value = data
   }
 }
-onMounted(() => {
-  loadData()
-})
-onUpdated(() => {})
 </script>
 <template>
   <div class="pagetitle">
@@ -298,14 +294,8 @@ onUpdated(() => {})
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                   <label>วันที่</label>
-                  <input
-                    type="date"
-                    v-model="form.document_date"
-                    name="document_date"
-                    id="document_date"
-                    class="form-control form-control-sm"
-                    readonly
-                  />
+                  <input type="date" v-model="form.document_date" name="document_date" id="document_date"
+                    class="form-control form-control-sm" readonly />
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                   <label>วันนัดรับเครื่องมือ</label>
@@ -326,11 +316,7 @@ onUpdated(() => {})
               </div>
 
               <div class="border p-2">
-                <input
-                  type="checkbox"
-                  v-model="searchCommitmentDate"
-                  @change="onChangeConditionCommitment"
-                />
+                <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
                 หาวันนัดรับเครื่องมือ
                 <div class="row g-2">
                   <div class="col-12 col-lg-8">
@@ -339,12 +325,8 @@ onUpdated(() => {})
                   </div>
                   <div class="col-12 col-lg-4">
                     <label>เลือกวันที่</label>
-                    <input
-                      type="date"
-                      class="form-control-sm form-control"
-                      v-model="commitmentDate"
-                      placeholder="เลือกวันที่"
-                    />
+                    <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
+                      placeholder="เลือกวันที่" />
                   </div>
 
                   <div class="col-12">
@@ -380,11 +362,7 @@ onUpdated(() => {})
                       <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                     </button>
                     <template v-if="form.commitment_date">
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-sm ms-2"
-                        @click="cancelBook()"
-                      >
+                      <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
                         <i class="float-start bi bi-x me-2"></i> ยกเลิกวัน
                       </button>
                     </template>
@@ -436,7 +414,7 @@ onUpdated(() => {})
                         <!-- <JobButtonStatus :data="item?.service_status_id"/> -->
 
                         <div v-if="item.current_service_status">
-                          {{item.current_service_status.status_id}} : {{ item?.current_service_status.status_name }}
+                          {{ item.current_service_status.status_id }} : {{ item?.current_service_status.status_name }}
                         </div>
                       </td>
                       <td>
@@ -469,11 +447,7 @@ onUpdated(() => {})
         </div>
       </div>
     </div>
-    <ConfirmCommitment
-      ref="modalConfirm"
-      :data="resultCommitment"
-      @onConfirm="updateCommitmentDate"
-    />
+    <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" @onConfirm="updateCommitmentDate" />
   </section>
 </template>
 

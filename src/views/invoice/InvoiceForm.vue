@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, ref, onUpdated } from 'vue'
+import { onMounted, computed, ref, reactive, onUpdated } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { MyFormatDate } from '@/helpers/myformat'
@@ -32,6 +32,7 @@ const formSearch = ref({
   taxnumber: '',
   q: '',
 })
+const customerTypes = ref([])
 const invoiceItems = computed(() => invoiceStore.carts)
 const invoiceTypes = [
   { text: '', value: 'onsite' },
@@ -71,6 +72,12 @@ const formInvoice = ref({
   status: '',
   vat_percent: 7,
   vat: 0,
+  customer_type_id: "",
+  customer_type_code: "",
+  discount_type: "percentage", //percentage | amount
+  customer_discount: 0,
+  customer_discount_percent: 0,
+  total_bill_discount: 0,
 })
 
 const loadData = async () => {
@@ -92,6 +99,13 @@ const loadData = async () => {
     pagination.value = p
     items.value = data.data
     loading.value = false
+  }
+}
+const getCustomerTypes = async () => {
+  const { data } = await api.get('/v2/customers/types')
+  console.log('types', data);
+  if (data) {
+    customerTypes.value = data
   }
 }
 
@@ -151,10 +165,13 @@ const onSelectProduct = async (item) => {
     vat: 0,
     total: item.total,
     product: item?.product,
+    staff_id: appStore.user.id
   }
   invoiceStore.addItem(row)
 }
-
+const onChangeCustomerType = (rs) => {
+  console.log(rs.target.value);
+}
 const emptyCart = async () => {
   invoiceStore.emptyCart()
 }
@@ -163,9 +180,18 @@ const loadCart = async () => {
   invoiceStore.loadCart()
 }
 const totalPrice = computed(() => {
-  return invoiceItems.value
+  let total = invoiceItems.value
     ? invoiceItems.value.reduce((total, item) => (total += parseFloat(item.price)), 0)
     : 0
+
+  return total
+})
+const totalPriceAfterDiscount = computed(() => {
+  let total = invoiceItems.value
+    ? invoiceItems.value.reduce((total, item) => (total += parseFloat(item.total)), 0)
+    : 0
+
+  return total - totalBillDiscount.value
 })
 const totalBillDiscount = computed(() => {
   return formInvoice.value.total_bill_discount
@@ -191,44 +217,67 @@ const totalDiscount = computed(() => {
     : 0
 })
 const totalAllDiscount = computed(() => {
+  let discountBill = Number(formInvoice.value.total_bill_discount)
+
   return (
-    parseFloat(totalDiscount.value) +
-    parseFloat(totalLabDiscount.value) +
-    parseFloat(totalOrderTypeDiscount.value) +
-    parseFloat(totalCustomerTypeDiscount.value) +
-    Number(formInvoice.value.total_bill_discount)
+    Number(totalDiscount.value) +
+    Number(totalLabDiscount.value) +
+    Number(totalOrderTypeDiscount.value) +
+    Number(totalCustomerTypeDiscount.value) +
+    discountBill
   )
 })
 
 const totalVat = computed(() => {
-  let total = (totalPrice.value * parseFloat(formInvoice.value.vat_percent)) / 100
+  let total = (totalPriceAfterDiscount.value * parseFloat(formInvoice.value.vat_percent)) / 100
   formInvoice.value.vat = total
   return total
 })
 const totalNet = computed(() => {
-  return (
-    totalPrice.value -
-    totalDiscount.value -
-    totalCustomerTypeDiscount.value -
-    totalOrderTypeDiscount.value
-  )
+  let net = totalPriceAfterDiscount.value + totalVat.value
+  return net
 })
 const openModalCustomer = () => {
   modalCustomer.value.show()
 }
 
 const calculate = () => {
-  loadCart()
+  console.log(formInvoice.value.customer_type_code, formInvoice.value.discount_type, formInvoice.value.customer_discount_percent, formInvoice.value.customer_discount);
+  let temp = invoiceItems.value
+  let items = temp.map((item) => {
+    if (item.product && Number(item.product.is_job) === 1 && Number(item.price > 0)) {
+      if (formInvoice.value.discount_type == 'percentage') {
+        item.discount_customer_percent = Number(formInvoice.value.customer_discount_percent)
+        item.discount_customer = Number(formInvoice.value.customer_discount_percent) * Number(item.price) / 100;
+
+      } else if (formInvoice.value.discount_type == 'amount') {
+        item.discount_customer = Number(formInvoice.value.customer_discount)
+        item.discount_customer_percent = (item.discount_customer * 100) / Number(formInvoice.value.customer_discount_percent)
+      }
+    }
+    item.total = Number(item.price) - (Number(item.discount_customer) + Number(item.discount_lab)
+      + Number(item.discount_order))
+    return item
+  })
+  if (items.length > 0) {
+    invoiceStore.updateItems(items)
+
+  }
 }
 const onSelectCustomer = (data) => {
-  console.log("c", data);
-  formInvoice.value.customer_id = data?.customers.id
-  formInvoice.value.customer_name = data.customers.companyname
-  formInvoice.value.contact_name = data.contacts.contactname
-  formInvoice.value.contact_id = data.contacts.id
-
-  let address = (`${data.address} ${data.subdistrict} ${data.district} ${data.province} ${data.postalcode}`).trim()
+  const customer = data?.customers
+  const contact = data?.contacts
+  formInvoice.value.customer_id = customer?.id
+  formInvoice.value.customer_name = customer?.companyname
+  formInvoice.value.contact_name = contact?.contactname
+  formInvoice.value.contact_id = contact?.id
+  let address = (`${customer?.address} 
+  ${customer?.subdistrict} 
+  ${customer?.district} 
+  ${customer?.province} 
+  ${customer?.postalcode}`).trim()
   formInvoice.value.address = address.trim()
+  loadCart()
 }
 const openModalContact = () => {
   modalContact.value.show()
@@ -236,6 +285,13 @@ const openModalContact = () => {
 const onSelectContact = (data) => {
   formInvoice.value.contact_id = data.id
   formInvoice.value.contact_name = data.contactname
+}
+const onChangeDiscountType = (e) => {
+  console.log(e.target.value);
+  formInvoice.value.discount_type = e.target.value
+  calculate()
+
+
 }
 
 const resetData = () => {
@@ -249,6 +305,7 @@ const save = async () => {
   formInvoice.value.totaldiscount = totalDiscount.value
   formInvoice.value.totalvat = (totalPrice.value * 7) / 100
   formInvoice.value.totalnet = totalNet.value
+  formInvoice.value.staff_id = appStore.user.id
 
   if (formInvoice.value.id !== undefined && formInvoice.value.id > 0) {
     return
@@ -259,12 +316,19 @@ const save = async () => {
       errors.value = err.response.data.errors
       loading.value = false
       hasError.value = true
+      let message = err.response.data?.message
+      toast(message, {
+        theme: 'auto',
+        type: 'error',
+        dangerouslyHTMLString: true,
+      })
     })
     if (data) {
       loading.value = false
       emptyCart()
       resetData()
       loadCart()
+      getCustomerTypes()
       router.push('/invoices')
       toast(data.message, {
         theme: 'auto',
@@ -279,14 +343,16 @@ const save = async () => {
   loading.value = false
 }
 const headers = [
+  { text: 'sorter', value: 'sorter', width: 30 },
   { text: 'Item code', value: 'item_code', width: 150 },
   { text: 'เครื่องมือ', value: 'product', width: 200 },
-  { text: 'ส่วนลด', value: 'discount' },
+  { text: 'ราคา', value: 'price' },
+  // { text: 'ส่วนลด', value: 'discount' },
+  { text: 'ส่วนลด Cust.', value: 'discount_customer' },
   { text: 'ส่วนลด Lab', value: 'discount_lab' },
   { text: 'ส่วนลด Order.', value: 'discount_order' },
-  { text: 'ส่วนลด Cust.', value: 'discount_customer' },
   { text: 'จำนวน', value: 'qty' },
-  { text: 'ราคา', value: 'price' },
+
 
   { text: 'รวมเป็นเงิน', value: 'total' },
   { text: 'หมายเหตุ', value: 'remark' },
@@ -311,8 +377,9 @@ const updateInvoiceInput = async (e, row, field) => {
 const onUpdatePageItems = (items) => {
   console.log('onUpdatePageItems', items)
 }
-
+getCustomerTypes()
 loadCart()
+
 const itemsSelected = ref([])
 onMounted(() => { })
 onUpdated(() => {
@@ -377,6 +444,31 @@ onUpdated(() => {
                       <input type="text" v-model="formInvoice.contact_name" class="form-control form-control-sm"
                         placeholder="" @click="openModalContact" />
                     </div>
+                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.customer_type }]">
+                      <label>ประเภทลูกค้า <span v-if="formInvoice.customer_type_code"> : {{ formInvoice.customer_type_code
+                      }}</span></label>
+
+                      <select required class="form-select form-select-sm" v-model="formInvoice.customer_type_code"
+                        @change="onChangeCustomerType">
+                        <option v-for="(item, key) in customerTypes" :key="item" :value="item.code">{{
+                          item.code }} : {{ item.name }} - {{ item.nameen }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-3" v-if="formInvoice.customer_type_code === 'S'">
+                      <label>ส่วนลดลูกค้า</label>
+                      <select required class="form-select form-select-sm" v-model="formInvoice.discount_type"
+                        @change="onChangeDiscountType">
+                        <option value="percentage">เปอร์เซ็นต์ %</option>
+                        <option value="amount">จำนวนเงิน</option>
+                      </select>
+                      <input v-if="formInvoice.discount_type == 'amount'" type="number"
+                        v-model="formInvoice.customer_discount" class="form-control form-control-sm"
+                        placeholder="จำนวนเงิน" @change="calculate" />
+                      <input v-if="formInvoice.discount_type == 'percentage'" type="number"
+                        v-model="formInvoice.customer_discount_percent" class="form-control form-control-sm"
+                        placeholder="%" @change="calculate" />
+                    </div>
                     <div class="col-12 col-lg-6" :class="[{ 'text-danger': errors.address }]">
                       <label>ที่อยู่</label>
                       <input type="text" v-model="formInvoice.address" class="form-control form-control-sm"
@@ -385,7 +477,8 @@ onUpdated(() => {
                     <div class="col-12 col-lg-6" :class="[{ 'text-danger': errors.address }]"></div>
                   </div>
                 </div>
-                <div class="">
+                <!-- <button type="button" @click="formInvoice.customer_type_code = ''">x</button> -->
+                <div class="" v-show="formInvoice.customer_type_code">
                   <div class="row my-2 g-2">
                     <div class="col-12 col-md-6">
                       <div class="btn-toolbar float-start" role="toolbar" aria-label="Toolbar with button groups">
@@ -420,9 +513,10 @@ onUpdated(() => {
                   </div>
 
 
-                  <EasyDataTable class="my-3" :headers="headers" :items="invoiceItems" alternating rowsPerPage="5"
-                    v-model:items-selected="itemsSelected" show-index border-cell buttons-pagination fixed-header
-                    :loading="invoiceStore.cartLoading" @update-page-items="onUpdatePageItems">
+
+                  <EasyDataTable class="my-3" :headers="headers" :items="invoiceStore.carts" alternating
+                    v-model:items-selected="itemsSelected" show-index border-cell fixed-header
+                    :loading="invoiceStore.cartLoading">
                     <!-- <template #loading>
                       <Spinner :visible="invoiceStore.cartLoading" />
                     </template> -->
@@ -464,6 +558,7 @@ onUpdated(() => {
                       <input type="text" v-model="item.remark" class="" />
                     </template>
                   </EasyDataTable>
+
                 </div>
 
                 <div class="row g-1">
@@ -476,12 +571,12 @@ onUpdated(() => {
 
                       <div class="col-6 col-md-3 text-end">รวมส่วนลดท้ายบิลทั้งหมด</div>
                       <div class="col-6 col-md-3">
-                        <input type="number" v-model="totalBillDiscount" class="text-end" />
+                        <input type="number" v-model="totalBillDiscount" class="text-end" disabled />
                       </div>
 
                       <div class="col-6 col-md-3 text-end">รวมส่วนลด Order Type</div>
                       <div class="col-6 col-md-3">
-                        <input type="number" v-model="totalOrderTypeDiscount" class="text-end" />
+                        <input type="number" v-model="totalOrderTypeDiscount" class="text-end" disabled />
                       </div>
 
                       <div class="col-6 col-md-3 text-end">รวมส่วนลด Customer</div>
@@ -489,17 +584,23 @@ onUpdated(() => {
                         <input type="number" v-model="totalCustomerTypeDiscount" class="text-end" disabled />
                       </div>
 
-                      <div class="col-6 col-md-3 text-end">รวมส่วนลดทั้งหมด (totalAllDiscount)</div>
+                      <div class="col-6 col-md-3 text-end">รวมส่วนลดทั้งหมด</div>
                       <div class="col-6 col-md-3">
-                        <input type="number" v-model="totalAllDiscount" class="text-end" />
+                        <input type="number" v-model="totalAllDiscount" class="text-end" disabled />
                       </div>
                     </div>
                   </div>
                   <div class="col-12 col-md-4" style="font-size: 14px">
                     <div class="row">
-                      <div class="col-6 text-end">รวม</div>
+                      <div class="col-6 text-end">รวมเงิน</div>
                       <div class="col-6">
                         <input type="number" v-model="totalPrice" class="text-end" disabled />
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6 text-end">คงเหลือ</div>
+                      <div class="col-6">
+                        <input type="number" v-model="totalPriceAfterDiscount" class="text-end" disabled />
                       </div>
                     </div>
                     <div class="row">
@@ -526,10 +627,10 @@ onUpdated(() => {
             <div class="card-body pt-3">
               <div class="row g-1">
                 <div class="col" align="center">
-                  <button class="btn btn-primary btn-lg mx-1" @click="save()">
+                  <button class="btn btn-primary btn-lg mx-1" type="submit" @click="save()">
                     <i class="bi bi-save"></i> Save
                   </button>
-                  <button class="btn btn-secondary btn-lg mx-1" @click="save()">
+                  <button class="btn btn-secondary btn-lg mx-1" type="button" @click="cancel()">
                     <i class="bi bi-x"></i> Cancel
                   </button>
                 </div>
@@ -545,9 +646,10 @@ onUpdated(() => {
         </div>
       </div>
 
-      <ModalWorkOrder ref="modalWorkOrder" @select="onSelectProduct" v-model:customer_id="formInvoice.customer_id"
-        title="xxx" />
-      <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
+      <ModalWorkOrder ref="modalWorkOrder" @select="onSelectProduct"
+        :customer="{ 'id': formInvoice.customer_id, 'name': formInvoice.customer_name }" />
+      <ModalCustomer ref="modalCustomer" @select="onSelectCustomer"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
       <ModalContact ref="modalContact" @select="onSelectContact"
         :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
     </section>

@@ -49,7 +49,7 @@ export const useInvoiceStore = defineStore('invoice', {
       }
       if (!exist) {
         const { data } = await api.post('v2/invoices/cart', item).catch((err) => {
-          this.cartMsgError = err.response.data?.message
+          this.cartMsgError = err.response?.data.message
           this.cartLoading = false
           toast(this.cartMsgError, {
             autoclose: 5000,
@@ -81,6 +81,7 @@ export const useInvoiceStore = defineStore('invoice', {
     async loadCart() {
       this.cartLoading = true
       const { data } = await api.get('v2/invoices/cart').catch(() => (this.cartLoading = false))
+      console.log(data)
       this.carts = data
       this.cartLoading = false
     },

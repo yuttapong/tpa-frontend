@@ -3,53 +3,33 @@
     <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ props }}</h5>
+          <h5 class="modal-title" v-if="props.customer">
+            {{ props.customer.id }}#
+            {{ props.customer.name }}
+          </h5>
 
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="my-2">
             <form @submit.prevent="search()">
               <div class="row g-2">
                 <div class="col-6 col-md-4 col-lg-4">
-                  <input
-                    type="search"
-                    v-model="formSearchProduct.bill_code"
-                    class="form-control form-control-sm"
-                    placeholder="เลขที่ใบขอรับบริการ"
-                    @keyup.enter="search()"
-                  />
+                  <input type="search" v-model="formSearchProduct.bill_code" class="form-control form-control-sm"
+                    placeholder="เลขที่ใบขอรับบริการ" @keyup.enter="search()" />
                 </div>
                 <div class="col-6 col-md-4 col-lg-4">
-                  <input
-                    type="search"
-                    v-model="formSearchProduct.item_code"
-                    class="form-control form-control-sm"
-                    placeholder="เลขที่ WorderOrder"
-                    @keyup.enter="search()"
-                  />
+                  <input type="search" v-model="formSearchProduct.item_code" class="form-control form-control-sm"
+                    placeholder="เลขที่ WorderOrder" @keyup.enter="search()" />
                 </div>
                 <div class="col-6 col-md-4 col-lg-4">
-                  <input
-                    type="search"
-                    v-model="formSearchProduct.customer_id"
-                    class="form-control form-control-sm"
-                    placeholder="Customer ID"
-                    @keyup.enter="search()"
-                  />
+                  <input type="search" v-model="formSearchProduct.customer_id" class="form-control form-control-sm"
+                    placeholder="Customer ID" @keyup.enter="search()" />
                 </div>
                 <div class="col-6 col-md-4 col-lg-3"></div>
                 <div class="col-6 col-md-4 col-lg-3">
                   <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                  <spinner
-                    :visible="workorderLoading || invoiceStore.cartLoading"
-                    class="mx-2 p-0"
-                  />
+                  <spinner :visible="workorderLoading || invoiceStore.cartLoading" class="mx-2 p-0" />
                 </div>
               </div>
             </form>
@@ -74,11 +54,7 @@
                 <tr v-for="(item, index) in items" :key="index">
                   <th scope="row">
                     <template v-if="!existCarts(item)">
-                      <button
-                        class="btn btn-secondary btn-sm d-block"
-                        type="button"
-                        @click="selectItem(item)"
-                      >
+                      <button class="btn btn-secondary btn-sm d-block" type="button" @click="selectItem(item)">
                         <i class="bi bi-plus"></i>
                       </button>
                     </template>
@@ -100,9 +76,9 @@
                   <td>{{ item.barcode_no }}</td>
                   <td>
                     {{ item.company_id }}<br />
-                    {{ item.customer.companyname }}
+                    <!-- {{ item.customer.companyname }}
 
-                    {{ item.customer.companynameen }}
+                    {{ item.customer.companynameen }} -->
                   </td>
                 </tr>
               </tbody>
@@ -114,14 +90,9 @@
         <div class="modal-footer m-0 p-1 d-block">
           <div class="row">
             <div class="col-xs-10 col-md-10">
-              <vue-awesome-paginate
-                :total-items="pagination.total"
-                :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow"
-                v-model="pagination.current_page"
-                :on-click="onChangePage"
-                class=""
-              />
+              <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                :on-click="onChangePage" class="" />
             </div>
 
             <div class="col-xs-2 col-md-2">
@@ -152,7 +123,7 @@ const props = defineProps({
   },
   data: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
   customer: {
     type: Object,
@@ -204,8 +175,8 @@ const loadData = async () => {
     page: pagination.value.current_page,
     ...formSearchProduct.value,
   }
-  if (props.customer_id) {
-    params.customer_id = props.customer_id
+  if (props.customer) {
+    params.customer_id = props.customer.id
   }
   const { data } = await api.get('/v2/workorders', {
     params: params,

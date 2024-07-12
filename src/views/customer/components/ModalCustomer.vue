@@ -32,15 +32,15 @@
             <div class="tab-content" id="customer">
               <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
 
-                <form @submit.prevent="onSearch()">
+                <form @submit.prevent="searchCustomer()">
                   <div class="row g-2 mb-2">
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
-                        placeholder="ชื่อบริษัท" autofocus @keyup.enter="onSearch()" />
+                        placeholder="ชื่อบริษัท" autofocus @keyup.enter="searchCustomer()" />
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                       <input type="search" v-model="formSearch.taxnumber" class="form-control form-control-sm"
-                        placeholder="taxnumber" @keyup.enter="onSearch()" />
+                        placeholder="taxnumber" @keyup.enter="searchCustomer()" />
                     </div>
 
                     <div class="col-6 col-md-4 col-lg-3">
@@ -126,14 +126,15 @@
           </div>
           <div class="modal-footer d-block">
             <!-- <span class="fw-bold bg-danger text-white p-1"> {{ selectedItems.length }}</span> -->
+  
             <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
               :max-pages-shown="5" v-model="pagination.current_page" :on-click="onChangePage" class="" />
-            <button type="button" class="btn btn-primary" @click="select">
+            <div class="float-end">       <button type="button" class="btn btn-primary btn-sm" @click="select" v-show="selectedCustomers.id || selectedContacts.contactid">
               <i class="bi bi-check-circle me-2"></i> ตกลง
             </button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <button type="button" class="btn btn-secondary btn-sm ms-1" data-bs-dismiss="modal">
               <i class="bi bi-x me-2"></i> ยกเลิก
-            </button>
+            </button></div>
           </div>
         </div>
       </div>
@@ -142,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted,watch } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'
@@ -188,12 +189,13 @@ const formSearchContact = ref({
   q: '',
 })
 
-const onSearch = async () => {
+const searchCustomer = async () => {
   pagination.value.current_page = 1
   pagination.value.total = 0
   try {
     loadData()
   } catch (error) { }
+  emit("onSearch",formSearch.value)
 }
 const onChangePage = async (page) => {
   pagination.value.current_page = page
@@ -247,6 +249,7 @@ const editCustomer = (row, index) => {
 }
 
 const show = () => {
+  // searchCustomer()
   emit('onShow', selectedCustomers.value)
   modal.show()
 }
@@ -273,6 +276,12 @@ onMounted(() => {
   modal = new Modal(modalElement.value)
   loadData()
 })
+// watch(props.customer, (p) => {
+//   if (p.customer) {
+//     formSearch.value.customer_id = p.customer?.id
+//     searchCustomer()
+//   }
+// })
 defineExpose({ show, hide })
 </script>
 <style lang="scss" scoped>

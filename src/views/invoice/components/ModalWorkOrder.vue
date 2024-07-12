@@ -157,6 +157,7 @@ const pagination = ref({
 })
 
 const _show = () => {
+  loadData()
   invoiceStore.loadCart()
   emit('show', selectedItems.value)
   modalEl.show()
@@ -215,7 +216,8 @@ onMounted(() => {
 })
 defineExpose({ show: _show })
 
-watch(props, (data) => {
-  console.log('dataxxx', data)
+watch(props.customer, (data) => {
+  console.log('loadData', data)
+  search()
 })
 </script>

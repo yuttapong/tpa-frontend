@@ -85,8 +85,16 @@ export const useInvoiceStore = defineStore('invoice', {
       this.carts = data
       this.cartLoading = false
     },
-    updateItems(items) {
+   async updateItems(items) {
       this.carts = items
+      this.cartLoading = true
+      const { data } = await api
+        .put('v2/invoices/cart',this.carts)
+        .catch(() => (this.cartLoading = false))
+      if (data) {
+        // this.carts = []
+      }
+      this.cartLoading = false
     },
     async resetCart() {
       this.cartLoading = true
@@ -144,6 +152,6 @@ export const useInvoiceStore = defineStore('invoice', {
   },
   persist: {
     enabled: true,
-    strategies: [{ storage: localStorage, paths: ['carts'] }],
+    strategies: [{ storage: localStorage, paths: ['carts','form'] }],
   },
 })

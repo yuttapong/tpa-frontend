@@ -202,6 +202,7 @@ const loadData = async () => {
 
 
 const show = () => {
+  search()
   emit('onShow', selectedItems.value)
   modal.show()
 }
@@ -216,10 +217,9 @@ const select = () => {
   modal.hide()
   emit('onHide')
 }
-watch(props, (p) => {
-  console.log('watch cm', p.customerId);
-  if (p.customerId) {
-    formSearch.value.customer_id = p.customerId
+watch(props.customer, (p) => {
+  if (p.customer) {
+    formSearch.value.customer_id = p.customer?.id
     search()
   }
 })

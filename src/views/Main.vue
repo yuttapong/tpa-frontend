@@ -11,3 +11,8 @@ import Sidebar from '@/components/layouts/Sidebar.vue';
 import Footer from '@/components/layouts/Footer.vue';
 import Header from '@/components/layouts/Header.vue';
 </script>
+<style lang="scss" scoped>
+#main {
+    max-width: 1320px;
+}
+</style>

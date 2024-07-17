@@ -393,10 +393,10 @@
                   <td nowrap>
                     <!-- <JobStatus v-model="row.job_status" /> -->
                     <div>
-                      {{ row.lab.name_th }} #{{ row.lab.id }}
+                      {{ row?.lab.name_th }} #{{ row.lab.id }}
                     </div>
                     <div class="ms-2 border-bottom">
-                      <small class="fs-italic"> {{ row.sublab.name_th }} #{{ row.sublab.id }}</small>
+                      <small class="fs-italic"> {{ row?.sublab.name_th }} #{{ row.sublab.id }}</small>
                     </div>
                     <div v-if="row.current_service_status" style="font-size: 12px"
                       class="border-bottom text-danger fw-bold">

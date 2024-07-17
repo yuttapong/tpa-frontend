@@ -121,7 +121,7 @@
 
                     <tbody v-if="bill.items">
                       <tr v-for="(item, index) in bill.items" :key="index"
-                        :class="item.product.is_job != 1 ? 'text-decoration-line-through' : ''">
+                        :class="item.product && item.product.is_job != 1 ? 'text-decoration-line-through' : ''">
                         <td>{{ index + 1 }})</td>
                         <td>
                           <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
@@ -142,7 +142,7 @@
                           {{ item.item_code }}
                         </td>
                         <td>
-                          <div v-if="item.product.is_job">{{ item.product_name }}</div>
+                          <div v-if="item.product && item.product.is_job">{{ item.product_name }}</div>
                           <div>{{ item.product_name }}</div>
                         </td>
                         <td>

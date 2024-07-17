@@ -566,7 +566,7 @@ onUpdated(() => {
                   </div>
                 </div>
                 <!-- <button type="button" @click="formInvoice.customer_type_code = ''">x</button> -->
-                <div class="" v-show="formInvoice.customer_type_code">
+                <div class="">
                   <div class="row my-2 g-2">
                     <div class="col-12 col-md-6">
                       <div

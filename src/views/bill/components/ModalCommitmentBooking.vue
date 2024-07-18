@@ -173,9 +173,9 @@
                   <button type="button" class="btn btn-primary btn-sm  ms-2" @click="submit()">
                     <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                   </button>
-                  <template v-if="form.commitment_date">
+                  <template v-if="bill.commitment_date">
                     <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
-                      <i class="float-start bi bi-x me-2"></i> ยกเลิกวัน
+                      <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
                     </button>
                   </template>
 
@@ -413,55 +413,54 @@ const confirmCommitmentToKanban = async (params) => {
     })
   }
 }
-const cancelBook = async () => {
-  if (confirm('ยืนยันยกเลิกจองคิว ?')) {
-    let params = {
-      commitment_date: form.value.commitment_date,
-      bill_id: form.value.id,
-    }
-    const { data } = await axios
-      .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + params.bill_id, {
-        data: {},
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${appStore.token}`,
-        },
-      })
-      .catch((err) => {
-        loadingCommitment.value = false
+const cancelBook = async (event) => {
+  console.log('ยกเลิกจองคิว', event);
 
-        if (err.response) {
-          let data = err.response?.data
-          if (data) {
-            messageErrorCommitment.value = data.message
-          } else {
-            messageErrorCommitment.value = err.message
-          }
+  let params = {
+    commitment_date: form.value.commitment_date,
+    bill_id: form.value.id,
+  }
+  const { data } = await axios
+    .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + params.bill_id, {
+      data: {},
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${appStore.token}`,
+      },
+    })
+    .catch((err) => {
+      loadingCommitment.value = false
+
+      if (err.response) {
+        let data = err.response?.data
+        if (data) {
+          messageErrorCommitment.value = data.message
         } else {
           messageErrorCommitment.value = err.message
         }
-        toast(messageErrorCommitment, {
-          theme: 'auto',
-          type: 'default',
-          dangerouslyHTMLString: true,
-        })
-      })
-    if (data.success) {
-      clearCommitmentDate(form.value.id)
-      loadingCommitment.value = false
-      toast('ยกเลิกสำเร็จ', {
+      } else {
+        messageErrorCommitment.value = err.message
+      }
+      toast(messageErrorCommitment, {
         theme: 'auto',
         type: 'default',
         dangerouslyHTMLString: true,
       })
-      loadData()
-    }
+    })
+  if (data.success) {
+    clearCommitmentDate(form.value.id)
+    loadingCommitment.value = false
+    toast('ยกเลิกสำเร็จ', {
+      theme: 'auto',
+      type: 'default',
+      dangerouslyHTMLString: true,
+    })
+    loadData()
   }
 }
 const updateCommitmentDate = async () => {
   const bill = resultCommitment.value.data
   const { data } = await api.post(`/v2/bills/${bill.bill_id}/commitment`, bill)
-  console.log(data)
   if (data) {
     if (data) {
       toast(data.message, {
@@ -472,6 +471,7 @@ const updateCommitmentDate = async () => {
       confirmCommitmentToKanban(bill)
       setTimeout(() => {
         loadData()
+        emit('onSave', data)
       }, 3000)
     }
   }
@@ -481,8 +481,8 @@ const clearCommitmentDate = async (billId) => {
 }
 
 const loadData = async () => {
+  emit('onReload', props.bill)
   loading.value = true;
-  emit("onReload", props.bill)
   setTimeout(() => loading.value = false, 2000)
 }
 
@@ -516,9 +516,7 @@ defineExpose({ show, hide })
 </script>
 
 <style lang="scss" scoped>
-.commitment {
-
-}
+.commitment {}
 
 .table-bill-items {
   border: solid 1px #130f0f;

@@ -221,7 +221,9 @@ const cancelBook = async () => {
         type: 'default',
         dangerouslyHTMLString: true,
       })
-      loadData()
+      setTimeout(() => {
+        loadData()
+      }, 3000);
     }
   }
 }
@@ -248,6 +250,7 @@ const clearCommitmentDate = async (billId) => {
 }
 
 const loadData = async () => {
+
   if (billCode.value) {
     const { data } = await api.get('/v2/bills/code/' + billCode.value, {
       onlyjob: 'yes',
@@ -255,6 +258,8 @@ const loadData = async () => {
     if (data) form.value = data
   }
 }
+
+loadData();
 </script>
 <template>
   <div class="pagetitle">

@@ -13,7 +13,11 @@ export const MyFormatDate = (date, options) => {
   if (typeof date === 'number') {
     let _date = new Date(date)
     return new Intl.DateTimeFormat(myFormatLang, { ...op, ...options }).format(_date)
-  } else if (date && date != '0000-00-00') {
+  } else if (date && date != null) {
+    if (date == '0000-00-00 00:00:00') return
+    if (date == '0000-00-00') return
+    if (date == '') return
+    if (typeof date === null) return
     let _date = new Date(date)
     return new Intl.DateTimeFormat(myFormatLang, { ...op, ...options }).format(_date)
   }

@@ -1,6 +1,6 @@
 <template>
     <div class="dropdown">
-        <a class="btn btn-sm btn-text dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+        <a class="btn btn-sm btn-outline-secondary dropdown-toggle p-1" href="#" role="button" id="dropdownMenuLink"
             data-bs-toggle="dropdown" aria-expanded="false">
             {{ currentStatus }}
         </a>

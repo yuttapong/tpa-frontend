@@ -12,55 +12,55 @@
             <div class="row g-2">
               <div class="col-4 text-decoration-underline">Item Code</div>
               <div class="col-8">
-                <span class="">{{ workorder?.item_code }}</span>
+                <span class="">{{ row?.item_code }}</span>
               </div>
 
               <div class="col-4 text-decoration-underline">วันที่รับเครื่องมือ</div>
               <div class="col-8">
-                <span class="">{{ MyFormatDate(workorder?.document_date) }}</span>
+                <span class="">{{ MyFormatDate(row?.document_date) }}</span>
               </div>
 
               <div class="col-4 text-decoration-underline">วันที่จองคิว</div>
               <div class="col-8">
-                <span class="">{{ MyFormatDate(workorder?.reserved_at) }}</span>
+                <span class="">{{ MyFormatDate(row?.reserved_at) }}</span>
               </div>
               <div class="col-4 text-decoration-underline">เครื่องมือ</div>
               <div class="col-8">
-                <span class="">{{ workorder?.product_name }}</span>
+                <span class="">{{ row?.product_name }}</span>
               </div>
               <div class="col-4 text-decoration-underline">สถานะงาน - Job status</div>
               <div class="col-8">
                 <span class="">
-                  <JobStatus v-model="workorder.job_status"></JobStatus>
+                  <JobStatus v-model="row.job_status"></JobStatus>
 
                 </span>
               </div>
               <div class="col-4 text-decoration-underline">Tracking Status</div>
               <div class="col-8">
                 <span class="fw-bold text-danger">
-                  <div v-if="workorder.current_service_status">
-                    {{ workorder.current_service_status.status_name }}
+                  <div v-if="row.current_service_status">
+                    {{ row.current_service_status.status_name }}
                   </div>
                 </span>
               </div>
               <div class="col-4 text-decoration-underline">Lab</div>
               <div class="col-8">
-                <span class="d-inline">{{ workorder?.lab?.name_th }}</span>
-                <span class="text-secondary ms-2 fst-italic">{{ workorder?.lab?.name }}</span>
+                <span class="d-inline">{{ row?.lab?.name_th }}</span>
+                <span class="text-secondary ms-2 fst-italic">{{ row?.lab?.name }}</span>
               </div>
               <div class="col-4 text-decoration-underline">Sub Lab</div>
               <div class="col-8">
-                <span class="d-inline">{{ workorder?.sublab?.name_th }}</span>
-                <span class="text-secondary ms-2 fst-italic">{{ workorder?.sublab?.name }}</span>
+                <span class="d-inline">{{ row?.sublab?.name_th }}</span>
+                <span class="text-secondary ms-2 fst-italic">{{ row?.sublab?.name }}</span>
               </div>
               <div class="col-4 text-decoration-underline">Test Point</div>
               <div class="col-8">
-                <span class="d-block">{{ workorder?.test_point }}</span>
+                <span class="d-block">{{ row?.test_point }}</span>
               </div>
             </div>
             <hr />
             <h5 class="h6 text-decoration-underline">Tracking Status</h5>
-            <JobTimeline :statuses="workorder?.service_statuses" />
+            <JobTimeline :statuses="row?.service_statuses" />
           </div>
           <div class="modal-footer">
 
@@ -94,7 +94,7 @@ const billStore = useBillStore()
 let modalEl = null
 let modalRef = ref(null)
 
-const workorder = computed(() => props.data)
+const row = computed(() => props.data)
 
 const show = () => {
   modalEl.show()
@@ -103,9 +103,6 @@ const hide = () => {
   modalEl.hide()
 }
 
-const confirm = () => {
-
-}
 
 onMounted(() => {
   modalEl = new Modal(modalRef.value)

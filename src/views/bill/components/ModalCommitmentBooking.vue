@@ -69,13 +69,13 @@
                       <div v-if="messageSuccessCommitment" class="alert alert-success">
                         {{ messageSuccessCommitment }}
                         <div>
-                          <span class="mx-2">วันที่เอกสาร</span>
+                          <span class="mx-2"><i class="bi bi-calendar"></i> วันที่เอกสาร</span>
                           {{
                             MyFormatDate(resultCommitment.data.document_date, {
                               hideTime: true,
                             })
                           }}
-                          <span class="mx-2">งานเสร็จวันที่</span>
+                          <span class="mx-2"><i class="bi bi-calendar"></i> วันนัดรับ</span>
                           {{
                             MyFormatDate(resultCommitment.data.commitment_date, {
                               hideTime: true,
@@ -517,7 +517,7 @@ defineExpose({ show, hide })
 
 <style lang="scss" scoped>
 .commitment {
-  font-size: 0.75rem;
+
 }
 
 .table-bill-items {

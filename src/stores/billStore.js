@@ -5,7 +5,25 @@ export const useBillStore = defineStore('bill', {
   state: () => {
     return {
       formMode: 'add',
-      form: {},
+      formAdd: {
+        id: 0,
+        bill_code: '',
+        document_date: '',
+        items: [],
+        company_id: '',
+        address_name: '',
+        address_detail: '',
+        cert_address_name: '',
+        cert_address_detail: '',
+        agent_id: '',
+        agent_name: '',
+        status: '',
+        bill_status: '',
+        service_status_id: 0,
+        vat_percent: 7,
+        vat: 0,
+      },
+      formEdit: {},
       workorder: {},
       items: [],
     }
@@ -44,7 +62,7 @@ export const useBillStore = defineStore('bill', {
       let index = this.items.indexOf(item)
       this.items.splice(index, 1)
     },
-    updateItems(items) {
+    setItems(items) {
       this.items = items
     },
     setForm(data) {

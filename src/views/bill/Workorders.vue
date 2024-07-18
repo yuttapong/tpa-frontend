@@ -43,23 +43,23 @@
               <div class="tab-pane fade show active qt-index" id="qt-index">
                 <form @submit.prevent="search" class="rounded bg-light border my-2 p-2">
                   <div class="row">
-                    <div class="col-12 col-md-2">
+                    <div class="col-6 col-md-4 col-xl-3">
                       <label>Tax Number</label>
                       <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
                         class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
                         @keyup.enter="search" />
                     </div>
-                    <div class="col-12 col-md-2">
+                    <div class="col-6 col-md-4 col-xl-3">
                       <label>Item ID</label>
                       <input type="search" v-model="formSearch.item_id" class="form-control form-control-sm"
                         placeholder="Item ID" @keyup.enter="search" autofocus />
                     </div>
-                    <div class="col-12 col-md-2">
+                    <div class="col-6 col-md-4 col-xl-3">
                       <label>Item Code</label>
                       <input type="search" v-model="formSearch.item_code" class="form-control form-control-sm"
                         placeholder="Item Code" @keyup.enter="search" autofocus />
                     </div>
-                    <div class="col-12 col-md-2">
+                    <div class="col-6 col-md-4 col-xl-3">
                       <label>Bill Code</label>
                       <input type="search" v-model="formSearch.bill_code" class="form-control form-control-sm"
                         placeholder="Bill Code" @keyup.enter="search" autofocus />

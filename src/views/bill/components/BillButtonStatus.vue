@@ -1,8 +1,8 @@
 <template>
     <div class="dropdown">
-        <a class="btn btn-sm btn-text dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+        <a class="btn btn-sm btn-outline-secondary p-1 dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
             data-bs-toggle="dropdown" aria-expanded="false">
-            {{ currentStatus }}
+            {{ currentStatus.length == 0 ? '-ไม่มีสถานะ-' : currentStatus }}
         </a>
 
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">

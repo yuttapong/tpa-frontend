@@ -73,3 +73,25 @@ export const jobStatuses = [
     default: false,
   },
 ]
+export const invoiceStatuses = [
+  {
+    value: 'draft',
+    text: 'ร่าง',
+    default: true,
+  },
+  {
+    value: 'unpaid',
+    text: 'ค้างชำระ',
+    default: false,
+  },
+  {
+    value: 'paid',
+    text: 'ชำระแล้ว',
+    default: false,
+  },
+  {
+    value: 'canceled',
+    text: 'ยกเลิก',
+    default: false,
+  }
+]

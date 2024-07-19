@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, ref, reactive, onUpdated, watch} from 'vue'
+import { onMounted, computed, ref, reactive, onUpdated, watch } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { MyFormatDate } from '@/helpers/myformat'
@@ -61,24 +61,7 @@ const dueWithinList = [
     value: 90,
   },
 ]
-const formInvoice = ref({
-  bill_code: '',
-  issue_date: format(new Date(), 'yyyy-MM-dd'),
-  due_within: 30,
-  due_date: '',
-  items: [],
-  contact_id: '',
-  contact_name: '',
-  status: '',
-  vat_percent: 7,
-  vat: 0,
-  customer_type_id: '',
-  customer_type_code: '',
-  discount_type: 'percentage', //percentage | amount
-  customer_discount: 0,
-  customer_discount_percent: 0,
-  total_bill_discount: 0,
-})
+const formInvoice = ref(invoiceStore.form)
 
 const loadData = async () => {
   let params = {
@@ -267,7 +250,7 @@ const calculate = async () => {
     return item
   })
   if (items.length > 0) {
-    invoiceStore.updateItems(items)
+    invoiceStore.setCartItems(items)
   }
   // const { data } = await api.patch('v2/invoices/cart', invoiceItems.value)
 }
@@ -369,12 +352,13 @@ const updateInvoiceInput = async (e, row, field) => {
   delete row['checkbox']
   delete row['index']
 
-  let items = invoiceItems.value.map(item => {
-    if (item.cart_id== row.cart_id) {
+  let items = invoiceItems.value.map((item) => {
+    if (item.cart_id == row.cart_id) {
       item[field] = row[field]
     }
     return item
   })
+  invoiceStore.setCartItems(items)
   calculate()
   // const { data } = await api.patch('v2/invoices/cart/' + row.cart_id, row)
   // loadCart()
@@ -385,15 +369,17 @@ const onUpdatePageItems = (items) => {
 }
 getCustomerTypes()
 
-watch(formInvoice.value,() => {
-  console.log('form');
-  localStorage.setItem('form', formInvoice.value)
+watch(formInvoice.value, () => {
   invoiceStore.setForm(formInvoice.value)
 })
 const itemsSelected = ref([])
-onMounted(() => {})
+onMounted(() => {
+
+
+})
 onUpdated(() => {
-  // console.log('form', formInvoice.value);
+  // invoiceStore.setForm(formInvoice.value)
+
 })
 </script>
 <template>
@@ -474,6 +460,12 @@ onUpdated(() => {
                         placeholder="บริษัท"
                         @click="openModalCustomer"
                       />
+                      <input
+                        type="hidden"
+                        v-model="formInvoice.customer_id"
+                        class="form-control form-control-sm"
+                        placeholder="รหัสลูกค้า"
+                      />
                     </div>
                     <div
                       class="col-6 col-md-4 col-lg-3"
@@ -512,8 +504,8 @@ onUpdated(() => {
                       <label
                         >ประเภทลูกค้า
                         <span v-if="formInvoice.customer_type_code">
-                          : {{ formInvoice.customer_type_code }}</span
-                        ></label
+                          ({{ formInvoice.customer_type_code }})</span>
+                        </label
                       >
 
                       <select
@@ -527,9 +519,7 @@ onUpdated(() => {
                         </option>
                       </select>
                     </div>
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                    >
+                    <div class="col-6 col-md-4 col-lg-3">
                       <label>ส่วนลดลูกค้า</label>
                       <div>
                         <div class="input-group mb-3">
@@ -561,8 +551,6 @@ onUpdated(() => {
                         </div>
                       </div>
                     </div>
-
-
                   </div>
                 </div>
                 <!-- <button type="button" @click="formInvoice.customer_type_code = ''">x</button> -->
@@ -643,7 +631,10 @@ onUpdated(() => {
                     </template>
                     <template #item-product="item">
                       {{ item.product_name }}
-                      <div class="fw-bold text-dark">{{ item.product?.code }}</div>
+                      <div class="fw-bold text-dark">{{ item.product?.code }}
+
+                        <i class="bi bi-star text-danger ms-2" v-if=" item.product?.is_job"></i>
+                      </div>
                     </template>
                     <template #item-discount="item">
                       <input
@@ -697,7 +688,12 @@ onUpdated(() => {
                       <input type="number" v-model="item.total" class="text-end" disabled />
                     </template>
                     <template #item-remark="item">
-                      <input type="text" v-model="item.remark" class="" @change="updateInvoiceInput($event, item, 'remark')"/>
+                      <input
+                        type="text"
+                        v-model="item.remark"
+                        class=""
+                        @change="updateInvoiceInput($event, item, 'remark')"
+                      />
                     </template>
                   </EasyDataTable>
                 </div>
@@ -716,37 +712,25 @@ onUpdated(() => {
 
                       <div class="col-6 col-md-3 text-end">รวมส่วนลดท้ายบิลทั้งหมด</div>
                       <div class="col-6 col-md-3">
-                        <input
-                          type="number"
-                          v-model="totalBillDiscount"
-                          class="text-end"
-                          disabled
-                        />
+                        <div class="text-end fw-bold text-danger">- {{ totalBillDiscount.toFixed(2) }}</div>
+ 
                       </div>
 
                       <div class="col-6 col-md-3 text-end">รวมส่วนลด Order Type</div>
                       <div class="col-6 col-md-3">
-                        <input
-                          type="number"
-                          v-model="totalOrderTypeDiscount"
-                          class="text-end"
-                          disabled
-                        />
+                        <div class="text-end fw-bold">- {{ totalOrderTypeDiscount.toFixed(2) }}</div>
                       </div>
 
                       <div class="col-6 col-md-3 text-end">รวมส่วนลด Customer</div>
                       <div class="col-6 col-md-3">
-                        <input
-                          type="number"
-                          v-model="totalCustomerTypeDiscount"
-                          class="text-end"
-                          disabled
-                        />
+                        <div class="text-end fw-bold">
+                          - {{ totalCustomerTypeDiscount.toFixed(2) }}
+                        </div>
                       </div>
 
                       <div class="col-6 col-md-3 text-end">รวมส่วนลดทั้งหมด</div>
                       <div class="col-6 col-md-3">
-                        <input type="number" v-model="totalAllDiscount" class="text-end" disabled />
+                        <div class="text-end fw-bold">- {{ totalAllDiscount.toFixed(2) }}</div>
                       </div>
                     </div>
                   </div>
@@ -754,18 +738,13 @@ onUpdated(() => {
                     <div class="row">
                       <div class="col-6 text-end">รวมเงิน</div>
                       <div class="col-6">
-                        <input type="number" v-model="totalPrice" class="text-end" disabled />
+                        <div class="text-end fw-bold">{{ totalPrice.toFixed(2) }}</div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-6 text-end">คงเหลือ</div>
                       <div class="col-6">
-                        <input
-                          type="number"
-                          v-model="totalPriceAfterDiscount"
-                          class="text-end"
-                          disabled
-                        />
+                        <div class="text-end fw-bold">{{ totalPriceAfterDiscount.toFixed(2) }}</div>
                       </div>
                     </div>
                     <div class="row">
@@ -777,13 +756,13 @@ onUpdated(() => {
                           class="text-end"
                           placeholder="%"
                         />
-                        <input type="number" v-model="totalVat" class="text-end" disabled />
+                        <div class="text-end fw-bold">{{ totalVat.toFixed(2) }}</div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-6 text-end">จำนวนเงินทั้งสิ้น</div>
                       <div class="col-6">
-                        <input type="number" v-model="totalNet" class="text-end" disabled />
+                        <div class="text-end fw-bold h4">{{ totalNet.toFixed(2) }}</div>
                       </div>
                     </div>
                   </div>
@@ -797,11 +776,17 @@ onUpdated(() => {
             <div class="card-body pt-3">
               <div class="row g-1">
                 <div class="col" align="center">
-                  <button class="btn btn-primary btn-lg mx-1" type="submit" @click="save()">
-                    <i class="bi bi-save"></i> Save
+                  <button class="btn btn-outline-secondary btn-lg mx-1" type="button">
+                    <i class="bi bi-calculator"></i> คำนวณ
                   </button>
-                  <button class="btn btn-secondary btn-lg mx-1" type="button" @click="cancel()">
-                    <i class="bi bi-x"></i> Cancel
+                  <button class="btn btn-outline-secondary btn-lg mx-1" type="button">
+                    <i class="bi bi-eye"></i> ดูตัวอย่าง
+                  </button>
+                  <button class="btn btn-primary btn-lg mx-1" type="submit" @click="save()">
+                    <i class="bi bi-save"></i> บันทึก(ร่าง)
+                  </button>
+                  <button class="btn btn-primary btn-lg mx-1" type="submit" @click="save()">
+                    <i class="bi bi-save"></i> บันทึกและส่ง
                   </button>
                 </div>
               </div>
@@ -842,7 +827,7 @@ input {
   border-radius: 1px;
 }
 label {
-font-size: small;
-font-style: italic;
+  font-size: small;
+  font-style: italic;
 }
 </style>

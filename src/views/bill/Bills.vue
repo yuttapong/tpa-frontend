@@ -51,11 +51,13 @@
                       <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
                         placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                     </div>
-                    <div class="col-12 col-md-4 col-lg-3">
-                      <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input type="reset" class="btn btn-light btn-sm mx-2" value="Reset" @click="resetFormSearch" />
-                      <button type="button" class="btn btn-sm btn-outline-success" @click="newBill">
-                        <i class="bi bi-plus"></i> สร้าง
+                    <div class="col-12 col-md-12 col-lg-12">
+                      <button type="submit" class="btn btn-primary btn-sm"> <i class="bi bi-search"></i> ค้นหา</button>
+                      <button type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch">
+                        <i class="bi bi-x"></i> รีเซ็ต
+                      </button>
+                      <button type="button" class="btn btn-sm btn-success" @click="newBill">
+                        <i class="bi bi-plus"></i> สร้างใบขอรับบริการ
                       </button>
                     </div>
                   </div>

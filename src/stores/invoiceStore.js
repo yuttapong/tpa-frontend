@@ -85,7 +85,7 @@ export const useInvoiceStore = defineStore('invoice', {
       this.carts = data
       this.cartLoading = false
     },
-   async updateItems(items) {
+   async setCartItems(items) {
       this.carts = items
       this.cartLoading = true
       const { data } = await api

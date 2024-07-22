@@ -13,11 +13,11 @@
               <div class="col-8"><span class="">{{ doc?.code }}</span></div>
 
               <div class="col-4">วันที่เอกสาร</div>
-              <div class="col-8"><span class="">{{ MyFormatDate(doc?.document_date)
+              <div class="col-8"><span class="">{{ myFormatDate(doc?.document_date)
               }}</span></div>
 
               <div class="col-4">วันที่งานเสร็จ</div>
-              <div class="col-8"><span class="">{{ MyFormatDate(doc?.commitment_date)
+              <div class="col-8"><span class="">{{ myFormatDate(doc?.commitment_date)
               }}</span>
               </div>
               <div class="col-4">จำนวนงาน</div>
@@ -50,7 +50,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
 import { differenceInDays } from "date-fns"
-import { MyFormatDate } from '@/helpers/myformat.js'
+import { myFormatDate } from '@/helpers/myformat.js'
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm'])
 const props = defineProps({

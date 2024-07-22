@@ -34,7 +34,7 @@
                     <label>วันนัดรับเครื่องมือ</label>
                     <template v-if="bill.commitment_date">
                       <p>
-                        {{ MyFormatDate(bill.commitment_date) }}
+                        {{ myFormatDate(bill.commitment_date) }}
                       </p>
                     </template>
                     <template v-else>
@@ -71,13 +71,13 @@
                         <div>
                           <span class="mx-2"><i class="bi bi-calendar"></i> วันที่เอกสาร</span>
                           {{
-                            MyFormatDate(resultCommitment.data.document_date, {
+                            myFormatDate(resultCommitment.data.document_date, {
                               hideTime: true,
                             })
                           }}
                           <span class="mx-2"><i class="bi bi-calendar"></i> วันนัดรับ</span>
                           {{
-                            MyFormatDate(resultCommitment.data.commitment_date, {
+                            myFormatDate(resultCommitment.data.commitment_date, {
                               hideTime: true,
                             })
                           }}
@@ -200,7 +200,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { Modal } from 'bootstrap'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import ConfirmCommitment from '@/views/bill/components/ConfirmCommitment.vue'
 import { toast } from 'vue3-toastify'
 import BillButtonStatus from '@/views/bill/components/BillButtonStatus.vue'

@@ -70,7 +70,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm'])

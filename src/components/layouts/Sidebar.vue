@@ -95,7 +95,7 @@
         </router-link>
       </li>
       <!-- #################### FOR ADMIN SYSTEM ################################# -->
-      <template v-if="(appStore.user.username).toUpperCase() == 'ADMIN'">
+      <template v-if="(appStore.user?.username) == 'ADMIN'">
 
 
 

@@ -374,7 +374,7 @@
 <script setup>
 import { onMounted, computed, ref, onUpdated } from 'vue'
 import { Modal } from 'bootstrap'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
 import JobButtonStatus from './JobButtonStatus.vue'

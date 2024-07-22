@@ -4,42 +4,69 @@
       <div class="modal-dialog modal-dialog-scrollable modal-xl modal-fullscreen-lg-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">รายชื่อ <span v-if="_companyId">CustomerID: {{ _companyId }}</span></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h5 class="modal-title">
+              รายชื่อ <span v-if="_companyId">CustomerID: {{ _companyId }}</span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="d-flex gap-5">
-              <div v-if="customer.id"><input type="radio" v-model="onlyOne" value="yes"> เฉพาะ ({{ customer.name }})
+              <div v-if="customer.id">
+                <input type="radio" v-model="onlyOne" value="yes" /> เฉพาะ ({{ customer.name }})
                 เท่านั้น
               </div>
-              <div><input type="radio" v-model="onlyOne" value="no"> ทั้งหมด</div>
+              <div><input type="radio" v-model="onlyOne" value="no" /> ทั้งหมด</div>
             </div>
 
             <form @submit.prevent="search()" class="my-2">
-              <div class="row g-2">
-                <div class="col-6 col-md-4 col-lg-3">
-                  <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
-                    placeholder="ชื่อ, สกุล" autofocus @keyup.enter="search()" />
+              <div class="d-flex gap-2">
+                <div class="">
+                  <input
+                    type="search"
+                    v-model="formSearch.q"
+                    class="form-control form-control-sm"
+                    placeholder="ชื่อ, สกุล"
+                    autofocus
+                    @keyup.enter="search()"
+                  />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3">
-                  <input type="search" v-model="formSearch.taxnumber" class="form-control form-control-sm"
-                    placeholder="taxnumber" @keyup.enter="search()" />
+                <div class="">
+                  <input
+                    type="search"
+                    v-model="formSearch.taxnumber"
+                    class="form-control form-control-sm"
+                    placeholder="taxnumber"
+                    @keyup.enter="search()"
+                  />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3">
-                  <input type="search" v-model="formSearch.customer_id" class="form-control form-control-sm"
-                    placeholder="Customer ID" @keyup.enter="search()" />
+                <div class="">
+                  <input
+                    type="search"
+                    v-model="formSearch.customer_id"
+                    class="form-control form-control-sm"
+                    placeholder="Customer ID"
+                    @keyup.enter="search()"
+                  />
                 </div>
 
-                <div class="col-6 col-md-4 col-lg-3">
-                  <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading" />
-
+                <div class="">
+                  <button
+                    type="submit"
+                    class="btn btn-light btn-sm"
+                    :disabled="loading"
+                  ><i class="bi bi-search"></i>
+                  </button>
                 </div>
               </div>
             </form>
 
             <!-- Small tables -->
             <div class="table table-responsive">
-
               <div class="spinner-border" role="status" v-if="loading">
                 <span class="visually-hidden">Loading...</span>
               </div>
@@ -54,17 +81,24 @@
 
                     <th scope="col">อีเมล์</th>
                     <th scope="col">เบอร์โทร</th>
-
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, index) in items" :key="index"
-                    :class="{ 'table-success': item.id == selectedItems.id }">
+                  <tr
+                    v-for="(item, index) in items"
+                    :key="index"
+                    :class="{ 'table-success': item.id == selectedItems.id }"
+                  >
                     <th scope="row">
                       <!-- <button class="btn btn-secondary btn-sm d-block" @click="selectProduct(item)">
                         <i class="bi bi-plus"></i>
                       </button> -->
-                      <input class="form-check-input" type="radio" v-model="selectedItems" :value="item" />
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        v-model="selectedItems"
+                        :value="item"
+                      />
                     </th>
                     <td>
                       <span class="">{{ item.id }}</span>
@@ -72,12 +106,16 @@
                     <td>
                       <div class="">
                         {{ item.contactname }}
-                        <div style="font-size:12px;" v-if="item.contactposition" class="mx-1 p-1 text-danger">{{
-                          item.contactposition
-                        }}</div>
-                        <div style="font-size:12px;" v-if="item.company" class="mx-1 p-1 text-info">{{
-                          item.company.companyname
-                        }}</div>
+                        <div
+                          style="font-size: 12px"
+                          v-if="item.contactposition"
+                          class="mx-1 p-1 text-danger"
+                        >
+                          {{ item.contactposition }}
+                        </div>
+                        <div style="font-size: 12px" v-if="item.company" class="mx-1 p-1 text-info">
+                          {{ item.company.companyname }}
+                        </div>
                       </div>
 
                       <!-- <span v-if="item.model" class="mx-1 p-1">{{ item.model }}</span>
@@ -89,7 +127,6 @@
                       {{ item.contacttel1 }}
                       <div>{{ item.contacttel2 }}</div>
                     </td>
-
                   </tr>
                 </tbody>
               </table>
@@ -97,17 +134,28 @@
             <!-- End small tables -->
           </div>
           <div class="modal-footer d-block">
-            <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
-              :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-              :on-click="onChangePage" class="" />
+            <vue-awesome-paginate
+              :total-items="pagination.total"
+              :items-per-page="pagination.per_page"
+              :max-pages-shown="appStore.settings.page.maxPageShow"
+              v-model="pagination.current_page"
+              :on-click="onChangePage"
+              class=""
+            />
 
-
-            <button type="button" class="btn btn-primary" @click="select">
-              <i class="bi bi-save"></i> ตกลง
-            </button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="bi bi-times"></i> ปิด
-            </button>
+            <div class="float-end">
+              <div class="input-group input-group-sm">
+                <button type="button" class="btn btn-primary" @click="select">
+                  <i class="bi bi-check-circle"></i> เลือก
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" @click="onClearSelected">
+                  <i class="bi bi-ban"></i> ไม่เลือก
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  <i class="bi bi-x"></i> ปิด
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -124,28 +172,28 @@ const emit = defineEmits(['search', 'onHide', 'onShow', 'select'])
 const props = defineProps({
   data: {
     type: Object,
-    default: () => { }
+    default: () => {},
   },
   title: {
     type: Object,
-    default: ""
+    default: '',
   },
   customer: {
     type: Object,
     default: () => {
       return {
         id: 0,
-        name: ""
+        name: '',
       }
-    }
-  }
+    },
+  },
 })
 
 const appStore = useAppStore()
 let modal = null
 let modalElement = ref(null)
 const items = ref([])
-const onlyOne = ref("no")
+const onlyOne = ref('no')
 const selectedItems = ref([])
 const loading = ref(false)
 const _companyId = computed(() => props.customerId)
@@ -158,7 +206,7 @@ const formSearch = ref({
   code: '',
   q: '',
   sortBy: 'id',
-  orderBy: 'desc'
+  orderBy: 'desc',
 })
 
 const search = async () => {
@@ -166,13 +214,13 @@ const search = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 const onChangePage = async (page) => {
   pagination.value.current_page = page
   try {
     loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 const loadData = async () => {
   let params = {
@@ -200,7 +248,6 @@ const loadData = async () => {
   }
 }
 
-
 const show = () => {
   search()
   emit('onShow', selectedItems.value)
@@ -214,9 +261,14 @@ const hide = () => {
 const select = () => {
   emit('select', selectedItems.value)
   selectedItems.value = []
-  modal.hide()
-  emit('onHide')
+  hide()
 }
+const onClearSelected = () => {
+  selectedItems.value = []
+  emit('clear', selectedItems.value)
+  hide()
+}
+
 watch(props.customer, (p) => {
   if (p.customer) {
     formSearch.value.customer_id = p.customer?.id
@@ -228,8 +280,8 @@ watch(onlyOne, () => {
     formSearch.value.customer_id = props.customer.id
     formSearch.value.customer_name = props.customer.name
   } else {
-    formSearch.value.customer_id = ""
-    formSearch.value.customer_name = ""
+    formSearch.value.customer_id = ''
+    formSearch.value.customer_name = ''
   }
   search()
 })
@@ -239,3 +291,9 @@ onMounted(() => {
 })
 defineExpose({ show, hide })
 </script>
+<style lang="scss" scoped>
+input[type='radio'] {
+  transform: scale(2);
+  margin: 3px;
+}
+</style>

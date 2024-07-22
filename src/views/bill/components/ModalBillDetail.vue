@@ -20,7 +20,7 @@
             </div>
             <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">วันที่</label>
-              <p>{{ bill.document_date ? MyFormatDate(bill.document_date) : '' }}</p>
+              <p>{{ bill.document_date ? myFormatDate(bill.document_date) : '' }}</p>
             </div>
 
             <div class="col-4 col-lg-3">
@@ -34,12 +34,12 @@
 
             <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">เวลาทำรายการ</label>
-              <p>{{ MyFormatDate(bill.date_start) }}</p>
+              <p>{{ myFormatDate(bill.date_start) }}</p>
             </div>
             <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">วันนัดรับเครื่องมือ</label>
               <p v-if="bill.commitment_date">
-                {{ MyFormatDate(bill.commitment_date) }}
+                {{ myFormatDate(bill.commitment_date) }}
               </p>
             </div>
             <div class="col-4 col-lg-3">
@@ -107,7 +107,7 @@
                     </div>
                     <JobButtonStatus v-model="row.job_status" :data="row" @on-change="onChangeJobStatus" />
                   </td>
-                  <td nowrap>{{ MyFormatDate(row.reserved_date) }}</td>
+                  <td nowrap>{{ myFormatDate(row.reserved_date) }}</td>
                   <td>{{ row.product_name }}</td>
                   <td>{{ row.test_point }}</td>
                   <td>{{ row.serialnumber }}</td>
@@ -166,7 +166,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
 import JobButtonStatus from './JobButtonStatus.vue'

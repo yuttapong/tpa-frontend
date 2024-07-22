@@ -28,7 +28,7 @@
                     <td>{{ item.level }}</td>
                     <td>
                         <span class="badge bg-light text-dark">{{
-                            MyFormatDate(new Date(item.date_starts))
+                            myFormatDate(new Date(item.date_starts))
                         }}</span>
                     </td>
                 </tr>
@@ -38,7 +38,7 @@
 </template>
 <script setup>
 import { } from 'vue';
-import { MyFormatDate } from '@/helpers/myformat';
+import { myFormatDate } from '@/helpers/myformat';
 const props = defineProps({
     items: {
         type: Array,

@@ -33,12 +33,18 @@
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-index" id="qt-index">
                 <form @submit.prevent="onSearch()" class="mb-3">
-                  <div class="row g-2">
-                    <div class="col-6 col-md-4 col-lg-3">
+                  <div class="d-flex flex-wrap gap-2">
+                    
+                    <div class="">
+                      <button type="button" class="btn btn-sm btn-primary" @click="newBill">
+                        <i class="bi bi-plus"></i> สร้างใบขอรับบริการ
+                      </button>
+                    </div>
+                    <div class="">
                       <input type="search" v-model="formSearch.id" name="id" class="form-control form-control-sm"
                         placeholder="ID" @keyup.enter="search" />
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3">
+                    <div class="">
                       <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
                         placeholder="Code" @keyup.enter="search" autofocus />
                     </div>
@@ -47,18 +53,14 @@
                         class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
                         @keyup.enter="search" />
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3">
+                    <div class="">
                       <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
                         placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                     </div>
-                    <div class="col-12 col-md-12 col-lg-12">
-                      <button type="submit" class="btn btn-primary btn-sm"> <i class="bi bi-search"></i> ค้นหา</button>
-                      <button type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" @click="resetFormSearch">
-                        <i class="bi bi-x"></i> รีเซ็ต
-                      </button>
-                      <button type="button" class="btn btn-sm btn-success" @click="newBill">
-                        <i class="bi bi-plus"></i> สร้างใบขอรับบริการ
-                      </button>
+                    <div class="">
+                      <button type="submit" class="btn btn-light btn-sm"> <i class="bi bi-search"></i></button>
+         
+                  
                     </div>
                   </div>
                 </form>
@@ -69,11 +71,11 @@
                 <EasyDataTable class="my-3" :headers="headers" :items="items" alternating
                   v-model:server-options="serverOptions" :server-items-length="pagination.total"
                   v-model:items-selected="itemsSelected" show-index border-cell fixed-header>
-                  <template #item-action="item">
+                  <template #item-actions="item">
                     <div class="btn-group gap-1" role="group" aria-label="Basic example">
                       <div>
-                        <button type="button" class="btn btn-secondary outlined btn-sm" @click="showDetail(item)">
-                          <i class="bi bi-search"></i>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @click="showDetail(item)">
+                          <i class="bi bi-eye"></i>
                         </button>
                       </div>
                       <!-- <div>
@@ -83,15 +85,15 @@
                       </div> -->
 
                       <div>
-                        <router-link class="btn btn-secondary btn-sm"
+                        <router-link class="btn btn-outline-secondary btn-sm"
                           :to="{ name: 'bills.commitmentForm', params: { code: item.code } }" title="คำนวณวันนัดรับ">
-                          <i class="bi bi-calendar mx-1" role="button"></i></router-link>
+                          <i class="bi bi-calendar" role="button"></i></router-link>
                         <!-- <router-link class="btn btn-secondary btn-sm"
                           :to="{ name: 'bills.formEdit', params: { code: item.code } }">
                           <i class="bi bi-pencil" role="button"></i></router-link> -->
                       </div>
                       <div>
-                        <button type="button" class="btn btn-secondary outlined btn-sm" @click="showEdit(item)">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @click="showEdit(item)">
                           <i class="bi bi-pen"></i>
                         </button>
                       </div>
@@ -107,12 +109,12 @@
                   </template>
                   <template #item-document_date="item">
                     <div class="fw-bold" v-if="item.document_date">
-                      {{ MyFormatDate(item.document_date) }}
+                      {{ myFormatDate(item.document_date) }}
                     </div>
                   </template>
                   <template #item-commitment_date="item">
                     <div class="fw-bold" v-if="item.commitment_date">
-                      {{ item.commitment_date ? MyFormatDate(item.commitment_date) : null }}
+                      {{ item.commitment_date ? myFormatDate(item.commitment_date) : null }}
                     </div>
                   </template>
                   <template #item-bill_status="item">
@@ -164,12 +166,12 @@
                         </td>
                         <td>
                           <span class="badge bg-light text-dark" v-if="item.document_date">{{
-                            MyFormatDate(new Date(item?.document_date))
+                            myFormatDate(new Date(item?.document_date))
                           }}</span>
                         </td>
                         <td>
                           <span class="badge bg-light text-dark" v-if="item.commitment_date">{{
-                            MyFormatDate(new Date(item?.commitment_date))
+                            myFormatDate(new Date(item?.commitment_date))
                           }}</span>
                         </td>
 
@@ -337,7 +339,7 @@
             </div>
             <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">วันที่</label>
-              <p>{{ bill.document_date ? MyFormatDate(bill.document_date) : '' }}</p>
+              <p>{{ bill.document_date ? myFormatDate(bill.document_date) : '' }}</p>
             </div>
 
             <div class="col-4 col-lg-3">
@@ -351,12 +353,12 @@
 
             <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">เวลาทำรายการ</label>
-              <p>{{ MyFormatDate(bill.date_start) }}</p>
+              <p>{{ myFormatDate(bill.date_start) }}</p>
             </div>
             <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">วันนัดรับเครื่องมือ</label>
               <p v-if="bill.commitment_date">
-                {{ MyFormatDate(bill.commitment_date) }}
+                {{ myFormatDate(bill.commitment_date) }}
               </p>
             </div>
             <div class="col-4 col-lg-3">
@@ -425,7 +427,7 @@
                     </div>
                     <JobButtonStatus v-model="row.job_status" :data="row" @on-change="onChangeJobStatus" />
                   </td>
-                  <td nowrap>{{ MyFormatDate(row.reserved_date) }}</td>
+                  <td nowrap>{{ myFormatDate(row.reserved_date) }}</td>
                   <td>{{ row.product_name }}</td>
                   <td>{{ row.test_point }}</td>
                   <td>{{ row.serialnumber }}</td>
@@ -618,7 +620,7 @@ import router from '@/router'
 import { toast } from 'vue3-toastify'
 import { useAppStore } from '@/stores/appStore'
 import axios from 'axios'
-import { MyFormatDate } from '@/helpers/myformat.js'
+import { myFormatDate } from '@/helpers/myformat.js'
 import BillStatus from '@/views/bill/components/BillStatus.vue'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
 import BillButtonStatus from '@/views/bill/components/BillButtonStatus.vue'
@@ -901,7 +903,7 @@ onMounted(() => {
 
 const headers = [
   // { text: 'ID', value: 'id' },
-  { text: 'Action', value: 'action', width: 100 },
+  { text: 'Actions', value: 'actions', width: 100 },
   { text: 'Code', value: 'code', width: 120 },
   { text: 'ID', value: 'id' },
   { text: 'วันที่', value: 'document_date', width: 100, sortable: true },

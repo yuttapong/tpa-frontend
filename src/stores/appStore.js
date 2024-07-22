@@ -14,6 +14,7 @@ export const useAppStore = defineStore('app', () => {
       perPage: 10,
       maxPageShow: 5,
     },
+    vat: 7,
   })
 
   const ability = ref()

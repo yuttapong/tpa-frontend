@@ -37,9 +37,8 @@
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-index" id="qt-index">
                 <form @submit.prevent="search()">
-                  <div class="row g-2">
-                    <div class="col-6 col-md-4 col-lg-2">
-        
+                  <div class="d-flex flex-wrap gap-2">
+                    <div class="">
                       <select v-model="filterField" class="form-select form-select-sm">
                         <option value="cerno">cerno</option>
                         <option value="cerid">cerid</option>
@@ -47,7 +46,7 @@
                         <option value="item_code">item_code</option>
                       </select>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3">
+                    <div class="">
                       <input
                         type="search"
                         v-model="filterValue"
@@ -57,9 +56,10 @@
                         autofocus
                       />
                     </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                      <input type="reset" class="btn btn-secondary btn-sm mx-2" value="Reset" />
+                    <div class="">
+                      <button type="submit" class="btn btn-light btn-sm">
+                        <i class="bi bi-search"></i>
+                      </button>
                     </div>
                   </div>
                 </form>
@@ -93,10 +93,14 @@
                           </router-link> -->
                         </td>
                         <td>
-                          <span class="badge bg-light text-dark">{{ MyFormatDate(item.issuedate) }}</span>
+                          <span class="badge bg-light text-dark">{{
+                            myFormatDate(item.issuedate)
+                          }}</span>
                         </td>
                         <td>
-                          <span class="badge bg-light text-dark">{{ MyFormatDate(item.caldate) }}</span>
+                          <span class="badge bg-light text-dark">{{
+                            myFormatDate(item.caldate)
+                          }}</span>
                         </td>
 
                         <td>
@@ -216,7 +220,7 @@ import Spinner from '@/components/Spinner.vue'
 import { Tab, Modal } from 'bootstrap'
 import Certificate from './components/Certificate.vue'
 import { useAppStore } from '@/stores/appStore'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 
 const row = ref({})
 const appStore = useAppStore()
@@ -231,8 +235,8 @@ const viewData = ref({})
 const modalViewRef = ref(null)
 const modalView = ref()
 const tabViewRef = ref(null)
-const filterField = ref("cerno")
-const filterValue = ref("")
+const filterField = ref('cerno')
+const filterValue = ref('')
 const formSearch = ref({
   q: '',
 })

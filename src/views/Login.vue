@@ -76,7 +76,7 @@ import { ref, computed } from 'vue'
 import { api } from '@/helpers/api'
 import { useRouter, } from 'vue-router'
 import { useAppStore } from '@/stores/appStore'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 // import router from "@/router/index"
 const appStore = new useAppStore()
 

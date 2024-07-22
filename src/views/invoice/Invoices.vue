@@ -2,7 +2,7 @@
 import { onMounted, computed, ref, watch } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
 
 import InvoiceDetail from '@/views/invoice/components/InvoiceDetail.vue'
@@ -111,7 +111,7 @@ const resetFormSearch = () => {
   formSearch.value.q = ''
 }
 const setFilterStatus = (item) => {
-  console.log(item);
+  console.log(item)
   formSearch.status = item
 }
 search()
@@ -196,11 +196,11 @@ watch(
                 <div class="tab-pane fade show active qt-index" id="qt-index">
                   <div>
                     <button
-                      @click="setFilterStatus(null);"
+                      @click="setFilterStatus(null)"
                       class="btn btn-sm btn-light"
                       type="button"
                     >
-                    ทั้งหมด
+                      ทั้งหมด
                     </button>
                     <button
                       v-for="item in invoiceStatuses"
@@ -213,51 +213,55 @@ watch(
                     </button>
                   </div>
                   <form @submit.prevent="search()">
-                    <div class="row g-2">
-                      <div class="col-6 col-md-4 col-lg-2">
-                        <input
-                          type="search"
-                          v-model="formSearch.code"
-                          name="code"
-                          class="form-control form-control-sm"
-                          placeholder="Code"
-                          @keyup.enter="search"
-                        />
-                      </div>
-                      <div class="col-6 col-md-4 col-lg-3">
-                        <input
-                          type="search"
-                          v-model="formSearch.taxnumber"
-                          name="taxnumber"
-                          class="form-control form-control-sm"
-                          placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                          @keyup.enter="search"
-                        />
-                      </div>
-                      <div class="col-6 col-md-4 col-lg-3">
-                        <input
-                          type="search"
-                          v-model="formSearch.q"
-                          name="q"
-                          class="form-control form-control-sm"
-                          placeholder="ลูกค้า/ผู้ติดต่อ"
-                          @keyup.enter="search"
-                        />
-                      </div>
-                      <div class="col-12 col-md-6 col-lg-4">
-                        <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                        <input
-                          type="reset"
-                          class="btn btn-secondary btn-sm mx-2"
-                          value="Reset"
-                          @click="resetFormSearch"
-                        />
+                    <div class="d-flex gap-2 flex-wrap">
+                      <div>
                         <router-link
-                          class="btn btn-sm btn-success"
+                          class="btn btn-sm btn-primary"
                           :to="{ name: 'invoices.create' }"
                         >
                           <i class="bi bi-plus"></i> สร้างใบแจ้งหนี้
                         </router-link>
+                      </div>
+                      <div class="">
+                        <div class="input-group">
+                          <input
+                            type="search"
+                            v-model="formSearch.code"
+                            name="code"
+                            class="form-control form-control-sm"
+                            placeholder="Code"
+                            @keyup.enter="search"
+                          />
+                        </div>
+                      </div>
+                      <div class="">
+                        <div class="input-group">
+                          <input
+                            type="search"
+                            v-model="formSearch.taxnumber"
+                            name="taxnumber"
+                            class="form-control form-control-sm"
+                            placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                            @keyup.enter="search"
+                          />
+                        </div>
+                      </div>
+                      <div class="">
+                        <div class="input-group">
+                          <input
+                            type="search"
+                            v-model="formSearch.q"
+                            name="q"
+                            class="form-control form-control-sm"
+                            placeholder="ลูกค้า/ผู้ติดต่อ"
+                            @keyup.enter="search"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <button type="submit" class="btn btn-light btn-sm">
+                          <i class="bi bi-search" />
+                        </button>
                       </div>
                     </div>
                   </form>
@@ -278,11 +282,36 @@ watch(
                     :loading="invoiceStore.cartLoading"
                     fixed-header
                   >
-                    >
+                    <template #item-issue_date="item">
+                      {{ item.issue_date }}
+                    </template>
+                    <template #item-invoice_status="item">
+                      {{ item?.invoice_status.toUpperCase() }}
+                    </template>
                     <template #item-action="item">
-                      <button type="button" class="btn btn-link btn-sm" @click="showDetail(item)">
-                        <i class="bi bi-search"></i>
-                      </button>
+                      <div class="d-flex gap-1">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary btn-sm"
+                          @click="showDetail(item)"
+                        >
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary btn-sm"
+                          @click="showDetail(item)"
+                        >
+                          <i class="bi bi-pen"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary btn-sm"
+                          @click="showDetail(item)"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
                       <!-- 
                       <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
                         title="จองคิวห้อง Lab">

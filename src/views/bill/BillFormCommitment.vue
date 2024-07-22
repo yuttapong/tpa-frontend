@@ -5,7 +5,7 @@ import Spinner from '@/components/Spinner.vue'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
 import ConfirmCommitment from './components/ConfirmCommitment.vue'
 import { toast } from 'vue3-toastify'
@@ -300,14 +300,14 @@ loadData()
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                   <label>วันที่เอกสาร</label>
                   <p>
-                    {{ MyFormatDate(form.document_date) }}
+                    {{ myFormatDate(form.document_date) }}
                   </p>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                   <label>วันนัดรับเครื่องมือ</label>
                   <template v-if="form.commitment_date">
                     <p>
-                      {{ MyFormatDate(form.commitment_date) }}
+                      {{ myFormatDate(form.commitment_date) }}
                     </p>
                   </template>
                   <template v-else>
@@ -358,13 +358,13 @@ loadData()
                       <div>
                         <span class="mx-2">วันที่เอกสาร</span>
                         {{
-                          MyFormatDate(resultCommitment.data.document_date, {
+                          myFormatDate(resultCommitment.data.document_date, {
                             hideTime: true,
                           })
                         }}
                         <span class="mx-2">งานเสร็จวันที่</span>
                         {{
-                          MyFormatDate(resultCommitment.data.commitment_date, {
+                          myFormatDate(resultCommitment.data.commitment_date, {
                             hideTime: true,
                           })
                         }}

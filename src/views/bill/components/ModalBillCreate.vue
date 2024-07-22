@@ -76,7 +76,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { Modal } from 'bootstrap'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 import ModalCustomer from "@/views/customer/components/ModalCustomer.vue"
 import ModalContact from "@/views/customer/components/ModalContact.vue"

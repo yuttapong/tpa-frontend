@@ -10,7 +10,10 @@ export const useInvoiceStore = defineStore('invoice', {
       cartLoading: false,
       cartMsgError: '',
       cartMsgSuccess: '',
-      form: {},
+      form: {
+        vat_percent: appStore.settings.vat,
+        items: []
+      },
       carts: [],
       invoice: {},
       items: [],
@@ -85,15 +88,15 @@ export const useInvoiceStore = defineStore('invoice', {
       this.carts = data
       this.cartLoading = false
     },
-   async setCartItems(items) {
+    async setCartItems(items) {
       this.carts = items
+    },
+    async saveCartItems() {
       this.cartLoading = true
       const { data } = await api
-        .put('v2/invoices/cart',this.carts)
+        .put('v2/invoices/cart', this.carts)
         .catch(() => (this.cartLoading = false))
-      if (data) {
-        // this.carts = []
-      }
+
       this.cartLoading = false
     },
     async resetCart() {
@@ -152,6 +155,6 @@ export const useInvoiceStore = defineStore('invoice', {
   },
   persist: {
     enabled: true,
-    strategies: [{ storage: localStorage, paths: ['carts','form'] }],
+    strategies: [{ storage: localStorage, paths: ['form'] }],
   },
 })

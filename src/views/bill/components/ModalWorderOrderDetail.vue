@@ -17,12 +17,12 @@
 
               <div class="col-4 text-decoration-underline">วันที่รับเครื่องมือ</div>
               <div class="col-8">
-                <span class="">{{ MyFormatDate(row?.document_date) }}</span>
+                <span class="">{{ myFormatDate(row?.document_date) }}</span>
               </div>
 
               <div class="col-4 text-decoration-underline">วันที่จองคิว</div>
               <div class="col-8">
-                <span class="">{{ MyFormatDate(row?.reserved_at) }}</span>
+                <span class="">{{ myFormatDate(row?.reserved_at) }}</span>
               </div>
               <div class="col-4 text-decoration-underline">เครื่องมือ</div>
               <div class="col-8">
@@ -75,7 +75,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
 import JobTimeline from './JobTimeline.vue'

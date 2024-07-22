@@ -49,7 +49,7 @@
                     <thead>
                       <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Actions</th>
                         <th scope="col">Code</th>
                         <th scope="col">Date</th>
                         <th scope="col">Price</th>
@@ -61,15 +61,17 @@
                       <tr v-for="(item, index) in items" :key="index">
                         <th scope="row">{{ index + 1 }}</th>
                         <td>
-                          <button type="type" class="btn btn-sm btn-secondary" @click="openModalQuotation(item)"><i
-                              class="bi bi-search"></i></button>
+                        <div class="input-group gap-1">
+                          <button type="type" class="btn btn-sm btn-outline-secondary" @click="openModalQuotation(item)"><i
+                            class="bi bi-eye"></i></button>
+                        </div>
                         </td>
                         <td>
                           <DocCode :data="item.code" @click="openModalQuotation(item)" role="button" />
                         </td>
                         <td>
                           <span class="badge bg-light text-dark">{{
-                            MyFormatDate(new Date(item.document_date))
+                            myFormatDate(new Date(item.document_date))
                           }}</span>
                         </td>
                         <td>{{ Number(item.total_price).toLocaleString() }}</td>
@@ -333,7 +335,7 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
 import { onMounted, computed, ref } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
 import ModalQuotationDetail from "@/views/quotation/components/ModalQuotationDetail.vue"
 import StatusActive from "@/components/StatusActive.vue"

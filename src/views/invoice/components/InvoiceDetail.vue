@@ -4,7 +4,7 @@ import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import ProductMeta from '@/views/invoice/components/ProductMeta.vue'
-import {  MyFormatDate } from '@/helpers/myformat'
+import {  myFormatDate } from '@/helpers/myformat'
 
 const invoiceStore = useInvoiceStore()
 
@@ -27,11 +27,11 @@ onMounted(() => { })
       <div class="row g-2">
         <div class="col-6 col-md-4 col-lg-3">
           <label class="fw-bold text-danger">วันที่</label>
-          <p>{{ MyFormatDate(data?.issue_date) }}</p>
+          <p>{{ myFormatDate(data?.issue_date) }}</p>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
           <label class="fw-bold text-danger">Due Date</label>
-          <p>{{ MyFormatDate(data?.due_date) }}</p>
+          <p>{{ myFormatDate(data?.due_date) }}</p>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
           <label class="fw-bold text-danger">Invoice Code</label>

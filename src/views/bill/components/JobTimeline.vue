@@ -5,7 +5,7 @@
         <div class="left-arrow"></div>
         <div class="time">
           <template v-if="item.created_at > 0">
-            {{ item.created_at > 0 ? MyFormatDate(fromUnixTime(item.created_at), 'p') : '' }}
+            {{ item.created_at > 0 ? myFormatDate(fromUnixTime(item.created_at), 'p') : '' }}
             <br />{{ showTime(item.created_at) }} <span class="glyphicon glyphicon-time"></span>
           </template>
           <template v-else> เวลาไม่ถูกต้อง </template>
@@ -23,7 +23,7 @@
   </div>
 </template>
 <script setup>
-import { MyFormatDate } from '@/helpers/myformat'
+import { myFormatDate } from '@/helpers/myformat'
 import {} from 'vue'
 import { fromUnixTime, format, isValid } from 'date-fns'
 

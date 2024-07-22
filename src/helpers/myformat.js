@@ -1,7 +1,11 @@
+import * as currency from 'currency.js'
+
 const locales = localStorage.getItem('lang')
 const myFormatLang = locales ? locales : 'th-TH'
-
-export const MyFormatDate = (date, options) => {
+export const myCurrency = (value, currencyCode = '') => {
+  return value.toLocaleString()
+}
+export const myFormatDate = (date, options) => {
   if (!date) {
     return
   }
@@ -9,6 +13,9 @@ export const MyFormatDate = (date, options) => {
     dateStyle: 'short', //  full, long, medium, short
     timeZone: 'Asia/Bangkok',
     hourCycle: 'h24',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   }
   if (typeof date === 'number') {
     let _date = new Date(date)

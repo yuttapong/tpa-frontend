@@ -5,6 +5,9 @@ import vue from '@vitejs/plugin-vue'
 import VueDevTools from 'vite-plugin-vue-devtools'
 import dotenv from 'dotenv'
 import dv from 'dotenv-expand'
+import { BootstrapVueNextResolver } from 'bootstrap-vue-next'
+import Components from 'unplugin-vue-components/vite'
+
 dv.expand(dotenv.config())
 // https://vitejs.dev/config/
 
@@ -15,7 +18,13 @@ const baseUrl =
 console.log('URL', baseUrl)
 
 export default defineConfig({
-  plugins: [vue(), VueDevTools()],
+  plugins: [
+    vue(),
+    VueDevTools(),
+    Components({
+      resolvers: [BootstrapVueNextResolver()],
+    }),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

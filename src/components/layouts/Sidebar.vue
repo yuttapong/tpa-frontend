@@ -82,12 +82,12 @@
         </router-link>
       </li>
 
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <router-link to="/data/staffs" class="nav-link collapsed">
           <i class="bi bi-person-circle"></i>
           <span>ผู้ใช้/พนักงาน</span>
         </router-link>
-      </li>
+      </li> -->
       <li class="nav-item">
         <router-link to="/data/company" class="nav-link collapsed">
           <i class="bi bi-person-circle"></i>

@@ -10,6 +10,7 @@ import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/appStore'
 import { invoiceStatuses } from '@/config'
 import { useInvoiceStore } from '@/stores/invoiceStore'
+import { myCurrency } from '@/helpers/myformat'
 const row = ref({})
 const items = ref([])
 const appStore = useAppStore()
@@ -34,12 +35,16 @@ const formSearch = ref({
 
 const headers = [
   { text: 'Action', value: 'action' },
-  { text: 'ID', value: 'id' },
-  { text: 'Total', value: 'totalnet' },
+  // { text: 'ID', value: 'id' },
   { text: 'Code', value: 'code' },
   { text: 'วันที่', value: 'issue_date' },
+  { text: 'Due Date', value: 'due_date' },
+  { text: 'Total', value: 'totalnet' },
+
+
   { text: 'ผู้ติดต่อ', value: 'contact_name' },
   { text: 'บริษัท/ลูกค้า', value: 'customer_name' },
+  { text: 'สถานะ', value: 'invoice_status' },
   // { text: 'ส่วนลด Lab', value: 'discount_lab' },
   // { text: 'ส่วนลด Order.', value: 'discount_order' },
   // { text: 'ส่วนลด Cust.', value: 'discount_customer' },
@@ -88,7 +93,7 @@ const getInvoiceById = async (item) => {
       invoiceStore.setInvoice(data)
       loading.value = false
     }
-  } catch (error) {}
+  } catch (error) { }
 }
 
 const showDetail = (item) => {
@@ -104,7 +109,7 @@ const search = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
@@ -195,67 +200,38 @@ watch(
               <div class="tab-content pt-2">
                 <div class="tab-pane fade show active qt-index" id="qt-index">
                   <div>
-                    <button
-                      @click="setFilterStatus(null)"
-                      class="btn btn-sm btn-light"
-                      type="button"
-                    >
+                    <button @click="setFilterStatus(null)" class="btn btn-sm btn-light" type="button">
                       ทั้งหมด
                     </button>
-                    <button
-                      v-for="item in invoiceStatuses"
-                      :key="item"
-                      @click="setFilterStatus(item)"
-                      class="btn btn-sm btn-light"
-                      type="button"
-                    >
+                    <button v-for="item in invoiceStatuses" :key="item" @click="setFilterStatus(item)"
+                      class="btn btn-sm btn-light" type="button">
                       {{ item.text }}
                     </button>
                   </div>
                   <form @submit.prevent="search()">
                     <div class="d-flex gap-2 flex-wrap">
                       <div>
-                        <router-link
-                          class="btn btn-sm btn-primary"
-                          :to="{ name: 'invoices.create' }"
-                        >
+                        <router-link class="btn btn-sm btn-primary" :to="{ name: 'invoices.create' }">
                           <i class="bi bi-plus"></i> สร้างใบแจ้งหนี้
                         </router-link>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input
-                            type="search"
-                            v-model="formSearch.code"
-                            name="code"
-                            class="form-control form-control-sm"
-                            placeholder="Code"
-                            @keyup.enter="search"
-                          />
+                          <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
+                            placeholder="Code" @keyup.enter="search" />
                         </div>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input
-                            type="search"
-                            v-model="formSearch.taxnumber"
-                            name="taxnumber"
-                            class="form-control form-control-sm"
-                            placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                            @keyup.enter="search"
-                          />
+                          <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                            class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                            @keyup.enter="search" />
                         </div>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input
-                            type="search"
-                            v-model="formSearch.q"
-                            name="q"
-                            class="form-control form-control-sm"
-                            placeholder="ลูกค้า/ผู้ติดต่อ"
-                            @keyup.enter="search"
-                          />
+                          <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
+                            placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                         </div>
                       </div>
                       <div>
@@ -268,47 +244,40 @@ watch(
 
                   <!-- tables -->
 
-                  <EasyDataTable
-                    @update-page-items="onChangePage"
-                    class="my-3"
-                    :headers="headers"
-                    :items="items"
-                    alternating
-                    v-model:server-options="serverOptions"
-                    :server-items-length="4"
-                    v-model:items-selected="itemsSelected"
-                    show-index
-                    border-cell
-                    :loading="invoiceStore.cartLoading"
-                    fixed-header
-                  >
+                  <EasyDataTable @update-page-items="onChangePage" class="my-3" :headers="headers" :items="items"
+                    alternating v-model:server-options="serverOptions" :server-items-length="4"
+                    v-model:items-selected="itemsSelected" show-index border-cell :loading="invoiceStore.cartLoading"
+                    fixed-header>
                     <template #item-issue_date="item">
-                      {{ item.issue_date }}
+                      {{ item.issue_date ? (item.issue_date) : "-" }}
+                    </template>
+                    <template #item-due_date="item">
+                      {{ item.due_date ? (item.due_date) : "-" }}
                     </template>
                     <template #item-invoice_status="item">
                       {{ item?.invoice_status.toUpperCase() }}
                     </template>
+                    <template #item-totalnet="item">
+                      <span class="fw-bold">{{ myCurrency(item.totalnet) }}</span>
+                    </template>
                     <template #item-action="item">
                       <div class="d-flex gap-1">
-                        <button
-                          type="button"
-                          class="btn btn-outline-secondary btn-sm"
-                          @click="showDetail(item)"
-                        >
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @click="showDetail(item)">
                           <i class="bi bi-eye"></i>
                         </button>
-                        <button
+                        <RouterLink :to="`invoices/edit/${item.id}`">
+                          <button type="button" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-pen"></i>
+                          </button>
+                        </RouterLink>
+                        <!-- <button
                           type="button"
                           class="btn btn-outline-secondary btn-sm"
                           @click="showDetail(item)"
                         >
                           <i class="bi bi-pen"></i>
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-outline-secondary btn-sm"
-                          @click="showDetail(item)"
-                        >
+                        </button> -->
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @click="() => { }">
                           <i class="bi bi-trash"></i>
                         </button>
                       </div>
@@ -340,12 +309,7 @@ watch(
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Invoice</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <InvoiceDetail />

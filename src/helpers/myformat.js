@@ -2,17 +2,29 @@ import * as currency from 'currency.js'
 
 const locales = localStorage.getItem('lang')
 const myFormatLang = locales ? locales : 'th-TH'
-export const myCurrency = (value, currencyCode = '') => {
-  return value.toLocaleString()
+import { format, isValid } from 'date-fns'
+import { th } from 'date-fns/locale'
+
+export const myCurrency = (value) => {
+  if (value === undefined) return
+  if (value === null) return
+  if (value === '') return
+  return parseFloat(value.toLocaleString()).toFixed(2)
 }
-export const myFormatDate = (date, options) => {
-  if (!date) {
+export const myFormatDate = (value, options) => {
+  if (!value) {
     return
   }
+  const isValidDate = isValid(value)
+  if (value === undefined) return
+  if (value === null) return
+  if (value === '') return
+  if (!isValidDate) return
+  return format(value, 'dd/MM/yyyy')
   let op = {
     dateStyle: 'short', //  full, long, medium, short
     timeZone: 'Asia/Bangkok',
-    hourCycle: 'h24',
+    // hourCycle: 'h24',
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -20,13 +32,13 @@ export const myFormatDate = (date, options) => {
   if (typeof date === 'number') {
     let _date = new Date(date)
     return new Intl.DateTimeFormat(myFormatLang, { ...op, ...options }).format(_date)
-  } else if (date && date != null) {
+  } else if (typeof date === 'string') {
     if (date == '0000-00-00 00:00:00') return
     if (date == '0000-00-00') return
     if (date == '') return
-    if (typeof date === null) return
+    if (typeof date == null) return
     let _date = new Date(date)
-    return new Intl.DateTimeFormat(myFormatLang, { ...op, ...options }).format(_date)
+    return new Intl.DateFormat(myFormatLang, { ...op, ...options }).format(_date)
   }
 }
 

@@ -13,24 +13,29 @@
         <div class="modal-body">
           <div class="my-2">
             <form @submit.prevent="search()">
-              <div class="row g-2">
-                <div class="col-6 col-md-4 col-lg-4">
+              <div class="d-flex gap-2">
+                <div class="discountLab">
                   <input type="search" v-model="formSearchProduct.bill_code" class="form-control form-control-sm"
                     placeholder="เลขที่ใบขอรับบริการ" @keyup.enter="search()" />
                 </div>
-                <div class="col-6 col-md-4 col-lg-4">
+                <div class="discountLab">
                   <input type="search" v-model="formSearchProduct.item_code" class="form-control form-control-sm"
                     placeholder="เลขที่ WorderOrder" @keyup.enter="search()" />
                 </div>
-                <div class="col-6 col-md-4 col-lg-4">
+                <div class="discountLab">
                   <input type="search" v-model="formSearchProduct.customer_id" class="form-control form-control-sm"
                     placeholder="Customer ID" @keyup.enter="search()" />
                 </div>
-                <div class="col-6 col-md-4 col-lg-3"></div>
-                <div class="col-6 col-md-4 col-lg-3">
+
+                <div class="">
                   <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
                   <spinner :visible="workorderLoading || invoiceStore.cartLoading" class="mx-2 p-0" />
                 </div>
+              </div>
+              <div class="">
+                <input v-model="filterSource" type="radio" value="all" :checked="filterSource == 'all'"> ทั้งหมด
+                <input v-model="filterSource" type="radio" class="ms-3" value="customer"
+                  :checked="filterSource == 'customer'"> {{ customer.name }}
               </div>
             </form>
           </div>
@@ -176,10 +181,10 @@ const loadData = async () => {
     page: pagination.value.current_page,
     ...formSearchProduct.value,
   }
-  if (props.customer) {
+  if (filterSource.value == 'customer') {
     params.customer_id = props.customer.id
   }
-  const { data } = await api.get('/v2/workorders', {
+  const { data } = await api.get('/v2/invoices/jobs', {
     params: params,
   })
   if (data) {
@@ -209,8 +214,13 @@ const selectItem = (data) => {
   emit('select', selectedItems.value)
   selectedItems.value = []
 }
-
+const filterSource = ref()
 onMounted(() => {
+  if (props.customer.id !== undefined) {
+    filterSource.value = "customer"
+  } else {
+    filterSource.value = "all"
+  }
   modalEl = new Modal(modalRef.value)
   search()
 })

@@ -73,6 +73,11 @@ const routes = [
         component: () => import('../views/invoice/InvoiceForm.vue'),
       },
       {
+        path: '/invoices/edit/:id',
+        name: 'invoices.edit',
+        component: () => import('../views/invoice/InvoiceForm.vue'),
+      },
+      {
         path: '/invoices/preview',
         name: 'invoices.preview',
         component: () => import('../views/invoice/InvoicePreview.vue'),

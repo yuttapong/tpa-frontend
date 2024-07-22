@@ -4,17 +4,18 @@
       <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
         <div class="container">
           <div class="row justify-content-center">
-            <div class="col-lg-5 d-flex flex-column align-items-center justify-content-center">
-              <div class="d-flex justify-content-center py-4">
-                <a href="javascript:void(0)" class="logo d-flex align-items-center w-auto">
-                  <img src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg" alt="" />
-
-                </a>
-              </div>
+            <div class="col-lg-5 align-items-center justify-content-center">
+      
               <!-- End Logo -->
 
               <div class="card mb-3">
                 <div class="card-body">
+                  <div class="d-flex justify-content-center py-4">
+                <a href="javascript:void(0)" class="logo d-flex align-items-center w-auto">
+                  <img src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg" alt="" class="img-fluid"/>
+
+                </a>
+              </div>
                   <div class="pt-4 pb-2">
                     <h5 class="card-title text-center pb-0 fs-4">Login to <span class="text-danger appcal">APPCAL</span>
                     </h5>
@@ -143,5 +144,8 @@ const login = (e) => {
 <style lang="scss" scoped>
 .appcal {
   font-size: 2rem;
+}
+main {
+  background-image: linear-gradient(to right top, #bbe9e5, #a1dde1, #89d0df, #73c3df, #64b4de, #5aa7d5, #519acb, #498dc1, #3a80af, #2c739d, #1d668b, #0c597a);
 }
 </style>

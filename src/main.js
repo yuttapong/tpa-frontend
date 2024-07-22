@@ -6,35 +6,27 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import piniaPersist from 'pinia-plugin-persist'
-import VueSweetalert2 from 'vue-sweetalert2';
+import VueSweetalert2 from 'vue-sweetalert2'
 
 // Import our custom CSS
 import '@/assets/scss/styles.scss'
-
+import 'vue3-toastify/dist/index.css'
+import 'vue3-easy-data-table/dist/style.css'
+// import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
+import 'bootstrap-icons/font/bootstrap-icons.min.css'
 
 // Import all of Bootstrap's JS
 import 'bootstrap'
 import '@popperjs/core'
 import '@/assets/js/layout.js'
-import 'bootstrap-icons/font/bootstrap-icons.min.css'
+import Vue3EasyDataTable from 'vue3-easy-data-table'
 import VueAwesomePaginate from 'vue-awesome-paginate'
 import 'vue-awesome-paginate/dist/style.css'
 import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
 import Vue3Toasity from 'vue3-toastify'
-import VueIntl from 'vue-intl'
-import {createBootstrap} from 'bootstrap-vue-next'
-
-
-// styles
-import 'vue3-toastify/dist/index.css'
-import Vue3EasyDataTable from 'vue3-easy-data-table'
-import 'vue3-easy-data-table/dist/style.css'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
-
-
-
+import { createBootstrap } from 'bootstrap-vue-next'
 
 const ability = createMongoAbility()
 
@@ -49,20 +41,13 @@ pinia.use(({ store }) => {
 app.use(abilitiesPlugin, ability)
 app.use(pinia)
 app.use(router)
-app.use(createBootstrap()) 
-app.use(VueSweetalert2);
+app.use(createBootstrap())
+app.use(VueSweetalert2)
 app.use(VueAwesomePaginate)
 app.use(Vue3Toasity, {
   autoClose: 3000,
 })
 app.component('EasyDataTable', Vue3EasyDataTable)
-app.use(VueIntl, {
-  locale: 'th',
-  defaultLocale: 'th',
-  messages: {
-    myMessage: "Aujourd'hui, nous sommes le {ts, date, ::yyyyMMdd}",
-  },
-})
 app.mount('#app')
 
 if (import.meta.env.DEV) {

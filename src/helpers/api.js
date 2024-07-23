@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useAppStore } from '@/stores/appStore'
 import router from '@/router'
-const appStore = new useAppStore()
+import { useModalController, useModal } from 'bootstrap-vue-next'
 
 const http = axios.create({
   baseURL:
@@ -14,6 +14,7 @@ const http = axios.create({
 })
 http.interceptors.request.use(
   (config) => {
+    const appStore = new useAppStore()
     const token = `${appStore.token}`
     config.headers['Authorization'] = token
     return config
@@ -24,6 +25,21 @@ http.interceptors.request.use(
   },
 )
 http.interceptors.response.use(
+  // (rs) => rs,
+  // (error) => {
+  //   if (error) {
+  //     switch (error.response.status) {
+  //       case 401:
+  //         console.log('401')
+  //         appStore.logout()
+  //         router.replace('/login')
+  //         break
+  //       case 403:
+  //       default:
+  //         return Promise.reject(error)
+  //     }
+  //   }
+  // },
   (rs) => responseHandler(rs),
   (err) => responseErrorHandler(err),
 )
@@ -38,19 +54,21 @@ function responseHandler(response) {
     if (!data) {
       throw new HttpError('API Error. No data!')
     }
-    return data
+    return response
   }
   throw new HttpError('API Error! Invalid status code!')
 }
 
 function responseErrorHandler(response) {
-  const config = response?.config
-  if (config.raw) {
-    return response
-  }
+  // const config = response?.config
+  // console.log('confing', response)
+  // if (config.raw) {
+  //   return response
+  // }
   return httpErrorHandler(response)
 }
 function httpErrorHandler(error) {
+  const appStore = new useAppStore()
   if (error === null) throw new Error('Unrecoverable error!! Error is null!')
   if (axios.isAxiosError(error)) {
     //here we have a type guard check, error inside this if will be treated as AxiosError
@@ -70,13 +88,19 @@ function httpErrorHandler(error) {
         console.log('The requested resource does not exist or has been deleted')
       } else if (statusCode === 401) {
         console.log('Please login to access this resource')
-        appStore.logout()
         router.replace('/login')
+        appStore.logout()
       } else if (statusCode === 403) {
         router.push('/erro403')
+      } else if (statusCode === 422) {
+        const { confirm } = useModalController()
+        const modal = useModal()
+        modal.show?.({ props: { title: `Promise resolved to ${response}`, variant: 'info' } })
+        console.log('Please check input is valid')
       } else if (statusCode === 500) {
         router.push('/error500')
       }
+      return response
     } else if (request) {
       //The request was made but no response was received, `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in Node.js
     }

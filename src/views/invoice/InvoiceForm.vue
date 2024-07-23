@@ -16,12 +16,13 @@ import { useRouter, useRoute } from 'vue-router'
 import { add, format, formatDate } from 'date-fns'
 import currency from 'currency.js'
 import { myCurrency } from '@/helpers/myformat'
+import { useModalController, useModal } from 'bootstrap-vue-next'
 const appStore = useAppStore()
 const pagination = ref({
   per_page: appStore.settings.page.perPage,
   current_page: 1,
 })
-
+const { confirm } = useModalController()
 const loading = ref(false)
 const hasError = ref(false)
 const router = useRouter()
@@ -31,8 +32,10 @@ const modalContact = ref(null)
 const modalCustomer = ref(null)
 const visibleModalEditItem = ref(false)
 const infoProduct = ref({})
-const invoiceId = ref(route.params.id)
+const invoiceId = computed(() => route.params.id)
 const itemsSelected = ref([])
+const visibleModalConfirmDel = ref(false)
+const itemView = ref({})
 const errors = ref([])
 const formMode = computed(() => {
   if (formInvoice.value.code !== undefined) {
@@ -83,7 +86,7 @@ const formInvoice = ref({
   items: [],
 })
 const items = computed(() => formInvoice.value.items)
-const vatPercent = ref(appStore.settings.vat)
+const vatPercent = ref(appStore.settings.vat || 7)
 const discountCustomer = ref(0)
 const discountCustomerType = ref('percentage')
 const loadData = async () => {
@@ -120,7 +123,7 @@ const onSearch = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 
 const openModalWorkOrder = () => {
@@ -161,14 +164,16 @@ const addItems = async (item) => {
     grand_total: grand_total,
     product: item?.product,
     staff_id: appStore.user.id,
+    invoice_item_id: item?.invoice_item_id
   }
+  // if (!row.invoice_item_id) {
   let items = []
   items.push(row)
-  const { data } = await api.post(`v2/invoices/${invoiceId.value}/items`, {
+  const { data, status } = await api.post(`v2/invoices/${invoiceId.value}/items`, {
     items: items,
   })
-
-  if (data) {
+  console.log(status, data);
+  if (status == 200) {
     toast(`${data?.message}`, {
       theme: 'auto',
       type: 'info',
@@ -178,25 +183,48 @@ const addItems = async (item) => {
     calculate()
     getInvoice(invoiceId.value)
   }
+  if (status == 422) {
+    toast(`${data?.message}`, {
+      theme: 'auto',
+      type: 'warning',
+      transition: 'zoom',
+      dangerouslyHTMLString: true,
+      autoClose: 15000,
+      position: 'top-center'
+    })
+  }
+
+  // }
 }
-const removeItems = async (row) => {
+const confirmRemoveItems = (row, index) => {
+  itemView.value = row
+  visibleModalConfirmDel.value = true
+  console.log('confirm remove');
+}
+
+const removeItems = async (row, index) => {
+
+
   let items = []
-  items.push(row.item)
+  items.push(row)
   const { data } = await api.delete(`v2/invoices/${invoiceId.value}/items`, {
-    items: items,
+    data: {
+      items: items
+    },
   })
 
   if (data) {
+    let x = formInvoice.value.items
+    formInvoice.value.items = x.filter(item => item.item_id != row.item_id)
     toast(`${data?.message}`, {
       theme: 'auto',
-      type: 'info',
+      type: 'success',
       dangerouslyHTMLString: true,
     })
-    formInvoice.value.items.push(row)
     calculate()
-    getInvoice(invoiceId.value)
+    setTimeout(() => save(), 500)
   }
-  
+
 }
 
 const onChangeCustomerType = (rs) => {
@@ -349,7 +377,7 @@ const submitDiscountItem = (type) => {
     }
 
     formDiscountAdd.value.index = null
-  } 
+  }
   calculate()
 }
 
@@ -369,6 +397,7 @@ const calculate = () => {
   })
   formInvoice.value.items = items
 }
+
 
 /**
  * เพิ่มส่วนลดลูกค้าที่ละหลายรายการครั้งเดียว
@@ -403,17 +432,18 @@ const addDiscountCustomer = () => {
     item.total = total
     item.discount = discount
     item.net = grand_total
-    console.log(discountType, discountValue, total, amount, percent, grand_total)
     return item
   })
+
   formInvoice.value.items = items
   discountCustomer.value = 0
-  let unit = discountType === 'percentage' ? '%' : 'บาท'
-  toast(`เพิ่มส่วนลด : ${discountValue} ${unit} สำเร็จ`, {
-    theme: 'auto',
-    type: 'info',
-    dangerouslyHTMLString: true,
-  })
+  // let unit = discountType === 'percentage' ? '%' : 'บาท'
+  // toast(`เพิ่มส่วนลด : ${discountValue} ${unit} สำเร็จ`, {
+  //   theme: 'auto',
+  //   type: 'info',
+  //   dangerouslyHTMLString: true,
+  // })
+
 }
 
 const onSelectCustomer = (data) => {
@@ -477,72 +507,76 @@ const getInvoice = async (id) => {
 
 const save = async () => {
   hasError.value = false
-  formInvoice.value.items = items.value
-  formInvoice.value.totalprice = totalPrice.value
-  formInvoice.value.totaldiscount = totalDiscount.value
-  formInvoice.value.totalvat = (totalPriceAfterDiscount.value * appStore.settings.vat) / 100
-  formInvoice.value.totalnet = totalNet.value
-  formInvoice.value.staff_id = appStore.user.id
+  calculate()
+  setTimeout(async () => {
+    formInvoice.value.items = items.value
+    formInvoice.value.totalprice = totalPrice.value
+    formInvoice.value.totaldiscount = totalDiscount.value
+    formInvoice.value.totalvat = (totalPriceAfterDiscount.value * vatPercent.value) / 100
+    formInvoice.value.totalnet = totalNet.value
+    formInvoice.value.staff_id = appStore.user.id
 
-  if (formMode.value === 'edit') {
-    loading.value = true
-    const { data } = await api
-      .post(`v2/invoices/${formInvoice.value.id}`, formInvoice.value)
-      .catch((err) => {
-        console.error(err)
-        errors.value = err.response.data.errors
+    if (formMode.value === 'edit') {
+      loading.value = true
+      const { data } = await api
+        .put(`v2/invoices/${formInvoice.value.id}`, formInvoice.value)
+        .catch((err) => {
+          console.error(err)
+          errors.value = err.response.data.errors
+          loading.value = false
+          hasError.value = true
+          let message = err.response.data?.message
+          toast(message, {
+            theme: 'auto',
+            type: 'error',
+            dangerouslyHTMLString: true,
+          })
+        })
+      if (data) {
         loading.value = false
-        hasError.value = true
-        let message = err.response.data?.message
-        toast(message, {
+        formInvoice.value = data?.data
+        formInvoice.value = data?.data
+        toast(data.message, {
           theme: 'auto',
-          type: 'error',
+          type: 'default',
           dangerouslyHTMLString: true,
         })
-      })
-    if (data) {
-      loading.value = false
-      getInvoice(invoiceId.value)
-      toast(data.message, {
-        theme: 'auto',
-        type: 'default',
-        dangerouslyHTMLString: true,
-      })
-    } else {
-      hasError.value = true
-      errors.value = loading.value = false
+      } else {
+        hasError.value = true
+        errors.value = loading.value = false
+      }
     }
-  }
 
-  if (formMode.value === 'add') {
-    loading.value = true
-    const resultCreate = await api.post('v2/invoices', formInvoice.value).catch((err) => {
-      console.error(err)
-      errors.value = err.response.data.errors
-      loading.value = false
-      hasError.value = true
-      let message = err.response.data?.message
-      toast(message, {
-        theme: 'auto',
-        type: 'error',
-        dangerouslyHTMLString: true,
-      })
-    })
-    console.log(resultCreate)
-    if (resultCreate) {
-      loading.value = false
-      getCustomerTypes()
-      router.push('/invoices/edit/' + resultCreate?.data.data.id)
-      toast(resultCreate.data.message, {
-        theme: 'auto',
-        type: 'default',
-        dangerouslyHTMLString: true,
-      })
-    } else {
-      hasError.value = true
-      errors.value = loading.value = false
+    if (formMode.value === 'add') {
+      loading.value = true
+      try {
+        const { data, status } = await api.post('v2/invoices', formInvoice.value)
+        if (status == 200) {
+          loading.value = false
+          hasError.value = true
+          errors.value = loading.value = false
+          router.push('/invoices/edit/' + data.data?.id)
+          toast(resultCreate.data.message, {
+            theme: 'auto',
+            type: 'default',
+            dangerouslyHTMLString: true,
+          })
+        } else if (status == 422) {
+          errors.value = data.errors
+          loading.value = false
+          hasError.value = true
+          let message = data?.message
+          toast(message, {
+            theme: 'auto',
+            type: 'error',
+            dangerouslyHTMLString: true,
+          })
+        }
+      } catch (error) {
+        console.log("errxxxx", error);
+      }
     }
-  }
+  }, 100)
   loading.value = false
 }
 
@@ -550,7 +584,7 @@ const tableFields = [
   { key: 'index', label: '#' },
   { key: 'actions', label: 'Actions' },
   { key: 'bill_code', sortable: true },
-  { key: 'product_name', label: 'รายการ', sortable: true, sticky: true },
+  { key: 'product_name', label: 'รายการ', sortable: true },
   { key: 'price', label: 'ราคา', sortable: true },
   { key: 'discount_customer', label: 'ส่วนลด Cust', sortable: true },
   { key: 'discount_lab', label: 'ส่วนลด Lab', sortable: true },
@@ -567,7 +601,10 @@ watch(route, (r) => {
 })
 
 onMounted(() => {
-  getInvoice(invoiceId.value)
+  if (invoiceId.value !== undefined) {
+    getInvoice(invoiceId.value)
+  }
+
 })
 </script>
 <template>
@@ -596,34 +633,18 @@ onMounted(() => {
               <form @submit.prevent="onSearch()">
                 <div class="border p-1">
                   <div class="row g-2">
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                      :class="[{ 'text-danger': errors.issue_date }]"
-                    >
+                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.issue_date }]">
                       <label>วันที่</label>
-                      <input
-                        type="date"
-                        v-model="formInvoice.issue_date"
-                        class="form-control form-control-sm"
-                        placeholder="issue date"
-                      />
+                      <input type="date" v-model="formInvoice.issue_date" class="form-control form-control-sm"
+                        placeholder="issue date" />
                     </div>
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                      :class="[{ 'text-danger': errors.due_within }]"
-                    >
-                      <label
-                        >กำหนดชำระภายใน
-                        <span v-if="formInvoice.due_date"
-                          >({{ myFormatDate(formInvoice.due_date) }})</span
-                        >
+                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.due_within }]">
+                      <label>กำหนดชำระภายใน
+                        <span v-if="formInvoice.due_date">({{ myFormatDate(formInvoice.due_date) }})</span>
                       </label>
 
-                      <select
-                        class="form-select form-select-sm"
-                        v-model="formInvoice.due_within"
-                        @change="onChangeDueWithin"
-                      >
+                      <select class="form-select form-select-sm" v-model="formInvoice.due_within"
+                        @change="onChangeDueWithin">
                         <option value="">----</option>
                         <option v-for="i in dueWithinList" :value="i.value" :key="i">
                           {{ i.text }}
@@ -632,104 +653,51 @@ onMounted(() => {
                     </div>
                     <div class="col-6 col-md-4 col-lg-3" v-if="formInvoice.code">
                       <label>Invoice Code</label>
-                      <input
-                        type="text"
-                        v-model="formInvoice.code"
-                        class="form-control form-control-sm"
-                        placeholder="Code"
-                        disabled="disabled"
-                      />
+                      <input type="text" v-model="formInvoice.code" class="form-control form-control-sm"
+                        placeholder="Code" disabled="disabled" />
                     </div>
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                      :class="[
-                        { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
-                      ]"
-                    >
-                      <label
-                        >ลูกค้า
-                        <span v-if="formInvoice.customer_id"
-                          >({{ formInvoice.customer_id }})</span
-                        ></label
-                      >
+                    <div class="col-6 col-md-4 col-lg-3" :class="[
+                      { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
+                    ]">
+                      <label>ลูกค้า
+                        <span v-if="formInvoice.customer_id">({{ formInvoice.customer_id }})</span></label>
                       <div class="input-group input-group-sm">
-                        <button
-                          class="btn btn-outline-secondary"
-                          type="button"
-                          @click="openModalCustomer"
-                        >
+                        <button class="btn btn-outline-secondary" type="button" @click="openModalCustomer">
                           <i class="bi bi-person"></i>
                         </button>
-                        <input
-                          type="search"
-                          v-model="formInvoice.customer_name"
-                          class="form-control form-control-sm"
-                          placeholder="บริษัท"
-                        />
-                        <input
-                          type="hidden"
-                          v-model="formInvoice.customer_id"
-                          class="form-control form-control-sm"
-                          placeholder="รหัสลูกค้า"
-                        />
+                        <input type="search" v-model="formInvoice.customer_name" class="form-control form-control-sm"
+                          placeholder="บริษัท" />
+                        <input type="hidden" v-model="formInvoice.customer_id" class="form-control form-control-sm"
+                          placeholder="รหัสลูกค้า" />
                       </div>
                     </div>
-                    <div
-                      class="col-12 col-md-8 col-lg-6"
-                      :class="[{ 'text-danger': errors.address }]"
-                    >
+
+                    <div class="col-12 col-md-8 col-lg-6" :class="[{ 'text-danger': errors.address }]">
                       <label>ที่อยู่</label>
-                      <input
-                        type="text"
-                        v-model="formInvoice.address"
-                        class="form-control form-control-sm"
-                        placeholder="ที่อยู่"
-                      />
+                      <input type="text" v-model="formInvoice.address" class="form-control form-control-sm"
+                        placeholder="ที่อยู่" />
                     </div>
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                      :class="[{ 'text-danger': errors.contact_name }]"
-                    >
-                      <label
-                        >ผู้ติดต่อ
-                        <span v-if="formInvoice.contact_id"
-                          >({{ formInvoice.contact_id }})</span
-                        ></label
-                      >
+                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.contact_name }]">
+                      <label>ผู้ติดต่อ
+                        <span v-if="formInvoice.contact_id">({{ formInvoice.contact_id }})</span></label>
                       <div class="input-group input-group-sm">
-                        <button
-                          class="btn btn-outline-secondary"
-                          type="button"
-                          @click="openModalContact"
-                        >
+                        <button class="btn btn-outline-secondary" type="button" @click="openModalContact">
                           <i class="bi bi-person-vcard"></i>
                         </button>
-                        <input
-                          type="search"
-                          v-model="formInvoice.contact_name"
-                          class="form-control form-control-sm"
-                          placeholder=""
-                        />
+                        <input type="search" v-model="formInvoice.contact_name" class="form-control form-control-sm"
+                          placeholder="" />
                       </div>
                     </div>
 
-                    <div
-                      class="col-6 col-md-4 col-lg-3"
-                      :class="[{ 'text-danger': errors.customer_type_code }]"
-                    >
-                      <label
-                        >ประเภทลูกค้า
+                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.customer_type_code }]">
+                      <label>ประเภทลูกค้า
                         <span v-if="formInvoice.customer_type_code">
-                          ({{ formInvoice.customer_type_code }})</span
-                        >
+                          ({{ formInvoice.customer_type_code }})</span>
                       </label>
 
-                      <select
-                        required
-                        class="form-select form-select-sm"
-                        v-model="formInvoice.customer_type_code"
-                        @change="onChangeCustomerType"
-                      >
+
+                      <select required class="form-select form-select-sm" v-model="formInvoice.customer_type_code"
+                        @change="onChangeCustomerType">
                         <option v-for="(item, key) in customerTypes" :key="key" :value="item.code">
                           {{ item.code }} : {{ item.name }} - {{ item.nameen }}
                         </option>
@@ -746,18 +714,10 @@ onMounted(() => {
                 <section class="" v-if="formMode === 'edit'">
                   <div class="row my-2 g-2">
                     <div class="col-12 col-md-6">
-                      <div
-                        class="btn-toolbar float-start"
-                        role="toolbar"
-                        aria-label="Toolbar with button groups"
-                      >
+                      <div class="btn-toolbar float-start" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="btn-group me-2" role="group" aria-label="">
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-danger"
-                            @click="removeCart()"
-                            v-if="itemsSelected.length"
-                          >
+                          <button type="button" class="btn btn-sm btn-danger" @click="removeCart()"
+                            v-if="itemsSelected.length">
                             <i class="bi bi-trash" role="button"></i>
                             <span>({{ itemsSelected.length }})</span>
                           </button>
@@ -765,17 +725,9 @@ onMounted(() => {
                       </div>
                     </div>
                     <div class="col-12 col-md-6">
-                      <div
-                        class="btn-toolbar float-md-end"
-                        role="toolbar"
-                        aria-label="Toolbar with button groups "
-                      >
+                      <div class="btn-toolbar float-md-end" role="toolbar" aria-label="Toolbar with button groups ">
                         <div class="btn-group me-2" role="group" aria-label="First group">
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-success"
-                            @click="openModalWorkOrder()"
-                          >
+                          <button type="button" class="btn btn-sm btn-success" @click="openModalWorkOrder()">
                             <i class="bi bi-plus" role="button"></i> เพิ่มเครื่องมือ
                           </button>
                           <!-- <button
@@ -794,14 +746,8 @@ onMounted(() => {
                     โปรดระบุรายการเครื่องมือ
                   </div>
                   <!-- ###################### MODAL ############################ -->
-                  <BModal
-                    :id="infoProduct.item_id"
-                    v-model="visibleModalEditItem"
-                    :title="infoProduct.product_name"
-                    :ok-only="true"
-                    @ok="submitDiscountItem(null)"
-                    scrollable
-                  >
+                  <BModal :id="infoProduct.item_id" v-model="visibleModalEditItem" :title="infoProduct.product_name"
+                    :ok-only="true" @ok="submitDiscountItem(null)" scrollable>
                     <template v-if="infoProduct">
                       <div class="row g-1 mb-2">
                         <div class="col-6">เครื่องมือ</div>
@@ -824,32 +770,26 @@ onMounted(() => {
 
                         <div class="col-6">ส่วนลด Customer</div>
                         <div class="col-6">
-                          <span v-if="infoProduct.discount_customer_percent"
-                            >{{ myCurrency(infoProduct.discount_customer_percent) }} %</span
-                          >
-                          <span v-if="infoProduct.discount_customer"
-                            >({{ myCurrency(infoProduct.discount_customer) }})</span
-                          >
+                          <span v-if="infoProduct.discount_customer_percent">{{
+                            myCurrency(infoProduct.discount_customer_percent) }} %</span>
+                          <span v-if="infoProduct.discount_customer">({{ myCurrency(infoProduct.discount_customer)
+                          }})</span>
                         </div>
 
                         <div class="col-6">ส่วนลด Lab</div>
                         <div class="col-6">
-                          <span v-if="infoProduct.discount_lab_percent"
-                            >{{ myCurrency(infoProduct.discount_lab_percent) }} %
+                          <span v-if="infoProduct.discount_lab_percent">{{ myCurrency(infoProduct.discount_lab_percent) }}
+                            %
                           </span>
-                          <span v-if="infoProduct.discount_lab"
-                            >({{ myCurrency(infoProduct.discount_lab) }})</span
-                          >
+                          <span v-if="infoProduct.discount_lab">({{ myCurrency(infoProduct.discount_lab) }})</span>
                         </div>
 
                         <div class="col-6">ส่วนลด Order Type</div>
                         <div class="col-6">
-                          <span v-if="infoProduct.discount_order_percent"
-                            >{{ myCurrency(infoProduct.discount_order_percent) }} %
+                          <span v-if="infoProduct.discount_order_percent">{{
+                            myCurrency(infoProduct.discount_order_percent) }} %
                           </span>
-                          <span v-if="infoProduct.discount_order"
-                            >({{ myCurrency(infoProduct.discount_order) }})</span
-                          >
+                          <span v-if="infoProduct.discount_order">({{ myCurrency(infoProduct.discount_order) }})</span>
                         </div>
 
                         <div class="col-6">ราคาหลังหักส่วนลด</div>
@@ -861,95 +801,48 @@ onMounted(() => {
                       </div>
                       <div class="input-group input-group-sm mb-3">
                         <label class="input-group-text bg-danger text-white" style="width: 160px">
-                          <i class="bi bi-gift me-2"></i> ส่วนลด Customer</label
-                        >
+                          <i class="bi bi-gift me-2"></i> ส่วนลด Customer</label>
 
-                        <input
-                          type="number"
-                          v-model="formDiscountAdd.discountCustomerValue"
-                          class="form-control form-control-sm"
-                          placeholder="จำนวนเงิน"
-                          min="0"
-                          style="width: 100px"
-                        />
-                        <select
-                          required
-                          class="form-select form-select-sm"
-                          style="width: 90px"
-                          v-model="formDiscountAdd.discountCustomerType"
-                          @change=""
-                        >
+                        <input type="number" v-model="formDiscountAdd.discountCustomerValue"
+                          class="form-control form-control-sm" placeholder="จำนวนเงิน" min="0" style="width: 100px" />
+                        <select required class="form-select form-select-sm" style="width: 90px"
+                          v-model="formDiscountAdd.discountCustomerType" @change="">
                           <option value="percentage" :selected="percentage">%</option>
                           <option value="amount" :selected="amount">บาท</option>
                         </select>
-                        <button
-                          class="btn btn-secondary"
-                          @click="submitDiscountItem('customer')"
-                          type="button"
-                        >
+                        <button class="btn btn-secondary" @click="submitDiscountItem('customer')" type="button">
                           <i class="bi bi-plus"></i>
                         </button>
                       </div>
 
                       <div class="input-group input-group-sm mb-3">
                         <label class="input-group-text bg-danger text-white" style="width: 160px">
-                          <i class="bi bi-gift me-2"></i> ส่วนลด Lab</label
-                        >
+                          <i class="bi bi-gift me-2"></i> ส่วนลด Lab</label>
 
-                        <input
-                          type="number"
-                          v-model="formDiscountAdd.discountLabValue"
-                          class="form-control form-control-sm"
-                          placeholder="จำนวนเงิน"
-                          min="0"
-                          style="width: 100px"
-                        />
-                        <select
-                          required
-                          class="form-select form-select-sm"
-                          style="width: 90px"
-                          v-model="formDiscountAdd.discountLabType"
-                          @change=""
-                        >
+                        <input type="number" v-model="formDiscountAdd.discountLabValue"
+                          class="form-control form-control-sm" placeholder="จำนวนเงิน" min="0" style="width: 100px" />
+                        <select required class="form-select form-select-sm" style="width: 90px"
+                          v-model="formDiscountAdd.discountLabType" @change="">
                           <option value="percentage" :selected="percentage">%</option>
                           <option value="amount" :selected="amount">บาท</option>
                         </select>
-                        <button
-                          class="btn btn-secondary"
-                          @click="submitDiscountItem('lab')"
-                          type="button"
-                        >
+                        <button class="btn btn-secondary" @click="submitDiscountItem('lab')" type="button">
                           <i class="bi bi-plus"></i>
                         </button>
                       </div>
 
                       <div class="input-group input-group-sm mb-3">
                         <label class="input-group-text bg-danger text-white" style="width: 160px">
-                          <i class="bi bi-gift me-2"></i> ส่วนลด Order Type</label
-                        >
+                          <i class="bi bi-gift me-2"></i> ส่วนลด Order Type</label>
 
-                        <input
-                          type="number"
-                          v-model="formDiscountAdd.discountOrderValue"
-                          class="form-control form-control-sm"
-                          placeholder="จำนวนเงิน"
-                          min="0"
-                          style="width: 100px"
-                        />
-                        <select
-                          required
-                          class="form-select form-select-sm"
-                          style="width: 90px"
-                          v-model="formDiscountAdd.discountOrderType"
-                        >
+                        <input type="number" v-model="formDiscountAdd.discountOrderValue"
+                          class="form-control form-control-sm" placeholder="จำนวนเงิน" min="0" style="width: 100px" />
+                        <select required class="form-select form-select-sm" style="width: 90px"
+                          v-model="formDiscountAdd.discountOrderType">
                           <option value="percentage" :selected="percentage">%</option>
                           <option value="amount" :selected="amount">บาท</option>
                         </select>
-                        <button
-                          class="btn btn-secondary"
-                          @click="submitDiscountItem('order')"
-                          type="button"
-                        >
+                        <button class="btn btn-secondary" @click="submitDiscountItem('order')" type="button">
                           <i class="bi bi-plus"></i>
                         </button>
                       </div>
@@ -957,40 +850,25 @@ onMounted(() => {
                   </BModal>
 
                   <!-- ######################## TABLE ######################## -->
-                  <BTable
-                    busyLoadingText="กำหลังโหลด.."
-                    stickyHeader
-                    responsive
-                    hover
-                    small
-                    caption-top
-                    bordered
-                    :items="formInvoice.items"
-                    :fields="tableFields"
-                    :busy="loading"
-                  >
+                  <BTable busyLoadingText="กำหลังโหลด.." stickyHeader responsive hover small caption-top bordered
+                    :items="formInvoice.items" :fields="tableFields" :busy="loading">
                     <template #cell(index)="row">
                       {{ row.index + 1 }}
                     </template>
 
                     <template #cell(actions)="row">
-                      <BButton
-                        size="sm"
-                        class="mr-1"
-                        variant="outline-secondary"
-                        @click="openModalEditItem(row.item, row.index)"
-                      >
-                        <i class="bi bi-pen"></i>
-                      </BButton>
+                      <BButtonGroup>
+                        <BButton size="sm" class="mr-1" variant="light" @click="openModalEditItem(row.item, row.index)">
+                          <i class="bi bi-pen"></i>
+                        </BButton>
+                        <BButton size="sm" class="mr-1" variant="light" @click="confirmRemoveItems(row.item, row.index)">
+                          <i class="bi bi-trash"></i>
+                        </BButton>
+                      </BButtonGroup>
                     </template>
                     <template #cell(price)="row">
-                      <BInput
-                        type="number"
-                        min="0"
-                        v-model="row.item.price"
-                        style="width: 80px"
-                        @change="updateInvoiceInput($event, row, 'price')"
-                      />
+                      <BInput type="number" min="0" v-model="row.item.price" style="width: 80px"
+                        @change="updateInvoiceInput($event, row, 'price')" />
                       <!-- <BButton
                         size="sm"
                         class="mr-1"
@@ -1001,34 +879,23 @@ onMounted(() => {
                       </BButton> -->
                     </template>
                     <template #cell(discount_customer)="row">
-                      <product-discount-detail
-                        :index="row.index"
-                        v-model:data="row.item"
-                        fieldAmount="discount_customer"
-                        fieldPercent="discount_customer_percent"
-                      />
+                      <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_customer"
+                        fieldPercent="discount_customer_percent" />
                     </template>
                     <template #cell(discount_lab)="row">
-                      <product-discount-detail
-                        :index="row.index"
-                        v-model:data="row.item"
-                        fieldAmount="discount_lab"
-                        fieldPercent="discount_lab_percent"
-                      />
+                      <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_lab"
+                        fieldPercent="discount_lab_percent" />
                     </template>
                     <template #cell(discount_order)="row">
-                      <product-discount-detail
-                        :index="row.index"
-                        v-model:data="row.item"
-                        fieldAmount="discount_order"
-                        fieldPercent="discount_order_percent"
-                      />
+                      <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_order"
+                        fieldPercent="discount_order_percent" />
                     </template>
                     <template #cell(discount)="row">
                       {{ myCurrency(row.item.discount) }}
                     </template>
                     <template #cell(net)="row">
-                      {{ myCurrency(row.item.net) }}
+
+                      {{ myCurrency((row.item.net)) }}
                     </template>
                   </BTable>
                   <!-- ################################################## -->
@@ -1038,47 +905,25 @@ onMounted(() => {
                     <div class="col-12 col-sm-6" style="font-size: 14px">
                       <div class="input-group input-group-sm mb-3">
                         <label class="input-group-text bg-danger text-white">
-                          <i class="bi bi-gift me-2"></i> ส่วนลดลูกค้า</label
-                        >
+                          <i class="bi bi-gift me-2"></i> ส่วนลดลูกค้า</label>
 
-                        <input
-                          type="number"
-                          v-model="discountCustomer"
-                          class="form-control form-control-sm"
-                          placeholder="จำนวนเงิน"
-                          min="0"
-                          style="width: 100px"
-                        />
-                        <select
-                          required
-                          class="form-select form-select-sm"
-                          style="width: 90px"
-                          v-model="discountCustomerType"
-                          @change="onChangeDiscountType"
-                        >
+                        <input type="number" v-model="discountCustomer" class="form-control form-control-sm"
+                          placeholder="จำนวนเงิน" min="0" style="width: 100px" />
+                        <select required class="form-select form-select-sm" style="width: 90px"
+                          v-model="discountCustomerType" @change="onChangeDiscountType">
                           <option value="percentage" :selected="percentage">%</option>
                           <option value="amount" :selected="amount">บาท</option>
                         </select>
-                        <button
-                          class="btn btn-secondary"
-                          @click="addDiscountCustomer"
-                          type="button"
-                        >
+                        <button class="btn btn-secondary" @click="addDiscountCustomer" type="button">
                           <i class="bi bi-plus"></i>
                         </button>
                       </div>
                     </div>
                     <div class="col-12 col-sm-6" style="font-size: 14px">
                       <div class="input-group input-group-sm mb-3">
-                        <label class="input-group-text bg-danger text-white"
-                          ><i class="bi bi-gift me-2"></i> ส่วนลดท้ายบิล</label
-                        >
-                        <input
-                          type="number"
-                          v-model="formInvoice.total_bill_discount"
-                          class="text-end"
-                          min="0"
-                        />
+                        <label class="input-group-text bg-danger text-white"><i class="bi bi-gift me-2"></i>
+                          ส่วนลดท้ายบิล</label>
+                        <input type="number" v-model="formInvoice.total_bill_discount" class="text-end" min="0" />
                       </div>
                     </div>
                   </div>
@@ -1158,11 +1003,8 @@ onMounted(() => {
                       </div>
                     </div>
                     <div class="col-12">
-                      <textarea
-                        v-model="formInvoice.remark"
-                        class="form-control"
-                        placeholder="Remark หมายเหตุ..."
-                      ></textarea>
+                      <textarea v-model="formInvoice.remark" class="form-control"
+                        placeholder="Remark หมายเหตุ..."></textarea>
                     </div>
                   </div>
                 </section>
@@ -1177,22 +1019,14 @@ onMounted(() => {
                 <!-- <button class="btn btn-outline-secondary btn-md mx-1" type="button">
                   <i class="bi bi-calculator"></i> คำนวณ
                 </button> -->
-                <button
-                  class="btn btn-outline-secondary btn-md mx-1"
-                  type="button"
-                  v-if="formMode == 'edit'"
-                >
+                <button class="btn btn-outline-secondary btn-md mx-1" type="button" v-if="formMode == 'edit'">
                   <i class="bi bi-eye"></i> ดูตัวอย่าง
                 </button>
                 <button class="btn btn-primary btn-md mx-1" type="submit" @click="saveAsDraft()">
                   <i class="bi bi-save"></i> บันทึก (ฉบับร่าง)
                 </button>
-                <button
-                  class="btn btn-primary btn-md mx-1"
-                  type="submit"
-                  @click="saveAndSend()"
-                  v-if="formMode == 'edit'"
-                >
+                <button class="btn btn-primary btn-md mx-1" type="submit" @click="saveAndSend()"
+                  v-if="formMode == 'edit'">
                   <i class="bi bi-save"></i> บันทึกและส่ง
                 </button>
               </div>
@@ -1207,33 +1041,52 @@ onMounted(() => {
         </div>
       </div>
 
-      <ModalWorkOrder
-        ref="modalWorkOrder"
-        @select="addItems"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
-      />
-      <ModalCustomer
-        ref="modalCustomer"
-        @select="onSelectCustomer"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
-        @clear="
-          () => {
-            formInvoice.customer_id = ''
-            formInvoice.customer_name = ''
-          }
-        "
-      />
-      <ModalContact
-        ref="modalContact"
-        @select="onSelectContact"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
-        @clear="
-          () => {
-            formInvoice.contact_id = ''
-            formInvoice.contact_name = ''
-          }
-        "
-      />
+      <ModalWorkOrder ref="modalWorkOrder" @select="addItems"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
+      <ModalCustomer ref="modalCustomer" @select="onSelectCustomer"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" @clear="() => {
+          formInvoice.customer_id = ''
+          formInvoice.customer_name = ''
+        }
+          " />
+      <ModalContact ref="modalContact" @select="onSelectContact"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" @clear="() => {
+          formInvoice.contact_id = ''
+          formInvoice.contact_name = ''
+        }
+          " />
+
+      <BModal v-if="itemView" v-model="visibleModalConfirmDel" id="modal__confirmDelItems" @ok="removeItems(itemView)"
+        okTitle="ใช่" ok-variant="danger" cancel-title="ไม่ใช่"
+        @cancel="() => { itemView = {}; visibleModalConfirmDel = false; }">
+        <template #header>
+          ยืนยันลบรายการ ?
+        </template>
+        <!-- <template #footer>
+          <BButton variant="danger" @click="removeItems(itemView)"><i class="bi bi-trash"></i> ใช่</BButton>
+          <BButton variant="secondary" @click="() => { itemView = {}; visibleModalEditItem = false }"><i
+              class="bi bi-x"></i> ไม่ใช่</BButton>
+        </template> -->
+
+        <p>
+          <BTableSimple responsive stacked>
+            <BTbody>
+              <BTr>
+                <BTh rowspan="3" class="text-center">{{ itemView.product_name }}</BTh>
+                <BTh stacked-heading="Item Code" class="text-start"> {{ itemView.bill_items_code }}</BTh>
+                <BTd stacked-heading="ID No.">{{ itemView.id_no }}</BTd>
+                <BTd stacked-heading="Model">{{ itemView.model }}</BTd>
+                <BTd stacked-heading="S/N.">{{ itemView.serialnumber }}</BTd>
+                <BTd stacked-heading="ราคา">{{ myCurrency(itemView.price) }}</BTd>
+                <BTd stacked-heading="ส่วนลดทั้งหมด">{{ myCurrency(itemView.discount) }}</BTd>
+                <BTd stacked-heading="คงเหลือ">{{ myCurrency(itemView.total) }}</BTd>
+
+              </BTr>
+            </BTbody>
+          </BTableSimple>
+
+        </p>
+      </BModal>
     </section>
   </div>
 </template>

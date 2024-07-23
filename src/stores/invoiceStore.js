@@ -12,7 +12,7 @@ export const useInvoiceStore = defineStore('invoice', {
       cartMsgSuccess: '',
       form: {
         vat_percent: appStore.settings.vat,
-        items: []
+        items: [],
       },
       carts: [],
       invoice: {},
@@ -84,7 +84,6 @@ export const useInvoiceStore = defineStore('invoice', {
     async loadCart() {
       this.cartLoading = true
       const { data } = await api.get('v2/invoices/cart').catch(() => (this.cartLoading = false))
-      console.log(data)
       this.carts = data
       this.cartLoading = false
     },

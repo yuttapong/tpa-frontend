@@ -58,7 +58,7 @@
               <tbody>
                 <tr v-for="(item, index) in items" :key="index">
                   <th scope="row">
-                    <template v-if="!existCarts(item)">
+                    <template v-if="!item.invoice_item_id">
                       <button class="btn btn-secondary btn-sm d-block" type="button" @click="selectItem(item)">
                         <i class="bi bi-plus"></i>
                       </button>

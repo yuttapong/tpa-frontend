@@ -30,16 +30,16 @@ import { createBootstrap } from 'bootstrap-vue-next'
 
 const ability = createMongoAbility()
 
-const app = createApp(App)
 const pinia = createPinia()
-
 pinia.use(piniaPersist)
-
 pinia.use(({ store }) => {
   store.ability = markRaw(ability)
 })
-app.use(abilitiesPlugin, ability)
+
+const app = createApp(App)
+
 app.use(pinia)
+app.use(abilitiesPlugin, ability)
 app.use(router)
 app.use(createBootstrap())
 app.use(VueSweetalert2)
@@ -51,5 +51,5 @@ app.component('EasyDataTable', Vue3EasyDataTable)
 app.mount('#app')
 
 if (import.meta.env.DEV) {
-  console.log('ENV', import.meta.env)
+  //console.log('ENV', import.meta.env)
 }

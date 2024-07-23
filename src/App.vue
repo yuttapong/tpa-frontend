@@ -3,13 +3,17 @@ import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import Navbar from './components/layouts/Navbar.vue'
 import { useAppStore } from './stores/appStore'
+import { api } from './helpers/api';
 
-const appStore = useAppStore()
-const getSettings = async () => {
-  const { data } = await api.get('/v2/configs')
-  if (data) {
-  }
-}
+// const appStore = useAppStore()
+// const getSettings = async () => {
+//   const data = await api.get('/v2/configs')
+//   if (data) {
+//   }
+// }
+
+
+// getSettings()
 </script>
 
 <template>

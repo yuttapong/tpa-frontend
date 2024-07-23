@@ -1,15 +1,14 @@
-import * as currency from 'currency.js'
-
 const locales = localStorage.getItem('lang')
 const myFormatLang = locales ? locales : 'th-TH'
 import { format, isValid } from 'date-fns'
 import { th } from 'date-fns/locale'
+import currency from 'currency.js'
 
 export const myCurrency = (value) => {
   if (value === undefined) return
   if (value === null) return
   if (value === '') return
-  return parseFloat(value.toLocaleString()).toFixed(2)
+  return currency(value, { precision: 2, separator: ',', symbol: '' }).format()
 }
 export const myFormatDate = (value, options) => {
   if (!value) {
@@ -19,7 +18,7 @@ export const myFormatDate = (value, options) => {
   if (value === undefined) return
   if (value === null) return
   if (value === '') return
-  if (!isValidDate) return
+  // if (!isValidDate) return
   return format(value, 'dd/MM/yyyy')
   let op = {
     dateStyle: 'short', //  full, long, medium, short

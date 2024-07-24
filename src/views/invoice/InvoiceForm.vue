@@ -136,9 +136,10 @@ const addItems = async (item) => {
   let total = Number(item.total)
   let grand_total = Number(item.total)
   let row = {
-    item_code: item.item_code,
-    item_id: item.item_id,
+    item_id: 0,
     bill_id: item.bill_id,
+    bill_items_code: item.item_code,
+    bill_items_id: item.item_id,
     bill_code: item?.bill.code,
     product_name: item.product_name,
     product_id: item.product_id,
@@ -169,60 +170,87 @@ const addItems = async (item) => {
   // if (!row.invoice_item_id) {
   let items = []
   items.push(row)
-  const { data, status } = await api.post(`v2/invoices/${invoiceId.value}/items`, {
-    items: items,
+  console.log("add items", row);
+  formInvoice.value.items.push(row)
+  toast(`เพิ่มรายการเรียบร้อย`, {
+    theme: 'auto',
+    type: 'info',
+    autoClose: 500,
+    dangerouslyHTMLString: true,
   })
-  console.log(status, data);
-  if (status == 200) {
-    toast(`${data?.message}`, {
-      theme: 'auto',
-      type: 'info',
-      dangerouslyHTMLString: true,
-    })
-    formInvoice.value.items.push(row)
-    calculate()
-    getInvoice(invoiceId.value)
-  }
-  if (status == 422) {
-    toast(`${data?.message}`, {
-      theme: 'auto',
-      type: 'warning',
-      transition: 'zoom',
-      dangerouslyHTMLString: true,
-      autoClose: 15000,
-      position: 'top-center'
-    })
-  }
+  calculate()
+
+  // const { data, status } = await api.post(`v2/invoices/${invoiceId.value}/items`, {
+  //   form: formInvoice.value,
+  //   items: items,
+  // })
+  // if (status == 200) {
+  //   let last = data.data.items.length - 1;
+  //   let record = data.data.items[last]
+  //   console.log('add item', record);
+  //   formInvoice.value.items.push(record)
+  //   calculate()
+  //   toast(`${data?.message}`, {
+  //     theme: 'auto',
+  //     type: 'info',
+  //     dangerouslyHTMLString: true,
+  //   })
 
   // }
+  // if (status == 422) {
+  //   toast(`${data?.message}`, {
+  //     theme: 'auto',
+  //     type: 'warning',
+  //     transition: 'zoom',
+  //     dangerouslyHTMLString: true,
+  //     autoClose: 15000,
+  //     position: 'top-center'
+  //   })
+  // }
+
+
 }
 const confirmRemoveItems = (row, index) => {
-  itemView.value = row
-  visibleModalConfirmDel.value = true
-  console.log('confirm remove');
+  formInvoice.value.items.splice(index, 1)
+  return;
+  if (row.item_id == 0) {
+    formInvoice.value.items.splice(index, 1)
+
+  } else {
+    itemView.value = row
+    visibleModalConfirmDel.value = true
+    console.log('confirm remove');
+  }
+
 }
 
 const removeItems = async (row, index) => {
-
-
-  let items = []
-  items.push(row)
-  const { data } = await api.delete(`v2/invoices/${invoiceId.value}/items`, {
-    data: {
-      items: items
-    },
-  })
-
-  if (data) {
+  if (row.item_id < 1) {
     let x = formInvoice.value.items
-    formInvoice.value.items = x.filter(item => item.item_id != row.item_id)
-    toast(`${data?.message}`, {
-      theme: 'auto',
-      type: 'success',
-      dangerouslyHTMLString: true,
+    delete x[index]
+    formInvoice.value.items = x
+
+  } else {
+    let items = []
+    items.push(row)
+    const { data } = await api.delete(`v2/invoices/${invoiceId.value}/items`, {
+      data: {
+        form: formInvoice.value,
+        items: items
+      },
     })
-    calculate()
-    setTimeout(() => save(), 500)
+
+    if (data) {
+      let x = formInvoice.value.items
+      formInvoice.value.items = x.filter(item => item.item_id != row.item_id)
+      // toast(`${data?.message}`, {
+      //   theme: 'auto',
+      //   type: 'success',
+      //   dangerouslyHTMLString: true,
+      // })
+      calculate()
+    }
+
   }
 
 }
@@ -273,8 +301,12 @@ const openModalCustomer = () => {
   modalCustomer.value.show()
 }
 const openModalEditItem = (row, index) => {
+  console.log('edit item', index, row);
   infoProduct.value = row
   formDiscountAdd.value.index = index
+  formDiscountAdd.value.discountCustomerType = row?.discount_customer_type;
+  formDiscountAdd.value.discountLabType = row?.discount_lab_type;
+  formDiscountAdd.value.discountOrderType = row?.discount_order_type
   visibleModalEditItem.value = true
 }
 
@@ -303,6 +335,7 @@ const formDiscountAdd = ref({
 })
 
 const submitDiscountItem = (type) => {
+  if (!type) return false
   let row = infoProduct.value
   let percent = 0
   let amount = 0
@@ -317,6 +350,7 @@ const submitDiscountItem = (type) => {
           amount = Number(formDiscountAdd.value.discountCustomerValue)
           percent = (Number(formDiscountAdd.value.discountCustomerValue) * 100) / total
         }
+        row.discount_customer_type = formDiscountAdd.value.discountCustomerType
         row.discount_customer_percent = percent
         row.discount_customer = amount
         row.discount =
@@ -328,8 +362,9 @@ const submitDiscountItem = (type) => {
           }
           return item
         })
+        console.log(row);
         formDiscountAdd.value.discountCustomerValue = 0
-
+        calculate()
         break
       case 'lab':
         if (formDiscountAdd.value.discountLabType == 'percentage') {
@@ -339,6 +374,7 @@ const submitDiscountItem = (type) => {
           amount = Number(formDiscountAdd.value.discountLabValue)
           percent = (Number(formDiscountAdd.value.discountLabValue) * 100) / total
         }
+        row.discount_customer_type = formDiscountAdd.value.discountLabType
         row.discount_lab_percent = percent
         row.discount_lab = amount
         row.discount =
@@ -351,7 +387,7 @@ const submitDiscountItem = (type) => {
           return item
         })
         formDiscountAdd.value.discountLabValue = 0
-
+        calculate()
         break
       case 'order':
         if (formDiscountAdd.value.discountOrderType == 'percentage') {
@@ -361,6 +397,7 @@ const submitDiscountItem = (type) => {
           amount = Number(formDiscountAdd.value.discountOrderValue)
           percent = (Number(formDiscountAdd.value.discountOrderValue) * 100) / total
         }
+        row.discount_customer_type = formDiscountAdd.value.discountOrderType
         row.discount_order_percent = percent
         row.discount_order = amount
         row.discount =
@@ -373,12 +410,13 @@ const submitDiscountItem = (type) => {
           return item
         })
         formDiscountAdd.value.discountOrderValue = 0
+        calculate()
         break
     }
 
     formDiscountAdd.value.index = null
   }
-  calculate()
+
 }
 
 const calculate = () => {
@@ -396,6 +434,10 @@ const calculate = () => {
     return item
   })
   formInvoice.value.items = items
+  formInvoice.totaldiscount = totalAllDiscount.value;
+  formInvoice.totalprice = totalPrice.value;
+  formInvoice.totavat = totalVat.value;
+  formInvoice.totalnet = totalNet.value;
 }
 
 
@@ -437,6 +479,8 @@ const addDiscountCustomer = () => {
 
   formInvoice.value.items = items
   discountCustomer.value = 0
+  calculate()
+
   // let unit = discountType === 'percentage' ? '%' : 'บาท'
   // toast(`เพิ่มส่วนลด : ${discountValue} ${unit} สำเร็จ`, {
   //   theme: 'auto',
@@ -583,7 +627,7 @@ const save = async () => {
 const tableFields = [
   { key: 'index', label: '#' },
   { key: 'actions', label: 'Actions' },
-  { key: 'bill_code', sortable: true },
+  { key: 'bill_items_code', label: 'Item Code', sortable: true },
   { key: 'product_name', label: 'รายการ', sortable: true },
   { key: 'price', label: 'ราคา', sortable: true },
   { key: 'discount_customer', label: 'ส่วนลด Cust', sortable: true },
@@ -846,6 +890,11 @@ onMounted(() => {
                           <i class="bi bi-plus"></i>
                         </button>
                       </div>
+                      {{ formDiscountAdd }}
+                      <hr>
+                      {{ infoProduct.discount_customer_type }}<br>
+                      {{ infoProduct.discount_lab_type }}<br>
+                      {{ infoProduct.discount_order_type }}<br>
                     </template>
                   </BModal>
 
@@ -881,14 +930,17 @@ onMounted(() => {
                     <template #cell(discount_customer)="row">
                       <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_customer"
                         fieldPercent="discount_customer_percent" />
+                      {{ row.item.discount_customer_type }}
                     </template>
                     <template #cell(discount_lab)="row">
                       <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_lab"
                         fieldPercent="discount_lab_percent" />
+                      {{ row.item.discount_lab_type }}
                     </template>
                     <template #cell(discount_order)="row">
                       <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_order"
                         fieldPercent="discount_order_percent" />
+                      {{ row.item.discount_order_type }}
                     </template>
                     <template #cell(discount)="row">
                       {{ myCurrency(row.item.discount) }}

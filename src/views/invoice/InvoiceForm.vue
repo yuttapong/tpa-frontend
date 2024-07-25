@@ -38,7 +38,7 @@ const visibleModalConfirmDel = ref(false)
 const itemView = ref({})
 const errors = ref([])
 const formMode = computed(() => {
-  if (formInvoice.value.code !== undefined) {
+  if (formInvoice.value?.code !== undefined) {
     return 'edit'
   } else {
     return 'add'
@@ -179,36 +179,6 @@ const addItems = async (item) => {
     dangerouslyHTMLString: true,
   })
   calculate()
-
-  // const { data, status } = await api.post(`v2/invoices/${invoiceId.value}/items`, {
-  //   form: formInvoice.value,
-  //   items: items,
-  // })
-  // if (status == 200) {
-  //   let last = data.data.items.length - 1;
-  //   let record = data.data.items[last]
-  //   console.log('add item', record);
-  //   formInvoice.value.items.push(record)
-  //   calculate()
-  //   toast(`${data?.message}`, {
-  //     theme: 'auto',
-  //     type: 'info',
-  //     dangerouslyHTMLString: true,
-  //   })
-
-  // }
-  // if (status == 422) {
-  //   toast(`${data?.message}`, {
-  //     theme: 'auto',
-  //     type: 'warning',
-  //     transition: 'zoom',
-  //     dangerouslyHTMLString: true,
-  //     autoClose: 15000,
-  //     position: 'top-center'
-  //   })
-  // }
-
-
 }
 const confirmRemoveItems = (row, index) => {
   formInvoice.value.items.splice(index, 1)
@@ -287,7 +257,7 @@ const totalAllDiscount = computed(() => {
   return Number(totalDiscount.value) + discountBill
 })
 const totalPriceAfterDiscount = computed(() => {
-  return totalPrice.value - totalAllDiscount.value
+  return totalPrice.value - (totalAllDiscount.value)
 })
 const totalVat = computed(() => {
   let total = (totalPriceAfterDiscount.value * vatPercent.value) / 100
@@ -297,6 +267,8 @@ const totalNet = computed(() => {
   let net = totalPriceAfterDiscount.value + totalVat.value
   return net
 })
+
+
 const openModalCustomer = () => {
   modalCustomer.value.show()
 }
@@ -339,82 +311,121 @@ const submitDiscountItem = (type) => {
   let row = infoProduct.value
   let percent = 0
   let amount = 0
-  let total = Number(row.price)
+  const price = row.price
+
+  row.total = price
   if (type) {
     switch (type) {
       case 'customer':
         if (formDiscountAdd.value.discountCustomerType == 'percentage') {
           percent = Number(formDiscountAdd.value.discountCustomerValue)
-          amount = (Number(formDiscountAdd.value.discountCustomerValue) * total) / 100
+          amount = (Number(formDiscountAdd.value.discountCustomerValue) * price) / 100
         } else {
           amount = Number(formDiscountAdd.value.discountCustomerValue)
-          percent = (Number(formDiscountAdd.value.discountCustomerValue) * 100) / total
+          percent = (Number(formDiscountAdd.value.discountCustomerValue) * 100) / price
         }
         row.discount_customer_type = formDiscountAdd.value.discountCustomerType
         row.discount_customer_percent = percent
         row.discount_customer = amount
         row.discount =
           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-        row.net = Number(total) - Number(row.discount)
+        row.net = Number(price) - Number(row.discount)
         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
           if (itemKey === formDiscountAdd.value.index) {
             item = row
           }
           return item
         })
-        console.log(row);
-        formDiscountAdd.value.discountCustomerValue = 0
         calculate()
+        formDiscountAdd.value.discountCustomerValue = 0
         break
       case 'lab':
         if (formDiscountAdd.value.discountLabType == 'percentage') {
           percent = Number(formDiscountAdd.value.discountLabValue)
-          amount = (Number(formDiscountAdd.value.discountLabValue) * total) / 100
+          amount = (Number(formDiscountAdd.value.discountLabValue) * price) / 100
         } else {
           amount = Number(formDiscountAdd.value.discountLabValue)
-          percent = (Number(formDiscountAdd.value.discountLabValue) * 100) / total
+          percent = (Number(formDiscountAdd.value.discountLabValue) * 100) / price
         }
-        row.discount_customer_type = formDiscountAdd.value.discountLabType
+        row.discount_lab_type = formDiscountAdd.value.discountLabType
         row.discount_lab_percent = percent
         row.discount_lab = amount
         row.discount =
           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-        row.net = Number(total) - Number(row.discount)
+        row.net = Number(price) - Number(row.discount)
         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
           if (itemKey === formDiscountAdd.value.index) {
             item = row
           }
           return item
         })
-        formDiscountAdd.value.discountLabValue = 0
         calculate()
+        formDiscountAdd.value.discountLabValue = 0
         break
       case 'order':
         if (formDiscountAdd.value.discountOrderType == 'percentage') {
           percent = Number(formDiscountAdd.value.discountOrderValue)
-          amount = (Number(formDiscountAdd.value.discountOrderValue) * total) / 100
+          amount = (Number(formDiscountAdd.value.discountOrderValue) * price) / 100
         } else {
           amount = Number(formDiscountAdd.value.discountOrderValue)
-          percent = (Number(formDiscountAdd.value.discountOrderValue) * 100) / total
+          percent = (Number(formDiscountAdd.value.discountOrderValue) * 100) / price
         }
-        row.discount_customer_type = formDiscountAdd.value.discountOrderType
+        row.discount_order_type = formDiscountAdd.value.discountOrderType
         row.discount_order_percent = percent
         row.discount_order = amount
         row.discount =
           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-        row.net = Number(total) - Number(row.discount)
+        row.net = Number(price) - Number(row.discount)
         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
           if (itemKey === formDiscountAdd.value.index) {
             item = row
           }
           return item
         })
+        calculate()
         formDiscountAdd.value.discountOrderValue = 0
+        break
+      case 'price':
+        // discount customer
+        if (row.discount_customer_type == 'percentage') {
+          row.discount_customer_percent = Number(row.discount_customer_percent)
+          row.discount_customer = (Number(row.discount_customer_percent) * price) / 100
+        } else if (row.discount_customer_type == 'amount') {
+          row.discount_customer = Number(row.discount_customer)
+          row.discount_customer_percent = (Number(row.discount_customer) * 100) / price
+        }
+        // discount lab
+        if (row.discount_lab_type == 'percentage') {
+          row.discount_lab_percent = Number(row.discount_lab_percent)
+          row.discount_lab = (Number(row.discount_lab_percent) * price) / 100
+        } else if (row.discount_lab_type == 'amount') {
+          row.discount_lab = Number(row.discount_lab)
+          row.discount_lab_percent = (Number(row.discount_lab) * 100) / price
+
+        }
+        // discount order
+        if (row.discount_order_type == 'percentage') {
+          row.discount_order_percent = Number(row.discount_order_percent)
+          row.discount_order = (Number(row.discount_order_percent) * price) / 100
+        } else if (row.discount_order_type == 'amount') {
+          row.discount_order = Number(row.discount_order)
+          row.discount_order_percent = (Number(row.discount_order) * 100) / price
+
+        }
+        //console.log('price', row.discount_customer_percent, row.discount_customer, row.discount_customer_type);
+
+        row.discount =
+          Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
+        row.net = Number(price) - Number(row.discount)
+        formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
+          if (itemKey === formDiscountAdd.value.index) {
+            item = row
+          }
+          return item
+        })
         calculate()
         break
     }
-
-    formDiscountAdd.value.index = null
   }
 
 }
@@ -465,6 +476,7 @@ const addDiscountCustomer = () => {
         percent = Number((discountValue * 100) / total).toFixed(2)
       }
     }
+    item.discount_customer_type = discountType
     item.discount_customer = amount
     item.discount_customer_percent = percent
 
@@ -480,14 +492,6 @@ const addDiscountCustomer = () => {
   formInvoice.value.items = items
   discountCustomer.value = 0
   calculate()
-
-  // let unit = discountType === 'percentage' ? '%' : 'บาท'
-  // toast(`เพิ่มส่วนลด : ${discountValue} ${unit} สำเร็จ`, {
-  //   theme: 'auto',
-  //   type: 'info',
-  //   dangerouslyHTMLString: true,
-  // })
-
 }
 
 const onSelectCustomer = (data) => {
@@ -555,7 +559,7 @@ const save = async () => {
   setTimeout(async () => {
     formInvoice.value.items = items.value
     formInvoice.value.totalprice = totalPrice.value
-    formInvoice.value.totaldiscount = totalDiscount.value
+    formInvoice.value.totaldiscount = totalDiscount.value // ไม่รวมส่วนลดท้ายบิล
     formInvoice.value.totalvat = (totalPriceAfterDiscount.value * vatPercent.value) / 100
     formInvoice.value.totalnet = totalNet.value
     formInvoice.value.staff_id = appStore.user.id
@@ -649,6 +653,9 @@ onMounted(() => {
     getInvoice(invoiceId.value)
   }
 
+})
+onUpdated(() => {
+  invoiceStore.setForm(formInvoice.value)
 })
 </script>
 <template>
@@ -791,7 +798,7 @@ onMounted(() => {
                   </div>
                   <!-- ###################### MODAL ############################ -->
                   <BModal :id="infoProduct.item_id" v-model="visibleModalEditItem" :title="infoProduct.product_name"
-                    :ok-only="true" @ok="submitDiscountItem(null)" scrollable>
+                    :ok-only="true" @ok="calculate()" scrollable>
                     <template v-if="infoProduct">
                       <div class="row g-1 mb-2">
                         <div class="col-6">เครื่องมือ</div>
@@ -801,8 +808,8 @@ onMounted(() => {
                         <div class="col-6">{{ infoProduct.bill_items_code }}</div>
 
                         <div class="col-6">ราคา</div>
-                        <div class="col-6">{{ myCurrency(infoProduct.price) }}</div>
-                        <!-- <div class="col-3">
+                        <div class="col-3">{{ myCurrency(infoProduct.price) }}</div>
+                        <div class="col-3">
                           <div class="input-group input-group-sm">
                             <input type="number" class="form-control form-control-sm" v-model="infoProduct.price"
                               min="0" />
@@ -810,17 +817,25 @@ onMounted(() => {
                                 class="bi bi-save"></i></button>
                           </div>
 
-                        </div> -->
+                        </div>
 
-                        <div class="col-6">ส่วนลด Customer</div>
+                        <div class="col-6">ส่วนลด Customer
+                          <!-- <small v-if="infoProduct.discount_customer_type">
+                            ({{ infoProduct.discount_customer_type }})
+                          </small> -->
+                        </div>
                         <div class="col-6">
                           <span v-if="infoProduct.discount_customer_percent">{{
-                            myCurrency(infoProduct.discount_customer_percent) }} %</span>
+                            myCurrency(infoProduct.discount_customer_percent) }} % </span>
                           <span v-if="infoProduct.discount_customer">({{ myCurrency(infoProduct.discount_customer)
                           }})</span>
                         </div>
 
-                        <div class="col-6">ส่วนลด Lab</div>
+                        <div class="col-6">ส่วนลด Lab
+                          <!-- <small v-if="infoProduct.discount_lab_type">
+                            ({{ infoProduct.discount_lab_type }})
+                          </small> -->
+                        </div>
                         <div class="col-6">
                           <span v-if="infoProduct.discount_lab_percent">{{ myCurrency(infoProduct.discount_lab_percent) }}
                             %
@@ -828,7 +843,11 @@ onMounted(() => {
                           <span v-if="infoProduct.discount_lab">({{ myCurrency(infoProduct.discount_lab) }})</span>
                         </div>
 
-                        <div class="col-6">ส่วนลด Order Type</div>
+                        <div class="col-6">ส่วนลด Order Type
+                          <!-- <small v-if="infoProduct.discount_order_type">
+                            ({{ infoProduct.discount_order_type }})
+                          </small> -->
+                        </div>
                         <div class="col-6">
                           <span v-if="infoProduct.discount_order_percent">{{
                             myCurrency(infoProduct.discount_order_percent) }} %
@@ -890,11 +909,8 @@ onMounted(() => {
                           <i class="bi bi-plus"></i>
                         </button>
                       </div>
-                      {{ formDiscountAdd }}
-                      <hr>
-                      {{ infoProduct.discount_customer_type }}<br>
-                      {{ infoProduct.discount_lab_type }}<br>
-                      {{ infoProduct.discount_order_type }}<br>
+
+
                     </template>
                   </BModal>
 
@@ -916,8 +932,7 @@ onMounted(() => {
                       </BButtonGroup>
                     </template>
                     <template #cell(price)="row">
-                      <BInput type="number" min="0" v-model="row.item.price" style="width: 80px"
-                        @change="updateInvoiceInput($event, row, 'price')" />
+                      {{ myCurrency(row.item.price) }}
                       <!-- <BButton
                         size="sm"
                         class="mr-1"
@@ -930,17 +945,17 @@ onMounted(() => {
                     <template #cell(discount_customer)="row">
                       <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_customer"
                         fieldPercent="discount_customer_percent" />
-                      {{ row.item.discount_customer_type }}
+                      <!-- {{ row.item.discount_customer_type }} -->
                     </template>
                     <template #cell(discount_lab)="row">
                       <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_lab"
                         fieldPercent="discount_lab_percent" />
-                      {{ row.item.discount_lab_type }}
+                      <!-- {{ row.item.discount_lab_type }} -->
                     </template>
                     <template #cell(discount_order)="row">
                       <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_order"
                         fieldPercent="discount_order_percent" />
-                      {{ row.item.discount_order_type }}
+                      <!-- {{ row.item.discount_order_type }} -->
                     </template>
                     <template #cell(discount)="row">
                       {{ myCurrency(row.item.discount) }}
@@ -980,7 +995,7 @@ onMounted(() => {
                     </div>
                   </div>
 
-                  <!-- #################### SUMMAYRY ####################### -->
+                  <!-- #################### START SUMMAYRY ####################### -->
                   <div class="row g-1">
                     <div class="col-12 col-md-6" style="font-size: 14px">
                       <div class="row border border-danger m-1">
@@ -1059,6 +1074,7 @@ onMounted(() => {
                         placeholder="Remark หมายเหตุ..."></textarea>
                     </div>
                   </div>
+                  <!-- #################### END SUMMAYRY ####################### -->
                 </section>
               </form>
             </div>
@@ -1071,10 +1087,10 @@ onMounted(() => {
                 <!-- <button class="btn btn-outline-secondary btn-md mx-1" type="button">
                   <i class="bi bi-calculator"></i> คำนวณ
                 </button> -->
-                <button class="btn btn-outline-secondary btn-md mx-1" type="button" v-if="formMode == 'edit'">
+                <!-- <button class="btn btn-outline-secondary btn-md mx-1" type="button" v-if="formMode == 'edit'">
                   <i class="bi bi-eye"></i> ดูตัวอย่าง
-                </button>
-                <button class="btn btn-primary btn-md mx-1" type="submit" @click="saveAsDraft()">
+                </button> -->
+                <button class="btn btn-success btn-md mx-1" type="submit" @click="saveAsDraft()">
                   <i class="bi bi-save"></i> บันทึก (ฉบับร่าง)
                 </button>
                 <button class="btn btn-primary btn-md mx-1" type="submit" @click="saveAndSend()"

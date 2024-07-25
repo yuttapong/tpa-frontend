@@ -9,7 +9,7 @@ const invoiceStore = useInvoiceStore()
 
 const invoiceItems = computed(() => invoiceStore.items)
 
-onMounted(() => {})
+onMounted(() => { })
 </script>
 <template>
   <div class="pagetitle">
@@ -36,10 +36,7 @@ onMounted(() => {})
               <div class="row">
                 <div class="col-6">
                   <p>
-                    <img
-                      src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg"
-                      height="60"
-                    />
+                    <img src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg" height="60" />
                   </p>
                 </div>
                 <div class="col-6">
@@ -69,6 +66,7 @@ onMounted(() => {})
                       <td>{{ 1 }}</td>
                       <td>{{ parseFloat(item.discount).toLocaleString() }}</td>
                       <td>{{ parseFloat(item.total).toLocaleString() }}</td>
+
                     </tr>
                   </tbody>
                   <tfoot>
@@ -88,13 +86,9 @@ onMounted(() => {})
           <div class="card-body pt-3">
             <div class="row">
               <div class="col-12">
-                <router-link
-                  :to="{ name: 'invoices.create' }"
-                  class="btn btn-sm btn-secondary w-100"
-                >
+                <router-link :to="{ name: 'invoices.create' }" class="btn btn-sm btn-secondary w-100">
                   <i class="bi bi-pencil"></i>
-                  แก้ไข</router-link
-                >
+                  แก้ไข</router-link>
               </div>
             </div>
           </div>
@@ -115,7 +109,7 @@ div[size='A4'] {
   margin-bottom: 0.5cm;
   box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
 
-  > p,
+  >p,
   span,
   li,
   td {
@@ -130,6 +124,7 @@ div[size='A4'][layout='portrait'] {
 }
 
 @media print {
+
   body,
   page {
     margin: 0;

@@ -122,7 +122,6 @@ search()
 onMounted(() => {
   modalView.value = new Modal(modalViewRef.value)
   modalView.value.hide()
-  invoiceStore.loadCart()
 })
 watch(
   serverOptions,

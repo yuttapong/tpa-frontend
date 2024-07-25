@@ -29,6 +29,50 @@ export const useInvoiceStore = defineStore('invoice', {
     countMyCart(state) {
       return state.myCartItems.length || 0
     },
+    totalPrice(state) {
+      return state.invoice.items
+        ? state.invoice.items.reduce((total, item) => (total += Number(item.price)), 0)
+        : 0
+    },
+
+    totalBillDiscount(state) {
+      return state.invoice.total_bill_discount || 0
+    },
+    totalLabDiscount(state) {
+      return state.invoice.items
+        ? state.invoice.items.reduce((total, item) => (total += Number(item.discount_lab)), 0)
+        : 0
+    },
+    totalOrderTypeDiscount(state) {
+      return state.invoice.items
+        ? state.invoice.items.reduce((total, item) => (total += Number(item.discount_order)), 0)
+        : 0
+    },
+    totalCustomerTypeDiscount(state) {
+      return state.invoice.items
+        ? state.invoice.items.reduce((total, item) => (total += Number(item.discount_customer)), 0)
+        : 0
+    },
+    totalDiscount(state) {
+      return state.invoice.items
+        ? state.invoice.items.reduce((total, item) => (total += Number(item.discount)), 0)
+        : 0
+    },
+    totalAllDiscount(state) {
+      let discountBill = Number(state.invoice.total_bill_discount) || 0
+      return Number(this.totalDiscount) + discountBill
+    },
+    totalPriceAfterDiscount(state) {
+      return this.totalPrice - this.totalAllDiscount
+    },
+    totalVat(state) {
+      let total = (this.totalPriceAfterDiscount * 7) / 100
+      return total
+    },
+    totalNet(state) {
+      let net = this.totalPriceAfterDiscount + this.totalVat
+      return net
+    },
   },
   actions: {
     hasSelectedItem(item) {

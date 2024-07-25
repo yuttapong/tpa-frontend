@@ -4,7 +4,7 @@ import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import ProductMeta from '@/views/invoice/components/ProductMeta.vue'
-import {  myFormatDate } from '@/helpers/myformat'
+import { myFormatDate, myCurrency } from '@/helpers/myformat'
 
 const invoiceStore = useInvoiceStore()
 
@@ -91,14 +91,96 @@ onMounted(() => { })
           </tfoot>
         </table>
       </div>
-      <div class="row g-3">
+      <!-- <div class="row g-3">
         <div class="col-3"></div>
         <div class="col-3">Total Price: {{ parseFloat(data?.totalprice).toLocaleString() }}</div>
         <div class="col-3">
           Total Discount : {{ parseFloat(data?.totaldiscount).toLocaleString() }}
         </div>
         <div class="col-3">Total Net : {{ parseFloat(data?.totalnet).toLocaleString() }}</div>
+      </div> -->
+
+      <!-- #################### START SUMMAYRY ####################### -->
+
+      <div class="row g-1">
+        <div class="col-12 col-md-6" style="font-size: 14px">
+          <div class="row border border-danger m-1">
+            <!-- <div class="col-6 text-end">ส่วนลด Customer</div>
+            <div class="col-6">
+              <div class="text-end fw-bold">
+                - {{ myCurrency(data.totaldiscount) }}
+              </div>
+            </div>
+
+            <div class="col-6 text-end">ส่วนลด Lab</div>
+            <div class="col-6">
+              <div class="text-end fw-bold">- {{ myCurrency(data.totalLabDiscount) }}</div>
+            </div>
+            <div class="col-6 text-end">ส่วนลด Order Type</div>
+            <div class="col-6">
+              <div class="text-end fw-bold">
+                - {{ myCurrency(data?.totalOrderTypeDiscount) }}
+              </div>
+            </div> -->
+            <div class="col-6 text-end">ส่วนลดสินค้า</div>
+            <div class="col-6">
+              <div class="text-end fw-bold text-danger">
+                - {{ myCurrency(invoiceStore.totalDiscount) }}
+              </div>
+            </div>
+            <div class="col-6 text-end">ส่วนลดท้ายบิล</div>
+            <div class="col-6">
+              <div class="text-end fw-bold text-danger">- {{ myCurrency(invoiceStore.totalBillDiscount) }}</div>
+            </div>
+
+
+          </div>
+        </div>
+        <div class="col-12 col-md-6" style="font-size: 14px">
+          <div class="row">
+            <div class="col-6 text-end">รวมเงิน</div>
+            <div class="col-6">
+              <div class="text-end fw-bold">{{ myCurrency(data.totalprice) }}</div>
+            </div>
+          </div>
+          <div class="row" v-if="data?.totaldiscount > 0">
+            <div class="col-6 text-end">ส่วนลดทั้งหมด</div>
+            <div class="col-6">
+              <div class="text-end fw-bold text-danger">
+                - {{ myCurrency(invoiceStore.totalAllDiscount) }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 text-end">คงเหลือ</div>
+            <div class="col-6">
+              <div class="text-end fw-bold text-decoration-underline">
+                {{ myCurrency(invoiceStore.totalPriceAfterDiscount) }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 text-end">VAT {{ data?.vat || 7 }}%</div>
+            <div class="col-6">
+              <div class="text-end fw-bold text-decoration-underline">
+                {{ myCurrency(data?.totalvat) }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 text-end">จำนวนเงินทั้งสิ้น</div>
+            <div class="col-6">
+              <div class="text-end fw-bold h4 text-decoration-underline">
+                {{ myCurrency(data?.totalnet) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <!-- <textarea v-model="data?.remark" class="form-control" placeholder="Remark หมายเหตุ..."></textarea> -->
+        </div>
       </div>
+      <!-- #################### END SUMMAYRY ####################### -->
     </div>
 
   </section>

@@ -8,34 +8,69 @@
             {{ props.customer.name }}
           </h5>
 
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="my-2">
             <form @submit.prevent="search()">
               <div class="d-flex gap-2">
                 <div class="discountLab">
-                  <input type="search" v-model="formSearchProduct.bill_code" class="form-control form-control-sm"
-                    placeholder="เลขที่ใบขอรับบริการ" @keyup.enter="search()" />
+                  <input
+                    type="search"
+                    v-model="formSearchProduct.bill_code"
+                    class="form-control form-control-sm"
+                    placeholder="เลขที่ใบขอรับบริการ"
+                    @keyup.enter="search()"
+                  />
                 </div>
                 <div class="discountLab">
-                  <input type="search" v-model="formSearchProduct.item_code" class="form-control form-control-sm"
-                    placeholder="เลขที่ WorderOrder" @keyup.enter="search()" />
+                  <input
+                    type="search"
+                    v-model="formSearchProduct.item_code"
+                    class="form-control form-control-sm"
+                    placeholder="เลขที่ WorderOrder"
+                    @keyup.enter="search()"
+                  />
                 </div>
                 <div class="discountLab">
-                  <input type="search" v-model="formSearchProduct.customer_id" class="form-control form-control-sm"
-                    placeholder="Customer ID" @keyup.enter="search()" />
+                  <input
+                    type="search"
+                    v-model="formSearchProduct.customer_id"
+                    class="form-control form-control-sm"
+                    placeholder="Customer ID"
+                    @keyup.enter="search()"
+                  />
                 </div>
 
                 <div class="">
                   <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
-                  <spinner :visible="workorderLoading || invoiceStore.cartLoading" class="mx-2 p-0" />
+                  <spinner
+                    :visible="workorderLoading || invoiceStore.cartLoading"
+                    class="mx-2 p-0"
+                  />
                 </div>
               </div>
               <div class="">
-                <input v-model="filterSource" type="radio" value="all" :checked="filterSource == 'all'"> ทั้งหมด
-                <input v-model="filterSource" type="radio" class="ms-3" value="customer"
-                  :checked="filterSource == 'customer'"> {{ customer.name }}
+                <input
+                  v-model="filterSource"
+                  type="radio"
+                  value="all"
+                  :checked="filterSource == 'all'"
+                />
+                ทั้งหมด
+                <input
+                  v-model="filterSource"
+                  type="radio"
+                  class="ms-3"
+                  value="customer"
+                  :checked="filterSource == 'customer'"
+                />
+                {{ customer.name }}
               </div>
             </form>
           </div>
@@ -58,8 +93,12 @@
               <tbody>
                 <tr v-for="(item, index) in items" :key="index">
                   <th scope="row">
-                    <template v-if="!item.invoice_item_id">
-                      <button class="btn btn-secondary btn-sm d-block" type="button" @click="selectItem(item)">
+                    <template v-if="!existCarts(item)">
+                      <button
+                        class="btn btn-secondary btn-sm d-block"
+                        type="button"
+                        @click="selectItem(item)"
+                      >
                         <i class="bi bi-plus"></i>
                       </button>
                     </template>
@@ -89,15 +128,19 @@
               </tbody>
             </table>
           </div>
-
           <!-- End small tables -->
         </div>
         <div class="modal-footer m-0 p-1 d-block">
           <div class="row">
             <div class="col-xs-10 col-md-10">
-              <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-                :on-click="onChangePage" class="" />
+              <vue-awesome-paginate
+                :total-items="pagination.total"
+                :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow"
+                v-model="pagination.current_page"
+                :on-click="onChangePage"
+                class=""
+              />
             </div>
 
             <div class="col-xs-2 col-md-2">
@@ -128,7 +171,7 @@ const props = defineProps({
   },
   data: {
     type: Object,
-    default: () => { },
+    default: () => {},
   },
   customer: {
     type: Object,
@@ -169,8 +212,12 @@ const _show = () => {
 }
 
 const existCarts = (data) => {
-  if (!invoiceStore.carts) return 0
-  const find = invoiceStore.carts.filter((item) => item.item_id == data.item_id)
+  if (!invoiceStore.invoiceItems) return 0
+  const find = invoiceStore.invoiceItems.filter((item) => {
+    if (item.bill_items_id == data.item_id) {
+      return item
+    }
+  })
   return Boolean(find.length)
 }
 
@@ -217,9 +264,9 @@ const selectItem = (data) => {
 const filterSource = ref()
 onMounted(() => {
   if (props.customer.id !== undefined) {
-    filterSource.value = "customer"
+    filterSource.value = 'customer'
   } else {
-    filterSource.value = "all"
+    filterSource.value = 'all'
   }
   modalEl = new Modal(modalRef.value)
   search()

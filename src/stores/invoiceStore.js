@@ -29,6 +29,9 @@ export const useInvoiceStore = defineStore('invoice', {
     countMyCart(state) {
       return state.myCartItems.length || 0
     },
+    invoiceItems(state) {
+      return state.form.items ? state.form.items : []
+    },
     totalPrice(state) {
       return state.invoice.items
         ? state.invoice.items.reduce((total, item) => (total += Number(item.price)), 0)

@@ -7,12 +7,7 @@
             <h5 class="modal-title">
               รายชื่อ <span v-if="_companyId">CustomerID: {{ _companyId }}</span>
             </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="d-flex gap-5">
@@ -26,40 +21,20 @@
             <form @submit.prevent="search()" class="my-2">
               <div class="d-flex gap-2">
                 <div class="">
-                  <input
-                    type="search"
-                    v-model="formSearch.q"
-                    class="form-control form-control-sm"
-                    placeholder="ชื่อ, สกุล"
-                    autofocus
-                    @keyup.enter="search()"
-                  />
+                  <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
+                    placeholder="ชื่อ, สกุล" autofocus @keyup.enter="search()" />
                 </div>
                 <div class="">
-                  <input
-                    type="search"
-                    v-model="formSearch.taxnumber"
-                    class="form-control form-control-sm"
-                    placeholder="taxnumber"
-                    @keyup.enter="search()"
-                  />
+                  <input type="search" v-model="formSearch.taxnumber" class="form-control form-control-sm"
+                    placeholder="taxnumber" @keyup.enter="search()" />
                 </div>
                 <div class="">
-                  <input
-                    type="search"
-                    v-model="formSearch.customer_id"
-                    class="form-control form-control-sm"
-                    placeholder="Customer ID"
-                    @keyup.enter="search()"
-                  />
+                  <input type="search" v-model="formSearch.customer_id" class="form-control form-control-sm"
+                    placeholder="Customer ID" @keyup.enter="search()" />
                 </div>
 
                 <div class="">
-                  <button
-                    type="submit"
-                    class="btn btn-light btn-sm"
-                    :disabled="loading"
-                  ><i class="bi bi-search"></i>
+                  <button type="submit" class="btn btn-light btn-sm" :disabled="loading"><i class="bi bi-search"></i>
                   </button>
                 </div>
               </div>
@@ -84,21 +59,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(item, index) in items"
-                    :key="index"
-                    :class="{ 'table-success': item.id == selectedItems.id }"
-                  >
+                  <tr v-for="(item, index) in items" :key="index"
+                    :class="{ 'table-success': item.id == selectedItems.id }">
                     <th scope="row">
                       <!-- <button class="btn btn-secondary btn-sm d-block" @click="selectProduct(item)">
                         <i class="bi bi-plus"></i>
                       </button> -->
-                      <input
-                        class="form-check-input"
-                        type="radio"
-                        v-model="selectedItems"
-                        :value="item"
-                      />
+                      <input class="form-check-input" type="radio" v-model="selectedItems" :value="item" />
                     </th>
                     <td>
                       <span class="">{{ item.id }}</span>
@@ -106,11 +73,7 @@
                     <td>
                       <div class="">
                         {{ item.contactname }}
-                        <div
-                          style="font-size: 12px"
-                          v-if="item.contactposition"
-                          class="mx-1 p-1 text-danger"
-                        >
+                        <div style="font-size: 12px" v-if="item.contactposition" class="mx-1 p-1 text-danger">
                           {{ item.contactposition }}
                         </div>
                         <div style="font-size: 12px" v-if="item.company" class="mx-1 p-1 text-info">
@@ -134,14 +97,9 @@
             <!-- End small tables -->
           </div>
           <div class="modal-footer d-block">
-            <vue-awesome-paginate
-              :total-items="pagination.total"
-              :items-per-page="pagination.per_page"
-              :max-pages-shown="appStore.settings.page.maxPageShow"
-              v-model="pagination.current_page"
-              :on-click="onChangePage"
-              class=""
-            />
+            <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+              :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+              :on-click="onChangePage" class="" />
 
             <div class="float-end">
               <div class="input-group input-group-sm">
@@ -168,11 +126,11 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'
-const emit = defineEmits(['search', 'onHide', 'onShow', 'select'])
+const emit = defineEmits(['search', 'onHide', 'onShow', 'onSelect'])
 const props = defineProps({
   data: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
   title: {
     type: Object,
@@ -214,13 +172,13 @@ const search = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const onChangePage = async (page) => {
   pagination.value.current_page = page
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const loadData = async () => {
   let params = {
@@ -259,7 +217,7 @@ const hide = () => {
 }
 
 const select = () => {
-  emit('select', selectedItems.value)
+  emit('onSelect', selectedItems.value)
   selectedItems.value = []
   hide()
 }
@@ -287,7 +245,7 @@ watch(onlyOne, () => {
 })
 onMounted(() => {
   modal = new Modal(modalElement.value)
-  search()
+
 })
 defineExpose({ show, hide })
 </script>

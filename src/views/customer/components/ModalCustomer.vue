@@ -7,53 +7,27 @@
             <div class="modal-toolbar">
               <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link active"
-                    id="home-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#home"
-                    type="button"
-                    role="tab"
-                    aria-controls="home"
-                    aria-selected="true"
-                  >
+                  <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
+                    role="tab" aria-controls="home" aria-selected="true">
                     <i class="bi bi-person"></i>
                     ลูกค้า ({{ pagination.total }})
                   </button>
                 </li>
 
                 <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link"
-                    id="contact-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#contact"
-                    type="button"
-                    role="tab"
-                    aria-controls="contact"
-                    aria-selected="false"
-                  >
+                  <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+                    role="tab" aria-controls="contact" aria-selected="false">
                     <i class="bi bi-person-vcard"></i>
                     รายชื่อ ({{ contacts.length }})
                   </button>
                 </li>
               </ul>
             </div>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-2">
             <div class="tab-content" id="customer">
-              <div
-                class="tab-pane fade show active"
-                id="home"
-                role="tabpanel"
-                aria-labelledby="home-tab"
-              >
+              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                 <form @submit.prevent="searchCustomer()">
                   <div class="d-flex gap-2">
                     <div>
@@ -62,23 +36,12 @@
                       </button>
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.q"
-                        class="form-control form-control-sm"
-                        placeholder="ชื่อบริษัท"
-                        autofocus
-                        @keyup.enter="searchCustomer()"
-                      />
+                      <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
+                        placeholder="ชื่อบริษัท" autofocus @keyup.enter="searchCustomer()" />
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="taxnumber"
-                        @keyup.enter="searchCustomer()"
-                      />
+                      <input type="search" v-model="formSearch.taxnumber" class="form-control form-control-sm"
+                        placeholder="taxnumber" @keyup.enter="searchCustomer()" />
                     </div>
 
                     <div class="">
@@ -94,21 +57,11 @@
                 </div>
 
                 <ul class="list-unstyled my-2">
-                  <li
-                    v-for="(item, index) in items"
-                    :key="index"
-                    :class="
-                      { 'bg-info': item.id == selectedCustomers.id } + ' border bg-light mb-2 row'
-                    "
-                  >
+                  <li v-for="(item, index) in items" :key="index" :class="{ 'bg-info': item.id == selectedCustomers.id } + ' border bg-light mb-2 row'
+                    ">
                     <div class="col-1">
-                      <input
-                        class="form-check-input mt-3 ms-2"
-                        type="radio"
-                        v-model="selectedCustomers"
-                        :value="item"
-                        @click="clickCustomer(item)"
-                      />
+                      <input class="form-check-input mt-3 ms-2" type="radio" v-model="selectedCustomers" :value="item"
+                        @click="clickCustomer(item)" />
                     </div>
 
                     <div class="col-8 ms-4">
@@ -122,10 +75,7 @@
                       </div>
                     </div>
                     <div class="col-1">
-                      <button
-                        class="btn btn-link btn-sm text-right"
-                        @click="editCustomer(item, index)"
-                      >
+                      <button class="btn btn-link btn-sm text-right" @click="editCustomer(item, index)">
                         <i class="bi bi-pencil"></i>
                       </button>
                     </div>
@@ -142,14 +92,8 @@
                       </button>
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearchContact.q"
-                        class="form-control form-control-sm"
-                        placeholder="ชื่อ"
-                        autofocus
-                        @keyup.enter="onSearchContact()"
-                      />
+                      <input type="search" v-model="formSearchContact.q" class="form-control form-control-sm"
+                        placeholder="ชื่อ" autofocus @keyup.enter="onSearchContact()" />
                     </div>
 
                     <div class="">
@@ -160,31 +104,19 @@
                   </div>
                 </form>
                 <ul class="list-unstyled my-2">
-                  <li
-                    v-for="(item, index) in contacts"
-                    :key="index"
-                    :class="
-                      { 'bg-info': item.id == selectedContacts.id } + ' border bg-light my-2 ps-2'
-                    "
-                  >
+                  <li v-for="(item, index) in contacts" :key="index" :class="{ 'bg-info': item.id == selectedContacts.id } + ' border bg-light my-2 ps-2'
+                    ">
                     <div class="float-start d-inline-block">
-                      <input
-                        class="form-check-input"
-                        type="radio"
-                        v-model="selectedContacts"
-                        :value="item"
-                      />
+                      <input class="form-check-input" type="radio" v-model="selectedContacts" :value="item" />
                     </div>
 
                     <div class="d-inline-block ms-3">
                       {{ item.contactname }}
                       <div class="text-secondary">
-                        <small class="mx-2" v-if="item.contacttel1"
-                          ><i class="bi bi-phone"></i> {{ item.contacttel1 }}</small
-                        >
-                        <small class="mx-2" v-if="item.contacttel2"
-                          ><i class="bi bi-phone"></i> {{ item.contacttel2 }}</small
-                        >
+                        <small class="mx-2" v-if="item.contacttel1"><i class="bi bi-phone"></i> {{ item.contacttel1
+                        }}</small>
+                        <small class="mx-2" v-if="item.contacttel2"><i class="bi bi-phone"></i> {{ item.contacttel2
+                        }}</small>
                       </div>
                     </div>
                     <div class="float-end d-inline-block">
@@ -201,35 +133,21 @@
           <div class="modal-footer d-block">
             <!-- <span class="fw-bold bg-danger text-white p-1"> {{ selectedItems.length }}</span> -->
 
-            <vue-awesome-paginate
-              :total-items="pagination.total"
-              :items-per-page="pagination.per_page"
-              :max-pages-shown="5"
-              v-model="pagination.current_page"
-              :on-click="onChangePage"
-              class=""
-            />
+            <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+              :max-pages-shown="5" v-model="pagination.current_page" :on-click="onChangePage" class="" />
             <div class="float-end">
-            <div class="input-group input-group-sm">
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                @click="select"
-                v-show="selectedCustomers.id || selectedContacts.contactid"
-              >
-                <i class="bi bi-check-circle"></i> เลือก
-              </button>
-              <button
-                type="button"
-                class="btn btn-danger btn-sm"
-                @click="onClearAll"
-              >
-                <i class="bi bi-trash"></i> ไม่เลือก
-              </button>
-              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-                <i class="bi bi-x"></i> ปิด
-              </button>
-            </div>
+              <div class="input-group input-group-sm">
+                <button type="button" class="btn btn-primary btn-sm" @click="select"
+                  v-show="selectedCustomers.id || selectedContacts.contactid">
+                  <i class="bi bi-check-circle"></i> เลือก
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" @click="onClearAll">
+                  <i class="bi bi-trash"></i> ไม่เลือก
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                  <i class="bi bi-x"></i> ปิด
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -243,7 +161,7 @@ import { ref, onMounted, watch } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'
-const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'select'])
+const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'onSelect'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -254,7 +172,7 @@ const props = defineProps({
   },
   data: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
   title: {
     type: String,
@@ -290,14 +208,14 @@ const searchCustomer = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
   emit('onSearch', formSearch.value)
 }
 const onChangePage = async (page) => {
   pagination.value.current_page = page
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const loadData = async () => {
   let params = {
@@ -370,7 +288,7 @@ const onClearContact = (row, index) => {
 }
 
 const show = () => {
-  // searchCustomer()
+  searchCustomer()
   emit('onShow', selectedCustomers.value)
   modal.show()
 }
@@ -380,7 +298,7 @@ const hide = () => {
 }
 
 const select = () => {
-  emit('select', {
+  emit('onSelect', {
     customers: selectedCustomers.value,
     contacts: selectedContacts.value,
   })
@@ -395,7 +313,7 @@ const clickCustomer = (item) => {
 }
 onMounted(() => {
   modal = new Modal(modalElement.value)
-  loadData()
+
 })
 // watch(props.customer, (p) => {
 //   if (p.customer) {

@@ -18,6 +18,7 @@ import { api } from './helpers/api';
 
 <template>
   <RouterView />
+  <BModalOrchestrator />
 </template>
 
 <style scoped>

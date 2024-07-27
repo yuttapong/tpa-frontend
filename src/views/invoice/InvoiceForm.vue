@@ -23,7 +23,6 @@ const pagination = ref({
   per_page: appStore.settings.page.perPage,
   current_page: 1,
 })
-const { confirm } = useModalController()
 const loading = ref(false)
 const hasError = ref(false)
 const router = useRouter()
@@ -47,6 +46,8 @@ const formMode = computed(() => {
     return 'add'
   }
 })
+const modeModalBill = ref("customer")
+
 const invoiceStore = useInvoiceStore()
 
 const formSearch = ref({
@@ -193,10 +194,10 @@ const addItems = async (item) => {
   calculate()
 }
 
-const addBill = async (bill, billItems) => {
-
+const fillDataBill = async (bill, billItems) => {
+  console.log(bill, billItems);
   let items = []
-  if (items.length > 0) {
+  if (billItems.length > 0) {
     billItems.map((item) => {
       let price = Number(item.total)
       let qty = 1
@@ -238,13 +239,30 @@ const addBill = async (bill, billItems) => {
     })
   }
 
-  toast(`เพิ่มรายการเรียบร้อย`, {
-    theme: 'auto',
-    type: 'info',
-    autoClose: 500,
-    dangerouslyHTMLString: true,
-  })
   calculate()
+  setTimeout(() => save(), 1000)
+}
+
+
+const fillDataCustomer = async (bill, billItems) => {
+  if (bill) {
+    let addressText = (`${bill?.address_name} ${bill?.address_detail} ${bill?.address_province} ${bill?.address_zipcode}`).trim()
+    let data = {
+      customer_id: bill?.company_id,
+      customer_name: bill?.address_name,
+      address: addressText,
+      phone: bill?.address_phone,
+      contact_id: bill?.agent_id,
+      contact_name: bill?.agent_name,
+    }
+    formInvoice.value.customer_id = data.customer_id
+    formInvoice.value.customer_name = data.customer_name
+    formInvoice.value.address = data.address
+    formInvoice.value.phone = data.phone
+    formInvoice.value.contact_id = data.contact_id
+    formInvoice.value.contact_name = data.contact_name
+
+  }
 }
 
 const confirmRemoveItems = (row, index) => {
@@ -301,42 +319,45 @@ const openModalCustomer = () => {
   modalCustomer.value.show()
 }
 
+const isEmpty = (v) => {
+  if (typeof v === null)
+    return true
+}
 /**
  * แสดง Modal แก้ไขรายการ
  */
 const openModalEditItem = (row, index) => {
-  console.log('edit item', index, row)
+
   infoProduct.value = row
   formDiscountAdd.value.index = index
-  formDiscountAdd.value.discountCustomerType = row.discount_customer_type
-  formDiscountAdd.value.discountLabType = row.discount_lab_type
-  formDiscountAdd.value.discountOrderType = row.discount_order_type
+  let defaultDiscountType = 'amount'
+
+  formDiscountAdd.value.discountCustomerType = row.discount_customer_type ? row.discount_customer_type : defaultDiscountType
+  formDiscountAdd.value.discountLabType = row.discount_lab_type ? row.discount_lab_type : defaultDiscountType
+  formDiscountAdd.value.discountOrderType = row.discount_order_type ? row.discount_order_type : defaultDiscountType
+
   if (row.discount_customer_type == 'percentage') {
-    formDiscountAdd.value.discountCustomerValue = row?.discount_customer_percent
+    formDiscountAdd.value.discountCustomerValue = Number(row?.discount_customer_percent)
   } else if (row.discount_customer_type == 'amount') {
-    formDiscountAdd.value.discountCustomerValue = row?.discount_customer
-  } else if (!row.discount_customer_type) {
-    row.discount_customer_type = 'amount'
-    formDiscountAdd.value.discountCustomerValue = row?.discount_customer
+    formDiscountAdd.value.discountCustomerValue = Number(ow?.discount_customer)
   }
+
+  // lab
   if (row.discount_lab_type == 'percentage') {
-    formDiscountAdd.value.discountLabValue = row?.discount_lab_percent
+    formDiscountAdd.value.discountLabValue = Number(row?.discount_lab_percent)
   } else if (row.discount_lab_type == 'amount') {
-    formDiscountAdd.value.discountLabValue = row?.discount_lab
-  } else if (!row.discount_lab_type) {
-    row.discount_lab_type = 'amount'
-    formDiscountAdd.value.discountLabValue = row?.discount_lab
+    formDiscountAdd.value.discountLabValue = Number(row?.discount_lab)
   }
+
+  // order
   if (row.discount_order_type == 'percentage') {
-    formDiscountAdd.value.discountOrderValue = row?.discount_order_percent
+    formDiscountAdd.value.discountOrderValue = Number(row?.discount_order_percent)
   } else if (row.discount_order_type == 'amount') {
-    formDiscountAdd.value.discountOrderValue = row?.discount_order
-  } else if (!row.discount_order_type) {
-    row.discount_order_type = 'amount'
-    formDiscountAdd.value.discountOrderValue = row?.discount_order
+    formDiscountAdd.value.discountOrderValue = Number(row?.discount_order)
   }
 
   visibleModalEditItem.value = true
+
 }
 
 const updateDiscountItem = (type) => {
@@ -344,7 +365,7 @@ const updateDiscountItem = (type) => {
   let row = infoProduct.value
   let percent = 0
   let amount = 0
-  const price = row.price
+  const price = Number(row.price)
 
   row.total = price
   if (type) {
@@ -574,14 +595,11 @@ const onChangeDueWithin = (e) => {
 
 const saveAsDraft = () => {
   formInvoice.value.invoice_status = 'draft'
-  if (confirm('ยันยันบันทึกใบแจ้งหนี้เป็นฉบับร่าง ?')) {
-    save()
-  }
+  save()
+
 }
 const saveAndSend = () => {
-  formInvoice.value.invoice_status = 'pending'
-  if (confirm('ยันยันบันทึกและส่งใบแจ้งหนี้ ?')) {
-  }
+
 }
 const getInvoice = async (id) => {
   loading.value = true
@@ -624,7 +642,6 @@ const save = async () => {
         })
       if (data) {
         loading.value = false
-        formInvoice.value = data?.data
         formInvoice.value = data?.data
         toast(data.message, {
           theme: 'auto',
@@ -723,8 +740,17 @@ onUpdated(() => {
         <div class="col-12 col-md-12">
           <div class="card m-0">
             <div class="card-body p-2">
-              <spinner :visible="loading" />
 
+              <div class="d-flex gap-2 my-3">
+                <button class=" btn btn-outline-secondary btn-sm mx-1" type="button" @click="openModalBill()">
+                  <i class="bi bi-search"></i> ดึงใบขอรับบริการ
+                </button>
+                <button v-if="formMode === 'edit'" type="button" class="btn btn-sm btn-outline-success"
+                  @click="openModalWorkOrder()">
+                  <i class="bi bi-plus" role="button"></i> เพิ่มเครื่องมือ
+                </button>
+                <spinner :visible="loading" />
+              </div>
               <form @submit.prevent="onSearch()">
                 <div class="border p-1">
                   <div class="row g-2">
@@ -818,22 +844,13 @@ onUpdated(() => {
                         </div>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6">
+                    <!-- <div class="col-12 col-md-6">
                       <div class="btn-toolbar float-md-end" role="toolbar" aria-label="Toolbar with button groups ">
                         <div class="btn-group me-2" role="group" aria-label="First group">
-                          <button type="button" class="btn btn-sm btn-success" @click="openModalWorkOrder()">
-                            <i class="bi bi-plus" role="button"></i> เพิ่มเครื่องมือ
-                          </button>
-                          <!-- <button
-                            type="button"
-                            class="btn btn-sm btn-outline-secondary"
-                            @click="openModalWorkOrder()"
-                          >
-                            <i class="bi bi-plus" role="button"></i> ดึงข้อมูล Invoice ยกเลิก
-                          </button> -->
+
                         </div>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
 
                   <div v-if="errors.items" :class="[{ 'text-danger my-2': errors.items }]">
@@ -917,6 +934,7 @@ onUpdated(() => {
                         <input type="number" v-model="formDiscountAdd.discountCustomerValue"
                           class="form-control form-control-sm" placeholder="จำนวนเงิน" min="0" style="width: 100px"
                           @change="updateDiscountItem('customer')" />
+
                         <select required class="form-select form-select-sm" style="width: 90px"
                           v-model="formDiscountAdd.discountCustomerType" @change="updateDiscountItem('customer')">
                           <option value="percentage" :selected="formDiscountAdd.discountCustomerType == 'percentage'">
@@ -926,13 +944,8 @@ onUpdated(() => {
                             บาท
                           </option>
                         </select>
-                        <!-- <button
-                          class="btn btn-secondary"
-                          @click="updateDiscountItem('customer')"
-                          type="button"
-                        >
-                          <i class="bi bi-plus"></i>
-                        </button> -->
+
+
                       </div>
 
                       <div class="input-group input-group-sm mb-3">
@@ -951,13 +964,7 @@ onUpdated(() => {
                             บาท
                           </option>
                         </select>
-                        <!-- <button
-                          class="btn btn-secondary"
-                          @click="updateDiscountItem('lab')"
-                          type="button"
-                        >
-                          <i class="bi bi-plus"></i>
-                        </button> -->
+
                       </div>
 
                       <div class="input-group input-group-sm mb-3">
@@ -976,13 +983,7 @@ onUpdated(() => {
                             บาท
                           </option>
                         </select>
-                        <!-- <button
-                          class="btn btn-secondary"
-                          @click="updateDiscountItem('order')"
-                          type="button"
-                        >
-                          <i class="bi bi-plus"></i>
-                        </button> -->
+
                       </div>
                     </template>
                   </BModal>
@@ -1053,7 +1054,7 @@ onUpdated(() => {
                       <!-- {{ row.item.discount_order_type }} -->
                     </template>
                     <template #cell(discount)="row">
-                      <div class="fw-bold text-danger text-end">
+                      <div v-if="row.item.discount" class="fw-bold text-danger text-end">
                         -{{ myCurrency(row.item.discount) }}
                       </div>
                     </template>
@@ -1189,9 +1190,7 @@ onUpdated(() => {
                 <button class="btn btn-success btn-md mx-1" type="submit" @click="saveAsDraft()">
                   <i class="bi bi-save"></i> บันทึก (ฉบับร่าง)
                 </button>
-                <button class="btn btn-secondary btn-md mx-1" type="button" @click="openModalBill()">
-                  <i class="bi bi-search"></i> ดึงข้อมูลใบรับบริการ
-                </button>
+
                 <button class="btn btn-primary btn-md mx-1" type="submit" @click="saveAndSend()"
                   v-if="formMode == 'edit'">
                   <i class="bi bi-save"></i> บันทึกและส่ง
@@ -1208,17 +1207,24 @@ onUpdated(() => {
         </div>
       </div>
 
-      <ModalBillSelect ref="modalBill" @select="addBill"
+      <template v-if="formMode === 'add'">
+        <ModalBillSelect mode="customer" ref="modalBill" @onSelect="fillDataCustomer" title="ดึงข้อมูลลูกค้า"
+          :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
+      </template>
+      <template v-if="formMode === 'edit'">
+        <ModalBillSelect mode="bill" ref="modalBill" @onSelect="fillDataBill" title="ดึงข้อมูลเครื่องมือ"
+          :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
+      </template>
+
+      <ModalWorkOrder ref="modalWorkOrder" @onSelect="addItems"
         :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
-      <ModalWorkOrder ref="modalWorkOrder" @select="addItems"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
-      <ModalCustomer ref="modalCustomer" @select="onSelectCustomer"
+      <ModalCustomer ref="modalCustomer" @onSelect="onSelectCustomer"
         :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" @clear="() => {
           formInvoice.customer_id = ''
           formInvoice.customer_name = ''
         }
           " />
-      <ModalContact ref="modalContact" @select="onSelectContact"
+      <ModalContact ref="modalContact" @onSelect="onSelectContact"
         :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" @clear="() => {
           formInvoice.contact_id = ''
           formInvoice.contact_name = ''

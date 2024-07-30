@@ -2,15 +2,14 @@
 import { onMounted, computed, ref, watch } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { myFormatDate } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
-
+import BillCode from '@/views/bill/components/BillCode.vue'
 import InvoiceDetail from '@/views/invoice/components/InvoiceDetail.vue'
 import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/appStore'
 import { invoiceStatuses } from '@/config'
 import { useInvoiceStore } from '@/stores/invoiceStore'
-import { myCurrency } from '@/helpers/myformat'
+import { myCurrency, myFormatDate } from '@/helpers/myformat'
 const row = ref({})
 const items = ref([])
 const appStore = useAppStore()
@@ -28,10 +27,27 @@ const route = useRoute()
 const itemsSelected = ref([])
 route.query.noom = 2
 const formSearch = ref({
+  status: '',
   code: '',
   taxnumber: '',
   q: '',
 })
+
+const sortItems = [
+  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+  { isActive: true, age: 45, first_name: 'Zelda', last_name: 'Macdonald' },
+  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
+  { isActive: false, age: 89, first_name: 'Gary', last_name: 'Wilson' },
+  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
+]
+
+const sortFields = [
+  { key: 'last_name', sortable: true },
+  { key: 'first_name', sortable: true },
+  { key: 'age', sortable: true },
+  { key: 'isActive', sortable: false },
+]
 
 const headers = [
   { text: 'Action', value: 'action' },
@@ -40,18 +56,22 @@ const headers = [
   { text: 'วันที่', value: 'issue_date' },
   { text: 'Due Date', value: 'due_date' },
   { text: 'Total', value: 'totalnet' },
-
   { text: 'ผู้ติดต่อ', value: 'contact_name' },
   { text: 'บริษัท/ลูกค้า', value: 'customer_name' },
   { text: 'สถานะ', value: 'invoice_status' },
-  // { text: 'ส่วนลด Lab', value: 'discount_lab' },
-  // { text: 'ส่วนลด Order.', value: 'discount_order' },
-  // { text: 'ส่วนลด Cust.', value: 'discount_customer' },
-  // { text: 'จำนวน', value: 'qty' },
-  // { text: 'ราคา', value: 'price' },
+]
 
-  // { text: 'รวมเป็นเงิน', value: 'total' },
-  // { text: 'หมายเหตุ', value: 'remark' },
+const tableItems = items.value
+const tableFields = [
+  { label: '#', key: 'index' },
+  { label: 'Action', key: 'actions' },
+  { label: 'code', key: 'code' },
+  { label: 'วันที่', key: 'issue_date' },
+  { label: 'Due Date', key: 'due_date' },
+  { label: 'Total', key: 'totalnet' },
+  { label: 'ผู้ติดต่อ', key: 'contact_name' },
+  { label: 'บริษัท/ลูกค้า', key: 'customer_name' },
+  { label: 'สถานะ', key: 'invoice_status' },
 ]
 
 const serverOptions = ref({
@@ -62,6 +82,7 @@ const onChangePage = (data) => {
   console.log(data)
 }
 const loadData = async () => {
+  loading.value = true
   let params = {
     per_page: pagination.value.per_page,
     page: pagination.value.current_page,
@@ -92,7 +113,7 @@ const getInvoiceById = async (item) => {
       invoiceStore.setInvoice(data)
       loading.value = false
     }
-  } catch (error) { }
+  } catch (error) {}
 }
 
 const showDetail = (item) => {
@@ -105,18 +126,23 @@ const showDetail = (item) => {
 
 const search = async () => {
   pagination.value.current_page = 1
-  pagination.value.total = 0
   try {
     loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
   formSearch.value.q = ''
 }
 const setFilterStatus = (item) => {
+  if (item === null) {
+    formSearch.value.status = ''
+  } else {
+    formSearch.value.status = item.value
+  }
   console.log(item)
-  formSearch.status = item
+
+  search()
 }
 search()
 onMounted(() => {
@@ -148,8 +174,6 @@ watch(
     <!-- End Page Title -->
 
     <section class="section profile">
-      <spinner :visible="loading" />
-
       <!-- <div class="row">
         <div class="col-xl-8">
           <div class="card">
@@ -197,39 +221,69 @@ watch(
               </ul>
               <div class="tab-content pt-2">
                 <div class="tab-pane fade show active qt-index" id="qt-index">
-                  <div>
-                    <button @click="setFilterStatus(null)" class="btn btn-sm btn-light" type="button">
+                  <div class="my-2">
+                    <button
+                      @click="setFilterStatus(null)"
+                      class="btn btn-sm btn-light"
+                      type="button"
+                    >
                       ทั้งหมด
                     </button>
-                    <button v-for="item in invoiceStatuses" :key="item" @click="setFilterStatus(item)"
-                      class="btn btn-sm btn-light" type="button">
+                    <button
+                      v-for="item in invoiceStatuses"
+                      :key="item"
+                      @click="setFilterStatus(item)"
+                      class="btn btn-sm btn-light"
+                      type="button"
+                    >
                       {{ item.text }}
                     </button>
                   </div>
+
                   <form @submit.prevent="search()">
-                    <div class="d-flex gap-2 flex-wrap">
+                    <div class="d-flex gap-2 flex-wrap my-2">
                       <div>
-                        <router-link class="btn btn-sm btn-primary" :to="{ name: 'invoices.create' }">
+                        <router-link
+                          class="btn btn-sm btn-primary"
+                          :to="{ name: 'invoices.create' }"
+                        >
                           <i class="bi bi-plus"></i> สร้างใบแจ้งหนี้
                         </router-link>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
-                            placeholder="Code" @keyup.enter="search" />
+                          <input
+                            type="search"
+                            v-model="formSearch.code"
+                            name="code"
+                            class="form-control form-control-sm"
+                            placeholder="Code"
+                            @keyup.enter="search"
+                          />
                         </div>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
-                            class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                            @keyup.enter="search" />
+                          <input
+                            type="search"
+                            v-model="formSearch.taxnumber"
+                            name="taxnumber"
+                            class="form-control form-control-sm"
+                            placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                            @keyup.enter="search"
+                          />
                         </div>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
-                            placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
+                          <input
+                            type="search"
+                            v-model="formSearch.q"
+                            name="q"
+                            class="form-control form-control-sm"
+                            placeholder="ลูกค้า/ผู้ติดต่อ"
+                            @keyup.enter="search"
+                          />
                         </div>
                       </div>
                       <div>
@@ -237,33 +291,35 @@ watch(
                           <i class="bi bi-search" />
                         </button>
                       </div>
+                      <div><Spinner :visible="loading" /></div>
                     </div>
                   </form>
 
                   <!-- tables -->
 
-                  <EasyDataTable @update-page-items="onChangePage" class="my-3" :headers="headers" :items="items"
-                    alternating v-model:server-options="serverOptions" :server-items-length="4"
-                    v-model:items-selected="itemsSelected" show-index border-cell :loading="invoiceStore.cartLoading"
-                    fixed-header>
-                    <template #item-issue_date="item">
-                      {{ item.issue_date ? myFormatDate(item.issue_date) : '-' }}
+                  <BTable
+                    :items="items"
+                    :fields="tableFields"
+                    :current-page="pagination.current_page"
+                    :per-page="pagination.per_page"
+                    :responsive="true"
+                    :small="true"
+                    class=""
+                  >
+                    <template #cell(index)="row">
+                      {{ row.index + 1 }}
                     </template>
-                    <template #item-due_date="item">
-                      {{ item.due_date ? myFormatDate(item.due_date) : '-' }}
-                    </template>
-                    <template #item-invoice_status="item">
-                      {{ (item?.invoice_status) }}
-                    </template>
-                    <template #item-totalnet="item">
-                      <span class="fw-bold">{{ myCurrency(item.totalnet) }}</span>
-                    </template>
-                    <template #item-action="item">
+
+                    <template #cell(actions)="row">
                       <div class="d-flex gap-1">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" @click="showDetail(item)">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary btn-sm"
+                          @click="showDetail(row.item)"
+                        >
                           <i class="bi bi-eye"></i>
                         </button>
-                        <RouterLink :to="`invoices/edit/${item.id}`">
+                        <RouterLink :to="`invoices/edit/${row.item.id}`">
                           <button type="button" class="btn btn-outline-secondary btn-sm">
                             <i class="bi bi-pen"></i>
                           </button>
@@ -275,18 +331,59 @@ watch(
                         >
                           <i class="bi bi-pen"></i>
                         </button> -->
-                        <button type="button" class="btn btn-outline-secondary btn-sm" @click="() => { }">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary btn-sm"
+                          @click="() => {}"
+                        >
                           <i class="bi bi-trash"></i>
                         </button>
                       </div>
-                      <!-- 
-                      <router-link :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
-                        title="จองคิวห้อง Lab">
-                        <i class="bi bi-calendar mx-1" role="button"></i></router-link>
-                      <router-link :to="{ name: 'bills.formEdit', params: { code: item.code } }">
-                        <i class="bi bi-pencil mx-1" role="button"></i></router-link> -->
                     </template>
-                  </EasyDataTable>
+                    <!-- <template #cell(bill_items_code)="row">
+                      <div style="min-width: 140px" class="">
+                        {{ row.item.bill_items_code }}
+                      </div>
+                    </template> -->
+                    <template #cell(code)="row">
+                      <div class="" style="width: 150px">
+                        <BillCode
+                          :data="row.item.code"
+                          role="button"
+                          @click="showDetail(row.item)"
+                        />
+                      </div>
+                    </template>
+                    <template #cell(due_date)="row">
+                      <div class="" style="width: 120px">
+                        {{ myFormatDate(row.item.due_date) }}
+                      </div>
+                    </template>
+                    <template #cell(issue_date)="row">
+                      <div class="" style="width: 120px">
+                        {{ myFormatDate(row.item.issue_date) }}
+                      </div>
+                    </template>
+                    <template #cell(totalnet)="row">
+                      <div class="" style="width: 80px">
+                        {{ myCurrency(row.item.totalnet) }}
+                      </div>
+                    </template>
+                    <template #cell(invoice_status)="row">
+                      <div class="">
+                        {{ row.item.invoice_status }}
+                      </div>
+                    </template>
+                  </BTable>
+
+                  <BPagination
+                    v-model="pagination.current_page"
+                    :total-rows="pagination.total"
+                    :per-page="pagination.per_page"
+                    size="sm"
+                    class="my-0"
+                    @page-click="onChangePage"
+                  />
 
                   <!--  tables -->
 
@@ -307,7 +404,12 @@ watch(
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Invoice</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <InvoiceDetail />

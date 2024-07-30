@@ -14,11 +14,12 @@ export const myFormatDate = (value, options) => {
   if (!value) {
     return
   }
-  const isValidDate = isValid(value)
-  if (value === undefined) return
-  if (value === null) return
-  if (value === '') return
-  // if (!isValidDate) return
+  if (value == undefined) return ''
+  if (value == null) return ''
+  if (value == '') return ''
+  if (value == '0000-00-00 00:00:00') return ''
+  if (value == '0000-00-00') return ''
+
   return format(value, 'dd/MM/yyyy')
   let op = {
     dateStyle: 'short', //  full, long, medium, short

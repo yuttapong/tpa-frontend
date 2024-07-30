@@ -5,12 +5,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <div class="modal-toolbar">ลูกค้า ({{ pagination.total.toLocaleString() }})</div>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-2">
             <div class="row g-3">
@@ -18,32 +13,17 @@
                 <form @submit.prevent="searchCustomer()">
                   <div class="d-flex gap-2">
                     <div>
-                      <button
-                        type="button"
-                        class="btn btn-primary btn-sm ms-1"
-                        @click="addCustomer()"
-                      >
+                      <button type="button" class="btn btn-primary btn-sm ms-1" @click="addCustomer()">
                         <i class="bi bi-plus"></i>
                       </button>
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.q"
-                        class="form-control form-control-sm"
-                        placeholder="ชื่อบริษัท"
-                        autofocus
-                        @keyup.enter="searchCustomer()"
-                      />
+                      <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
+                        placeholder="ชื่อบริษัท" autofocus @keyup.enter="searchCustomer()" />
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="taxnumber"
-                        @keyup.enter="searchCustomer()"
-                      />
+                      <input type="search" v-model="formSearch.taxnumber" class="form-control form-control-sm"
+                        placeholder="taxnumber" @keyup.enter="searchCustomer()" />
                     </div>
 
                     <div class="">
@@ -57,24 +37,16 @@
                   </div>
                 </form>
                 <BListGroup style="font-size: 13px" class="mt-2" flush>
-                  <BListGroupItem
-                    v-for="(item, index) in items"
-                    :key="index"
-                    :active="item.id == selectedCustomers.id ? true : fasle"
-                    icon
-                  >
-                    <div class="row">
-                      <div class="col-1">
-                        <input
-                          class="form-check-input mt-3 ms-2"
-                          type="radio"
-                          v-model="selectedCustomers"
-                          :value="item"
-                          @click="clickCustomer(item)"
-                        />
+                  <BListGroupItem v-for="(item, index) in items" :key="index"
+                    :active="item.id == selectedCustomers.id ? true : fasle" icon>
+                    <div class="row g-2">
+                      <div class="col-2">
+                        <BButton size="sm" class="m2-2" variant="outline-info" type="button" @click="clickCustomer(item)">
+                          เลือก
+                        </BButton>
                       </div>
 
-                      <div class="col-9">
+                      <div class="col-8">
                         <i class="bi bi-person-fill"></i>
                         <span class="fw-bold">{{ item.companyname }}</span>
                         <div v-if="item.companynameen" class="mx-1 p-1">
@@ -85,9 +57,8 @@
                       </div>
                       <div class="col-2">
                         #{{ item.id }}
-                        <BButton type="button" @click="editCustomer(item)" variant="text" size="sm"
-                          ><i class="bi bi-pencil"></i
-                        ></BButton>
+                        <BButton type="button" @click="editCustomer(item)" variant="text" size="sm"><i
+                            class="bi bi-pencil"></i></BButton>
                       </div>
                     </div>
                   </BListGroupItem>
@@ -95,12 +66,8 @@
               </div>
               <div class="col-12 col-md-6" id="customer-detail" ref="customerDetail">
                 <div v-if="selectedCustomers.id !== undefined" class="border p-2">
-                  <BCard
-                    variant=""
-                    class=""
-                    :title="selectedCustomers?.companyname"
-                    :subtitle="selectedCustomers?.companynameen"
-                  >
+                  <BCard variant="" class="" :title="selectedCustomers?.companyname"
+                    :subtitle="selectedCustomers?.companynameen">
                     <BCardText style="font-size: small" class="">
                       {{ selectedCustomers?.address }}
                       {{ selectedCustomers?.subdistrict }}
@@ -115,8 +82,7 @@
 
                   <BTabs>
                     <BTab visible>
-                      <template #title
-                        ><i class="bi bi-person me-1"></i> สมุดรายชื่อ
+                      <template #title><i class="bi bi-person me-1"></i> สมุดรายชื่อ
                         <!-- <BButton size="sm" type="button" @click="addContact()" variant="link"
                         ><i class="bi bi-plus"></i
                       ></BButton> -->
@@ -125,32 +91,17 @@
                         <form @submit.prevent="onSearchContact()">
                           <div class="d-flex gap-2">
                             <div>
-                              <BButton
-                                type="button"
-                                @click="addContact()"
-                                variant="primary"
-                                size="sm"
-                              >
+                              <BButton type="button" @click="addContact()" variant="primary" size="sm">
                                 <i class="bi bi-plus"></i>
                               </BButton>
                             </div>
                             <div class="">
-                              <input
-                                type="search"
-                                v-model="formSearchContact.q"
-                                class="form-control form-control-sm"
-                                placeholder="ชื่อ"
-                                autofocus
-                                @keyup.enter="onSearchContact()"
-                              />
+                              <input type="search" v-model="formSearchContact.q" class="form-control form-control-sm"
+                                placeholder="ชื่อ" autofocus @keyup.enter="onSearchContact()" />
                             </div>
 
                             <div class="">
-                              <button
-                                type="submit"
-                                class="btn btn-light btn-sm"
-                                :disabled="loadingContact"
-                              >
+                              <button type="submit" class="btn btn-light btn-sm" :disabled="loadingContact">
                                 <i class="bi bi-search"></i>
                               </button>
                             </div>
@@ -159,46 +110,25 @@
                             </div>
                           </div>
                         </form>
-                        <BListGroup
-                          class="my-2"
-                          flush
-                          style="height: 400px; overflow-y: scroll; font-size: 13px"
-                        >
-                          <BListGroupItem
-                            v-for="(item, index) in filtedContacts"
-                            :key="index"
-                            class="border-bottom"
-                            :active="item.id == selectedContacts.id ? true : false"
-                            icon="pi pi-person"
-                          >
+                        <BListGroup class="my-2" flush style="height: 400px; overflow-y: scroll; font-size: 13px">
+                          <BListGroupItem v-for="(item, index) in filtedContacts" :key="index" class="border-bottom"
+                            :active="item.id == selectedContacts.id ? true : false" icon="pi pi-person">
                             <div class="float-start d-inline-block">
-                              <input
-                                class="form-check-input"
-                                type="radio"
-                                v-model="selectedContacts"
-                                :value="item"
-                              />
+                              <input class="form-check-input" type="radio" v-model="selectedContacts" :value="item" />
                             </div>
 
                             <div class="d-inline-block ms-3">
                               {{ item.contactname }}
                               <div class="text">
-                                <small class="mx-2" v-if="item.contacttel1"
-                                  ><i class="bi bi-phone"></i> {{ item.contacttel1 }}</small
-                                >
-                                <small class="mx-2" v-if="item.contacttel2"
-                                  ><i class="bi bi-phone"></i> {{ item.contacttel2 }}</small
-                                >
+                                <small class="mx-2" v-if="item.contacttel1"><i class="bi bi-phone"></i> {{
+                                  item.contacttel1 }}</small>
+                                <small class="mx-2" v-if="item.contacttel2"><i class="bi bi-phone"></i> {{
+                                  item.contacttel2 }}</small>
                               </div>
                             </div>
                             <div class="float-end d-inline-block">
                               #{{ item.id }}
-                              <BButton
-                                type="button"
-                                size="sm"
-                                variant="text"
-                                @click="editContact(item)"
-                              >
+                              <BButton type="button" size="sm" variant="text" @click="editContact(item)">
                                 <i class="bi bi-pencil"></i>
                               </BButton>
                             </div>
@@ -207,8 +137,7 @@
                       </div>
                     </BTab>
                     <BTab>
-                      <template #title
-                        ><i class="bi bi-truck me-1"></i> ที่อยู่
+                      <template #title><i class="bi bi-truck me-1"></i> ที่อยู่
                         <!-- <BButton variant="text" @click="addAddress()" type="button"
                         ><div class="bi bi-plus"></div
                       ></BButton> -->
@@ -250,25 +179,16 @@
                             </div>
                           </div>
                         </form> -->
-                        <BListGroup
-                          class=""
-                          style="height: 400px; overflow-y: scroll; font-size: 13px"
-                          flush
-                        >
-                          <BListGroupItem
-                            v-for="(item, index) in customerAddresses"
-                            :key="index"
-                            class=""
-                          >
+                        <BListGroup class="" style="height: 400px; overflow-y: scroll; font-size: 13px" flush>
+                          <BListGroupItem v-for="(item, index) in customerAddresses" :key="index" class="">
                             <div class="d-inline-block ms-3">
-                              {{ `${item.address} ${item.address}`.trim() }}
+                              <div class="fw-bold">{{ item.customer_name }}</div>
+                              {{ showAddress(item) }}
                               <div class="text">
-                                <small class="mx-2" v-if="item.contacttel1"
-                                  ><i class="bi bi-phone"></i> {{ item.contacttel1 }}</small
-                                >
-                                <small class="mx-2" v-if="item.contacttel2"
-                                  ><i class="bi bi-phone"></i> {{ item.contacttel2 }}</small
-                                >
+                                <small class="mx-2" v-if="item.contacttel1"><i class="bi bi-phone"></i> {{
+                                  item.contacttel1 }}</small>
+                                <small class="mx-2" v-if="item.contacttel2"><i class="bi bi-phone"></i> {{
+                                  item.contacttel2 }}</small>
                               </div>
                             </div>
                           </BListGroupItem>
@@ -290,14 +210,8 @@
 
             <div class="d-flex gap-2 flex-wrap justify-content-center">
               <div>
-                <vue-awesome-paginate
-                  :total-items="pagination.total"
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="5"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                  class=""
-                />
+                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                  :max-pages-shown="5" v-model="pagination.current_page" :on-click="onChangePage" class="" />
               </div>
               <div class="text-right">
                 <div class="d-flex gap-2 flex-wrap">
@@ -321,92 +235,50 @@
     </div>
 
     <!-- ################################# CONTACT ###################################### -->
-    <BModal
-      hideFooter
-      id="modal-contact"
-      title="ผู้ติดต่อ"
-      v-model="visibleModalContact"
-      bodyScrolling
-    >
+    <BModal hideFooter id="modal-contact" title="ผู้ติดต่อ" v-model="visibleModalContact" bodyScrolling>
       <p class="">
         <BForm ref="formContactRef" novalidate @submit="saveContact">
           <div class="">
             <BFormFloatingLabel label="ชื่อ *" label-for="contactname" class="my-2">
-              <BFormInput
-                v-model="formContact.contactname"
-                id="contactname"
-                type="text"
-                placeholder="ชื่อ"
-                :state="!!formContact.contactname"
-              />
+              <BFormInput v-model="formContact.contactname" id="contactname" type="text" placeholder="ชื่อ"
+                :state="!!formContact.contactname" />
             </BFormFloatingLabel>
             <BFormFloatingLabel label="ตำแหน่งงาน" label-for="contactposition" class="my-2">
-              <BFormInput
-                v-model="formContact.contactposition"
-                id="contactposition"
-                type="text"
-                placeholder="position"
-              />
+              <BFormInput v-model="formContact.contactposition" id="contactposition" type="text" placeholder="position" />
             </BFormFloatingLabel>
 
             <BFormFloatingLabel label="เบอร์โทร 1" label-for="contacttel1" class="my-2 w-100">
-              <BFormInput
-                v-model="formContact.contacttel1"
-                id="contactemail"
-                type="text"
-                placeholder="Phone 1"
-              />
+              <BFormInput v-model="formContact.contacttel1" id="contactemail" type="text" placeholder="Phone 1" />
             </BFormFloatingLabel>
             <BFormFloatingLabel label="เบอร์โทร 2" label-for="contacttel2" class="my-2 w-100">
-              <BFormInput
-                v-model="formContact.contacttel2"
-                id="contacttel2"
-                type="text"
-                placeholder="Phone 2"
-              />
+              <BFormInput v-model="formContact.contacttel2" id="contacttel2" type="text" placeholder="Phone 2" />
             </BFormFloatingLabel>
             <BFormFloatingLabel label="email" label-for="contactemail" class="my-2">
-              <BFormInput
-                v-model="formContact.contactemail"
-                id="contactemail"
-                type="text"
-                placeholder="email"
-              />
+              <BFormInput v-model="formContact.contactemail" id="contactemail" type="text" placeholder="email" />
             </BFormFloatingLabel>
             <div>
-              <BFormRadio v-model="formContact.status" name="status" value="1"
-                >เปิดใช้งาน
+              <BFormRadio v-model="formContact.status" name="status" value="1">เปิดใช้งาน
               </BFormRadio>
-              <BFormRadio v-model="formContact.status" name="status" value="0"
-                >ปิดใช้งาน
+              <BFormRadio v-model="formContact.status" name="status" value="0">ปิดใช้งาน
               </BFormRadio>
             </div>
           </div>
           <div class="d-flex gap-2 justify-content-center">
             <BButton type="submit" variant="primary"><i class="bi bi-save" /> OK</BButton>
-            <BButton type="button" @click="visibleModalContact = false" variant="outline-secondary"
-              ><i class="bi bi-x" /> Cancel</BButton
-            >
+            <BButton type="button" @click="visibleModalContact = false" variant="outline-secondary"><i class="bi bi-x" />
+              Cancel</BButton>
           </div>
         </BForm>
       </p>
     </BModal>
     <!-- ################################# ADDRESS ###################################### -->
-    <BModal
-      id="modal-address"
-      title="ที่อยู่"
-      v-model="visibleModalAddress"
-      bodyScrolling
-      hideFooter
-    >
+    <BModal id="modal-address" title="ที่อยู่" v-model="visibleModalAddress" bodyScrolling hideFooter>
       <p class="">
         <BForm ref="formAddressRef" novalidate>
           <div class="my-2 d-flex gap-5">
-            <BFormRadio v-model="formCustomer.is_company" name="is_company" value="yes"
-              >นิติบุคคล
+            <BFormRadio v-model="formCustomer.is_company" name="is_company" value="yes">นิติบุคคล
             </BFormRadio>
-            <BFormRadio v-model="formCustomer.is_company" name="is_company" value="no"
-              >บุคคลทั่วไป
+            <BFormRadio v-model="formCustomer.is_company" name="is_company" value="no">บุคคลทั่วไป
             </BFormRadio>
           </div>
           <BFormFloatingLabel label="ชื่อบริษัท" label-for="companyname" class="my-2">
@@ -419,13 +291,7 @@
       </p>
     </BModal>
     <!-- ################################# CUSTOMER ###################################### -->
-    <BModal
-      id="modal-customer"
-      title="ลูกค้า"
-      bodyScrolling
-      v-model="visibleModalCustomer"
-      hideFooter
-    >
+    <BModal id="modal-customer" title="ลูกค้า" bodyScrolling v-model="visibleModalCustomer" hideFooter>
       <template #header>
         ลูกค้า
         <span v-if="formCustomer.customercode">#{{ formCustomer?.customercode }} </span>
@@ -433,155 +299,70 @@
       <p class="">
         <BForm ref="formCustomerRef" novalidate @submit="saveCustomer">
           <div class="my-2 d-flex gap-5">
-            <BFormRadio v-model="formCustomer.is_company" name="is_company" value="yes"
-              >นิติบุคคล
+            <BFormRadio v-model="formCustomer.is_company" name="is_company" value="yes">นิติบุคคล
             </BFormRadio>
-            <BFormRadio v-model="formCustomer.is_company" name="is_company" value="no"
-              >บุคคลทั่วไป
+            <BFormRadio v-model="formCustomer.is_company" name="is_company" value="no">บุคคลทั่วไป
             </BFormRadio>
           </div>
           <BFormFloatingLabel label="ประเภทลูกค้า" label-for="customer_type" class="my-2">
-            <BFormSelect
-              v-model="formCustomer.customer_type"
-              size="sm"
-              class="my-2"
-              value-field="code"
-              text-field="name"
-            >
+            <BFormSelect v-model="formCustomer.customer_type" size="sm" class="my-2" value-field="code" text-field="name">
               <template #first>
                 <BFormSelectOption value="">-เลือกประเภท-</BFormSelectOption>
               </template>
-              <BFormSelectOption v-for="(item, key) in customerTypes" :value="item.code" :key="key"
-                >{{ item.code }} : {{ item.name }}</BFormSelectOption
-              >
+              <BFormSelectOption v-for="(item, key) in customerTypes" :value="item.code" :key="key">{{ item.code }} : {{
+                item.name }}</BFormSelectOption>
             </BFormSelect>
           </BFormFloatingLabel>
           <div class="">
             <template v-if="formCustomer.is_company == 'yes'">
-              <BFormFloatingLabel
-                label="ชื่อบริษัท (th)"
-                label-for="companyname"
-                class="my-2 w-100"
-              >
-                <BFormInput
-                  v-model="formCustomer.companyname"
-                  id="companyname"
-                  type="text"
-                  placeholder="ชื่อบริษัท"
-                  :state="!!formCustomer.companyname"
-                />
+              <BFormFloatingLabel label="ชื่อบริษัท (th)" label-for="companyname" class="my-2 w-100">
+                <BFormInput v-model="formCustomer.companyname" id="companyname" type="text" placeholder="ชื่อบริษัท"
+                  :state="!!formCustomer.companyname" />
               </BFormFloatingLabel>
 
-              <BFormFloatingLabel
-                label="ชื่อบริษัท (en)"
-                label-for="companynameen"
-                class="my-2 w-100"
-              >
-                <BFormInput
-                  v-model="formCustomer.companynameen"
-                  id="companynameen"
-                  type="text"
-                  placeholder="company name"
-                  size="sm"
-                  :state="!!formCustomer.companynameen"
-                />
+              <BFormFloatingLabel label="ชื่อบริษัท (en)" label-for="companynameen" class="my-2 w-100">
+                <BFormInput v-model="formCustomer.companynameen" id="companynameen" type="text" placeholder="company name"
+                  size="sm" :state="!!formCustomer.companynameen" />
               </BFormFloatingLabel>
             </template>
             <template v-else>
               <BFormFloatingLabel label="ชื่อ (th)" label-for="name_th" class="my-2">
-                <BFormInput
-                  v-model="formCustomer.name"
-                  id="name_th"
-                  type="text"
-                  placeholder="name_th"
-                  size="sm"
-                />
+                <BFormInput v-model="formCustomer.name" id="name_th" type="text" placeholder="name_th" size="sm" />
               </BFormFloatingLabel>
               <BFormFloatingLabel label="นามสกุล (th)" label-for="lastname_th" class="my-2">
-                <BFormInput
-                  v-model="formCustomer.lastname_th"
-                  id="lastname_th"
-                  type="text"
-                  placeholder="lastname_th"
-                  size="sm"
-                />
+                <BFormInput v-model="formCustomer.lastname_th" id="lastname_th" type="text" placeholder="lastname_th"
+                  size="sm" />
               </BFormFloatingLabel>
               <BFormFloatingLabel label="ชื่อ (en)" label-for="name" class="my-2">
-                <BFormInput
-                  v-model="formCustomer.name"
-                  id="name"
-                  type="text"
-                  placeholder="name"
-                  size="sm"
-                />
+                <BFormInput v-model="formCustomer.name" id="name" type="text" placeholder="name" size="sm" />
               </BFormFloatingLabel>
               <BFormFloatingLabel label="นามสกุล (en)" label-for="lastname" class="my-2">
-                <BFormInput
-                  v-model="formCustomer.lastname"
-                  id="lastname"
-                  type="text"
-                  placeholder="lastname"
-                  size="sm"
-                />
+                <BFormInput v-model="formCustomer.lastname" id="lastname" type="text" placeholder="lastname" size="sm" />
               </BFormFloatingLabel>
             </template>
 
             <BFormFloatingLabel label="อำเภอ/เขต" label-for="district" class="my-2">
-              <BFormInput
-                v-model="formCustomer.district"
-                id="district"
-                type="text"
-                placeholder="district"
-                size="sm"
-              />
+              <BFormInput v-model="formCustomer.district" id="district" type="text" placeholder="district" size="sm" />
             </BFormFloatingLabel>
             <BFormFloatingLabel label="จังหวัด" label-for="province" class="my-2">
-              <BFormInput
-                v-model="formCustomer.province"
-                id="province"
-                type="text"
-                placeholder="province"
-                size="sm"
-              />
+              <BFormInput v-model="formCustomer.province" id="province" type="text" placeholder="province" size="sm" />
             </BFormFloatingLabel>
             <BFormFloatingLabel label="รหัสไปรษณีย์" label-for="postalcode" class="my-2">
-              <BFormInput
-                v-model="formCustomer.postalcode"
-                id="postalcode"
-                type="text"
-                placeholder="postalcode"
-                size="sm"
-              />
+              <BFormInput v-model="formCustomer.postalcode" id="postalcode" type="text" placeholder="postalcode"
+                size="sm" />
             </BFormFloatingLabel>
             <BFormFloatingLabel label="ประเทศ" label-for="country" class="my-2">
-              <BFormInput
-                v-model="formCustomer.country"
-                id="country"
-                type="text"
-                placeholder="country"
-                size="sm"
-              />
+              <BFormInput v-model="formCustomer.country" id="country" type="text" placeholder="country" size="sm" />
             </BFormFloatingLabel>
-            <BFormFloatingLabel
-              label="ผู้ติดต่อหลัก (Default)"
-              label-for="contactmain"
-              class="my-2 w-100"
-            >
-              <BFormInput
-                v-model="formCustomer.contactmain"
-                disabled
-                id="contactmain"
-                type="text"
-                placeholder="contactmain"
-                size="sm"
-              />
+            <BFormFloatingLabel label="ผู้ติดต่อหลัก (Default)" label-for="contactmain" class="my-2 w-100">
+              <BFormInput v-model="formCustomer.contactmain" disabled id="contactmain" type="text"
+                placeholder="contactmain" size="sm" />
             </BFormFloatingLabel>
           </div>
           <div class="d-flex gap-2 justify-content-center">
             <BButton type="submit" variant="primary"><i class="bi bi-save" /> OK</BButton>
-            <BButton type="button" @click="visibleModalCustomer = false" variant="outline-secondary"
-              ><i class="bi bi-x" /> Cancel</BButton
-            >
+            <BButton type="button" @click="visibleModalCustomer = false" variant="outline-secondary"><i class="bi bi-x" />
+              Cancel</BButton>
           </div>
         </BForm>
       </p>
@@ -608,7 +389,7 @@ const props = defineProps({
   },
   data: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
   title: {
     type: String,
@@ -696,14 +477,14 @@ const searchCustomer = async () => {
   // pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
   emit('onSearch', formSearch.value)
 }
 const onChangePage = async (page) => {
   pagination.value.current_page = page
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const loadData = async () => {
   loading.value = true
@@ -756,17 +537,15 @@ const onClearAll = (row, index) => {
     contacts: selectedContacts.value,
   })
   emit('onHide', selectedCustomers.value)
-  modal.hide()
+  // modal.hide()
 }
 const onClearCustomer = (row, index) => {
-  console.log('clear customer')
   selectedCustomers.value = []
   emit('clearCustomer', {
     customers: selectedCustomers.value,
   })
 }
 const onClearContact = (row, index) => {
-  console.log('clear contact')
   selectedContacts.value = []
   emit('clearContact', {
     contacts: selectedContacts.value,
@@ -795,10 +574,10 @@ const select = () => {
 }
 const customerDetail = ref(null)
 const clickCustomer = (item) => {
-  console.log('click', item)
   loadContactByCustomerId(item.id)
   loadAddrressByCustomerId(item.id)
   customerDetail.value.scrollIntoView({ behavior: 'smooth' })
+  chooseCustomer(item)
 }
 onMounted(() => {
   modal = new Modal(modalElement.value)
@@ -925,6 +704,16 @@ const editAddress = async (item) => {
   const { data } = await api.get(`v2/customers/${item.id}/address`)
   if (data) formAddress.value = data
 }
+
+const showAddress = (item) => {
+  let text = `${item.address} ${item.subdistrict} ${item.district} ${item.province} ${item.postcode}`
+  text = text.replace(null, "").trim()
+  return text
+}
+
+const chooseCustomer = (item) => {
+  selectedCustomers.value = item
+}
 </script>
 <style lang="scss" scoped>
 td,
@@ -936,6 +725,9 @@ input[type='radio'] {
   transform: scale(2);
   margin: 3px;
 }
+
+
+
 .list-group {
   // .active {
   //   background-color: rgb(56, 58, 58);

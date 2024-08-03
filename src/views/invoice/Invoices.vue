@@ -411,7 +411,7 @@ watch(
           </div>
           <div class="modal-footer d-block">
             <div class="d-flex flex-wrap gap-2 justify-content-end">
-              <div v-if="invoiceStore.invoice.id !== undefined">
+              <div v-if="invoiceStore.invoice.id !== undefined && invoiceStore.invoice.cancel_remark ">
                 หมายเหตุยกเลิก:
                 <span class="ms-2 text-danger"> {{ invoiceStore.invoice?.cancel_remark }}
                   ( {{ myFormatDate(fromUnixTime(invoiceStore.invoice.canceled_at)) }})</span>

@@ -160,7 +160,7 @@ onMounted(() => { })
             </div>
           </div>
           <div class="row">
-            <div class="col-6 text-end">VAT {{ data?.vat || 7 }}%</div>
+            <div class="col-6 text-end">ภาษีมูลค่าเพิ่ม (VAT)</div>
             <div class="col-6">
               <div class="text-end fw-bold text-decoration-underline">
                 {{ myCurrency(data?.totalvat) }}

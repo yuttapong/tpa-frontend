@@ -13,6 +13,7 @@ import { myCurrency, myFormatDate } from '@/helpers/myformat'
 import InvoiceButtonActions from './components/InvoiceButtonActions.vue'
 import { toast } from 'vue3-toastify'
 import { fromUnixTime } from 'date-fns'
+import printJS from "print-js"
 
 const row = ref({})
 const items = ref([])
@@ -197,6 +198,35 @@ watch(
   },
   { deep: false },
 )
+
+const print = () => {
+  printJS({
+    printable: "print",
+    type: "html",
+    header: `ใบแจ้งหนี้เลขที่ : ${invoiceStore.invoice?.code}`,
+    targetStyles: ['*'],
+    font: 'Sarabun',
+    font_size: '13pt',
+    style: `
+    @import url('https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css')
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+    body { 
+      color: red; 
+      font-family: 'Sarabun', sans-serif,
+    }`
+  })
+  // var divContents = document.getElementById("print").innerHTML;
+  // var a = window.open('', '', 'height=500, width=500');
+  // a.document.write('<html>');
+  // a.document.write(`
+  // <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  // `);
+  // a.document.write('<body > <h1>Div contents are <br>');
+  // a.document.write(divContents);
+  // a.document.write('</body></html>');
+  // a.document.close();
+  // a.print();
+}
 </script>
 <template>
   <div>
@@ -407,16 +437,23 @@ watch(
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <InvoiceDetail />
+            <page class="A4" id="print">
+              <InvoiceDetail @print="print()" />
+            </page>
+
           </div>
           <div class="modal-footer d-block">
             <div class="d-flex flex-wrap gap-2 justify-content-end">
-              <div v-if="invoiceStore.invoice.id !== undefined && invoiceStore.invoice.cancel_remark ">
+              <div v-if="invoiceStore.invoice.id !== undefined && invoiceStore.invoice.cancel_remark">
                 หมายเหตุยกเลิก:
                 <span class="ms-2 text-danger"> {{ invoiceStore.invoice?.cancel_remark }}
                   ( {{ myFormatDate(fromUnixTime(invoiceStore.invoice.canceled_at)) }})</span>
               </div>
-              <div><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+              <div><button type="button" class="btn btn-secondary" @click="print()">
+                  <i class="bi bi-printer"></i>
+                  พิมพ์</button></div>
+              <div><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  <i class="bi bi-x"></i>ปิด</button></div>
             </div>
 
           </div>

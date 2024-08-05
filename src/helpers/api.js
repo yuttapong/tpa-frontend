@@ -98,7 +98,7 @@ function httpErrorHandler(error) {
         modal.show?.({ props: { title: `Promise resolved to ${response}`, variant: 'info' } })
         console.log('Please check input is valid')
       } else if (statusCode === 500) {
-        router.push('/error500')
+        //router.push('/error500')
       }
       return response
     } else if (request) {

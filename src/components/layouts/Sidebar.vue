@@ -95,10 +95,7 @@
         </router-link>
       </li>
       <!-- #################### FOR ADMIN SYSTEM ################################# -->
-      <template v-if="(appStore.user?.username) == 'ADMIN'">
-
-
-
+      <template v-if="appStore.user?.username == 'Surin.Y'">
         <li class="nav-heading">สำหรับผู้ดูแลระบบ</li>
         <li class="nav-item">
           <router-link to="/setting/staff" class="nav-link collapsed">
@@ -113,7 +110,12 @@
           </router-link>
         </li>
         <li class="nav-item">
-          <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
+          <a
+            class="nav-link collapsed"
+            data-bs-target="#setting-nav"
+            data-bs-toggle="collapse"
+            href="#"
+          >
             <i class="bi bi-gear"></i>
             <span>ตั้งค่า</span>
           </a>
@@ -256,7 +258,6 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
-
   #main,
   #footer {
     margin-left: 300px;
@@ -270,7 +271,6 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
-
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;

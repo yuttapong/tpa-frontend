@@ -27,6 +27,7 @@ import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
 import Vue3Toasity from 'vue3-toastify'
 import { createBootstrap } from 'bootstrap-vue-next'
+import Spinner from './components/Spinner.vue'
 
 const ability = createMongoAbility()
 
@@ -48,6 +49,7 @@ app.use(Vue3Toasity, {
   autoClose: 3000,
 })
 app.component('EasyDataTable', Vue3EasyDataTable)
+app.component('Spinner', Spinner)
 app.mount('#app')
 
 if (import.meta.env.DEV) {

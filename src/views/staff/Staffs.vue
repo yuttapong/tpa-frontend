@@ -32,23 +32,24 @@
               </li>
             </ul>
 
-
             <div class="tab-content pt-2">
-
-
               <div class="tab-pane fade show active qt-index" id="qt-index">
-                <StaffTable :items="items" @on-view="showStaff" />
-                <vue-awesome-paginate :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-                  :on-click="onChangePage" />
+                <StaffTable :items="items" @on-view="showStaff" @on-assign-lab="showLabAssign" />
+                <vue-awesome-paginate
+                  :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow"
+                  v-model="pagination.current_page"
+                  :on-click="onChangePage"
+                />
               </div>
-
 
               <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
                 <!-- Settings Form -->
                 <form>
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Default Appcal Role</label>
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
+                      >Default Appcal Role</label
+                    >
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check" v-for="(role, key) in kanbanRoles" :key="key">
                         <span class="bi bi-check mx-3"></span>
@@ -59,11 +60,19 @@
                     </div>
                   </div>
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Kanban Role Level</label>
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
+                      >Kanban Role Level</label
+                    >
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check" v-for="(role, key) in kanbanRoles" :key="key">
-                        <input type="radio" name="kanban_defaultlevvel" v-model="setting.kanban_defaultLevel"
-                          :value="role.value" class="mx-3" :checked="role.value == setting.kanban_defaultLevel" />
+                        <input
+                          type="radio"
+                          name="kanban_defaultlevvel"
+                          v-model="setting.kanban_defaultLevel"
+                          :value="role.value"
+                          class="mx-3"
+                          :checked="role.value == setting.kanban_defaultLevel"
+                        />
                         <label class="form-check-label" for="changesMade">
                           {{ role.text }}
                         </label>
@@ -84,69 +93,105 @@
       </div>
     </div>
 
-
     <!-- ######### START MODAL ############### -->
-    <div class="modal" id="staffModal" ref="modalRef" tabindex="-1" aria-labelledby="staffModalLabel" aria-hidden="true">
+    <div
+      class="modal"
+      id="staffModal"
+      ref="modalRef"
+      tabindex="-1"
+      aria-labelledby="staffModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-lg modal-fullscreen-xl-down">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="staffModalLabel">Staff</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body" style="min-height: 350px">
-
-
             <ul class="nav nav-tabs" id="staffTab" role="tablist">
               <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="detail-tab" data-bs-toggle="tab" data-bs-target="#detail"
-                  type="button" role="tab" aria-controls="detail" aria-selected="true">
+                <button
+                  class="nav-link active"
+                  id="detail-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#detail"
+                  type="button"
+                  role="tab"
+                  aria-controls="detail"
+                  aria-selected="true"
+                >
                   รายละเอียด
                 </button>
               </li>
 
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs" type="button"
-                  role="tab" aria-controls="labs" aria-selected="false">
+                <button
+                  class="nav-link"
+                  id="labs-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#labs"
+                  type="button"
+                  role="tab"
+                  aria-controls="labs"
+                  aria-selected="false"
+                >
                   ห้องแล๊ปที่รับผิดชอบ
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="roles-tab" data-bs-toggle="tab" data-bs-target="#roles" type="button"
-                  role="tab" aria-controls="roles" aria-selected="false">
+                <button
+                  class="nav-link"
+                  id="roles-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#roles"
+                  type="button"
+                  role="tab"
+                  aria-controls="roles"
+                  aria-selected="false"
+                >
                   สิทธิ์การใช้งาน
                 </button>
               </li>
-
             </ul>
             <div class="tab-content pt-3" id="myTabContent">
-              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="detail-tab">
-
+              <div
+                class="tab-pane fade show active"
+                id="home"
+                role="tabpanel"
+                aria-labelledby="detail-tab"
+              >
                 <p>
                   <StaffDetail v-model:data="staff" />
                 </p>
-
               </div>
               <div class="tab-pane fade" id="labs" role="tabpanel" aria-labelledby="labs-tab">
                 <StaffLabAssignment :labs="labs" />
-
               </div>
               <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="bill-tab">
-                <StaffRoles :permissions="permissions" :roles="roles" :userPermissions="userPermissions.permisions"
-                  :userRoles="userPermissions.roles" />
-
+                <StaffRoles
+                  :permissions="permissions"
+                  :roles="roles"
+                  :userPermissions="userPermissions.permisions"
+                  :userRoles="userPermissions.roles"
+                />
               </div>
-
             </div>
           </div>
           <div class="modal-footer">
             <spinner :visible="loading" />
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
           </div>
         </div>
       </div>
     </div>
     <!-- ###########END MODAL ########### -->
+    <LabAssignForm v-model:visible="visibleModalAssignLab" :data="staff" />
   </section>
 </template>
 
@@ -160,6 +205,8 @@ import { Modal } from 'bootstrap'
 import StaffLabAssignment from './components/StaffLabAssignment.vue'
 import StaffDetail from './components/StaffDetail.vue'
 import StaffRoles from './components/StaffRoles.vue'
+import LabAssignForm from './components/LabAssignForm.vue'
+
 import { useAppStore } from '@/stores/appStore'
 import StaffTable from './components/StaffTable.vue'
 const row = ref({})
@@ -168,6 +215,7 @@ const modalRef = ref(null)
 const modal = ref(null)
 const loading = ref(true)
 const staff = ref()
+const visibleModalAssignLab = ref(false)
 const setting = ref({
   appcal_defaultRole: 'Officer',
   kanban_defaultLevel: 'officer',
@@ -180,11 +228,11 @@ const kanbanRoles = ref([
   { value: 'admin', text: 'Admin', level: 5 },
 ])
 const formSearch = ref({
-  q: ""
+  q: '',
 })
-const labs = ref([]);
-const roles = ref([]);
-const permissions = ref([]);
+const labs = ref([])
+const roles = ref([])
+const permissions = ref([])
 const userPermissions = ref([])
 const appStore = useAppStore()
 const pagination = ref({
@@ -198,10 +246,10 @@ const loadData = async () => {
   let params = {
     page: pagination.value.current_page,
     per_page: pagination.value.per_page,
-    ...formSearch.value
+    ...formSearch.value,
   }
   const { data } = await api.get('/v2/staffs', {
-    params: params
+    params: params,
   })
   if (data) {
     const p = {
@@ -217,55 +265,52 @@ const loadData = async () => {
 }
 
 const search = () => {
-  pagination.value.current_page = 1;
-  loadData();
+  pagination.value.current_page = 1
+  loadData()
 }
 const onChangePage = (page) => {
-  pagination.value.current_page = page;
-  loadData();
+  pagination.value.current_page = page
+  loadData()
 }
 
 const getAllRoles = async () => {
   try {
-    const rs = await api.get("/v2/roles")
+    const rs = await api.get('/v2/roles')
     roles.value = rs.data
-  } catch (error) {
-
-  }
+  } catch (error) {}
 }
 const getAllPermissions = async () => {
   try {
-    const rs = await api.get("/v2/roles/permissions")
+    const rs = await api.get('/v2/roles/permissions')
     permissions.value = rs.data
-  } catch (error) {
-
-  }
+  } catch (error) {}
 }
 const getUserPermissions = async (id) => {
   try {
-    const rs = await api.get("/v2/roles/user/" + id)
+    const rs = await api.get('/v2/roles/user/' + id)
     userPermissions.value = rs.data
-  } catch (error) {
-
-  }
+  } catch (error) {}
 }
 const getLabs = async () => {
   try {
-    const rs = await api.get("/v2/labs/all")
+    const rs = await api.get('/v2/labs/all')
     labs.value = rs.data
-  } catch (error) {
-
-  }
+  } catch (error) {}
 }
 const showStaff = (item) => {
-  getAllRoles();
-  getAllPermissions();
+  getAllRoles()
+  getAllPermissions()
   getUserPermissions(item.id)
   getLabs()
   modal.value.show()
-  console.log("item", item);
+  console.log('item', item)
   staff.value = item
   loading.value = false
+}
+const showLabAssign = (item) => {
+  getLabs()
+  visibleModalAssignLab.value = true
+  staff.value = item
 }
 onMounted(() => {
   modal.value = new Modal(modalRef.value)

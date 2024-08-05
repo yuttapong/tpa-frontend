@@ -16,7 +16,7 @@
       >
         <optgroup label="Roles">
           <option v-for="(item, key) in filterRoles" :key="item" :value="item">
-            {{ `${item?.name} - ${item?.description}` }}
+            {{ `${item?.name} - ${item.description}` }}
           </option>
         </optgroup>
 
@@ -108,7 +108,7 @@ const items = computed(() => {
     props.roles.map((r) => {
       items.push({
         type: 'role',
-        description: r.description_th,
+        description: r.display_name,
         name: r.name,
       })
     })
@@ -117,7 +117,7 @@ const items = computed(() => {
     props.permissions.map((r) => {
       items.push({
         type: 'permission',
-        description: r.description_th,
+        description: r.display_name,
         name: r.name,
       })
     })

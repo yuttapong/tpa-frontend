@@ -22,42 +22,40 @@
             <ul class="nav nav-tabs nav-tabs-bordered">
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-role">
-                  Roles
+                  บทบาท
                 </button>
               </li>
 
               <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-permission">
-                  Permistions
+                  การอนุญาต
                 </button>
               </li>
               <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-edit">
-                  Edit
-                </button>
-              </li>
-
-              <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-settings">
-                  Settings
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qt-user">
+                  ผู้ใช้งาน
                 </button>
               </li>
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-role" id="qt-role">
                 <form @submit.prevent="onSearch()">
-                  <div class="row g-2">
-                    <div class="col-10 col-md-4">
+                  <div class="d-flex flex-wrap gap-2">
+                    <div>
+                      <BButton variant="primary" @click="addRole($event)" size="sm"
+                        ><i class="bi bi-plus"></i
+                      ></BButton>
+                    </div>
+                    <div class="">
                       <input
                         type="search"
                         v-model="formSearch.q"
                         class="form-control form-control-sm"
-                        placeholder=""
-                        @keyup.enter="onSearch"
+                        placeholder="keyword.."
                       />
                     </div>
-                    <div class="col-2 col-md-2">
-                      <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
+                    <div class="">
+                      <BButton type="submit" size="sm"><i class="bi bi-search"></i></BButton>
                     </div>
                   </div>
                 </form>
@@ -65,18 +63,39 @@
                 <table class="table table-sm">
                   <thead>
                     <tr>
+                      <th scope="col">Actions</th>
                       <th scope="col">ID</th>
-                      <th scope="col">Name</th>
+                      <th scope="col">ชื่อ</th>
+                      <th scope="col">ชื่อแสดง</th>
 
-                      <th scope="col">Description</th>
+                      <th scope="col">รายละเอียด</th>
+                      <th scope="col">สถานะ</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(item, index) in roles" :key="index">
+                      <th scope="row">
+                        <BButton
+                          variant="outline-secondary"
+                          @click="editRole(item, index, $event)"
+                          size="sm"
+                          ><i class="bi bi-pencil"></i
+                        ></BButton>
+                      </th>
                       <th scope="row">{{ item.id }}</th>
-                      <td>{{ item.name }}</td>
                       <td>
-                        {{ item.name_th }}
+                        <a role="button" @click="editRole(item, index, $event)"
+                          ><i class="bi bi-person me-2"></i>{{ item.name }}</a
+                        >
+                      </td>
+                      <td>
+                        {{ item.display_name }}
+                      </td>
+                      <td>
+                        {{ item.description }}
+                      </td>
+                      <td>
+                        {{ item.status }}
                       </td>
                     </tr>
                   </tbody>
@@ -85,19 +104,24 @@
               </div>
 
               <div class="tab-pane fade qt-permission" id="qt-permission">
-                <form @submit.prevent="loadPermission()">
-                  <div class="row g-2">
-                    <div class="col-10 col-md-4">
+                <form @submit.prevent="loadPermissions()">
+                  <div class="d-flex flex-wrap gap-2">
+                    <div>
+                      <BButton @click="addPermission" variant="primary" size="sm"
+                        ><i class="bi bi-plus"></i
+                      ></BButton>
+                    </div>
+                    <div class="">
                       <input
                         type="search"
                         v-model="formSearch.q"
                         class="form-control form-control-sm"
                         placeholder=""
-                        @keyup.enter="loadPermission"
+                        @keyup.enter="loadPermissions"
                       />
                     </div>
-                    <div class="col-2 col-md-2">
-                      <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" />
+                    <div class="">
+                      <BButton type="submit" size="sm"><i class="bi bi-search"></i></BButton>
                     </div>
                   </div>
                 </form>
@@ -114,30 +138,37 @@
                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                     <li><a class="dropdown-item" @click="filterType('all')">ทั้งหมด</a></li>
                     <li v-for="(t, key) in permisstionType" :key="key">
-                      <a class="dropdown-item" @click="filterType(t)">{{ t.text }}</a>
+                      <a role="button" class="dropdown-item" @click="filterType(t)">{{ t.text }}</a>
                     </li>
                   </ul>
                 </div>
                 {{ permisstionSelected }}
                 <div class="table-resonsive">
-                  <table class="table table-sm table-hover">
-                    <caption>
-                      List of Permisstions
-                    </caption>
+                  <table class="table table-sm table-hover table-bordered">
                     <thead>
                       <tr>
-                        <th scope="col" class="fw-bold text-decoration-underline">#</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Select</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Name</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Tags</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">Actions</th>
 
-                        <th scope="col" class="fw-bold text-decoration-underline">Description</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">ชื่อ</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">ชื่อ</th>
+
+                        <th scope="col" class="fw-bold text-decoration-underline">ชื่อแสดง</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">รายละเอียด</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">Tags</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="(item, index) in permissions" :key="index">
-                        <th scope="row">{{ index + 1 }}</th>
-                        <td>
+                        <th scope="row">
+                          <BButton
+                            variant="outline-secondary"
+                            @click="editPermission(item, index, $event)"
+                            size="sm"
+                            ><i class="bi bi-pencil"></i
+                          ></BButton>
+                        </th>
+
+                        <!-- <td>
                           <input
                             type="checkbox"
                             name="permisstionSelected[]"
@@ -146,13 +177,18 @@
                             :id="`p__${item.id}`"
                             :value="item.name"
                           />
+                        </td> -->
+                        <td>
+                          <a role="button" @click="editPermission(item, index, $event)"
+                            ><i class="bi bi-lock me-2"></i>{{ item.name }}</a
+                          >
                         </td>
                         <td>
-                          <label class="form-check-label" :for="`p__${item.id}`">{{
-                            item.name
-                          }}</label>
+                          {{ item.display_name }}
                         </td>
-
+                        <td>
+                          {{ item.description }}
+                        </td>
                         <td>
                           <span
                             class="badge rounded-pill bg-secondary text-light mx-1 fw-normal"
@@ -160,9 +196,6 @@
                             :key="t"
                             >{{ t.text }}</span
                           >
-                        </td>
-                        <td>
-                          {{ item.description_th }}
                         </td>
                       </tr>
                     </tbody>
@@ -446,13 +479,26 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       </div>
     </div>
   </section>
+  <RoleForm
+    v-model:visible="visibleModalRole"
+    v-model:data="viewRoleData"
+    @onUpdated="onUpdatedRole"
+    @onCreated="onCreatedRole"
+  />
+  <PermissionForm
+    v-model:visible="visibleModalPermission"
+    v-model:data="viewPermissionData"
+    @onUpdated="onUpdatedPermission"
+    @onCreated="onCreatedPermission"
+  />
 </template>
 
 <script setup>
 import { onMounted, computed, ref } from 'vue'
-import avatar from '@/assets/img/profile-img.jpg'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
+import RoleForm from '@/views/role/components/RoleForm.vue'
+import PermissionForm from '@/views/role/components/PermissionForm.vue'
 const row = ref({})
 const roles = ref([])
 const permisstionType = ref([
@@ -469,12 +515,20 @@ const permisstionType = ref([
     text: 'Certificate',
   },
 ])
+const visibleModalRole = ref(false)
+const visibleModalPermission = ref(false)
+
+const viewRoleData = ref({})
+const viewRoleIndex = ref(0)
+const viewPermissionData = ref({})
+const viewPermissionIndex = ref(0)
 const permissions = ref([])
 const permisstionSelected = ref([])
 const loading = ref(true)
 const formSearch = ref({
   q: '',
 })
+
 const loadRoles = async () => {
   const { data } = await api.get('/v2/roles')
   if (data) {
@@ -482,7 +536,7 @@ const loadRoles = async () => {
   }
   loading.value = false
 }
-const loadPermission = async () => {
+const loadPermissions = async () => {
   loading.value = true
   const { data } = await api.get('/v2/permissions')
   if (data) {
@@ -498,8 +552,39 @@ const onSearch = () => {
 }
 onMounted(() => {
   loadRoles()
-  loadPermission()
+  loadPermissions()
 })
+
+const addRole = () => {
+  viewRoleData.value = { id: 0 }
+  visibleModalRole.value = true
+}
+const editRole = (row, index, e) => {
+  viewRoleData.value = row
+  viewRoleIndex.value = index
+  visibleModalRole.value = true
+}
+const addPermission = () => {
+  viewPermissionData.value = { id: 0 }
+  visibleModalPermission.value = true
+}
+const editPermission = (row, index, e) => {
+  viewPermissionData.value = row
+  viewPermissionIndex.value = index
+  visibleModalPermission.value = true
+}
+const onUpdatedRole = (data) => {
+  roles.value[viewRoleIndex.value] = data
+}
+const onCreatedRole = (data) => {
+  loadRoles()
+}
+const onUpdatedPermission = (data) => {
+  permissions.value[viewPermissionIndex.value] = data
+}
+const onCreatedPermission = (data) => {
+  loadPermissions()
+}
 </script>
 <style lang="scss" scoped>
 .qt-detail {

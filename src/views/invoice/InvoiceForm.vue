@@ -107,10 +107,10 @@ const hasVat = ref(true)
 
 const items = computed(() => formInvoice.value.items)
 const vatPercent = computed(() => {
-  if(!hasVat.value) {
-    return 0;
+  if (!hasVat.value) {
+    return 0
   }
-  if(hasVat.value) {
+  if (hasVat.value) {
     return appStore.settings.vat || 7
   }
 })
@@ -196,11 +196,10 @@ const addItems = async (item) => {
   }
   let items = []
   items.push(row)
-  console.log('add items', row)
   formInvoice.value.items.push(row)
-  toast(`เพิ่มรายการเรียบร้อย`, {
+  toast(`เพิ่มรายการสำเร็จ`, {
     theme: 'auto',
-    type: 'info',
+    type: 'success',
     autoClose: 500,
     dangerouslyHTMLString: true,
   })
@@ -926,7 +925,7 @@ onUpdated(() => {
                     </div>
                     <div class="col-12 col-md-6 col-lg-5">
                       <label>Note Customer</label>
-              
+
                       <BFormTextarea
                         v-model="formInvoice.note_customer"
                         class="text-danger"
@@ -1334,17 +1333,11 @@ onUpdated(() => {
                         />
                       </div>
                     </div>
-                      <div class="" style="font-size: 14px">
+                    <div class="" style="font-size: 14px">
                       <div align="center">
-                 
-                      
-                               <label class="fw-bold"
-                          ><input
-                          type="checkbox"
-                          v-model="hasVat"
-                          class="form-checkbox"
-                        
-                        /> คำนวณภาษีมูลค่าเพิ่ม (VAT)</label
+                        <label class="fw-bold"
+                          ><input type="checkbox" v-model="hasVat" class="form-checkbox" />
+                          คำนวณภาษีมูลค่าเพิ่ม (VAT)</label
                         >
                       </div>
                     </div>

@@ -1,11 +1,12 @@
 <template>
   <div class="row">
     <div class="col-12">
-      <h3>Labs</h3>
+      <h5>Labs</h5>
+
       <select
         v-model="labSelected"
         class="form-select"
-        @click="onSelected($event)"
+        @change="onSelected($event)"
         aria-label="เลือกห้องแล็ป"
       >
         <option :value="[]">---------- เลือกห้องแล็ป -------------</option>
@@ -56,7 +57,7 @@
           v-for="item in labs"
           :value="item"
           :key="item"
-          :label="`${item?.code} - ${item?.name_th}`"
+          :label="`***** ${item?.code} - ${item?.name_th} *****`"
         >
           <option v-for="sub in item.sublabs" :key="sub" :value="sub">
             {{ `${sub?.code} - ${sub?.name_th}` }}

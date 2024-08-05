@@ -20,9 +20,7 @@
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
                   <i class="bi bi-book"></i> ใบขอรับบริการ
-                  <span v-if="pagination"
-                    >({{ parseInt(pagination.total).toLocaleString() || 0 }})</span
-                  >
+                  <span v-if="pagination">({{ parseInt(pagination.total).toLocaleString() || 0 }})</span>
                 </button>
               </li>
               <li class="nav-item">
@@ -42,14 +40,8 @@
                       </button>
                     </div> -->
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.id"
-                        name="id"
-                        class="form-control form-control-sm"
-                        placeholder="ID"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.id" name="id" class="form-control form-control-sm"
+                        placeholder="ID" @keyup.enter="search" />
                     </div>
                     <div class="">
                       <!--                 
@@ -75,35 +67,17 @@
                       /> -->
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.code"
-                        name="code"
-                        class="form-control form-control-sm"
-                        placeholder="Code"
-                        @keyup.enter="search"
-                        autofocus
-                      />
+                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
+                        placeholder="Code" @keyup.enter="search" autofocus />
                     </div>
                     <div class="col-6 col-md-4 col-xl-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        name="taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search" />
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.q"
-                        name="q"
-                        class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                     </div>
                     <div class="">
                       <button type="submit" class="btn btn-light btn-sm">
@@ -188,40 +162,22 @@
                     </div>
                   </template>
                 </EasyDataTable> -->
-                <BTable
-                  bordered
-                  :items="items"
-                  class=""
-                  :fields="tableFields"
-                  :per-page="pagination.per_page"
-                  :responsive="true"
-                  :small="true"
-                >
+                <BTable bordered :items="items" class="" :fields="tableFields" :per-page="pagination.per_page"
+                  :responsive="true" :small="true">
                   <template #cell(index)="row">
                     {{ row.index + 1 }}
                   </template>
 
                   <template #cell(actions)="row">
                     <div class="d-flex gap-1">
-                      <router-link
-                        class="btn btn-sm btn-outline-secondary"
-                        :to="{ name: 'bills.commitmentForm', params: { code: row.item.code } }"
-                      >
-                        <i class="bi bi-calendar" role="button"></i
-                      ></router-link>
-                      <button
-                        type="button"
-                        @click="showDetail(row.item)"
-                        class="btn btn-outline-secondary btn-sm"
-                      >
+                      <router-link class="btn btn-sm btn-outline-secondary"
+                        :to="{ name: 'bills.commitmentForm', params: { code: row.item.code } }">
+                        <i class="bi bi-calendar" role="button"></i></router-link>
+                      <button type="button" @click="showDetail(row.item)" class="btn btn-outline-secondary btn-sm">
                         <i class="bi bi-eye"></i>
                       </button>
 
-                      <button
-                        type="button"
-                        class="btn btn-outline-secondary btn-sm"
-                        @click="showEdit(row.item)"
-                      >
+                      <button type="button" class="btn btn-outline-secondary btn-sm" @click="showEdit(row.item)">
                         <i class="bi bi-pencil"></i>
                       </button>
                     </div>
@@ -267,14 +223,8 @@
                   </template>
                 </BTable>
 
-                <BPagination
-                  v-model="pagination.current_page"
-                  :total-rows="pagination.total"
-                  :per-page="pagination.per_page"
-                  size="sm"
-                  class="my-0"
-                  @page-click="onChangePage"
-                />
+                <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
+                  :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
 
                 <!-- <div class="table-responsive">
                   <table class="table table-sm">
@@ -458,39 +408,18 @@
       </div>
     </div>
 
-    <ModalBillCreate
-      ref="modalBillCreateRef"
-      title="สร้างใบขอรับบริการใหม่"
-      :billTypes="billTypes"
-    />
-    <ModalBillDetail
-      ref="modalBillDetailRef"
-      title="รายละเอียดใบขอรับบริการ"
-      :billTypes="billTypes"
-      :data="bill"
-    />
-    <ModalBillEdit
-      ref="modalBillEditRef"
-      title="แก้ไขใบขอรับบริการ"
-      :billTypes="billTypes"
-      :data="bill"
-    />
-    <ModalCommitmentBooking
-      ref="modalCommitmentRef"
-      :bill="bill"
-      @onSave="
-        (data) => {
-          console.log('saved', data)
-          loadData()
-        }
-      "
-      @onReload="
-        (data) => {
-          console.log('reload after booking', data)
-          getBillById(data.id)
-        }
-      "
-    />
+    <ModalBillCreate ref="modalBillCreateRef" title="สร้างใบขอรับบริการใหม่" :billTypes="billTypes" />
+    <ModalBillDetail ref="modalBillDetailRef" title="รายละเอียดใบขอรับบริการ" :billTypes="billTypes" :data="bill" />
+    <ModalBillEdit ref="modalBillEditRef" title="แก้ไขใบขอรับบริการ" :billTypes="billTypes" :data="bill" />
+    <ModalCommitmentBooking ref="modalCommitmentRef" :bill="bill" @onSave="(data) => {
+      console.log('saved', data)
+      loadData()
+    }
+      " @onReload="(data) => {
+    console.log('reload after booking', data)
+    getBillById(data.id)
+  }
+    " />
   </section>
 
   <div class="modal" ref="modalViewRef" v-if="bill">
@@ -498,12 +427,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Bill ID#{{ bill.id }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -542,11 +466,7 @@
             <div class="col-4 col-lg-3">
               <label class="fw-bold text-decoration-underline">สถานะ</label>
               <p>
-                <BillButtonStatus
-                  v-model="bill.bill_status"
-                  :data="bill"
-                  @on-change="onChangeBillStatus"
-                />
+                <BillButtonStatus v-model="bill.bill_status" :data="bill" @on-change="onChangeBillStatus" />
               </p>
             </div>
             <div class="col-12 col-md-6">
@@ -585,44 +505,29 @@
               <tbody>
                 <tr v-for="(row, rowIndex) in bill.items" :key="row">
                   <th>
-                    <input
-                      type="checkbox"
-                      v-model="itemsSelected"
-                      name="itemsSelected[]"
-                      :value="row"
-                    />
+                    <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
                   </th>
                   <th>{{ rowIndex + 1 }}</th>
                   <td nowrap>
                     {{ row.item_code }}
                     <div>
-                      <small
-                        >#<span class="text-primary fw-bold">{{ row.item_id }}</span></small
-                      >
+                      <small>#<span class="text-primary fw-bold">{{ row.item_id }}</span></small>
                     </div>
                   </td>
                   <td nowrap>
                     <!-- <JobStatus v-model="row.job_status" /> -->
-                    <div>{{ row?.lab.name_th }} #{{ row.lab.id }}</div>
+                    <div>{{ row.lab?.name_th }} #{{ row.lab.id }}</div>
                     <div class="ms-2 border-bottom">
                       <small class="fs-italic">
-                        {{ row?.sublab.name_th }} #{{ row.sublab.id }}</small
-                      >
+                        {{ row.sublab?.name_th }} #{{ row.sublab.id }}</small>
                     </div>
-                    <div
-                      v-if="row.current_service_status"
-                      style="font-size: 12px"
-                      class="border-bottom text-danger fw-bold"
-                    >
+                    <div v-if="row.current_service_status" style="font-size: 12px"
+                      class="border-bottom text-danger fw-bold">
                       {{ row.current_service_status.status_name }} #{{
                         row.current_service_status.status_id
                       }}
                     </div>
-                    <JobButtonStatus
-                      v-model="row.job_status"
-                      :data="row"
-                      @on-change="onChangeJobStatus"
-                    />
+                    <JobButtonStatus v-model="row.job_status" :data="row" @on-change="onChangeJobStatus" />
                   </td>
                   <td nowrap>{{ myFormatDate(row.reserved_date) }}</td>
                   <td>{{ row.product_name }}</td>
@@ -665,15 +570,12 @@
             </table>
           </div>
           <p>
-            <label class="me-3 fw-bold text-decoration-underline"
-              >ที่อยู่ในการจัดส่งใบรับรอง:</label
-            >
+            <label class="me-3 fw-bold text-decoration-underline">ที่อยู่ในการจัดส่งใบรับรอง:</label>
             <span class="text-wrap">
               {{
                 `${bill.cert_address_name} ${bill.cert_address_detail}
                             ${bill.cert_address_province} ${bill.cert_address_zipcode} ${bill.cert_address_phone}`.trim()
-              }}</span
-            >
+              }}</span>
           </p>
         </div>
         <div class="modal-footer d-block">
@@ -685,9 +587,8 @@
             </div>
 
             <div class="p-1">
-              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
-                >{{ itemsSelected.length }} รายการ</span
-              >
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0">{{
+                itemsSelected.length }} รายการ</span>
             </div>
           </div>
 
@@ -726,12 +627,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -742,21 +638,13 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ลูกค้า</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.customer_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.customer_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="date"
-                  v-model="invoice.document_date"
-                  class="form-control form-control-sm"
-                />
+                <input type="date" v-model="invoice.document_date" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -764,21 +652,13 @@
             <div class="col-4">
               <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.contact_name"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.contact_name" class="form-control form-control-sm" />
               </p>
             </div>
             <div class="col-8">
               <label class="fw-bold text-decoration-underline">ที่อยู่</label>
               <p>
-                <input
-                  type="text"
-                  v-model="invoice.address_detail"
-                  class="form-control form-control-sm"
-                />
+                <input type="text" v-model="invoice.address_detail" class="form-control form-control-sm" />
               </p>
             </div>
           </div>
@@ -805,22 +685,12 @@
                     }}</span>
                   </th>
                   <th>
-                    <input
-                      type="number"
-                      name="price[]"
-                      v-model="row.price"
-                      class="form-control form-control-sm"
-                      style="width: 100px"
-                    />
+                    <input type="number" name="price[]" v-model="row.price" class="form-control form-control-sm"
+                      style="width: 100px" />
                   </th>
                   <th>
-                    <input
-                      type="number"
-                      name="price[]"
-                      v-model="row.discount"
-                      class="form-control form-control-sm"
-                      style="width: 100px"
-                    />
+                    <input type="number" name="price[]" v-model="row.discount" class="form-control form-control-sm"
+                      style="width: 100px" />
                   </th>
                 </tr>
               </tbody>
@@ -1127,7 +997,7 @@ const onSearch = async () => {
   try {
     pagination.value.current_page = 1
     await loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 
 const resetFormSearch = () => {
@@ -1175,7 +1045,7 @@ watch(
   (data) => {
     console.log(data)
     pagination.value.current_page = data.page
-    ;(pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
+      ; (pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
     formSearch.value.orderBy = data.sortType
     loadData()
   },
@@ -1207,6 +1077,8 @@ th {
 }
 
 .checkbox {
-  transform: scale(/*desired magnification*/);
+  transform: scale(
+      /*desired magnification*/
+    );
 }
 </style>

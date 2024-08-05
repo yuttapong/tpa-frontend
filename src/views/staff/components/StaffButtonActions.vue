@@ -1,17 +1,12 @@
 <template>
   <div class="d-flex flex-wrap gap-1">
-    <BButton v-show="canView" @click="clickView" size="sm" variant="outline-secondary"
-      ><i class="bi bi-eye"></i
-    ></BButton>
+    <BButton v-show="canView" @click="clickView" size="sm" variant="outline-secondary"><i class="bi bi-eye"></i></BButton>
     <BDropdown v-model="show" split-variant="outline-secondary" size="sm" noCaret>
-      <template #button-content
-        ><i class="bi bi-three-dots-vertical"></i><span class="visually-hidden">menu</span>
+      <template #button-content><i class="bi bi-three-dots-vertical"></i><span class="visually-hidden">menu</span>
       </template>
-      <BDropdownItem v-show="canEdit" @click="clickEdit"
-        ><i class="bi bi-pencil"></i>แก้ไข
+      <BDropdownItem v-show="canEdit" @click="clickEdit"><i class="bi bi-pencil"></i>แก้ไข
       </BDropdownItem>
-      <BDropdownItem v-show="canAssingLab" @click="clickAssignLab"
-        ><i class="bi bi-building-add"></i>ตั่งค่าห้องทดลอง
+      <BDropdownItem v-show="canAssingLab" @click="clickAssignLab"><i class="bi bi-building-add"></i>กำหนดห้อง Lab
       </BDropdownItem>
       <BDropdownDivider />
       <BDropdownItem v-show="canCancel && item.canceled_at < 1" @click="clickCancel">

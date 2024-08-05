@@ -1,5 +1,5 @@
 <template>
-  <BModal v-model="showModal" @hide="hide" :title="title" @ok="submit()" hideHeader buttonSize="sm">
+  <BModal v-model="showModal" @hide="hide" :title="title" @ok="submit()" hideHeader buttonSize="sm" :ok-title="formMode">
     <BForm @submit.stop.prevent>
       <div class="d-flex flex-wrap gap-2">
         <div>
@@ -27,13 +27,7 @@
         <div class="col-5">
           <h6>ทั้งหมด ({{ permissionsFiltered.length }})</h6>
           <BFormInput size="sm" v-model="formSearchRole.name" placeholder="ค้นหา..." />
-          <BFormSelect
-            v-model="selectedLeftItems"
-            :select-size="10"
-            valueField="id"
-            textField="name"
-            multiple
-          >
+          <BFormSelect v-model="selectedLeftItems" :select-size="10" valueField="id" textField="name" multiple>
             <template v-for="(item, key) in permissionsFiltered" :key="key">
               <BFormSelectOption :value="item.id">{{ item.name }}</BFormSelectOption>
             </template>
@@ -41,33 +35,23 @@
         </div>
         <div class="col-2">
           <div class="d-flex flex-column gap-2 align-items-center align-content-center pt-5">
-            <BButton @click="chooseOne()" type="button" size="sm" variant="success"
-              ><i class="bi bi-chevron-right"></i
-            ></BButton>
-            <BButton @click="chooseAll()" type="button" size="sm" variant="success"
-              ><i class="bi bi-chevron-double-right"></i
-            ></BButton>
-            <BButton @click="removeOne()" type="button" size="sm" variant="danger"
-              ><i class="bi bi-chevron-left"></i
-            ></BButton>
+            <BButton @click="chooseOne()" type="button" size="sm" variant="success"><i class="bi bi-chevron-right"></i>
+            </BButton>
+            <BButton @click="chooseAll()" type="button" size="sm" variant="success"><i
+                class="bi bi-chevron-double-right"></i></BButton>
+            <BButton @click="removeOne()" type="button" size="sm" variant="danger"><i class="bi bi-chevron-left"></i>
+            </BButton>
 
-            <BButton @click="removeAll()" type="button" size="sm" variant="danger"
-              ><i class="bi bi-chevron-double-left"></i
-            ></BButton>
+            <BButton @click="removeAll()" type="button" size="sm" variant="danger"><i
+                class="bi bi-chevron-double-left"></i></BButton>
             <Spinner v-model:visible="loading" />
           </div>
         </div>
         <div class="col-5">
           <h6>อนุญาต ({{ rolePermissionsFiltered.length }})</h6>
           <BFormInput size="sm" v-model="formSearchPermission.name" placeholder="ค้นหา..." />
-          <BFormSelect
-            v-model="selectedRightItems"
-            :options="rolePermissionsFiltered"
-            :select-size="10"
-            valueField="id"
-            textField="name"
-            multiple
-          />
+          <BFormSelect v-model="selectedRightItems" :options="rolePermissionsFiltered" :select-size="10" valueField="id"
+            textField="name" multiple />
         </div>
       </div>
     </BForm>
@@ -84,7 +68,7 @@ const emit = defineEmits(['updated', 'created'])
 const props = defineProps({
   visible: { type: Boolean },
   data: { type: Object },
-  type: { type: String, default: 'add' },
+  mode: { type: String, default: 'add' },
 })
 
 const appStore = useAppStore()
@@ -128,7 +112,7 @@ const form = ref({
   status: props.data?.status,
 })
 
-const formMode = computed(() => (props.data.id !== undefined && props.data.id > 0 ? 'edit' : 'add'))
+const formMode = computed(() => props.mode)
 
 const getRolePermissons = async () => {
   const { data } = await api.get(`/v2/roles/${props.data.id}/permissions`, {
@@ -158,7 +142,9 @@ watch(
 watch(
   () => props.data,
   (newValue, oldValue) => {
-    form.value.id = newValue.id
+    if (props.mode == 'edit') {
+      form.value.id = newValue.id
+    }
     form.value.name = newValue.name
     form.value.display_name = newValue.display_name
     form.value.description = newValue.description
@@ -235,15 +221,11 @@ const syncPermissions = async (e) => {
     loading.value = false
   }
 }
-const showTitle = computed(() => {
-  if (formMode.value == 'add') emit('update:title', `สร้าง Role ใหม่`)
-  if (formMode.value == 'edit') emit('update:title', `แก้ไข Role : ${form.value.name}`)
-})
+
 const submit = async () => {
   if (formMode.value == 'add') {
     loading.value = true
     let params = {
-      ...props.data,
       ...form.value,
     }
     const { data, status } = await api.post('v2/roles', params)
@@ -262,7 +244,6 @@ const submit = async () => {
   if (formMode.value == 'edit') {
     loading.value = true
     let params = {
-      ...props.data,
       ...form.value,
     }
     const { data, status } = await api.put('v2/roles/' + props.data.id, params)
@@ -281,8 +262,8 @@ const submit = async () => {
   }
 }
 
-const cancel = () => {}
-onMounted(() => {})
+const cancel = () => { }
+onMounted(() => { })
 </script>
 <style lang="scss" scoped>
 label {

@@ -5,17 +5,18 @@
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-lg-5 align-items-center justify-content-center">
-      
+
               <!-- End Logo -->
 
               <div class="card mb-3">
                 <div class="card-body">
                   <div class="d-flex justify-content-center py-4">
-                <a href="javascript:void(0)" class="logo d-flex align-items-center w-auto">
-                  <img src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg" alt="" class="img-fluid"/>
+                    <a href="javascript:void(0)" class="logo d-flex align-items-center w-auto">
+                      <img src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg" alt=""
+                        class="img-fluid" />
 
-                </a>
-              </div>
+                    </a>
+                  </div>
                   <div class="pt-4 pb-2">
                     <h5 class="card-title text-center pb-0 fs-4">Login to <span class="text-danger appcal">APPCAL</span>
                     </h5>
@@ -96,7 +97,7 @@ const password = ref('')
 const messageError = ref("")
 
 
-const login = (e) => {
+const login = async (e) => {
   messageError.value = ""
   const params = {
     username: username.value,
@@ -104,35 +105,25 @@ const login = (e) => {
   }
 
   try {
-    api
+    const { data, status } = await api
       .post('v1/auth/login', params)
-      .then((rs) => {
-        console.log(rs);
-        messageError.value = ""
-        if (rs) {
-          const r = rs.data.result
-          const ep = r.expire_time
-          const token = r.token
-          const user = r.user
-          const permissions = r.permisions
-          const epDay = ep / 24 / 60 / 60 || 0
-          appStore.setExpired(epDay)
-          appStore.login(token, user, permissions)
-          router.replace("/profile")
-        }
-      })
-      .catch((err) => {
-        console.error(err)
-
-        if (err) {
-          const status = err.response.status
-          messageError.value = err.response.data.message
-          if (status === 401) {
-
-
-          }
-        }
-      })
+    if (status == 200) {
+      messageError.value = ""
+      if (data) {
+        const r = data.result
+        const ep = r.expire_time
+        const token = r.token
+        const user = r.user
+        const permissions = r.permisions
+        const epDay = ep / 24 / 60 / 60 || 0
+        appStore.setExpired(epDay)
+        appStore.login(token, user, permissions)
+        router.replace("/profile")
+      }
+    }
+    else if (status === 401) {
+      messageError.value = data.message
+    }
 
   } catch (error) {
     console.log('error', error);
@@ -145,6 +136,7 @@ const login = (e) => {
 .appcal {
   font-size: 2rem;
 }
+
 main {
   background-image: linear-gradient(to right top, #bbe9e5, #a1dde1, #89d0df, #73c3df, #64b4de, #5aa7d5, #519acb, #498dc1, #3a80af, #2c739d, #1d668b, #0c597a);
 }

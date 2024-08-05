@@ -14,54 +14,6 @@
   <section class="section profile">
     <spinner :visible="loading" />
 
-    <!-- <div class="row" v-if="items">
-      <div class="col-xl-12">
-        <div class="card">
-          <div class="card-body pt-3">
-
-            <div class="table-responsive">
-              <table class="table table-sm table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col" class="fw-bold">#</th>
-                    <th scope="col" class="fw-bold">ID</th>
-                    <th scope="col" class="fw-bold">Code</th>
-                    <th scope="col" class="fw-bold">Name</th>
-                    <th scope="col" class="fw-bold">Sub labs</th>
-                    <th scope="col" class="fw-bold">Conditions</th>
-
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, index) in   items  " :key="index">
-                    <th scope="row">
-                      <a role="button" class="btn btn-link" @click="view(item)">
-                        <i class="bi bi-search"></i> </a>
-                    </th>
-                    <th scope="row">{{ item.id }}</th>
-                    <td>
-                      {{ item.code }}
-                    </td>
-                    <td>
-                      <router-link :to="`/data/labs/${item.id}`" role="button" class="btn btn-link">
-                        {{ item.name_th }} </router-link>
-                      <div class="ps-2">{{ item.name }}</div>
-
-                    </td>
-                    <td>{{ item?.sublabs.length }}</td>
-                    <td>
-                      <small>{{ item?.conditions.length }}</small>
-                    </td>
-
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
     <div class="accordion" id="accordionLabs">
       <div class="accordion-item" v-for="(item, index) in    items   " :key="index">
         <h2 class="accordion-header" :id="`header${index}`">

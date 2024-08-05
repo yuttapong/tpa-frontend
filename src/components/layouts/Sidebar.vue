@@ -70,12 +70,12 @@
       </li>
       <li class="nav-item">
         <router-link to="/data/labs" class="nav-link collapsed">
-          <i class="bi bi-people"></i>
-          <span>Lab/Sub Lab</span>
+          <i class="bi bi-building"></i>
+          <span>ห้องแล็ปและงานย่อย</span>
         </router-link>
       </li>
 
-      <li class="nav-item">
+      <li class=" nav-item">
         <router-link to="/data/promotions" class="nav-link collapsed">
           <i class="bi bi-box"></i>
           <span>โปรโมชั่น/ส่วนลด</span>
@@ -95,27 +95,22 @@
         </router-link>
       </li>
       <!-- #################### FOR ADMIN SYSTEM ################################# -->
-      <template v-if="appStore.user?.username == 'Surin.Y'">
+      <template v-if="isSuperAdmin()">
         <li class="nav-heading">สำหรับผู้ดูแลระบบ</li>
         <li class="nav-item">
           <router-link to="/setting/staff" class="nav-link collapsed">
-            <i class="bi bi-gear"></i>
+            <i class="bi bi-person"></i>
             <span>ผู้ใช้งานระบบ</span>
           </router-link>
         </li>
         <li class="nav-item">
           <router-link to="/setting/permission" class="nav-link collapsed">
-            <i class="bi bi-gear"></i>
+            <i class="bi bi-lock"></i>
             <span>บทบาท && สิทธิ์</span>
           </router-link>
         </li>
-        <li class="nav-item">
-          <a
-            class="nav-link collapsed"
-            data-bs-target="#setting-nav"
-            data-bs-toggle="collapse"
-            href="#"
-          >
+        <!-- <li class="nav-item">
+          <a class="nav-link collapsed" data-bs-target="#setting-nav" data-bs-toggle="collapse" href="#">
             <i class="bi bi-gear"></i>
             <span>ตั้งค่า</span>
           </a>
@@ -133,7 +128,7 @@
               </router-link>
             </li>
           </ul>
-        </li>
+        </li> -->
       </template>
       <!-- <li class="nav-heading">Pages</li>
       <li class="nav-item">
@@ -220,6 +215,11 @@ onMounted(() => {
     )
   }
 })
+
+const isSuperAdmin = () => {
+  let value = appStore.user?.username == 'Surin.Y' || appStore.user?.username == 'thanyaras.t'
+  return value
+}
 </script>
 <style lang="scss" scoped>
 /*--------------------------------------------------------------
@@ -258,6 +258,7 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
+
   #main,
   #footer {
     margin-left: 300px;
@@ -271,6 +272,7 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
+
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;

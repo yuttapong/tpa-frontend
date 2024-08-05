@@ -1,24 +1,13 @@
 <template>
   <div>
-    <div
-      class="offcanvas offcanvas-end"
-      tabindex="-1"
-      :id="computedId"
-      ref="idRef"
-      aria-labelledby="offcanvasLabel"
-    >
+    <div class="offcanvas offcanvas-end" tabindex="-1" :id="computedId" ref="idRef" aria-labelledby="offcanvasLabel">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasLabel">
           <slot name="title"> Offcanvas </slot>
         </h5>
 
         <slot name="button">
-          <button
-            type="button"
-            class="btn-close text-reset"
-            data-bs-dismiss="offcanvas"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </slot>
       </div>
       <div class="offcanvas-body">
@@ -51,7 +40,6 @@ onMounted(() => {
 const show = () => canvas.value.show()
 const hide = () => canvas.value.hide()
 watch(props, () => {
-  console.log('xxx', props.modelValue)
   if (props.modelValue === true) {
     show()
   }

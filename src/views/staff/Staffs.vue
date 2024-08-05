@@ -34,22 +34,32 @@
 
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-index" id="qt-index">
+                <div class="p-2 d-flex flex-wrap gap-2">
+                  <div>
+                    <BButton variant="primary" size="sm" type="button" @click="addUser">
+                      <i class="bi bi-plus"></i> เพิ่มผู้ใช้
+                    </BButton>
+                  </div>
+                  <div>
+                    <BFormInput size=" sm" type="search" v-model="formSearch.q" @keyup.enter="search" />
+                  </div>
+                  <div>
+                    <BButton variant="light" size="sm" type="button" @click="search">
+                      <i class="bi bi-search"></i>
+                    </BButton>
+                  </div>
+                </div>
                 <StaffTable :items="items" @on-view="showStaff" @on-assign-lab="showLabAssign" />
-                <vue-awesome-paginate
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                />
+                <vue-awesome-paginate :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                  :on-click="onChangePage" />
               </div>
 
               <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
                 <!-- Settings Form -->
                 <form>
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
-                      >Default Appcal Role</label
-                    >
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Default Appcal Role</label>
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check" v-for="(role, key) in kanbanRoles" :key="key">
                         <span class="bi bi-check mx-3"></span>
@@ -60,19 +70,11 @@
                     </div>
                   </div>
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
-                      >Kanban Role Level</label
-                    >
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Kanban Role Level</label>
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check" v-for="(role, key) in kanbanRoles" :key="key">
-                        <input
-                          type="radio"
-                          name="kanban_defaultlevvel"
-                          v-model="setting.kanban_defaultLevel"
-                          :value="role.value"
-                          class="mx-3"
-                          :checked="role.value == setting.kanban_defaultLevel"
-                        />
+                        <input type="radio" name="kanban_defaultlevvel" v-model="setting.kanban_defaultLevel"
+                          :value="role.value" class="mx-3" :checked="role.value == setting.kanban_defaultLevel" />
                         <label class="form-check-label" for="changesMade">
                           {{ role.text }}
                         </label>
@@ -94,78 +96,37 @@
     </div>
 
     <!-- ######### START MODAL ############### -->
-    <div
-      class="modal"
-      id="staffModal"
-      ref="modalRef"
-      tabindex="-1"
-      aria-labelledby="staffModalLabel"
-      aria-hidden="true"
-    >
+    <div class="modal" id="staffModal" ref="modalRef" tabindex="-1" aria-labelledby="staffModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-fullscreen-xl-down">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="staffModalLabel">Staff</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" style="min-height: 350px">
             <ul class="nav nav-tabs" id="staffTab" role="tablist">
               <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link active"
-                  id="detail-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#detail"
-                  type="button"
-                  role="tab"
-                  aria-controls="detail"
-                  aria-selected="true"
-                >
+                <button class="nav-link active" id="detail-tab" data-bs-toggle="tab" data-bs-target="#detail"
+                  type="button" role="tab" aria-controls="detail" aria-selected="true">
                   รายละเอียด
                 </button>
               </li>
 
               <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link"
-                  id="labs-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#labs"
-                  type="button"
-                  role="tab"
-                  aria-controls="labs"
-                  aria-selected="false"
-                >
+                <button class="nav-link" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs" type="button"
+                  role="tab" aria-controls="labs" aria-selected="false">
                   ห้องแล๊ปที่รับผิดชอบ
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link"
-                  id="roles-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#roles"
-                  type="button"
-                  role="tab"
-                  aria-controls="roles"
-                  aria-selected="false"
-                >
+                <button class="nav-link" id="roles-tab" data-bs-toggle="tab" data-bs-target="#roles" type="button"
+                  role="tab" aria-controls="roles" aria-selected="false">
                   สิทธิ์การใช้งาน
                 </button>
               </li>
             </ul>
             <div class="tab-content pt-3" id="myTabContent">
-              <div
-                class="tab-pane fade show active"
-                id="home"
-                role="tabpanel"
-                aria-labelledby="detail-tab"
-              >
+              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="detail-tab">
                 <p>
                   <StaffDetail v-model:data="staff" />
                 </p>
@@ -174,12 +135,8 @@
                 <StaffLabAssignment :labs="labs" />
               </div>
               <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="bill-tab">
-                <StaffRoles
-                  :permissions="permissions"
-                  :roles="roles"
-                  :userPermissions="userPermissions.permisions"
-                  :userRoles="userPermissions.roles"
-                />
+                <StaffRoles :permissions="permissions" :roles="roles" :userPermissions="userPermissions.permisions"
+                  :userRoles="userPermissions.roles" />
               </div>
             </div>
           </div>
@@ -277,25 +234,25 @@ const getAllRoles = async () => {
   try {
     const rs = await api.get('/v2/roles')
     roles.value = rs.data
-  } catch (error) {}
+  } catch (error) { }
 }
 const getAllPermissions = async () => {
   try {
     const rs = await api.get('/v2/roles/permissions')
     permissions.value = rs.data
-  } catch (error) {}
+  } catch (error) { }
 }
 const getUserPermissions = async (id) => {
   try {
     const rs = await api.get('/v2/roles/user/' + id)
     userPermissions.value = rs.data
-  } catch (error) {}
+  } catch (error) { }
 }
 const getLabs = async () => {
   try {
     const rs = await api.get('/v2/labs/all')
     labs.value = rs.data
-  } catch (error) {}
+  } catch (error) { }
 }
 const showStaff = (item) => {
   getAllRoles()
@@ -311,6 +268,9 @@ const showLabAssign = (item) => {
   getLabs()
   visibleModalAssignLab.value = true
   staff.value = item
+}
+const addUser = () => {
+
 }
 onMounted(() => {
   modal.value = new Modal(modalRef.value)

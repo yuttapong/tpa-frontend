@@ -5,34 +5,19 @@
         <div class="modal-header">
           <h5 class="modal-title">{{ title }}</h5>
 
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="my-2">
             <form @submit.prevent="search()">
               <div class="d-flex gap-2">
                 <div>
-                  <input
-                    v-model="filterSource"
-                    type="radio"
-                    value="all"
-                    :checked="filterSource == 'all'"
-                  />
+                  <input v-model="filterSource" type="radio" value="all" :checked="filterSource == 'all'" />
                   ทั้งหมด
                 </div>
                 <div v-if="customer.id">
-                  <input
-                    v-model="filterSource"
-                    type="radio"
-                    class="ms-3"
-                    value="customer"
-                    :checked="filterSource == 'customer'"
-                  />
+                  <input v-model="filterSource" type="radio" class="ms-3" value="customer"
+                    :checked="filterSource == 'customer'" />
                   {{ customer.name }}
                 </div>
 
@@ -63,38 +48,19 @@
                     </tr>
                     <tr>
                       <th scope="col" class="fw-bold">
-                        <input
-                          type="search"
-                          v-model="formSearchProduct.q"
-                          class="form-control form-control-sm"
-                          placeholder="Customer ID"
-                          @keyup.enter="search()"
-                        />
+                        <input type="search" v-model="formSearchProduct.q" class="form-control form-control-sm"
+                          placeholder="Customer ID" @keyup.enter="search()" />
                       </th>
 
-                      <input
-                        type="date"
-                        v-model="formSearchProduct.document_date"
-                        class="form-control form-control-sm"
-                        placeholder="วันที่"
-                        @change="search()"
-                      />
+                      <input type="date" v-model="formSearchProduct.document_date" class="form-control form-control-sm"
+                        placeholder="วันที่" @change="search()" />
                       <th scope="col" class="fw-bold">
-                        <select
-                          v-model="formSearchProduct.bill_status"
-                          class="form-control form-control-sm"
-                          placeholder="สถานะ"
-                          @keyup.enter="search()"
-                        />
+                        <select v-model="formSearchProduct.bill_status" class="form-control form-control-sm"
+                          placeholder="สถานะ" @keyup.enter="search()" />
                       </th>
                       <th scope="col" class="fw-bold">
-                        <input
-                          type="search"
-                          v-model="formSearchProduct.code"
-                          class="form-control form-control-sm"
-                          placeholder="เลขที่ใบขอรับริการ"
-                          @keyup.enter="search()"
-                        />
+                        <input type="search" v-model="formSearchProduct.code" class="form-control form-control-sm"
+                          placeholder="เลขที่ใบขอรับริการ" @keyup.enter="search()" />
                       </th>
                     </tr>
                   </thead>
@@ -126,9 +92,7 @@
               <h5>
                 <i class="bi bi-tools"></i> เครื่องมือ
                 <!-- <BBadge variant="danger" text-indicator v-if="bill.items">{{ bill.items.length }}</BBadge> -->
-                <span variant="danger" text-indicator v-if="bill.items"
-                  >({{ bill.items.length }})</span
-                >
+                <span variant="danger" text-indicator v-if="bill.items">({{ bill.items.length }})</span>
               </h5>
 
               <span v-if="selectedItems.length > 0"> เลือก {{ selectedItems.length }} รายการ</span>
@@ -137,20 +101,12 @@
                   <thead>
                     <tr>
                       <th scope="col" class="fw-bold text-center">
-                        <button
-                          type="button"
-                          @click="selectAll(bill.items)"
-                          value="All"
-                          class="btn btn-outline-secondary btn-sm"
-                        >
+                        <button type="button" @click="selectAll(bill.items)" value="All"
+                          class="btn btn-outline-secondary btn-sm">
                           <i class="bi bi-check"></i>
                         </button>
-                        <button
-                          type="button"
-                          @click="clearAll()"
-                          value="Clear"
-                          class="ms-1 btn btn-outline-secondary btn-sm"
-                        >
+                        <button type="button" @click="clearAll()" value="Clear"
+                          class="ms-1 btn btn-outline-secondary btn-sm">
                           <i class="bi bi-x"></i>
                         </button>
                       </th>
@@ -172,12 +128,7 @@
                     <tr v-for="(item, index) in bill.items" :key="index">
                       <th class="text-center align-middle">
                         <template v-if="!existCarts(item) || item.invoice_item_id < 1">
-                          <input
-                            class="form-checkbox"
-                            v-model="selectedItems"
-                            type="checkbox"
-                            :value="item"
-                          />
+                          <input class="form-checkbox" v-model="selectedItems" type="checkbox" :value="item" />
                         </template>
                       </th>
 
@@ -234,6 +185,7 @@
                         </BTd>
                         <BTd stacked-heading="เบอร์โทร">{{ bill.address_phone }}</BTd>
                         <BTd stacked-heading="ผู้ติดต่อ">{{ bill.agent_name }}</BTd>
+                        <BTd stacked-heading="Note ลูกค้า">{{ bill.note_customers }}</BTd>
                       </BTr>
                     </BTbody>
                   </BTableSimple>
@@ -246,27 +198,17 @@
         <div class="modal-footer m-0 p-1 d-block">
           <div class="row">
             <div class="col-xs-10 col-md-7">
-              <vue-awesome-paginate
-                :total-items="pagination.total"
-                :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow"
-                v-model="pagination.current_page"
-                :on-click="onChangePage"
-                class=""
-              />
+              <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                :on-click="onChangePage" class="" />
             </div>
 
             <div class="col-xs-2 col-md-5">
               <div class="d-flex gap-2 justify-content-end">
                 <template v-if="isModeCustomer()">
-                  <button
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="confirmSelectCustomer"
-                  >
+                  <button type="button" class="btn btn-success btn-sm" @click="confirmSelectCustomer">
                     <i class="bi bi-person"></i> ดึงข้อมูลลูกค้า
-                  </button></template
-                >
+                  </button></template>
                 <template v-if="isModeBill()">
                   <button type="button" class="btn btn-success btn-sm" @click="confirmSelectBill">
                     <i class="bi bi-files"></i> ดึงข้อมูลเครื่องมือ

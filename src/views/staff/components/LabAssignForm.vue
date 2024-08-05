@@ -1,15 +1,6 @@
 <template>
-  <BModal
-    scrollable
-    headerClass="py-1 text-light"
-    footerClass="d-block"
-    v-model="showModal"
-    @hide="hide"
-    @ok="submit()"
-    buttonSize="sm"
-    size="xl"
-    headerBgVariant="primary"
-  >
+  <BModal scrollable headerClass="py-1 text-light" footerClass="d-block" v-model="showModal" @hide="hide" @ok="submit()"
+    buttonSize="sm" size="xl" headerBgVariant="primary">
     <template #header>
       <div class="d-none d-md-inline">
         <div class="d-flex flex-wrap gap-2">
@@ -41,8 +32,8 @@
     <template #footer class="d-block">
       <div class="row">
         <div class="col-6">
-          <span v-if="selectedLabItems">{{ selectedLabItems.length }} Lab</span>
-          <span v-if="selectedSublabItems"> | {{ selectedSublabItems.length }} Sublab</span>
+          <span v-if="selectedLabItems">Lab({{ selectedLabItems.length }})</span>
+          <span v-if="selectedSublabItems"> | Sublab({{ selectedSublabItems.length }})</span>
         </div>
         <div class="col-6 d-flex gap-2">
           <BButton variant="primary" size="sm" @click="submit">OK</BButton>
@@ -57,33 +48,27 @@
           <h6>ทั้งหมด ({{ labsFiltered.length }})</h6>
           <BFormInput size="sm" v-model="formSearchRole.name" placeholder="ค้นหา..." />
           <p>
-            <BButton text variant="text" @click="checkAll"
-              ><i class="bi bi-check-square"></i> เลือกทั้งหมด</BButton
-            >
-            <BButton text variant="text" @click="uncheckAll"
-              ><i class="bi bi-square"></i> ไม่เลือก</BButton
-            >
+            <BButton text variant="text" @click="checkAll"><i class="bi bi-check-square"></i> เลือกทั้งหมด</BButton>
+            <BButton text variant="text" @click="uncheckAll"><i class="bi bi-square"></i> ไม่เลือก</BButton>
           </p>
           <Spinner v-model:visible="loading" />
           <section v-if="!loading">
             <div v-for="(item, key) in labsFiltered" :key="key" class="d-flex gap-3 my-1">
-              <div><BFormCheckbox v-model="selectedLabItems" :value="item.id" /></div>
               <div>
-                <span class="fw-normal text-dark"
-                  ><BBade variant="info">{{ item.code }}</BBade> : {{ item.name }}
-                  {{ item.name_th }} ({{ item.sublabs.length }})</span
-                >
-                <ol v-if="item.sublabs.length > 0">
-                  <li
-                    v-for="(job, jobIndex) in item.sublabs"
-                    :key="jobIndex"
-                    class="d-flex gap-2 flex-wrap"
-                  >
+                <BFormCheckbox v-model="selectedLabItems" :value="item.id" />
+              </div>
+              <div>
+                <span class="fw-normal text-dark">
+                  <BBade variant="info" class="fw-bold">{{ item.code }}</BBade> : {{ item.name }}
+                  {{ item.name_th }} ({{ item.sublabs.length }})
+                </span>
+                <ol v-if="item.sublabs.length > 0" class="m-0 p-0">
+                  <li v-for="(job, jobIndex) in item.sublabs" :key="jobIndex" class="d-flex gap-2">
                     <BFormCheckbox v-model="selectedSublabItems" :value="job.id" class="" />
-                    <small class="text-danger"
-                      ><BBade variant="secondary">{{ item.code }}</BBade> : {{ job.name }}
-                      {{ job.name_th }}</small
-                    >
+                    <small class="text-secondary">
+                      <BBade variant="secondary" class=" fw-bold">{{ item.code }}</BBade> : {{ job.name }}
+                      {{ job.name_th }}
+                    </small>
                   </li>
                 </ol>
               </div>
@@ -250,7 +235,7 @@ const submit = async () => {
   assignLab()
 }
 
-const cancel = () => {}
+const cancel = () => { }
 const checkAll = () => {
   let sl = []
   let l = []
@@ -266,7 +251,7 @@ const uncheckAll = () => {
   selectedLabItems.value = []
   selectedSublabItems.value = []
 }
-onMounted(() => {})
+onMounted(() => { })
 </script>
 <style lang="scss" scoped>
 label {

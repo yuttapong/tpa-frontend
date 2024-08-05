@@ -16,13 +16,8 @@
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
           <th>
-            <StaffButtonActions
-              canAssingLab
-              canEdit
-              canView
-              @clickView="viewStaff(item)"
-              @clickAssignLab="viewLabAssign(item)"
-            />
+            <StaffButtonActions canAssingLab canEdit canView @clickView="viewStaff(item)"
+              @clickAssignLab="viewLabAssign(item)" />
           </th>
           <th scope="row">{{ item.id }}</th>
           <td>{{ item.code }}</td>
@@ -45,7 +40,7 @@
   </div>
 </template>
 <script setup>
-import {} from 'vue'
+import { } from 'vue'
 import LabAssignForm from '@/views/staff/components/LabAssignForm.vue'
 import StaffButtonActions from '@/views/staff/components/StaffButtonActions.vue'
 import { myFormatDate } from '@/helpers/myformat'

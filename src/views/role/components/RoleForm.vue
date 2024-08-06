@@ -1,5 +1,5 @@
 <template>
-  <BModal v-model="showModal" @hide="hide" :title="title" @ok="submit()" hideHeader buttonSize="sm" :ok-title="formMode">
+  <BModal v-model="showModal" :title="title" hideHeader buttonSize="sm" :ok-title="formMode">
     <BForm @submit.stop.prevent>
       <div class="d-flex flex-wrap gap-2">
         <div>
@@ -55,6 +55,13 @@
         </div>
       </div>
     </BForm>
+    <template #footer>
+      <div class="d-flex flex-warp gap-2">
+        <BButton variant="secondary" size="sm" type="button" @click="hide">Cancel</BButton>
+        <BButton variant="primary" size="sm" type="button" @click="submit">{{ formMode }}</BButton>
+
+      </div>
+    </template>
   </BModal>
 </template>
 
@@ -210,17 +217,6 @@ const removeAll = async (e) => {
     loading.value = false
   }
 }
-const syncPermissions = async (e) => {
-  let params = rolePermissions.value.map((item) => item.id)
-  if (params.length > 0) {
-    loading.value = true
-    const { data, status } = await api.post(`v2/roles/${props.data.id}/permissions`, params)
-    if (status == 200) {
-      rolePermissions.value = data.data
-    }
-    loading.value = false
-  }
-}
 
 const submit = async () => {
   if (formMode.value == 'add') {
@@ -230,17 +226,20 @@ const submit = async () => {
     }
     const { data, status } = await api.post('v2/roles', params)
 
-    if (status == 200) {
-      emit('onUpdated', params)
-      toast(`เพิ่ม Role สำเร็จ`, {
+    if (status == 201) {
+      emit('onCreated', params)
+      toast(`${data.message}`, {
         theme: 'auto',
         type: 'success',
         autoClose: 1500,
         dangerouslyHTMLString: true,
       })
       loading.value = false
+      hide()
     }
+
   }
+
   if (formMode.value == 'edit') {
     loading.value = true
     let params = {
@@ -258,6 +257,7 @@ const submit = async () => {
         dangerouslyHTMLString: true,
       })
       loading.value = false
+      hide()
     }
   }
 }

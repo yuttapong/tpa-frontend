@@ -169,6 +169,7 @@
                   <BTableSimple hover small caption-top stacked>
                     <BTbody>
                       <BTr>
+                        <BTd stacked-heading="เลขที่ใบขอรับบริการ">{{ bill.code }}</BTd>
                         <BTh rowspan="3" class="text-center fw-bold text-primary">{{
                           bill?.address_name
                         }}</BTh>
@@ -186,6 +187,7 @@
                         <BTd stacked-heading="เบอร์โทร">{{ bill.address_phone }}</BTd>
                         <BTd stacked-heading="ผู้ติดต่อ">{{ bill.agent_name }}</BTd>
                         <BTd stacked-heading="Note ลูกค้า">{{ bill.note_customers }}</BTd>
+
                       </BTr>
                     </BTbody>
                   </BTableSimple>

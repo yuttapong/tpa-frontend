@@ -1,10 +1,14 @@
 <template>
   <div class="d-flex flex-wrap gap-1">
-    <BButton v-show="canView" @click="clickView" size="sm" variant="outline-secondary"><i class="bi bi-eye"></i></BButton>
+
+    <BButton v-show="canView" @click="clickView" size="sm" variant="outline-secondary"><i class="bi bi-eye"></i>
+    </BButton>
     <BDropdown v-model="show" split-variant="outline-secondary" size="sm" noCaret>
       <template #button-content><i class="bi bi-three-dots-vertical"></i><span class="visually-hidden">menu</span>
       </template>
       <BDropdownItem v-show="canEdit" @click="clickEdit"><i class="bi bi-pencil"></i>แก้ไข
+      </BDropdownItem>
+      <BDropdownItem v-show="canAssingRole" @click="clickAssignRole"><i class="bi bi-lock"></i>กำหนดสิทธิ์
       </BDropdownItem>
       <BDropdownItem v-show="canAssingLab" @click="clickAssignLab"><i class="bi bi-building-add"></i>กำหนดห้อง Lab
       </BDropdownItem>
@@ -17,6 +21,7 @@
         <BDropdownItem active>Active action</BDropdownItem>
         <BDropdownItem disabled>Disabled action</BDropdownItem> -->
     </BDropdown>
+
   </div>
   <BModal v-model="modalCancel" :title="`ยืนยันยกเลิก ?`" @ok="confirmCancel()">
     <p>
@@ -69,6 +74,9 @@ const props = defineProps({
   canEdit: {
     type: Boolean,
   },
+  canAssingRole: {
+    type: Boolean,
+  },
   canAssingLab: {
     type: Boolean,
   },
@@ -96,6 +104,9 @@ const clickView = () => {
 }
 const clickEdit = () => {
   emit('clickEdit', props.data)
+}
+const clickAssignRole = () => {
+  emit('clickAssignRole', props.data)
 }
 const clickAssignLab = () => {
   emit('clickAssignLab', props.data)

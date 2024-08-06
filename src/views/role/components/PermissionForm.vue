@@ -1,5 +1,5 @@
 <template>
-  <BModal v-model="showModal" @hide="hide" :title="title" @ok="submit()" hideHeader buttonSize="sm">
+  <BModal v-model="showModal" :title="title" hideHeader buttonSize="sm">
     <BForm @submit.stop.prevent>
       <div class="d-flex flex-wrap gap-2">
         <div>
@@ -41,7 +41,15 @@
           </div>
         </div>
       </template>
+
     </BForm>
+    <template #footer>
+      <div class="d-flex flex-warp gap-2">
+        <BButton variant="secondary" size="sm" type="button" @click="hide">Cancel</BButton>
+        <BButton variant="primary" size="sm" type="button" @click="submit">{{ formMode }}</BButton>
+
+      </div>
+    </template>
   </BModal>
 </template>
 
@@ -51,7 +59,7 @@ import { toast } from 'vue3-toastify'
 
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'
-const emit = defineEmits(['updated', 'created'])
+const emit = defineEmits(['onUpdated', 'onCreated'])
 const props = defineProps({
   visible: { type: Boolean },
   data: { type: Object },
@@ -67,6 +75,7 @@ const loading = ref(false)
 const showModal = ref(props.visible)
 const title = ref('คำอนุญาต')
 const form = ref({
+
   name: '',
   display_name: '',
   description: '',
@@ -126,10 +135,7 @@ const hide = (e) => {
   form.value.roles = []
   form.value.staffs = []
 }
-const showTitle = computed(() => {
-  if (formMode.value == 'add') emit('update:title', `สร้าง Role ใหม่`)
-  if (formMode.value == 'edit') emit('update:title', `แก้ไข Role : ${form.value.name}`)
-})
+
 const submit = async () => {
   if (formMode.value == 'add') {
     loading.value = true
@@ -139,14 +145,15 @@ const submit = async () => {
     }
     const { data, status } = await api.post('v2/permissions', params)
 
-    if (status == 200) {
-      emit('onUpdated', params)
+    if (status == 201) {
+      emit('onCreated', params)
       toast(`เพิ่ม Role สำเร็จ`, {
         theme: 'auto',
         type: 'success',
         autoClose: 1500,
         dangerouslyHTMLString: true,
       })
+      hide();
     }
     loading.value = false
   }
@@ -168,13 +175,14 @@ const submit = async () => {
         autoClose: 1500,
         dangerouslyHTMLString: true,
       })
+      hide();
     }
     loading.value = false
   }
 }
 
-const cancel = () => {}
-onMounted(() => {})
+const cancel = () => { }
+onMounted(() => { })
 </script>
 <style lang="scss" scoped>
 label {

@@ -439,14 +439,14 @@ const editPermission = (row, index, e) => {
   visibleModalPermission.value = true
 }
 const onUpdatedRole = (data) => {
-  roles.value[viewRoleIndex.value] = data
+  //roles.value[viewRoleIndex.value] = data
   loadRoles()
 }
 const onCreatedRole = (data) => {
   loadRoles()
 }
 const onUpdatedPermission = (data) => {
-  permissions.value[viewPermissionIndex.value] = data
+  //permissions.value[viewPermissionIndex.value] = data
   loadPermissions()
 }
 const onCreatedPermission = (data) => {

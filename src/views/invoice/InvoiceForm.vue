@@ -790,7 +790,7 @@ onUpdated(() => {
                       <input type="text" v-model="formInvoice.code" class="form-control form-control-sm"
                         placeholder="Code" disabled="disabled" />
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" v-if="formInvoice.code">
+                    <div class="col-6 col-md-4 col-lg-3">
                       <label>ส่วนลดและการสมสมยอด</label>
                       <BFormSelect :options="discountTypes" :state="!!formInvoice.discount_pattern"
                         v-model="formInvoice.discount_pattern" size="sm">

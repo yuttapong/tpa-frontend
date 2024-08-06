@@ -1,6 +1,6 @@
 <template>
   <div class="table-responsive">
-    <table class="table table-sm table-hover">
+    <table class="table table-sm table-hover table-borderless">
       <thead>
         <tr>
           <th scope="col" class="fw-bold text-decoration-underline">Actions</th>
@@ -17,7 +17,8 @@
         <tr v-for="(item, index) in items" :key="index">
           <th>
             <StaffButtonActions canAssingLab canEdit canView @clickView="viewStaff(item)"
-              @clickAssignLab="viewLabAssign(item)" />
+              @clickAssignLab="viewLabAssign(item)" @clickEdit="viewEdit(item)" canAssingRole
+              @clickAssignRole="viewRoleAssign(item)" />
           </th>
           <th scope="row">{{ item.id }}</th>
           <td>{{ item.code }}</td>
@@ -44,6 +45,8 @@ import { } from 'vue'
 import LabAssignForm from '@/views/staff/components/LabAssignForm.vue'
 import StaffButtonActions from '@/views/staff/components/StaffButtonActions.vue'
 import { myFormatDate } from '@/helpers/myformat'
+
+
 const props = defineProps({
   items: {
     type: Array,
@@ -52,8 +55,17 @@ const props = defineProps({
   onView: {
     type: Function,
   },
+  onEdit: {
+    type: Function,
+  },
+  onAssignRole: {
+    type: Function,
+  },
 })
-const emit = defineEmits(['onView'])
+const emit = defineEmits(['onView', 'onEdit', 'onAssignRole'])
+
 const viewStaff = (item) => emit('onView', item)
 const viewLabAssign = (item) => emit('onAssignLab', item)
+const viewRoleAssign = (item) => emit('onAssignRole', item)
+const viewEdit = (item) => emit('onEdit', item)
 </script>

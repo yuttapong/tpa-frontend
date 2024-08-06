@@ -49,7 +49,9 @@
                     </BButton>
                   </div>
                 </div>
-                <StaffTable :items="items" @on-view="showStaff" @on-assign-lab="showLabAssign" />
+
+                <StaffTable :items="items" @on-view="showStaff" @on-assign-lab="showLabAssign" @on-edit="showEdit"
+                  @on-assign-role="showRoleAssign" />
                 <vue-awesome-paginate :items-per-page="pagination.per_page"
                   :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
                   :on-click="onChangePage" />
@@ -148,7 +150,11 @@
       </div>
     </div>
     <!-- ###########END MODAL ########### -->
-    <LabAssignForm v-model:visible="visibleModalAssignLab" :data="staff" />
+    <LabAssignForm v-model:visible="visibleModalAssignLab" :data="staff" :settings="settings" />
+    <StaffForm :mode="formMode" v-model:visible="visibleModalEdit" :data="staff" :settings="settings" @created="onCreated"
+      @updated="onUpdated" />
+    <RoleAssign :mode="formMode" v-model:visible="visibleModalRole" :data="staff" :settings="settings"
+      @updated="onRoleUpdated" />
   </section>
 </template>
 
@@ -166,13 +172,18 @@ import LabAssignForm from './components/LabAssignForm.vue'
 
 import { useAppStore } from '@/stores/appStore'
 import StaffTable from './components/StaffTable.vue'
+import StaffForm from './components/StaffForm.vue'
+import RoleAssign from './components/RoleAssign.vue'
 const row = ref({})
 const items = ref([])
 const modalRef = ref(null)
 const modal = ref(null)
 const loading = ref(true)
+const formMode = ref("add")
 const staff = ref()
 const visibleModalAssignLab = ref(false)
+const visibleModalRole = ref(false)
+const visibleModalEdit = ref(false)
 const setting = ref({
   appcal_defaultRole: 'Officer',
   kanban_defaultLevel: 'officer',
@@ -192,13 +203,20 @@ const roles = ref([])
 const permissions = ref([])
 const userPermissions = ref([])
 const appStore = useAppStore()
+const settings = ref()
 const pagination = ref({
   total: 0,
   current_page: 1,
   last_page: 0,
   per_page: appStore.settings.page.perPage,
 })
-
+const getSettings = async () => {
+  const { data } = await api.get("v2/staffs/settings")
+  if (data) {
+    settings.value = data
+  }
+}
+getSettings()
 const loadData = async () => {
   let params = {
     page: pagination.value.current_page,
@@ -269,9 +287,23 @@ const showLabAssign = (item) => {
   visibleModalAssignLab.value = true
   staff.value = item
 }
-const addUser = () => {
-
+const showRoleAssign = (item) => {
+  visibleModalRole.value = true
+  staff.value = item
 }
+const showEdit = (item) => {
+  formMode.value = 'edit'
+  visibleModalEdit.value = true
+  staff.value = item
+}
+const addUser = () => {
+  formMode.value = 'add'
+  visibleModalEdit.value = true
+}
+const onCreated = () => loadData()
+const onUpdated = () => loadData()
+const onRoleUpdated = () => loadData()
+
 onMounted(() => {
   modal.value = new Modal(modalRef.value)
   search()

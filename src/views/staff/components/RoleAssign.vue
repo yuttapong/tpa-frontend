@@ -2,7 +2,7 @@
   <BModal v-model="showModal" :title="title" buttonSize="sm" :ok-title="formMode">
     <BForm @submit.stop.prevent>
 
-      <div class="d-flex flex-wrap gap-2">
+      <div class="d-flex flex-wrap gap-2" v-if="data">
         <div>
           <label for="name_th">ชื่อ</label>
           <BFormInput v-model="data.name_th" disabled />

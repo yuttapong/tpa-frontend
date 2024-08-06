@@ -109,7 +109,7 @@ const inArray = (needle, haystack) => {
 }
 const loading = ref(false)
 const showModal = ref(props.visible)
-const title = ref(`ID#${props.data.id} : ${props.data?.name_th} ${props.data?.lastname_th}`)
+const title = ref(`ID#${props.data?.id} : ${props.data?.name_th} ${props.data?.lastname_th}`)
 const formSearchRole = ref({ name: '' })
 const formSearchPermission = ref({ name: '' })
 const form = ref({

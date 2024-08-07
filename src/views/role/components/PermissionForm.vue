@@ -41,13 +41,15 @@
           </div>
         </div>
       </template>
-
     </BForm>
     <template #footer>
       <div class="d-flex flex-warp gap-2">
-        <BButton variant="secondary" size="sm" type="button" @click="hide">Cancel</BButton>
-        <BButton variant="primary" size="sm" type="button" @click="submit">{{ formMode }}</BButton>
-
+        <BButton variant="primary" size="sm" type="button" @click="submit"
+          ><i class="bi bi-save"></i> บันทึก</BButton
+        >
+        <BButton variant="secondary" size="sm" type="button" @click="hide"
+          ><i class="bi bi-x"></i> ปิด</BButton
+        >
       </div>
     </template>
   </BModal>
@@ -75,7 +77,6 @@ const loading = ref(false)
 const showModal = ref(props.visible)
 const title = ref('คำอนุญาต')
 const form = ref({
-
   name: '',
   display_name: '',
   description: '',
@@ -153,7 +154,7 @@ const submit = async () => {
         autoClose: 1500,
         dangerouslyHTMLString: true,
       })
-      hide();
+      hide()
     }
     loading.value = false
   }
@@ -175,14 +176,14 @@ const submit = async () => {
         autoClose: 1500,
         dangerouslyHTMLString: true,
       })
-      hide();
+      hide()
     }
     loading.value = false
   }
 }
 
-const cancel = () => { }
-onMounted(() => { })
+const cancel = () => {}
+onMounted(() => {})
 </script>
 <style lang="scss" scoped>
 label {

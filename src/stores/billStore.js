@@ -23,6 +23,7 @@ export const useBillStore = defineStore('bill', {
         vat_percent: 7,
         vat: 0,
       },
+      bill: {},
       formEdit: {},
       workorder: {},
       items: [],

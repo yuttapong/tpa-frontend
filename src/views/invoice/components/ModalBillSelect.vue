@@ -3,21 +3,38 @@
     <div class="modal-dialog modal-fullscreen-md-down modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ title }}</h5>
+          <h5 class="modal-title">{{ title }} : {{ billCode }}</h5>
 
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="my-2">
             <form @submit.prevent="search()">
               <div class="d-flex gap-2">
                 <div>
-                  <input v-model="filterSource" type="radio" value="all" :checked="filterSource == 'all'" />
+                  <input
+                    v-model="filterSource"
+                    type="radio"
+                    value="all"
+                    :checked="filterSource == 'all'"
+                    @change="search()"
+                  />
                   ทั้งหมด
                 </div>
                 <div v-if="customer.id">
-                  <input v-model="filterSource" type="radio" class="ms-3" value="customer"
-                    :checked="filterSource == 'customer'" />
+                  <input
+                    v-model="filterSource"
+                    type="radio"
+                    class="ms-3"
+                    value="customer"
+                    :checked="filterSource == 'customer'"
+                    @change="search()"
+                  />
                   {{ customer.name }}
                 </div>
 
@@ -27,18 +44,19 @@
                     <i class="bi bi-search"></i>
                   </button>
                 </div>
+                <div>
+                  <spinner :visible="billLoading || invoiceStore.cartLoading" class="mx-2" />
+                </div>
               </div>
             </form>
           </div>
-          <div class="text-center" v-if="billLoading">
-            <spinner :visible="billLoading || invoiceStore.cartLoading" class="mx-2" />
-          </div>
+
           <div class="row">
             <div class="col-12 col-md-6">
-              <h5><i class="bi bi-book"></i> ใบขอรับบริการ</h5>
+              <h5>ใบขอรับบริการ</h5>
               <!-- Small tables -->
               <div class="table table-responsive" style="height: 400px; overflow: scroll">
-                <table class="table table-sm table-striped table-bordered">
+                <table class="table table-sm table-striped table-bordered table-hover">
                   <thead>
                     <tr>
                       <th scope="col" class="fw-bold">วันที่</th>
@@ -48,24 +66,44 @@
                     </tr>
                     <tr>
                       <th scope="col" class="fw-bold">
-                        <input type="search" v-model="formSearchProduct.q" class="form-control form-control-sm"
-                          placeholder="Customer ID" @keyup.enter="search()" />
+                        <input
+                          type="search"
+                          v-model="formSearchProduct.q"
+                          class="form-control form-control-sm"
+                          placeholder="Customer ID"
+                          @keyup.enter="search()"
+                        />
                       </th>
 
-                      <input type="date" v-model="formSearchProduct.document_date" class="form-control form-control-sm"
-                        placeholder="วันที่" @change="search()" />
+                      <input
+                        type="date"
+                        v-model="formSearchProduct.document_date"
+                        class="form-control form-control-sm"
+                        placeholder="วันที่"
+                        @change="search()"
+                      />
                       <th scope="col" class="fw-bold">
-                        <select v-model="formSearchProduct.bill_status" class="form-control form-control-sm"
-                          placeholder="สถานะ" @keyup.enter="search()" />
+                        <select
+                          v-model="formSearchProduct.bill_status"
+                          class="form-control form-control-sm"
+                          placeholder="สถานะ"
+                          @keyup.enter="search()"
+                        />
                       </th>
                       <th scope="col" class="fw-bold">
-                        <input type="search" v-model="formSearchProduct.code" class="form-control form-control-sm"
-                          placeholder="เลขที่ใบขอรับริการ" @keyup.enter="search()" />
+                        <input
+                          type="search"
+                          v-model="formSearchProduct.code"
+                          class="form-control form-control-sm"
+                          placeholder="เลขที่ใบขอรับริการ"
+                          @keyup.enter="search()"
+                        />
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(item, index) in items" :key="index">
+                      <td>{{ myFormatDate(item.document_date) }}</td>
                       <td>
                         <div class="">
                           <i class="">{{ item.address_name }}</i>
@@ -74,7 +112,6 @@
                         <ProductMeta :item="item" />
                       </td>
 
-                      <td>{{ myFormatDate(item.document_date) }}</td>
                       <td>{{ item.bill_status }}<br /></td>
                       <td nowrap>
                         <button class="fw-bold btn-link btn" @click="getBill(item.id)">
@@ -90,29 +127,41 @@
             <!-- ############################# STAR BILL ITEMS ################################### -->
             <div v-if="isModeBill()" class="col-12 col-md-6">
               <h5>
-                <i class="bi bi-tools"></i> เครื่องมือ
+                เครื่องมือ
                 <!-- <BBadge variant="danger" text-indicator v-if="bill.items">{{ bill.items.length }}</BBadge> -->
-                <span variant="danger" text-indicator v-if="bill.items">({{ bill.items.length }})</span>
+                <span variant="danger" text-indicator v-if="bill.items"
+                  >({{ bill.items.length }})</span
+                >
               </h5>
+              <div class="d-flex flex-row gap-2 mb-2">
+                <BButton
+                  type="button"
+                  @click="selectAll(bill.items)"
+                  value="All"
+                  size="sm"
+                  variant="secondary"
+                  class="mx-2"
+                >
+                  <i class="bi bi-check"></i>
+                </BButton>
+                <BButton type="button" @click="clearAll()" size="sm" variant="secondary">
+                  <i class="bi bi-x"></i>
+                </BButton>
+                <span v-if="selectedItems.length > 0">
+                  เลือก {{ selectedItems.length }} รายการ</span
+                >
+              </div>
 
-              <span v-if="selectedItems.length > 0"> เลือก {{ selectedItems.length }} รายการ</span>
               <div class="table table-responsive" style="height: 400px; overflow: scroll">
-                <table class="table table-sm table-striped table-bordered">
+                <table class="table table-sm table-striped table-bordered table-hover">
                   <thead>
                     <tr>
-                      <th scope="col" class="fw-bold text-center">
-                        <button type="button" @click="selectAll(bill.items)" value="All"
-                          class="btn btn-outline-secondary btn-sm">
-                          <i class="bi bi-check"></i>
-                        </button>
-                        <button type="button" @click="clearAll()" value="Clear"
-                          class="ms-1 btn btn-outline-secondary btn-sm">
-                          <i class="bi bi-x"></i>
-                        </button>
-                      </th>
+                      <th scope="col" class="fw-bold text-center"></th>
 
                       <th scope="col" class="fw-bold">Item Code</th>
                       <th scope="col" class="fw-bold">เครื่องมือ</th>
+                      <th scope="col" class="fw-bold">Point</th>
+                      <th scope="col" class="fw-bold">Point Price</th>
                       <th scope="col" class="fw-bold">จำนวนเงิน</th>
                       <th scope="col" class="fw-bold">สถานะ</th>
                     </tr>
@@ -127,8 +176,13 @@
                   <tbody v-if="!workorderLoading && bill.items">
                     <tr v-for="(item, index) in bill.items" :key="index">
                       <th class="text-center align-middle">
-                        <template v-if="!existCarts(item) || item.invoice_item_id < 1">
-                          <input class="form-checkbox" v-model="selectedItems" type="checkbox" :value="item" />
+                        <template v-if="!isExistItem(item) && item.invoice_item_id == 0">
+                          <input
+                            class="form-checkbox"
+                            v-model="selectedItems"
+                            type="checkbox"
+                            :value="item"
+                          />
                         </template>
                       </th>
 
@@ -142,7 +196,11 @@
                         </div>
                         <ProductMeta :item="item" />
                       </td>
-                      <td>{{ parseFloat(item.total).toLocaleString() }}</td>
+                      <td>{{ item.point }}<br /></td>
+                      <td>{{ Number(item.point_price).toLocaleString() }}</td>
+
+                      <td>{{ Number(item.price).toLocaleString() }}</td>
+
                       <td>{{ item.job_status }}<br /></td>
                     </tr>
                   </tbody>
@@ -187,7 +245,6 @@
                         <BTd stacked-heading="เบอร์โทร">{{ bill.address_phone }}</BTd>
                         <BTd stacked-heading="ผู้ติดต่อ">{{ bill.agent_name }}</BTd>
                         <BTd stacked-heading="Note ลูกค้า">{{ bill.note_customers }}</BTd>
-
                       </BTr>
                     </BTbody>
                   </BTableSimple>
@@ -200,17 +257,27 @@
         <div class="modal-footer m-0 p-1 d-block">
           <div class="row">
             <div class="col-xs-10 col-md-7">
-              <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-                :on-click="onChangePage" class="" />
+              <vue-awesome-paginate
+                :total-items="pagination.total"
+                :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow"
+                v-model="pagination.current_page"
+                :on-click="onChangePage"
+                class=""
+              />
             </div>
 
             <div class="col-xs-2 col-md-5">
               <div class="d-flex gap-2 justify-content-end">
                 <template v-if="isModeCustomer()">
-                  <button type="button" class="btn btn-success btn-sm" @click="confirmSelectCustomer">
+                  <button
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    @click="confirmSelectCustomer"
+                  >
                     <i class="bi bi-person"></i> ดึงข้อมูลลูกค้า
-                  </button></template>
+                  </button></template
+                >
                 <template v-if="isModeBill()">
                   <button type="button" class="btn btn-success btn-sm" @click="confirmSelectBill">
                     <i class="bi bi-files"></i> ดึงข้อมูลเครื่องมือ
@@ -239,7 +306,6 @@
 import { ref, onMounted, computed, watch, reactive } from 'vue'
 import { Modal } from 'bootstrap'
 import { api } from '@/helpers/api'
-import { differenceInDays } from 'date-fns'
 import { useAppStore } from '@/stores/appStore'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import Spinner from '@/components/Spinner.vue'
@@ -258,6 +324,7 @@ const props = defineProps({
     type: String,
     default: 'Work Order',
   },
+  billCode: { type: String },
   customer: {
     type: Object,
     default: () => {
@@ -336,6 +403,7 @@ const loadData = async () => {
 }
 
 const bill = ref({})
+
 const getBill = async (id) => {
   workorderLoading.value = true
 
@@ -345,19 +413,35 @@ const getBill = async (id) => {
   if (data) {
     bill.value = data
     billLoading.value = false
-    selectAll()
+  }
+  workorderLoading.value = false
+}
+const getBillByCode = async (code) => {
+  workorderLoading.value = true
+
+  const { data } = await api.get(`/v2/bills/code/${code}`, {
+    params: {},
+  })
+  if (data) {
+    bill.value = data
+    billLoading.value = false
   }
   workorderLoading.value = false
 }
 
 const selectedItems = ref([])
-
+const invoiceItems = computed(() => invoiceStore.form?.items || [])
 let selectAll = () => {
   selectedItems.value = bill.value.items
-    ? bill.value.items.filter((item) => Number(item.invoice_item_id) < 1)
+    ? bill.value.items.filter((item) => !isExistItem(item) && item.invoice_item_id == 0)
     : []
 }
-
+const isExistItem = (bill) => {
+  let rs = invoiceItems.value.filter(
+    (item) => String(item.bill_items_code) == String(bill.item_code),
+  )
+  return rs.length > 0 ? true : false
+}
 let clearAll = () => {
   selectedItems.value = []
 }
@@ -433,19 +517,29 @@ const selectItem = (data) => {
   selectedItems.value = []
 }
 const filterSource = ref()
+
 onMounted(() => {
+  console.log('onmounted', 'modalJob')
   if (props.customer.id !== undefined) {
     filterSource.value = 'customer'
   } else {
     filterSource.value = 'all'
   }
+  if (props.billCode) {
+    formSearchProduct.value.code = props.billCode
+    getBillByCode(props.billCode)
+  }
   modalEl = new Modal(modalRef.value)
 })
+
 defineExpose({ show: _show })
 
 watch(props.customer, (data) => {
   console.log('loadData', data)
   search()
+})
+watch(props.billCode, (data) => {
+  formSearchProduct.value.code = data
 })
 </script>
 <style lang="scss" scoped>

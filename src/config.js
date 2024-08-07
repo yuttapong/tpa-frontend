@@ -77,7 +77,7 @@ export const invoiceStatuses = [
   {
     value: 'draft',
     text: 'ร่าง',
-    default: true,
+    default: false,
   },
   {
     value: 'unpaid',
@@ -93,5 +93,5 @@ export const invoiceStatuses = [
     value: 'canceled',
     text: 'ยกเลิก',
     default: false,
-  }
+  },
 ]

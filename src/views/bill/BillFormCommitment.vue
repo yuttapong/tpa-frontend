@@ -5,7 +5,7 @@ import Spinner from '@/components/Spinner.vue'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
-import { myFormatDate } from '@/helpers/myformat'
+import { myCurrency, myFormatDate } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
 import ConfirmCommitment from './components/ConfirmCommitment.vue'
 import { toast } from 'vue3-toastify'
@@ -289,22 +289,22 @@ loadData()
             <form @submit.prevent="onSearch()">
               <div class="row g-3">
                 <div class="col-12 col-lg-4 col-xl-3">
-                  <label>Bill ID</label>
-                  <p class="fw-bold">{{ form.id }}</p>
+                  <label class="text-decoration-underline">Bill ID</label>
+                  <p class="">{{ form.id }}</p>
                 </div>
                 <div class="col-12 col-lg-4 col-xl-3">
-                  <label>Bill Code</label>
-                  <p class="fw-bold">{{ form.code }}</p>
+                  <label class="text-decoration-underline">Bill Code</label>
+                  <p class="">{{ form.code }}</p>
                 </div>
-   
+
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                  <label>วันที่เอกสาร</label>
+                  <label class="text-decoration-underline">วันที่เอกสาร</label>
                   <p>
                     {{ myFormatDate(form.document_date) }}
                   </p>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                  <label>วันนัดรับเครื่องมือ</label>
+                  <label class="text-decoration-underline">วันนัดรับเครื่องมือ</label>
                   <template v-if="form.commitment_date">
                     <p>
                       {{ myFormatDate(form.commitment_date) }}
@@ -317,14 +317,17 @@ loadData()
                                             id="commitment_date" class="form-control form-control-sm" readonly> -->
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                  <label>ลูกค้า</label>
+                  <label class="text-decoration-underline">ลูกค้า</label>
                   <p>
                     {{ form.customer?.companyname }}
                   </p>
                 </div>
-                <div class="col-12 col-lg-4 col-xl-3"></div>
-                <div class="col-12 col-lg-4 col-xl-3"></div>
-                <div class="col-12 col-lg-4 col-xl-3"></div>
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                  <label class="text-decoration-underline">Note Customer</label>
+                  <p class="text-danger">
+                    {{ form.note_customers }}
+                  </p>
+                </div>
               </div>
 
               <div class="border p-3 bg-info rounded">
@@ -413,22 +416,31 @@ loadData()
                                         </tr> -->
                     <tr>
                       <th scope="col" class="">#</th>
-                      <th scope="col" class="fw-bold">SubLab</th>
-                      <th scope="col" class="fw-bold" nowrap>Reserved Date</th>
                       <th scope="col" class="">Item Id</th>
                       <th scope="col" class="">Item Code</th>
+                      <th scope="col" class="fw-bold">SubLab</th>
+                      <th scope="col" class="fw-bold" nowrap>Reserved Date</th>
+
                       <th scope="col" class="">Product</th>
 
                       <th scope="col" class="fw-bold">Barcode</th>
 
                       <th scope="col" class="fw-bold">S/N.</th>
                       <th scope="col" class="fw-bold">ID No.</th>
+                      <th scope="col" class="fw-bold">Point</th>
+                      <th scope="col" class="fw-bold">Point Price</th>
                     </tr>
                   </thead>
 
                   <tbody v-for="(item, index) in items" :key="index">
                     <tr :class="item.product.is_job != 1 ? 'text-decoration-line-through' : ''">
                       <td>{{ index + 1 }})</td>
+                      <td>
+                        <span>{{ item.item_id }}</span>
+                      </td>
+                      <td nowrap>
+                        {{ item.item_code }}
+                      </td>
                       <td>
                         <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
                         <small class="ms-2 text-danger"
@@ -444,12 +456,7 @@ loadData()
                           {{ item?.current_service_status.status_name }}
                         </div>
                       </td>
-                      <td>
-                        <span>{{ item.item_id }}</span>
-                      </td>
-                      <td nowrap>
-                        {{ item.item_code }}
-                      </td>
+
                       <td>
                         <div v-if="item.product.is_job">{{ item.product_name }}</div>
                         <div>{{ item.product_name }}</div>
@@ -463,6 +470,12 @@ loadData()
                       </td>
                       <td>
                         <span>{{ item?.id_no }}</span>
+                      </td>
+                      <td>
+                        <span>{{ item?.point }}</span>
+                      </td>
+                      <td>
+                        <span>{{ myCurrency(item?.point_price) }}</span>
                       </td>
                     </tr>
                   </tbody>

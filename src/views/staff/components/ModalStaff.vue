@@ -5,7 +5,12 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">พนักงาน</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <!-- Small tables -->
@@ -13,17 +18,32 @@
               <form @submit.prevent="onSearch()">
                 <div class="row g-2">
                   <div class="col-6 col-md-4 col-lg-3">
-                    <input type="search" v-model="formSearchProduct.q" class="form-control form-control-sm"
-                      placeholder="ชื่อ, สกุล" autofocus @keyup.enter="onSearch()" />
+                    <input
+                      type="search"
+                      v-model="formSearchProduct.q"
+                      class="form-control form-control-sm"
+                      placeholder="ชื่อ, สกุล"
+                      autofocus
+                      @keyup.enter="onSearch()"
+                    />
                   </div>
                   <div class="col-6 col-md-4 col-lg-3">
-                    <input type="search" v-model="formSearchProduct.taxnumber" class="form-control form-control-sm"
-                      placeholder="taxnumber" @keyup.enter="onSearch()" />
+                    <input
+                      type="search"
+                      v-model="formSearchProduct.taxnumber"
+                      class="form-control form-control-sm"
+                      placeholder="taxnumber"
+                      @keyup.enter="onSearch()"
+                    />
                   </div>
 
                   <div class="col-6 col-md-4 col-lg-3">
-                    <input type="submit" class="btn btn-primary btn-sm" value="ค้นหา" :disabled="loading" />
-
+                    <input
+                      type="submit"
+                      class="btn btn-primary btn-sm"
+                      value="ค้นหา"
+                      :disabled="loading"
+                    />
                   </div>
                 </div>
               </form>
@@ -41,17 +61,24 @@
 
                     <th scope="col">อีเมล์</th>
                     <th scope="col">เบอร์โทร</th>
-
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, index) in items" :key="index"
-                    :class="{ 'table-success': item.id == selectedItems.id }">
+                  <tr
+                    v-for="(item, index) in items"
+                    :key="index"
+                    :class="{ 'table-success': item.id == selectedItems.id }"
+                  >
                     <th scope="row">
                       <!-- <button class="btn btn-secondary btn-sm d-block" @click="selectProduct(item)">
                         <i class="bi bi-plus"></i>
                       </button> -->
-                      <input class="form-check-input" type="radio" v-model="selectedItems" :value="item" />
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        v-model="selectedItems"
+                        :value="item"
+                      />
                     </th>
                     <td>
                       <span class="">{{ item.id }}</span>
@@ -73,7 +100,6 @@
                       {{ item.contacttel1 }}
                       <div>{{ item.contacttel2 }}</div>
                     </td>
-
                   </tr>
                 </tbody>
               </table>
@@ -81,13 +107,11 @@
             <!-- End small tables -->
           </div>
           <div class="modal-footer">
-
-
             <button type="button" class="btn btn-primary" @click="select">
               <i class="bi bi-save"></i> ตกลง
             </button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="bi bi-times"></i> ปิด
+              <i class="bi bi-x"></i> ปิด
             </button>
           </div>
         </div>
@@ -122,7 +146,7 @@ const onSearch = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 const loadData = async () => {
   let params = {

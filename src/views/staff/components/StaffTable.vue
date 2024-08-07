@@ -11,14 +11,22 @@
           <th scope="col" class="fw-bold text-decoration-underline">Username</th>
           <th scope="col" class="fw-bold text-decoration-underline">Level</th>
           <th scope="col" class="fw-bold text-decoration-underline">Created</th>
+          <th scope="col" class="fw-bold text-decoration-underline">สถานะ</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
           <th>
-            <StaffButtonActions canAssingLab canEdit canView @clickView="viewStaff(item)"
-              @clickAssignLab="viewLabAssign(item)" @clickEdit="viewEdit(item)" canAssingRole
-              @clickAssignRole="viewRoleAssign(item)" />
+            <StaffButtonActions
+              canAssingLab
+              canEdit
+              canView
+              @clickView="viewStaff(item)"
+              @clickAssignLab="viewLabAssign(item)"
+              @clickEdit="viewEdit(item)"
+              canAssingRole
+              @clickAssignRole="viewRoleAssign(item)"
+            />
           </th>
           <th scope="row">{{ item.id }}</th>
           <td>{{ item.code }}</td>
@@ -35,17 +43,17 @@
               myFormatDate(new Date(item.date_starts))
             }}</span>
           </td>
+          <td><status-active :status="item.status" /></td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
 <script setup>
-import { } from 'vue'
+import {} from 'vue'
 import LabAssignForm from '@/views/staff/components/LabAssignForm.vue'
 import StaffButtonActions from '@/views/staff/components/StaffButtonActions.vue'
 import { myFormatDate } from '@/helpers/myformat'
-
 
 const props = defineProps({
   items: {

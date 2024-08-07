@@ -468,8 +468,6 @@
       title="รายละเอียดใบขอรับบริการ"
       :billTypes="billTypes"
       :data="bill"
-      @onChangeBillStatus="getBillByCode(bill.code)"
-      @onChangeJobStatus="getBillByCode(bill.code)"
     />
     <ModalBillEdit
       ref="modalBillEditRef"
@@ -494,6 +492,354 @@
       "
     />
   </section>
+
+  <div class="modal" ref="modalViewRef" v-if="bill">
+    <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Bill ID#{{ bill.id }}</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-4 col-lg-3">
+              <label class="fw-bold text-decoration-underline">เลขที่</label>
+              <p>{{ bill.code }}</p>
+            </div>
+            <div class="col-4 col-lg-3">
+              <label class="fw-bold text-decoration-underline">ลูกค้า</label>
+              <p>{{ bill?.customer?.companyname }}</p>
+            </div>
+            <div class="col-4 col-lg-3">
+              <label class="fw-bold text-decoration-underline">วันที่</label>
+              <p>{{ bill.document_date ? myFormatDate(bill.document_date) : '' }}</p>
+            </div>
+
+            <div class="col-4 col-lg-3">
+              <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
+              <p>{{ bill.agent_name }}</p>
+            </div>
+            <div class="col-12 col-lg-3">
+              <label class="fw-bold text-decoration-underline">ที่อยู่</label>
+              <p>{{ bill.address_name }} {{ bill.address_detail }}</p>
+            </div>
+
+            <div class="col-4 col-lg-3">
+              <label class="fw-bold text-decoration-underline">เวลาทำรายการ</label>
+              <p>{{ myFormatDate(bill.date_start) }}</p>
+            </div>
+            <div class="col-4 col-lg-3">
+              <label class="fw-bold text-decoration-underline">วันนัดรับเครื่องมือ</label>
+              <p v-if="bill.commitment_date">
+                {{ myFormatDate(bill.commitment_date) }}
+              </p>
+            </div>
+            <div class="col-4 col-lg-3">
+              <label class="fw-bold text-decoration-underline">สถานะ</label>
+              <p>
+                <BillButtonStatus
+                  v-model="bill.bill_status"
+                  :data="bill"
+                  @on-change="onChangeBillStatus"
+                />
+              </p>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="fw-bold text-decoration-underline">Note Customer</label>
+              <p class="text-muted text-wrap fst-italic fw-light">{{ bill.note_customers }}</p>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="fw-bold text-decoration-underline">หมายเหตุ</label>
+              <p class="word-wrap">{{ bill.remark }}</p>
+            </div>
+          </div>
+
+          <div class="" v-if="loadingItems">
+            <div class="spinner-grow" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-condensed table-sm table-bordered" v-if="!loadingItems">
+              <thead>
+                <tr>
+                  <th class="fw-bold text-decoration-underline">#</th>
+                  <th class="fw-bold text-decoration-underline">NO</th>
+                  <th class="fw-bold text-decoration-underline">ItemCode</th>
+                  <th class="fw-bold text-decoration-underline">Tracking Status</th>
+                  <th class="fw-bold text-decoration-underline" nowrap>วันที่</th>
+                  <th class="fw-bold text-decoration-underline">Item Name</th>
+                  <th class="fw-bold text-decoration-underline">Test Point</th>
+                  <th class="fw-bold text-decoration-underline">SN.</th>
+
+                  <th class="fw-bold text-decoration-underline text-end">Qty</th>
+                  <th class="fw-bold text-decoration-underline text-end">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, rowIndex) in bill.items" :key="row">
+                  <th>
+                    <input
+                      type="checkbox"
+                      v-model="itemsSelected"
+                      name="itemsSelected[]"
+                      :value="row"
+                    />
+                  </th>
+                  <th>{{ rowIndex + 1 }}</th>
+                  <td nowrap>
+                    {{ row.item_code }}
+                    <div>
+                      <small
+                        >#<span class="text-primary fw-bold">{{ row.item_id }}</span></small
+                      >
+                    </div>
+                  </td>
+                  <td nowrap>
+                    <!-- <JobStatus v-model="row.job_status" /> -->
+                    <div>{{ row.lab?.name_th }} #{{ row.lab.id }}</div>
+                    <div class="ms-2 border-bottom">
+                      <small class="fs-italic">
+                        {{ row.sublab?.name_th }} #{{ row.sublab.id }}</small
+                      >
+                    </div>
+                    <div
+                      v-if="row.current_service_status"
+                      style="font-size: 12px"
+                      class="border-bottom text-danger fw-bold"
+                    >
+                      {{ row.current_service_status.status_name }} #{{
+                        row.current_service_status.status_id
+                      }}
+                    </div>
+                    <JobButtonStatus
+                      v-model="row.job_status"
+                      :data="row"
+                      @on-change="onChangeJobStatus"
+                    />
+                  </td>
+                  <td nowrap>{{ myFormatDate(row.reserved_date) }}</td>
+                  <td>{{ row.product_name }}</td>
+                  <td>{{ row.test_point }}</td>
+                  <td>{{ row.serialnumber }}</td>
+                  <td class="text-end">{{ row.qty }}</td>
+                  <td class="text-end">{{ row.total }}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="8">
+                    ค่าบริการ Onsite
+                    <span class="ms-3">{{ parseFloat(bill.cost_onsite).toLocaleString() }}</span>
+
+                    <label class="ms-5">ค่าขนส่ง</label>
+                    <span class="ms-3">{{ parseFloat(bill.cost_travel).toLocaleString() }}</span>
+                  </td>
+
+                  <td>รวม</td>
+                  <td colspan="2" class="text-end fw-bold">
+                    {{ parseFloat(bill.total_price).toLocaleString() }}
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="8"></td>
+                  <td>VAT ({{ parseFloat(bill.vat_percent).toLocaleString() }}%)</td>
+                  <td colspan="2" class="text-end fw-bold">
+                    {{ parseFloat(bill.vat_total).toLocaleString() }}
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="8"></td>
+                  <td>รวมเป็นเงินทั้งหมด</td>
+                  <td colspan="2" class="text-end fw-bolder text-decoration-underline">
+                    {{ Number(bill.grand_total).toLocaleString() }}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <p>
+            <label class="me-3 fw-bold text-decoration-underline"
+              >ที่อยู่ในการจัดส่งใบรับรอง:</label
+            >
+            <span class="text-wrap">
+              {{
+                `${bill.cert_address_name} ${bill.cert_address_detail}
+                            ${bill.cert_address_province} ${bill.cert_address_zipcode} ${bill.cert_address_phone}`.trim()
+              }}</span
+            >
+          </p>
+        </div>
+        <div class="modal-footer d-block">
+          <!-- ///////////// -->
+
+          <div class="d-flex">
+            <div class="p-1">
+              <span class="alert alert-danger p-1" v-if="errorMsg">{{ errorMsg }}</span>
+            </div>
+
+            <div class="p-1">
+              <span class="badge rounded-pill bg-danger p-2 fw-bold" v-if="itemsSelected.length > 0"
+                >{{ itemsSelected.length }} รายการ</span
+              >
+            </div>
+          </div>
+
+          <div class="row g-2">
+            <div class="col-12 col-lg-12 col-xl-12">
+              <Spinner :visible="loadingCancelCommitment" />
+              <span v-if="resultCancelCommitment.success === true" class="text-success">{{
+                resultCancelCommitment.message
+              }}</span>
+              <span v-if="resultCancelCommitment.success === false" class="text-danger">{{
+                resultCancelCommitment.message
+              }}</span>
+            </div>
+
+            <div class="col-12 col-lg-6 col-xl-6">
+              <!-- <button type="button" class="btn btn-danger btn-sm mx-1" @click="cancelBill(bill)">
+                <i class="bi bi-x"></i> ยกเลิก
+              </button> -->
+              <!-- <button type="button" class="btn btn-success btn-sm mx-1" @click="newInvoice">
+                <i class="bi bi-plus"></i> Invoice Cart
+              </button> -->
+              <!-- <button type="button" class="btn btn-secondary btn-sm mx-1" data-bs-dismiss="modal">
+                <i class="bi bi-x-circle"></i> ปิดหน้าต่าง
+              </button> -->
+            </div>
+          </div>
+
+          <!-- ///////////// -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" ref="modalInvoiceRef">
+    <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">สร้างใบแจ้งหนี้ / Invoice</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-4">
+              <!-- <label class="fw-bold text-decoration-underline">เลขที่</label>
+                            <p>xxxxxxxxxxxxx</p> -->
+            </div>
+            <div class="col-4">
+              <label class="fw-bold text-decoration-underline">ลูกค้า</label>
+              <p>
+                <input
+                  type="text"
+                  v-model="invoice.customer_name"
+                  class="form-control form-control-sm"
+                />
+              </p>
+            </div>
+            <div class="col-4">
+              <label class="fw-bold text-decoration-underline">ที่อยู่</label>
+              <p>
+                <input
+                  type="date"
+                  v-model="invoice.document_date"
+                  class="form-control form-control-sm"
+                />
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
+              <p>
+                <input
+                  type="text"
+                  v-model="invoice.contact_name"
+                  class="form-control form-control-sm"
+                />
+              </p>
+            </div>
+            <div class="col-8">
+              <label class="fw-bold text-decoration-underline">ที่อยู่</label>
+              <p>
+                <input
+                  type="text"
+                  v-model="invoice.address_detail"
+                  class="form-control form-control-sm"
+                />
+              </p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th class="fw-bold text-decoration-underline">NO</th>
+                  <th class="fw-bold text-decoration-underline">ItemCode</th>
+                  <th class="fw-bold text-decoration-underline">รายการ</th>
+                  <th class="fw-bold text-decoration-underline">Model</th>
+                  <th class="fw-bold text-decoration-underline">ราคา</th>
+                  <th class="fw-bold text-decoration-underline">ส่วนลด</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, rowIndex) in invoice.items" :key="row">
+                  <th>{{ rowIndex + 1 }}</th>
+                  <th>{{ row.item_code }}</th>
+                  <th>{{ row.product_name }}</th>
+                  <th>
+                    <span class="mx-2 badge badge-light text-dark d-inline-block">{{
+                      row.model
+                    }}</span>
+                  </th>
+                  <th>
+                    <input
+                      type="number"
+                      name="price[]"
+                      v-model="row.price"
+                      class="form-control form-control-sm"
+                      style="width: 100px"
+                    />
+                  </th>
+                  <th>
+                    <input
+                      type="number"
+                      name="price[]"
+                      v-model="row.discount"
+                      class="form-control form-control-sm"
+                      style="width: 100px"
+                    />
+                  </th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            <label class="font-bold mr-3">NOTE:</label>
+            <textarea class="form-control" placeholder="หมายเหตุ"></textarea>
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" @click="createInvoice">
+            สร้างใบแจ้งหนี้
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -559,20 +905,19 @@ const loadData = async () => {
     page: pagination.value.current_page,
     ...formSearch.value,
   }
-  const { data } = await api.get('/v2/bills', {
+  const { data } = await api.get('/v1/bill', {
     params: params,
   })
 
   if (data) {
     const p = {
-      total: data?.total,
-      current_page: data?.current_page,
+      current_page: data?.page,
       per_page: data?.per_page,
-      page_count: data?.last_page,
-      total: data?.total || 0,
+      page_count: data?.total_pages,
+      total: data?.total_pages || 0,
     }
     pagination.value = p
-    items.value = data.data
+    items.value = data.result
     loading.value = false
   }
   loading.value = false
@@ -791,8 +1136,8 @@ const resetFormSearch = () => {
 onSearch()
 onMounted(() => {
   errorMsg.value = ''
-  // modalView.value = new Modal(modalViewRef.value)
-  // modalInvoice.value = new Modal(modalInvoiceRef.value)
+  modalView.value = new Modal(modalViewRef.value)
+  modalInvoice.value = new Modal(modalInvoiceRef.value)
 })
 
 const headers = [

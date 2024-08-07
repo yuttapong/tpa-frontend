@@ -42,11 +42,17 @@
                 <form @submit.prevent="onSearch()">
                   <div class="d-flex flex-wrap gap-2">
                     <div>
-                      <BButton variant="primary" @click="addRole($event)" size="sm"><i class="bi bi-plus"></i></BButton>
+                      <BButton variant="primary" @click="addRole($event)" size="sm"
+                        ><i class="bi bi-plus"></i
+                      ></BButton>
                     </div>
                     <div class="">
-                      <input type="search" v-model="formSearch.q" class="form-control form-control-sm"
-                        placeholder="keyword.." />
+                      <input
+                        type="search"
+                        v-model="formSearch.q"
+                        class="form-control form-control-sm"
+                        placeholder="keyword.."
+                      />
                     </div>
                     <div class="">
                       <BButton type="submit" size="sm"><i class="bi bi-search"></i></BButton>
@@ -69,13 +75,18 @@
                   <tbody>
                     <tr v-for="(item, index) in roles" :key="index">
                       <th scope="row">
-                        <BButton variant="outline-secondary" @click="editRole(item, index, $event)" size="sm"><i
-                            class="bi bi-pencil"></i></BButton>
+                        <BButton
+                          variant="outline-secondary"
+                          @click="editRole(item, index, $event)"
+                          size="sm"
+                          ><i class="bi bi-pencil"></i
+                        ></BButton>
                       </th>
                       <th scope="row">{{ item.id }}</th>
                       <td>
-                        <a role="button" @click="editRole(item, index, $event)"><i class="bi bi-person me-2"></i>{{
-                          item.name }}</a>
+                        <a role="button" @click="editRole(item, index, $event)"
+                          ><i class="bi bi-person me-2"></i>{{ item.name }}</a
+                        >
                       </td>
                       <td>
                         {{ item.display_name }}
@@ -84,7 +95,7 @@
                         {{ item.description }}
                       </td>
                       <td>
-                        {{ item.status }}
+                        <status-active :status="item.status" />
                       </td>
                     </tr>
                   </tbody>
@@ -96,11 +107,18 @@
                 <form @submit.prevent="loadPermissions()">
                   <div class="d-flex flex-wrap gap-2">
                     <div>
-                      <BButton @click="addPermission" variant="primary" size="sm"><i class="bi bi-plus"></i></BButton>
+                      <BButton @click="addPermission" variant="primary" size="sm"
+                        ><i class="bi bi-plus"></i
+                      ></BButton>
                     </div>
                     <div class="">
-                      <input type="search" v-model="formSearch.q" class="form-control form-control-sm" placeholder=""
-                        @keyup.enter="loadPermissions" />
+                      <input
+                        type="search"
+                        v-model="formSearch.q"
+                        class="form-control form-control-sm"
+                        placeholder=""
+                        @keyup.enter="loadPermissions"
+                      />
                     </div>
                     <div class="">
                       <BButton type="submit" size="sm"><i class="bi bi-search"></i></BButton>
@@ -108,8 +126,13 @@
                   </div>
                 </form>
                 <div class="dropdown">
-                  <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton1"
-                    data-bs-toggle="dropdown" aria-expanded="false">
+                  <button
+                    class="btn btn-link dropdown-toggle"
+                    type="button"
+                    id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     Type
                   </button>
                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
@@ -127,18 +150,21 @@
                         <th scope="col" class="fw-bold text-decoration-underline">Actions</th>
 
                         <th scope="col" class="fw-bold text-decoration-underline">ชื่อ</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">ชื่อ</th>
 
                         <th scope="col" class="fw-bold text-decoration-underline">ชื่อแสดง</th>
                         <th scope="col" class="fw-bold text-decoration-underline">รายละเอียด</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Tags</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">status</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="(item, index) in permissions" :key="index">
                         <th scope="row">
-                          <BButton variant="outline-secondary" @click="editPermission(item, index, $event)" size="sm"><i
-                              class="bi bi-pencil"></i></BButton>
+                          <BButton
+                            variant="outline-secondary"
+                            @click="editPermission(item, index, $event)"
+                            size="sm"
+                            ><i class="bi bi-pencil"></i
+                          ></BButton>
                         </th>
 
                         <!-- <td>
@@ -152,8 +178,9 @@
                           />
                         </td> -->
                         <td>
-                          <a role="button" @click="editPermission(item, index, $event)"><i class="bi bi-lock me-2"></i>{{
-                            item.name }}</a>
+                          <a role="button" @click="editPermission(item, index, $event)"
+                            ><i class="bi bi-lock me-2"></i>{{ item.name }}</a
+                          >
                         </td>
                         <td>
                           {{ item.display_name }}
@@ -162,8 +189,7 @@
                           {{ item.description }}
                         </td>
                         <td>
-                          <span class="badge rounded-pill bg-secondary text-light mx-1 fw-normal"
-                            v-for="t in permisstionType" :key="t">{{ t.text }}</span>
+                          <status-active :status="item.status" />
                         </td>
                       </tr>
                     </tbody>
@@ -177,7 +203,13 @@
                   <div class="row mb-3">
                     <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="fullName" type="text" class="form-control" id="fullName" value="Kevin Anderson" />
+                      <input
+                        name="fullName"
+                        type="text"
+                        class="form-control"
+                        id="fullName"
+                        value="Kevin Anderson"
+                      />
                     </div>
                   </div>
 
@@ -185,82 +217,146 @@
                     <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
                     <div class="col-md-8 col-lg-9">
                       <textarea name="about" class="form-control" id="about" style="height: 100px">
-Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
+Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea
+                      >
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="company" type="text" class="form-control" id="company"
-                        value="Lueilwitz, Wisoky and Leuschke" />
+                      <input
+                        name="company"
+                        type="text"
+                        class="form-control"
+                        id="company"
+                        value="Lueilwitz, Wisoky and Leuschke"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="job" type="text" class="form-control" id="Job" value="Web Designer" />
+                      <input
+                        name="job"
+                        type="text"
+                        class="form-control"
+                        id="Job"
+                        value="Web Designer"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Country" class="col-md-4 col-lg-3 col-form-label">Country</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="country" type="text" class="form-control" id="Country" value="USA" />
+                      <input
+                        name="country"
+                        type="text"
+                        class="form-control"
+                        id="Country"
+                        value="USA"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Address" class="col-md-4 col-lg-3 col-form-label">Address</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="address" type="text" class="form-control" id="Address"
-                        value="A108 Adam Street, New York, NY 535022" />
+                      <input
+                        name="address"
+                        type="text"
+                        class="form-control"
+                        id="Address"
+                        value="A108 Adam Street, New York, NY 535022"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="phone" type="text" class="form-control" id="Phone" value="(436) 486-3538 x29071" />
+                      <input
+                        name="phone"
+                        type="text"
+                        class="form-control"
+                        id="Phone"
+                        value="(436) 486-3538 x29071"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="email" type="email" class="form-control" id="Email" value="k.anderson@example.com" />
+                      <input
+                        name="email"
+                        type="email"
+                        class="form-control"
+                        id="Email"
+                        value="k.anderson@example.com"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
+                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label"
+                      >Twitter Profile</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#" />
+                      <input
+                        name="twitter"
+                        type="text"
+                        class="form-control"
+                        id="Twitter"
+                        value="https://twitter.com/#"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
+                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label"
+                      >Facebook Profile</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="facebook" type="text" class="form-control" id="Facebook"
-                        value="https://facebook.com/#" />
+                      <input
+                        name="facebook"
+                        type="text"
+                        class="form-control"
+                        id="Facebook"
+                        value="https://facebook.com/#"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
+                    <label for="Instagram" class="col-md-4 col-lg-3 col-form-label"
+                      >Instagram Profile</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="instagram" type="text" class="form-control" id="Instagram"
-                        value="https://instagram.com/#" />
+                      <input
+                        name="instagram"
+                        type="text"
+                        class="form-control"
+                        id="Instagram"
+                        value="https://instagram.com/#"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
+                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label"
+                      >Linkedin Profile</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="linkedin" type="text" class="form-control" id="Linkedin"
-                        value="https://linkedin.com/#" />
+                      <input
+                        name="linkedin"
+                        type="text"
+                        class="form-control"
+                        id="Linkedin"
+                        value="https://linkedin.com/#"
+                      />
                     </div>
                   </div>
 
@@ -273,9 +369,11 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
 
               <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
                 <!-- Settings Form -->
-                <form @submit.prevent="() => { }">
+                <form @submit.prevent="() => {}">
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
+                      >Email Notifications</label
+                    >
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="changesMade" checked />
@@ -296,7 +394,13 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                         </label>
                       </div>
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled />
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="securityNotify"
+                          checked
+                          disabled
+                        />
                         <label class="form-check-label" for="securityNotify">
                           Security alerts
                         </label>
@@ -315,23 +419,44 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
                 <!-- Change Password Form -->
                 <form>
                   <div class="row mb-3">
-                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
+                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label"
+                      >Current Password</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="password" type="password" class="form-control" id="currentPassword" />
+                      <input
+                        name="password"
+                        type="password"
+                        class="form-control"
+                        id="currentPassword"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label"
+                      >New Password</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="newpassword" type="password" class="form-control" id="newPassword" />
+                      <input
+                        name="newpassword"
+                        type="password"
+                        class="form-control"
+                        id="newPassword"
+                      />
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
+                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label"
+                      >Re-enter New Password</label
+                    >
                     <div class="col-md-8 col-lg-9">
-                      <input name="renewpassword" type="password" class="form-control" id="renewPassword" />
+                      <input
+                        name="renewpassword"
+                        type="password"
+                        class="form-control"
+                        id="renewPassword"
+                      />
                     </div>
                   </div>
 
@@ -348,16 +473,26 @@ Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Temp
       </div>
     </div>
   </section>
-  <RoleForm :mode="formMode" v-model:visible="visibleModalRole" :data="viewRoleData" @onUpdated="onUpdatedRole"
-    @onCreated="onCreatedRole" />
-  <PermissionForm v-model:visible="visibleModalPermission" v-model:data="viewPermissionData"
-    @onUpdated="onUpdatedPermission" @onCreated="onCreatedPermission" />
+  <RoleForm
+    :mode="formMode"
+    v-model:visible="visibleModalRole"
+    :data="viewRoleData"
+    @onUpdated="onUpdatedRole"
+    @onCreated="onCreatedRole"
+  />
+  <PermissionForm
+    v-model:visible="visibleModalPermission"
+    v-model:data="viewPermissionData"
+    @onUpdated="onUpdatedPermission"
+    @onCreated="onCreatedPermission"
+  />
 </template>
 
 <script setup>
 import { onMounted, computed, ref } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
+import StatusActive from '@/components/StatusActive.vue'
 import RoleForm from '@/views/role/components/RoleForm.vue'
 import PermissionForm from '@/views/role/components/PermissionForm.vue'
 const formMode = ref('add')
@@ -418,7 +553,7 @@ onMounted(() => {
 
 const addRole = () => {
   formMode.value = 'add'
-  viewRoleData.value = { id: "" }
+  viewRoleData.value = { id: '' }
   visibleModalRole.value = true
 }
 const editRole = (row, index, e) => {

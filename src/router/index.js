@@ -33,6 +33,11 @@ const routes = [
         component: () => import('../views/bill/Bills.vue'),
       },
       {
+        path: 'bills_v1',
+        name: 'bills_v1',
+        component: () => import('../views/bill/Bills_v1.vue'),
+      },
+      {
         path: 'bills/form',
         name: 'bills.formAdd',
         component: () => import('../views/bill/BillForm.vue'),

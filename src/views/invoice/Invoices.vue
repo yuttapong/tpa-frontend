@@ -155,12 +155,15 @@ const clickCancel = async (row, form) => {
   }
 }
 const clickEdit = (data) => {
-  console.log(data.item);
-  let resolvedRoute = router.resolve({
+  // let resolvedRoute = router.resolve({
+  //   name: "invoices.edit",
+  //   params: { id: data.item.id }
+  // });
+  // window.open(resolvedRoute.href, '_blank');
+  router.push({
     name: "invoices.edit",
     params: { id: data.item.id }
   });
-  window.open(resolvedRoute.href, '_blank');
 }
 
 

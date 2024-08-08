@@ -1,40 +1,24 @@
 <template>
   <div class="modal" ref="modalRef">
-    <div class="modal-dialog modal-fullscreen-md-down modal-xl modal-dialog-scrollable">
+    <div class="modal-dialog modal-fullscreen modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ title }} : {{ billCode }}</h5>
+          <h5 class="modal-title">{{ title }}</h5>
 
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="my-2">
             <form @submit.prevent="search()">
               <div class="d-flex gap-2">
                 <div>
-                  <input
-                    v-model="filterSource"
-                    type="radio"
-                    value="all"
-                    :checked="filterSource == 'all'"
-                    @change="search()"
-                  />
+                  <input v-model="filterSource" type="radio" value="all" :checked="filterSource == 'all'"
+                    @change="search()" />
                   ทั้งหมด
                 </div>
                 <div v-if="customer.id">
-                  <input
-                    v-model="filterSource"
-                    type="radio"
-                    class="ms-3"
-                    value="customer"
-                    :checked="filterSource == 'customer'"
-                    @change="search()"
-                  />
+                  <input v-model="filterSource" type="radio" class="ms-3" value="customer"
+                    :checked="filterSource == 'customer'" @change="search()" />
                   {{ customer.name }}
                 </div>
 
@@ -55,54 +39,42 @@
             <div class="col-12 col-md-6">
               <h5>ใบขอรับบริการ</h5>
               <!-- Small tables -->
-              <div class="table table-responsive" style="height: 400px; overflow: scroll">
+              <div class="table table-responsive" style="height: 510px; overflow: scroll">
                 <table class="table table-sm table-striped table-bordered table-hover">
                   <thead>
                     <tr>
+                      <th scope="col" class="fw-bold">เลขที่ใบขอรับ</th>
                       <th scope="col" class="fw-bold">วันที่</th>
                       <th scope="col" class="fw-bold">ลูกค้า</th>
                       <th scope="col" class="fw-bold">สถานะ</th>
-                      <th scope="col" class="fw-bold">Bill Code</th>
+
                     </tr>
                     <tr>
                       <th scope="col" class="fw-bold">
-                        <input
-                          type="search"
-                          v-model="formSearchProduct.q"
-                          class="form-control form-control-sm"
-                          placeholder="Customer ID"
-                          @keyup.enter="search()"
-                        />
+                        <input type="search" v-model="formSearchProduct.code" class="form-control form-control-sm"
+                          placeholder="เลขที่ใบขอรับริการ" @keyup.enter="search()" />
                       </th>
 
-                      <input
-                        type="date"
-                        v-model="formSearchProduct.document_date"
-                        class="form-control form-control-sm"
-                        placeholder="วันที่"
-                        @change="search()"
-                      />
+                      <input type="date" v-model="formSearchProduct.document_date" class="form-control form-control-sm"
+                        placeholder="วันที่" @change="search()" />
                       <th scope="col" class="fw-bold">
-                        <select
-                          v-model="formSearchProduct.bill_status"
-                          class="form-control form-control-sm"
-                          placeholder="สถานะ"
-                          @keyup.enter="search()"
-                        />
+                        <input type="search" v-model="formSearchProduct.q" class="form-control form-control-sm"
+                          placeholder="" @keyup.enter="search()" />
                       </th>
                       <th scope="col" class="fw-bold">
-                        <input
-                          type="search"
-                          v-model="formSearchProduct.code"
-                          class="form-control form-control-sm"
-                          placeholder="เลขที่ใบขอรับริการ"
-                          @keyup.enter="search()"
-                        />
+                        <select v-model="formSearchProduct.bill_status" class="form-control form-control-sm"
+                          placeholder="สถานะ" @keyup.enter="search()" />
                       </th>
+
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(item, index) in items" :key="index">
+                      <td nowrap>
+                        <button class="fw-bold btn-link btn" @click="getBill(item.id)">
+                          {{ item.code }}
+                        </button>
+                      </td>
                       <td>{{ myFormatDate(item.document_date) }}</td>
                       <td>
                         <div class="">
@@ -113,118 +85,26 @@
                       </td>
 
                       <td>{{ item.bill_status }}<br /></td>
-                      <td nowrap>
-                        <button class="fw-bold btn-link btn" @click="getBill(item.id)">
-                          {{ item.code }}
-                        </button>
-                      </td>
+
                     </tr>
                   </tbody>
                 </table>
               </div>
               <!-- End small tables -->
             </div>
-            <!-- ############################# STAR BILL ITEMS ################################### -->
-            <div v-if="isModeBill()" class="col-12 col-md-6">
-              <h5>
-                เครื่องมือ
-                <!-- <BBadge variant="danger" text-indicator v-if="bill.items">{{ bill.items.length }}</BBadge> -->
-                <span variant="danger" text-indicator v-if="bill.items"
-                  >({{ bill.items.length }})</span
-                >
-              </h5>
-              <div class="d-flex flex-row gap-2 mb-2">
-                <BButton
-                  type="button"
-                  @click="selectAll(bill.items)"
-                  value="All"
-                  size="sm"
-                  variant="secondary"
-                  class="mx-2"
-                >
-                  <i class="bi bi-check"></i>
-                </BButton>
-                <BButton type="button" @click="clearAll()" size="sm" variant="secondary">
-                  <i class="bi bi-x"></i>
-                </BButton>
-                <span v-if="selectedItems.length > 0">
-                  เลือก {{ selectedItems.length }} รายการ</span
-                >
-              </div>
+            <div class="col-12 col-md-6" id="detail">
 
-              <div class="table table-responsive" style="height: 400px; overflow: scroll">
-                <table class="table table-sm table-striped table-bordered table-hover">
-                  <thead>
-                    <tr>
-                      <th scope="col" class="fw-bold text-center"></th>
+              <BAlert :model-value="!bill.id" variant="warning" dismissible><i class="bi bi-info-circle"></i>
+                โปรดเลือกใบขอรับบริการ
+              </BAlert>
+              <BTabs :active-id="mode" small v-model="currentTab" @activate-tab="setTab" class="">
 
-                      <th scope="col" class="fw-bold">Item Code</th>
-                      <th scope="col" class="fw-bold">เครื่องมือ</th>
-                      <th scope="col" class="fw-bold">Point</th>
-                      <th scope="col" class="fw-bold">Point Price</th>
-                      <th scope="col" class="fw-bold">จำนวนเงิน</th>
-                      <th scope="col" class="fw-bold">สถานะ</th>
-                    </tr>
-                  </thead>
-                  <tbody v-if="workorderLoading">
-                    <tr>
-                      <td colspan="5">
-                        <spinner :visible="workorderLoading" class="mx-2" />
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody v-if="!workorderLoading && bill.items">
-                    <tr v-for="(item, index) in bill.items" :key="index">
-                      <th class="text-center align-middle">
-                        <template v-if="!isExistItem(item) && item.invoice_item_id == 0">
-                          <input
-                            class="form-checkbox"
-                            v-model="selectedItems"
-                            type="checkbox"
-                            :value="item"
-                          />
-                        </template>
-                      </th>
+                <BTab title="ข้อมูลลูกค้า" id="customer">
+                  <div class="text-center mt-2">
+                    <Spinner :visible="workorderLoading" />
+                  </div>
 
-                      <td class="align-middle" nowrap>
-                        <span class="p-1">{{ item.item_code }}</span>
-                      </td>
-                      <td>
-                        <div class="">
-                          <i class="text-danger">{{ item.product_name }}</i>
-                          <br />{{ item.manufaturer_name }}
-                        </div>
-                        <ProductMeta :item="item" />
-                      </td>
-                      <td>{{ item.point }}<br /></td>
-                      <td>{{ Number(item.point_price).toLocaleString() }}</td>
-
-                      <td>{{ Number(item.price).toLocaleString() }}</td>
-
-                      <td>{{ item.job_status }}<br /></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <!-- {{ selectedItems }} -->
-                <!-- {{ invoiceStore.invoiceItems }} -->
-              </div>
-            </div>
-            <!-- ############################# END BILL ITEMS ################################### -->
-
-            <!-- ############################# STAR CUSTOMER DETAIL ################################### -->
-            <div v-if="isModeCustomer()" class="col-12 col-md-5">
-              <h5><i class="bi bi-person"></i> ลูกค้า</h5>
-              <div v-if="workorderLoading">
-                <spinner :visible="workorderLoading" class="mx-2" />
-              </div>
-              <div v-else class="border p-2 rounded">
-                <div v-if="!bill.id">
-                  <p class="alert alert-info">
-                    <i class="bi bi-info"></i>โปรดเลือกใบขอรับบริการก่อน
-                  </p>
-                </div>
-                <div v-else>
-                  <BTableSimple hover small caption-top stacked>
+                  <BTableSimple v-if="!workorderLoading" small caption-top stacked class="mt-2">
                     <BTbody>
                       <BTr>
                         <BTd stacked-heading="เลขที่ใบขอรับบริการ">{{ bill.code }}</BTd>
@@ -234,6 +114,8 @@
                         <BTh stacked-heading="Customer ID" class="text-start">{{
                           bill?.company_id
                         }}</BTh>
+                        <BTh stacked-heading="ประเภทลูกค้า" class="text-start">
+                          {{ bill.customer?.customer_type?.code }} : {{ bill.customer?.customer_type?.name }}</BTh>
                         <BTh stacked-heading="ลูกค้า/บริษัท" class="text-start">{{
                           bill.address_name
                         }}</BTh>
@@ -244,43 +126,106 @@
                         </BTd>
                         <BTd stacked-heading="เบอร์โทร">{{ bill.address_phone }}</BTd>
                         <BTd stacked-heading="ผู้ติดต่อ">{{ bill.agent_name }}</BTd>
+                        <BTd stacked-heading="ผู้ส่ง">{{ bill?.sender_name }}</BTd>
                         <BTd stacked-heading="Note ลูกค้า">{{ bill.note_customers }}</BTd>
                       </BTr>
                     </BTbody>
                   </BTableSimple>
-                </div>
-              </div>
+                </BTab>
+                <BTab :title="`เครื่องมือ (${(bill.items ? bill.items.length : 0)})`" id="product">
+
+                  <div class="d-flex flex-row gap-2 my-2">
+                    <BButton type="button" @click="selectAll(bill.items)" value="All" size="sm" variant="text"
+                      class="mx-2">
+                      <i class="bi bi-check"></i> เลือกทั้งหมด
+                    </BButton>
+                    <BButton type="button" @click="clearAll()" size="sm" variant="text">
+                      <i class="bi bi-x"></i> ไม่เลือก
+                    </BButton>
+
+                  </div>
+
+                  <div class="table table-responsive" style="height: 450px; overflow: scroll">
+                    <table class="table table-sm table-striped table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col" class="fw-bold text-center">
+                            <span v-if="selectedItems.length > 0">
+                              {{ selectedItems.length }}</span>
+                          </th>
+
+                          <th scope="col" class="fw-bold">Item Code</th>
+                          <th scope="col" class="fw-bold">เครื่องมือ</th>
+                          <th scope="col" class="fw-bold">Point</th>
+                          <th scope="col" class="fw-bold">Point Price</th>
+                          <th scope="col" class="fw-bold">Range</th>
+                          <th scope="col" class="fw-bold">Range Price</th>
+                          <th scope="col" class="fw-bold">จำนวนเงิน</th>
+                          <th scope="col" class="fw-bold">สถานะ</th>
+                        </tr>
+                      </thead>
+                      <tbody v-if="workorderLoading">
+                        <tr>
+                          <td colspan="9" align="center">
+                            <spinner :visible="workorderLoading" class="mx-2" />
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tbody v-if="!workorderLoading && bill.items">
+                        <tr v-for="(item, index) in bill.items" :key="index">
+                          <th class="text-center align-middle">
+                            <template v-if="!isExistItem(item) && item.invoice_item_id == 0">
+                              <input class="form-checkbox" v-model="selectedItems" type="checkbox" :value="item" />
+                            </template>
+                          </th>
+
+                          <td class="align-middle" nowrap>
+                            <span class="p-1">{{ item.item_code }}</span>
+                          </td>
+                          <td>
+                            <div class="">
+                              <i class="text-danger">{{ item.product_name }}</i>
+                              <br />{{ item.manufaturer_name }}
+                            </div>
+                            <ProductMeta :item="item" />
+                          </td>
+                          <td class="text-right">{{ item.point }}</td>
+                          <td class="text-right">{{ Number(item.point_price).toLocaleString() }}</td>
+                          <td class="text-right">{{ item.range_value }}<br /></td>
+                          <td class="text-right">{{ Number(item.range_price).toLocaleString() }}</td>
+
+                          <td class="text-right">{{ Number(item.price).toLocaleString() }}</td>
+
+                          <td>{{ item.job_status }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </BTab>
+              </BTabs>
             </div>
-            <!-- ############################# END CUSTOMER DETAIL  ################################### -->
+
+
+
           </div>
         </div>
         <div class="modal-footer m-0 p-1 d-block">
           <div class="row">
             <div class="col-xs-10 col-md-7">
-              <vue-awesome-paginate
-                :total-items="pagination.total"
-                :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow"
-                v-model="pagination.current_page"
-                :on-click="onChangePage"
-                class=""
-              />
+              <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                :on-click="onChangePage" class="" />
             </div>
 
             <div class="col-xs-2 col-md-5">
               <div class="d-flex gap-2 justify-content-end">
-                <template v-if="isModeCustomer()">
-                  <button
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="confirmSelectCustomer"
-                  >
-                    <i class="bi bi-person"></i> ดึงข้อมูลลูกค้า
-                  </button></template
-                >
-                <template v-if="isModeBill()">
-                  <button type="button" class="btn btn-success btn-sm" @click="confirmSelectBill">
-                    <i class="bi bi-files"></i> ดึงข้อมูลเครื่องมือ
+                <template v-if="currentTab == 0 && mode == 'customer'">
+                  <button type="button" class="btn btn-primary btn-sm" @click="confirmSelectCustomer">
+                    <i class="bi bi-download"></i> ดึงข้อมูลลูกค้า
+                  </button></template>
+                <template v-if="currentTab == 1 && mode == 'product'">
+                  <button type="button" class="btn btn-primary btn-sm" @click="confirmSelectBill">
+                    <i class="bi bi-download"></i> ดึงรายการเครื่องมือ
                   </button>
                 </template>
 
@@ -298,9 +243,6 @@
   <BModal v-if="bill" v-model="visibleModalConfirmCustomer" id="modal__cofirm_customer">
     <BButton @click="hide"><i class="bi bi-x"></i> ปิด</BButton>
   </BModal>
-  <!-- <BModal v-if="bill.items" v-model="visibleModalConfirmBill" id="modal__cofirm_bill">
-          <BButton @click="hide"><i class="bi bi-x"></i> ปิด</BButton>
-        </BModal> -->
 </template>
 <script setup>
 import { ref, onMounted, computed, watch, reactive } from 'vue'
@@ -314,7 +256,7 @@ import { BButton, useModal, useModalController } from 'bootstrap-vue-next'
 const { confirm } = useModalController()
 const { hide, modal, show } = useModal()
 
-const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'onSelect'])
+const emit = defineEmits(['onSearch', 'onHide', 'onShow', 'onSelectProduct', 'onSelectCustomer'])
 const props = defineProps({
   mode: {
     type: String,
@@ -322,7 +264,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Work Order',
+    default: 'ดึงข้อมูลใบขอรับบริการ',
   },
   billCode: { type: String },
   customer: {
@@ -339,7 +281,7 @@ const appStore = useAppStore()
 const invoiceStore = useInvoiceStore()
 let modalEl = null
 let modalRef = ref(null)
-
+const currentTab = ref(props.mode)
 const items = ref([])
 const billLoading = ref(false)
 const workorderLoading = ref(false)
@@ -365,14 +307,20 @@ const _show = () => {
   modalEl.show()
 }
 
-const existCarts = (data) => {
-  if (!invoiceStore.invoiceItems) return 0
-  const find = invoiceStore.invoiceItems.filter((item) => {
-    if (item.bill_items_id == data.item_id) {
-      return item
-    }
-  })
-  return Boolean(find.length)
+
+const setTab = (tab) => {
+  console.log(tab);
+  switch (tab) {
+    case 0:
+      emit('update:mode', 'customer')
+      break;
+    case 1:
+      emit('update:mode', 'bill')
+      break;
+    default:
+      emit('update:mode', 'customer')
+      break;
+  }
 }
 
 const loadData = async () => {
@@ -419,29 +367,31 @@ const getBill = async (id) => {
 const getBillByCode = async (code) => {
   workorderLoading.value = true
 
-  const { data } = await api.get(`/v2/bills/code/${code}`, {
+  const { data, status } = await api.get(`/v2/bills/code/${code}`, {
     params: {},
   })
-  if (data) {
+  if (status === 200) {
     bill.value = data
-    billLoading.value = false
   }
   workorderLoading.value = false
 }
 
 const selectedItems = ref([])
+
 const invoiceItems = computed(() => invoiceStore.form?.items || [])
 let selectAll = () => {
   selectedItems.value = bill.value.items
     ? bill.value.items.filter((item) => !isExistItem(item) && item.invoice_item_id == 0)
     : []
 }
+
 const isExistItem = (bill) => {
   let rs = invoiceItems.value.filter(
     (item) => String(item.bill_items_code) == String(bill.item_code),
   )
   return rs.length > 0 ? true : false
 }
+
 let clearAll = () => {
   selectedItems.value = []
 }
@@ -456,46 +406,45 @@ let toggleSelect = function (email) {
 
 const visibleModalConfirmCustomer = ref(false)
 const visibleModalConfirmBill = ref(false)
-const confirmSelectCustomer = async () => {
-  // console.log('confirm');
-  if (bill.value.company_id === undefined) return
 
-  // visibleModalConfirmCustomer.value = true
+
+const confirmSelectCustomer = async () => {
+  if (bill.value.company_id === undefined)
+    return
+
   const value = await confirm?.({
     props: {
-      title: `ยืนยันดึงข้อมูลลูกค้า รหัส # ${bill.value?.company_id} ?`,
-      body: `${bill.value?.address_name}`,
+      title: `ยืนยันดึงข้อมูลลูกค้า  ?`,
+      body: `ID#${bill.value?.company_id} : ${bill.value?.address_name}`,
       buttonSize: 'sm',
-      noFade: true,
+      noFade: false,
+      okTitle: 'ตกลง',
+      cancelTitle: 'ยกเลิก'
     },
   })
   if (value) {
-    emit('onSelect', bill.value, selectedItems.value)
+    emit('onSelectCustomer', bill.value, selectedItems.value)
+    selectedItems.value = []
     modalEl.hide()
   }
-
-  modal.show?.({
-    props: {
-      title: `Promise resolved to ${value}`,
-      variant: 'info',
-    },
-  })
 }
 const confirmSelectBill = async () => {
-  console.log('confirm')
+  if (selectedItems.value.length === 0)
+    return
   const value = await confirm?.({
     props: {
       title: `ยืนยันดึงข้อมูลใบขอรับเลขที่ # ${bill.value?.code} ?`,
       bodyScrolling: true,
       body: `จำนวน ${selectedItems.value.length} รายการ`,
+      okTitle: 'ตกลง',
+      cancelTitle: 'ยกเลิก'
     },
   })
   if (value) {
-    emit('onSelect', bill.value, selectedItems.value)
+    emit('onSelectProduct', bill.value, selectedItems.value)
+    selectedItems.value = []
     modalEl.hide()
   }
-
-  modal.show?.({ props: { title: `Promise resolved to ${value}`, variant: 'info' } })
 }
 const search = () => {
   bill.value = {}
@@ -519,7 +468,6 @@ const selectItem = (data) => {
 const filterSource = ref()
 
 onMounted(() => {
-  console.log('onmounted', 'modalJob')
   if (props.customer.id !== undefined) {
     filterSource.value = 'customer'
   } else {
@@ -535,7 +483,6 @@ onMounted(() => {
 defineExpose({ show: _show })
 
 watch(props.customer, (data) => {
-  console.log('loadData', data)
   search()
 })
 watch(props.billCode, (data) => {

@@ -297,8 +297,7 @@ const pagination = ref({
   per_page: appStore.settings.page.perPage,
   current_page: 1,
 })
-const isModeCustomer = () => props.mode == 'customer'
-const isModeBill = () => props.mode == 'bill'
+
 
 const _show = () => {
   loadData()
@@ -309,7 +308,6 @@ const _show = () => {
 
 
 const setTab = (tab) => {
-  console.log(tab);
   switch (tab) {
     case 0:
       emit('update:mode', 'customer')

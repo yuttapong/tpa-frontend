@@ -233,6 +233,7 @@ const fillDataBill = async (bill, billItems) => {
         manufaturer_name: item?.manufaturer_name,
         lab: item.lab,
         test_point: item.test_point,
+        range: item?.range,
         discount: 0,
         discount_percent: 0,
         discount_lab: 0,
@@ -314,7 +315,6 @@ const showConfirmDeleteItems = async () => {
   if (value) {
     deleteItems()
   }
-  console.log(value)
 }
 
 
@@ -614,13 +614,13 @@ const addDiscountCustomer = () => {
 const onSelectCustomer = (data) => {
   const customer = data?.customers
   const contact = data?.contacts
-  console.log(data.code);
+
   formInvoice.value.bill_id = data.id
   formInvoice.value.bill_code = data.code
   formInvoice.value.customer_id = customer?.id
   formInvoice.value.customer_id = customer?.id
   formInvoice.value.customer_name = customer?.companyname
-  formInvoice.value.customer_type_code = customer?.customer_type.code
+  formInvoice.value.customer_type_code = customer?.customer_type?.code
   formInvoice.value.customerType = customer?.customer_type
 
   if (contact.id != undefined) {
@@ -811,7 +811,7 @@ const tableFields = [
   // { key: 'model', label: 'Model' },
   { key: 'serialnumber', label: 'S/N' },
   { key: 'id_no', label: 'IDNo' },
-  { key: 'cerno', label: 'CerNo' },
+  { key: 'cerno', label: 'cerno' },
   { key: 'range', label: 'Range' },
   { key: 'price', label: 'ราคาต่อหน่วย', sortable: false },
   { key: 'discount_customer', label: 'ส่วนลด Cust', sortable: false },
@@ -821,6 +821,8 @@ const tableFields = [
   { key: 'net', label: 'ราคาหลังลด', sortable: false },
   { key: 'remark', sortable: false, label: 'Remark' },
 ]
+
+
 getCustomerTypes()
 
 watch(route, (r) => {
@@ -839,9 +841,18 @@ onMounted(() => {
     formInvoice.value.discount_pattern = 'A'
   }
 })
+const listPromotionCode = ref([])
+
 onUpdated(() => {
   invoiceStore.setForm(formInvoice.value)
+  if (formInvoice.value.bill_code) {
+    let code = formInvoice.value.bill_code
+    let t = code.replace(/[\-0-9]/g, '').split('')
+    listPromotionCode.value = t
+    console.log('code', t);
+  }
 })
+
 </script>
 <template>
   <div>
@@ -930,6 +941,20 @@ onUpdated(() => {
                           placeholder="รหัสลูกค้า" />
                       </div>
                     </div>
+                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.customer_type_code }]"
+                      v-if="!formInvoice.customer_type_code">
+                      <label>ประเภทลูกค้า
+                        <span v-if="formInvoice.customer_type_code">
+                          ({{ formInvoice.customer_type_code }})</span>
+                      </label>
+
+                      <select required class="form-select form-select-sm" v-model="formInvoice.customer_type_code"
+                        @change="onChangeCustomerType">
+                        <option v-for="(item, key) in customerTypes" :key="key" :value="item.code">
+                          {{ item.code }} : {{ item.name }} - {{ item.nameen }}
+                        </option>
+                      </select>
+                    </div>
                     <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.contact_name }]">
                       <label>ผู้ติดต่อ
                         <span v-if="formInvoice.contact_id">({{ formInvoice.contact_id }})</span></label>
@@ -968,19 +993,6 @@ onUpdated(() => {
                         placeholder="จังหวัด" />
                     </div>
 
-                    <!-- <div class="col-6 col-md-4 col-lg-2" :class="[{ 'text-danger': errors.customer_type_code }]">
-                      <label>ประเภทลูกค้า
-                        <span v-if="formInvoice.customer_type_code">
-                          ({{ formInvoice.customer_type_code }})</span>
-                      </label>
-
-                      <select required class="form-select form-select-sm" v-model="formInvoice.customer_type_code"
-                        @change="onChangeCustomerType">
-                        <option v-for="(item, key) in customerTypes" :key="key" :value="item.code">
-                          {{ item.code }} : {{ item.name }} - {{ item.nameen }}
-                        </option>
-                      </select>
-                    </div> -->
                   </div>
                   <div class="row g-2">
                     <div class="col-12 col-md-6 col-lg-5">

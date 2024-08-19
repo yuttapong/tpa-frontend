@@ -280,30 +280,30 @@ loadData()
 
   <section class="section">
     <div class="row">
-      <div class="col-12 col-xxl-8">
+      <div class="col-12">
         <div class="card">
           <div class="card-body pt-3">
             <spinner :visible="loading" />
 
             <!-- #####################START######################## -->
             <form @submit.prevent="onSearch()">
-              <div class="row g-3">
-                <div class="col-12 col-lg-4 col-xl-3">
+              <div class="d-flex flex-wrap gap-3">
+                <div class="">
                   <label class="text-decoration-underline">Bill ID</label>
                   <p class="">{{ form.id }}</p>
                 </div>
-                <div class="col-12 col-lg-4 col-xl-3">
+                <div class="">
                   <label class="text-decoration-underline">Bill Code</label>
                   <p class="">{{ form.code }}</p>
                 </div>
 
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="">
                   <label class="text-decoration-underline">วันที่เอกสาร</label>
                   <p>
                     {{ myFormatDate(form.document_date) }}
                   </p>
                 </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="">
                   <label class="text-decoration-underline">วันนัดรับเครื่องมือ</label>
                   <template v-if="form.commitment_date">
                     <p>
@@ -316,13 +316,13 @@ loadData()
                   <!-- <input type="date" v-model="form.commitment_date" name="commitment_date"
                                             id="commitment_date" class="form-control form-control-sm" readonly> -->
                 </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="">
                   <label class="text-decoration-underline">ลูกค้า</label>
                   <p>
                     {{ form.customer?.companyname }}
                   </p>
                 </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="">
                   <label class="text-decoration-underline">Note Customer</label>
                   <p class="text-danger">
                     {{ form.note_customers }}
@@ -331,11 +331,7 @@ loadData()
               </div>
 
               <div class="border p-3 bg-info rounded">
-                <input
-                  type="checkbox"
-                  v-model="searchCommitmentDate"
-                  @change="onChangeConditionCommitment"
-                />
+                <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
                 หาวันนัดรับเครื่องมือ
                 <div class="row g-2">
                   <div class="col-12 col-lg-8">
@@ -344,12 +340,8 @@ loadData()
                   </div>
                   <div class="col-12 col-lg-4">
                     <label>เลือกวันที่</label>
-                    <input
-                      type="date"
-                      class="form-control-sm form-control"
-                      v-model="commitmentDate"
-                      placeholder="เลือกวันที่"
-                    />
+                    <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
+                      placeholder="เลือกวันที่" />
                   </div>
 
                   <div class="col-12">
@@ -385,11 +377,7 @@ loadData()
                       <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                     </button>
                     <template v-if="form.commitment_date">
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-sm ms-2"
-                        @click="cancelBook()"
-                      >
+                      <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
                         <i class="float-start bi bi-x me-2"></i> ยกเลิกวัน
                       </button>
                     </template>
@@ -443,9 +431,7 @@ loadData()
                       </td>
                       <td>
                         <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
-                        <small class="ms-2 text-danger"
-                          >{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small
-                        >
+                        <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
                       </td>
                       <td nowrap>
                         <span>{{ item?.reserved_date }}</span>
@@ -487,11 +473,7 @@ loadData()
         </div>
       </div>
     </div>
-    <ConfirmCommitment
-      ref="modalConfirm"
-      :data="resultCommitment"
-      @onConfirm="updateCommitmentDate"
-    />
+    <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" @onConfirm="updateCommitmentDate" />
   </section>
 </template>
 

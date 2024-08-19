@@ -10,6 +10,7 @@
           <th scope="col" class="fw-bold text-decoration-underline">Name</th>
           <th scope="col" class="fw-bold text-decoration-underline">Username</th>
           <th scope="col" class="fw-bold text-decoration-underline">Level</th>
+          <th scope="col" class="fw-bold text-decoration-underline">Email</th>
           <th scope="col" class="fw-bold text-decoration-underline">Created</th>
           <th scope="col" class="fw-bold text-decoration-underline">สถานะ</th>
         </tr>
@@ -17,16 +18,9 @@
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
           <th>
-            <StaffButtonActions
-              canAssingLab
-              canEdit
-              canView
-              @clickView="viewStaff(item)"
-              @clickAssignLab="viewLabAssign(item)"
-              @clickEdit="viewEdit(item)"
-              canAssingRole
-              @clickAssignRole="viewRoleAssign(item)"
-            />
+            <StaffButtonActions canAssingLab canEdit canView @clickView="viewStaff(item)"
+              @clickAssignLab="viewLabAssign(item)" @clickEdit="viewEdit(item)" canAssingRole
+              @clickAssignRole="viewRoleAssign(item)" />
           </th>
           <th scope="row">{{ item.id }}</th>
           <td>{{ item.code }}</td>
@@ -38,6 +32,7 @@
           </td>
           <td>{{ item.username }}</td>
           <td>{{ item.level }}</td>
+          <td>{{ item.email }}</td>
           <td>
             <span class="badge bg-light text-dark">{{
               myFormatDate(new Date(item.date_starts))
@@ -50,7 +45,7 @@
   </div>
 </template>
 <script setup>
-import {} from 'vue'
+import { } from 'vue'
 import LabAssignForm from '@/views/staff/components/LabAssignForm.vue'
 import StaffButtonActions from '@/views/staff/components/StaffButtonActions.vue'
 import { myFormatDate } from '@/helpers/myformat'

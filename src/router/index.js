@@ -92,6 +92,11 @@ const routes = [
         name: 'certificates',
         component: () => import('../views/certificate/Certificates.vue'),
       },
+      {
+        path: '/certificates2',
+        name: 'certificates2',
+        component: () => import('../views/certificate/Certificates2.vue'),
+      },
       //////////////// DATA ///////////////////
       {
         path: '/data/labs',

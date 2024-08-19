@@ -25,7 +25,8 @@
       <Spinner :visible="loading" />
       <template v-if="!loading">
         <fielset v-if="form.roles" class="p-2 border my-2 d-block">
-          <BBadge variant="warning" v-for="(role, key) in form.roles" :key="key">{{
+          <legend>บทบาท</legend>
+          <BBadge variant="light" class="mx-1" v-for="(role, key) in form.roles" :key="key">{{
             role.name
           }}</BBadge>
         </fielset>
@@ -44,12 +45,8 @@
     </BForm>
     <template #footer>
       <div class="d-flex flex-warp gap-2">
-        <BButton variant="primary" size="sm" type="button" @click="submit"
-          ><i class="bi bi-save"></i> บันทึก</BButton
-        >
-        <BButton variant="secondary" size="sm" type="button" @click="hide"
-          ><i class="bi bi-x"></i> ปิด</BButton
-        >
+        <BButton variant="primary" size="sm" type="button" @click="submit"><i class="bi bi-save"></i> บันทึก</BButton>
+        <BButton variant="outline-secondary" size="sm" type="button" @click="hide"><i class="bi bi-x"></i> ปิด</BButton>
       </div>
     </template>
   </BModal>
@@ -182,8 +179,8 @@ const submit = async () => {
   }
 }
 
-const cancel = () => {}
-onMounted(() => {})
+const cancel = () => { }
+onMounted(() => { })
 </script>
 <style lang="scss" scoped>
 label {

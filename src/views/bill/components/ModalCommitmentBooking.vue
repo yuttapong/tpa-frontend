@@ -5,7 +5,7 @@
 
     <form @submit="submit()">
       <div class="modal" ref="modalRef" id="modal">
-        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+        <div class="modal-dialog modal-dialog-scrollable modal-fullscreen modal-info">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" v-html="title"></h5>
@@ -16,22 +16,24 @@
 
               <!-- #####################START######################## -->
               <form @submit.prevent="onSearch()">
-                <div class="row g-3">
-                  <div class="col-12 col-lg-4 col-xl-3">
-                    <label>Bill ID</label>
-                    <p class="fw-bold">{{ bill.id }}</p>
+
+                <div class="d-flex flex-wrap gap-3">
+                  <div class="">
+                    <label class="text-decoration-underline fw-bold">Bill ID</label>
+                    <p class="">{{ bill.id }}</p>
                   </div>
-                  <div class="col-12 col-lg-4 col-xl-3">
-                    <label>Bill Code</label>
-                    <p class="fw-bold">{{ bill.code }}</p>
+                  <div class="">
+                    <label class="text-decoration-underline fw-bold">Bill Code</label>
+                    <p class="">{{ bill.code }}</p>
                   </div>
-                  <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                    <label>วันที่</label>
-                    <input type="date" v-model="bill.document_date" name="document_date" id="document_date"
-                      class="form-control form-control-sm" readonly />
+                  <div class="">
+                    <label class="text-decoration-underline fw-bold">วันที่</label>
+                    <p>
+                      {{ myFormatDate(bill.document_date) }}
+                    </p>
                   </div>
-                  <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                    <label>วันนัดรับเครื่องมือ</label>
+                  <div class="">
+                    <label class="text-decoration-underline fw-bold">วันนัดรับ</label>
                     <template v-if="bill.commitment_date">
                       <p>
                         {{ myFormatDate(bill.commitment_date) }}
@@ -43,9 +45,23 @@
                     <!-- <input type="date" v-model="form.commitment_date" name="commitment_date"
                                             id="commitment_date" class="form-control form-control-sm" readonly> -->
                   </div>
-                  <div class="col-12 col-lg-4 col-xl-3"></div>
-                  <div class="col-12 col-lg-4 col-xl-3"></div>
-                  <div class="col-12 col-lg-4 col-xl-3"></div>
+                  <div class="">
+                    <label class="text-decoration-underline fw-bold">ลูกค้า</label>
+                    <p class="">{{ bill?.address_name }}</p>
+                  </div>
+                  <div class="">
+                    <label class="text-decoration-underline fw-bold">ผู้ติดต่อ</label>
+                    <p class="">{{ bill?.agent_name }}</p>
+                  </div>
+                  <div class="">
+                    <label class="text-decoration-underline fw-bold">Note Customer</label>
+                    <p class="text-danger">{{ bill?.note_customers }}</p>
+                  </div>
+                  <div class="">
+                    <label class="text-decoration-underline fw-bold">Remark</label>
+                    <p class="">{{ bill?.remark }}</p>
+                  </div>
+
                 </div>
 
                 <div class="border p-2">
@@ -106,16 +122,33 @@
                                         </tr> -->
                       <tr>
                         <th scope="col" class="">#</th>
-                        <th scope="col" class="fw-bold">SubLab</th>
-                        <th scope="col" class="fw-bold" nowrap>Reserved Date</th>
+                        <th scope="col" class="fw-bold">
+                          <div>ห้องทดลอง</div>SubLab
+
+
+                        </th>
+                        <th scope="col" class="fw-bold">Cal Hour</th>
+                        <th scope="col" class="fw-bold" nowrap>
+                          <div>วันนัดรับ</div>Reserved Date
+
+                        </th>
                         <th scope="col" class="">Item Id</th>
                         <th scope="col" class="">Item Code</th>
-                        <th scope="col" class="">Product</th>
+                        <th scope="col" class="">
+                          <div>เครื่องมือ</div>Product
 
+
+                        </th>
+                        <!-- 
                         <th scope="col" class="fw-bold">Barcode</th>
 
                         <th scope="col" class="fw-bold">S/N.</th>
-                        <th scope="col" class="fw-bold">ID No.</th>
+                        <th scope="col" class="fw-bold">ID No.</th> -->
+                        <th scope="col" class="fw-bold">
+                          <div>รายละเอียด</div> Test Point
+
+
+                        </th>
                       </tr>
                     </thead>
 
@@ -123,10 +156,11 @@
                       <tr v-for="(item, index) in bill.items" :key="index"
                         :class="item.product && item.product.is_job != 1 ? 'text-decoration-line-through' : ''">
                         <td>{{ index + 1 }})</td>
-                        <td>
+                        <td nowrap>
                           <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
                           <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
                         </td>
+                        <td>{{ item?.product?.calhour }}</td>
                         <td nowrap>
                           <span>{{ item?.reserved_date }}</span>
                           <!-- <JobButtonStatus :data="item?.service_status_id"/> -->
@@ -141,11 +175,38 @@
                         <td nowrap>
                           {{ item.item_code }}
                         </td>
-                        <td>
-                          <div v-if="item.product && item.product.is_job">{{ item.product_name }}</div>
-                          <div>{{ item.product_name }}</div>
+                        <td style="min-width: 350px;">
+
+                          <BRow align-h="start" gutter-x="1" style="font-size: 13px;">
+                            <BCol sm="3" alignSelf="center">
+                              <div class="text-decoration-underline fw-bold">Id.No</div>
+                              <div class="d-block">{{ item?.id_no }}</div>
+                            </BCol>
+                            <BCol sm="3" alignSelf="center">
+                              <div class="text-decoration-underline fw-bold">Model</div>
+                              <div class="d-item">{{
+                                (item.model)
+                              }}
+                              </div>
+                            </BCol>
+                            <BCol sm="3" alignSelf="center">
+                              <div class="text-decoration-underline fw-bold">S/N</div>
+                              <div class="d-block">{{ item.serialnumber }}</div>
+                            </BCol>
+                            <BCol sm="3" alignSelf="center">
+                              <div class="text-decoration-underline fw-bold">Barcode</div>
+                              <div class="d-block">{{
+                                (item.barcode_no)
+                              }}
+                              </div>
+                            </BCol>
+                          </BRow>
+                          <BBadge v-if="item.manufaturer_name" variant="warning me-2">{{ item?.manufaturer_name }}
+                          </BBadge>
+                          <span v-if="item.product && item.product.is_job">
+                            {{ item.product_name }}</span>
                         </td>
-                        <td>
+                        <!-- <td>
                           <span>{{ item?.barcode_no }}</span>
                         </td>
 
@@ -154,7 +215,36 @@
                         </td>
                         <td>
                           <span>{{ item?.id_no }}</span>
+                        </td> -->
+                        <td style="min-width: 350px;">
+
+                          <BRow align-h="start" gutter-x="1" style="font-size: 13px;">
+                            <BCol sm="3" alignSelf="center">
+                              <div class="text-decoration-underline fw-bold">Range</div>
+                              <div class="d-block">{{ item?.range_value }}</div>
+                            </BCol>
+                            <BCol sm="3" alignSelf="center">
+                              <div class="text-decoration-underline fw-bold">Range Price</div>
+                              <div class="d-item">{{
+                                myCurrency(item.range_price)
+                              }}
+                              </div>
+                            </BCol>
+                            <BCol sm="3" alignSelf="center">
+                              <div class="text-decoration-underline fw-bold">Point</div>
+                              <div class="d-block">{{ item.point }}</div>
+                            </BCol>
+                            <BCol sm="3" alignSelf="center">
+                              <div class="text-decoration-underline fw-bold">Pont Price</div>
+                              <div class="d-block">{{
+                                myCurrency(item.point_price)
+                              }}
+                              </div>
+                            </BCol>
+                          </BRow>
+                          {{ item.test_point }}
                         </td>
+
                       </tr>
                     </tbody>
                   </table>
@@ -167,13 +257,14 @@
               <div class="row g-1">
                 <div class="col-12">
 
-                  <button type="button" class="btn btn-secondary btn-sm" @click="loadData()">
+                  <button type="button" class="btn btn-secondary btn-sm" @click="reloadData()">
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลดข้อมูล
                   </button>
                   <button type="button" class="btn btn-primary btn-sm  ms-2" @click="submit()">
                     <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                   </button>
-                  <template v-if="bill.commitment_date">
+
+                  <template v-if="(bill.commitment_date)">
                     <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
                       <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
                     </button>
@@ -200,7 +291,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { Modal } from 'bootstrap'
-import { myFormatDate } from '@/helpers/myformat'
 import ConfirmCommitment from '@/views/bill/components/ConfirmCommitment.vue'
 import { toast } from 'vue3-toastify'
 import BillButtonStatus from '@/views/bill/components/BillButtonStatus.vue'
@@ -208,6 +298,7 @@ import JobButtonStatus from '@/views/bill/components/JobButtonStatus.vue'
 import { useConfirmDialog } from '@vueuse/core'
 import { useAppStore } from '@/stores/appStore'
 import { api } from '@/helpers/api'
+import { myCurrency, myFormatDate } from '@/helpers/myformat'
 import Spinner from '@/components/Spinner.vue'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
@@ -219,9 +310,6 @@ const props = defineProps({
   title: {
     type: String,
     default: 'จองคิวทดสอบเครื่องมือ',
-  },
-  onSave: {
-    type: Function,
   },
   onCancel: {
     type: Function,
@@ -240,7 +328,7 @@ let modalEl = null
 let modalRef = ref(null)
 
 const show = () => {
-  setTimeout(() => loadData(), 2000)
+  setTimeout(() => reloadData(), 2000)
   modalEl.show()
 }
 const hide = () => {
@@ -270,7 +358,6 @@ const form = ref({
 
 //  commitment
 const billCode = computed(() => props.bill.code)
-const items = ref(props.bill?.items || [])
 const loadingCommitment = ref(false)
 const resultCommitment = ref()
 const messageSuccessCommitment = ref()
@@ -349,7 +436,7 @@ const findCommitmentDate = async () => {
           messageErrorCommitment.value = err.message
         }
       })
-    console.log('data', data)
+
     resultCommitment.value = data
     loadingCommitment.value = false
     if (data.success) {
@@ -377,6 +464,7 @@ const submit = () => {
     findCommitmentDate()
   }
 }
+
 const confirmCommitmentToKanban = async (params) => {
   const { data } = await axios
     .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
@@ -406,20 +494,23 @@ const confirmCommitmentToKanban = async (params) => {
     })
   if (data) {
     loadingCommitment.value = false
-    toast(data.message, {
-      theme: 'auto',
-      type: 'default',
-      dangerouslyHTMLString: true,
-    })
+    if (data.message !== undefined) {
+      toast(data.message, {
+        theme: 'auto',
+        type: 'default',
+        dangerouslyHTMLString: true,
+      })
+    }
   }
 }
 const cancelBook = async (event) => {
-  console.log('ยกเลิกจองคิว', event);
+
 
   let params = {
-    commitment_date: form.value.commitment_date,
-    bill_id: form.value.id,
+    commitment_date: props.bill.commitment_date,
+    bill_id: props.bill.id,
   }
+
   const { data } = await axios
     .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + params.bill_id, {
       data: {},
@@ -448,69 +539,72 @@ const cancelBook = async (event) => {
       })
     })
   if (data.success) {
-    clearCommitmentDate(form.value.id)
+    clearCommitmentDate(props.bill.id)
     loadingCommitment.value = false
     toast('ยกเลิกสำเร็จ', {
       theme: 'auto',
       type: 'default',
       dangerouslyHTMLString: true,
     })
-    loadData()
+    setTimeout(() => reloadData(), 500)
   }
 }
 const updateCommitmentDate = async () => {
-  const bill = resultCommitment.value.data
-  const { data } = await api.post(`/v2/bills/${bill.bill_id}/commitment`, bill)
+  const params = resultCommitment.value.data
+  const { data } = await api.post(`/v2/bills/${props.bill.id}/commitment`, params)
   if (data) {
-    if (data) {
-      toast(data.message, {
-        theme: 'auto',
-        type: 'default',
-        dangerouslyHTMLString: true,
-      })
-      confirmCommitmentToKanban(bill)
-      setTimeout(() => {
-        loadData()
-        emit('onSave', data)
-      }, 3000)
-    }
+    toast(data.message, {
+      theme: 'auto',
+      type: 'success',
+      dangerouslyHTMLString: true,
+    })
+    confirmCommitmentToKanban(params)
+    setTimeout(() => {
+      emit('update:bill', data)
+      reloadData()
+    }, 3000)
   }
 }
 const clearCommitmentDate = async (billId) => {
-  await api.delete(`/v2/bills/${billId}/commitment`)
+  const { data, status } = await api.delete(`/v2/bills/${billId}/commitment`)
+
+  if (status == 200) {
+    emit("update:bill", data.data)
+  }
 }
 
-const loadData = async () => {
+const reloadData = async () => {
   emit('onReload', props.bill)
   loading.value = true;
   setTimeout(() => loading.value = false, 2000)
 }
 
-const getBill = async () => {
-  if (billCode.value) {
-    const { data } = await api.get('/v2/bills/code/' + billCode.value, {
-      onlyjob: 'yes',
-    })
-    if (data) {
-      console.log("data", data);
-      emit("update:bill", data)
-    }
-  }
-}
 onMounted(() => {
   modalEl = new Modal(modalRef.value)
   console.log(modalEl);
   var myModal = document.getElementById('modal')
   myModal.addEventListener("shown.bs.modal", (e) => {
-    console.log('show');
     messageErrorCommitment.value = ""
     messageSuccessCommitment.value = ""
   })
   myModal.addEventListener("hide.bs.modal", (e) => {
-    console.log('hide');
     messageErrorCommitment.value = ""
     messageSuccessCommitment.value = ""
   })
+
+  document.onkeydown = function (evt) {
+    evt = evt || window.event;
+    var isEscape = false;
+    if ("key" in evt) {
+      isEscape = (evt.key === "Escape" || evt.key === "Esc");
+    } else {
+      isEscape = (evt.keyCode === 27);
+    }
+    if (isEscape) {
+      hide()
+    }
+  };
+
 })
 defineExpose({ show, hide })
 </script>

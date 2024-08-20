@@ -257,6 +257,22 @@
                                   <input type="text" v-model="item.test_point" class="w-100"
                                     @change="updateItemField('test_point', item)" />
                                 </template>
+                                <template #item-range_value="item">
+                                  <input type="number" v-model="item.range_value" class="" style="width: 50px"
+                                    @change="updateItemField('range_value', item)" />
+                                </template>
+                                <template #item-range_price="item">
+                                  <input type="number" v-model="item.point" class="" style="width: 50px"
+                                    @change="updateItemField('point', item)" />
+                                </template>
+                                <template #item-point="item">
+                                  <input type="number" v-model="item.range_value" class="" style="width: 50px"
+                                    @change="updateItemField('range_value', item)" />
+                                </template>
+                                <template #item-point_price="item">
+                                  <input type="number" v-model="item.point_price" class="" style="width: 50px"
+                                    @change="updateItemField('point_price', item)" />
+                                </template>
                                 <template #item-discount="item">
                                   <input type="number" v-model="item.discount" class="" style="width: 80px"
                                     @change="updateItemField('discount', item)" />
@@ -445,10 +461,14 @@ const headers = [
   { text: 'ItemCode', value: 'item_code' },
   { text: 'เครื่องมือ', value: 'product_name' },
   { text: 'Test Point', value: 'test_point' },
+  { text: 'Range', value: 'range_value' },
+  { text: 'Range Price', value: 'range_price' },
+  { text: 'Point', value: 'point' },
+  { text: 'Pont Price', value: 'point_price' },
   { text: 'ส่วนลด', value: 'discount' },
-  { text: 'Price', value: 'total' },
+  { text: 'Price', value: 'price' },
   { text: 'จำนวน', value: 'qty' },
-  { text: 'Total', value: 'showTotal' },
+  { text: 'Total', value: 'total' },
   { text: 'หมายเหตุ', value: 'remark' },
   // { text: 'Total', value: 'total' },
 ]

@@ -811,8 +811,11 @@ const tableFields = [
   // { key: 'model', label: 'Model' },
   { key: 'serialnumber', label: 'S/N' },
   { key: 'id_no', label: 'IDNo' },
-  { key: 'cerno', label: 'cerno' },
+  { key: 'cerno', label: 'CerNo' },
   { key: 'range', label: 'Range' },
+  { key: 'range_price', label: 'Range Price' },
+  { key: 'point', label: 'Point' },
+  { key: 'point_price', label: 'Point Price' },
   { key: 'price', label: 'ราคาต่อหน่วย', sortable: false },
   { key: 'discount_customer', label: 'ส่วนลด Cust', sortable: false },
   { key: 'discount_lab', label: 'ส่วนลด Lab', sortable: false },
@@ -1025,10 +1028,31 @@ onUpdated(() => {
                         <div class="col-6">Item Code</div>
                         <div class="col-6">{{ infoProduct.bill_items_code }}</div>
 
-                        <div class="col-6">Range</div>
+                        <div class="col-3">Range</div>
                         <div class="col-3">
                           <div class="input-group input-group-sm">
                             <input type="number" class="form-control form-control-sm" v-model="infoProduct.range"
+                              min="0" />
+                          </div>
+                        </div>
+                        <div class="col-3">Range Price</div>
+                        <div class="col-3">
+                          <div class="input-group input-group-sm">
+                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.range_price"
+                              min="0" />
+                          </div>
+                        </div>
+                        <div class="col-3">Point</div>
+                        <div class="col-3">
+                          <div class="input-group input-group-sm">
+                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.point"
+                              min="0" />
+                          </div>
+                        </div>
+                        <div class="col-3">Point Price</div>
+                        <div class="col-3">
+                          <div class="input-group input-group-sm">
+                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.point_price"
                               min="0" />
                           </div>
                         </div>
@@ -1165,26 +1189,53 @@ onUpdated(() => {
                         {{ row.item.bill_code }}
                       </div>
                     </template>
-                    <template #cell(id_no)="row">
-                      <div style="min-width: 80px" class="">
-                        {{ row.item.id_no }}
-                      </div>
-                    </template>
-                    <template #cell(serialnumber)="row">
-                      <div style="min-width: 80px" class="">
-                        {{ row.item.serialnumber }}
-                      </div>
-                    </template>
-                    <template #cell(price)="row">
-                      <div style="min-width: 80px" class="text-end">
-                        {{ myCurrency(row.item.price) }}
-                      </div>
-                    </template>
                     <template #cell(product_name)="row">
-                      <div style="min-width: 200px" class="text-primary fw-bold">
+                      <div class="text-primary">
                         {{ row.item.product_name }}
                       </div>
                       <small class="text-seconday">Model. {{ row.item.model }}</small>
+                    </template>
+
+                    <template #cell(serialnumber)="row">
+                      <div class="">
+                        {{ row.item.serialnumber }}
+                      </div>
+                    </template>
+                    <template #cell(id_no)="row">
+                      <div class="">
+                        {{ row.item.id_no }}
+                      </div>
+                    </template>
+                    <template #cell(cerno)="row">
+                      <div class="">
+                        {{ row.item.cerno }}
+                      </div>
+                    </template>
+
+                    <template #cell(range)="row">
+                      <div class="text-center">
+                        {{ (row.item.range) }}
+                      </div>
+                    </template>
+                    <template #cell(range_price)="row">
+                      <div class="text-end">
+                        {{ myCurrency(row.item.range_price) }}
+                      </div>
+                    </template>
+                    <template #cell(point)="row">
+                      <div class="text-center">
+                        {{ (row.item.point) }}
+                      </div>
+                    </template>
+                    <template #cell(point_price)="row">
+                      <div class="text-end">
+                        {{ myCurrency(row.item.point_price) }}
+                      </div>
+                    </template>
+                    <template #cell(price)="row">
+                      <div class="text-end">
+                        {{ myCurrency(row.item.price) }}
+                      </div>
                     </template>
                     <template #cell(discount_customer)="row">
                       <div class="text-danger text-end">

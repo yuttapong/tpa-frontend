@@ -328,6 +328,12 @@ loadData()
                     {{ form.note_customers }}
                   </p>
                 </div>
+                <div class="">
+                  <label class="text-decoration-underline">Remark</label>
+                  <p class="">
+                    {{ form.remark }}
+                  </p>
+                </div>
               </div>
 
               <div class="border p-3 bg-info rounded">
@@ -404,19 +410,20 @@ loadData()
                                         </tr> -->
                     <tr>
                       <th scope="col" class="">#</th>
-                      <th scope="col" class="">Item Id</th>
-                      <th scope="col" class="">Item Code</th>
-                      <th scope="col" class="fw-bold">SubLab</th>
-                      <th scope="col" class="fw-bold" nowrap>Reserved Date</th>
+                      <th scope="col" nowrap>รหัสงาน<br>Item Id</th>
+                      <th scope="col" nowrap>เลขที่งาน<br>Item Code</th>
+                      <th scope="col">ห้องทดลอง<br>SubLab</th>
+                      <th scope="col" nowrap><br>Lead Time</th>
+                      <th scope="col" nowrap>วันนัดรับ<br>Reserved Date</th>
 
-                      <th scope="col" class="">Product</th>
-
+                      <th scope="col" class="">เครื่องมือ<br>Product</th>
+                      <!-- 
                       <th scope="col" class="fw-bold">Barcode</th>
 
                       <th scope="col" class="fw-bold">S/N.</th>
-                      <th scope="col" class="fw-bold">ID No.</th>
-                      <th scope="col" class="fw-bold">Point</th>
-                      <th scope="col" class="fw-bold">Point Price</th>
+                      <th scope="col" class="fw-bold">ID No.</th> -->
+                      <th scope="col" class="fw-bold">รายละเอียด<br>Test Point</th>
+
                     </tr>
                   </thead>
 
@@ -429,10 +436,11 @@ loadData()
                       <td nowrap>
                         {{ item.item_code }}
                       </td>
-                      <td>
+                      <td style="min-width: 150px;">
                         <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
                         <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
                       </td>
+                      <td nowrap>{{ item?.product?.calhour }}</td>
                       <td nowrap>
                         <span>{{ item?.reserved_date }}</span>
                         <!-- <JobButtonStatus :data="item?.service_status_id"/> -->
@@ -443,11 +451,38 @@ loadData()
                         </div>
                       </td>
 
-                      <td>
-                        <div v-if="item.product.is_job">{{ item.product_name }}</div>
-                        <div>{{ item.product_name }}</div>
+                      <td style="min-width: 350px;">
+
+                        <BRow align-h="start" gutter-x="1" style="font-size: 13px;">
+                          <BCol sm="3" alignSelf="center">
+                            <div class="text-decoration-underline fw-bold">Id.No</div>
+                            <div class="d-block">{{ item?.id_no }}</div>
+                          </BCol>
+                          <BCol sm="3" alignSelf="center">
+                            <div class="text-decoration-underline fw-bold">Model</div>
+                            <div class="d-item">{{
+                              (item.model)
+                            }}
+                            </div>
+                          </BCol>
+                          <BCol sm="3" alignSelf="center">
+                            <div class="text-decoration-underline fw-bold">S/N</div>
+                            <div class="d-block">{{ item.serialnumber }}</div>
+                          </BCol>
+                          <BCol sm="3" alignSelf="center">
+                            <div class="text-decoration-underline fw-bold">Barcode</div>
+                            <div class="d-block">{{
+                              (item.barcode_no)
+                            }}
+                            </div>
+                          </BCol>
+                        </BRow>
+                        <BBadge v-if="item.manufaturer_name" variant="warning me-2">{{ item?.manufaturer_name }}
+                        </BBadge>
+                        <span v-if="item.product && item.product.is_job">
+                          {{ item.product_name }}</span>
                       </td>
-                      <td>
+                      <!-- <td>
                         <span>{{ item?.barcode_no }}</span>
                       </td>
 
@@ -456,13 +491,36 @@ loadData()
                       </td>
                       <td>
                         <span>{{ item?.id_no }}</span>
-                      </td>
+                      </td> -->
                       <td>
-                        <span>{{ item?.point }}</span>
+
+                        <BRow align-h="start" gutter-x="1" style="font-size: 13px;">
+                          <BCol sm="3" alignSelf="center">
+                            <div class="text-decoration-underline fw-bold">Range</div>
+                            <div class="d-block">{{ item.range_value }}</div>
+                          </BCol>
+                          <BCol sm="3" alignSelf="center">
+                            <div class="text-decoration-underline fw-bold">Range Price</div>
+                            <div class="d-block">{{
+                              myCurrency(item.range_price)
+                            }}
+                            </div>
+                          </BCol>
+                          <BCol sm="3" alignSelf="center">
+                            <div class="text-decoration-underline fw-bold">Point</div>
+                            <div class="d-block">{{ item.point }}</div>
+                          </BCol>
+                          <BCol sm="3" alignSelf="center">
+                            <div class="text-decoration-underline fw-bold">Pont Price</div>
+                            <div class="d-block">{{
+                              myCurrency(item.point_price)
+                            }}
+                            </div>
+                          </BCol>
+                        </BRow>
+                        <span>{{ item?.test_point }}</span>
                       </td>
-                      <td>
-                        <span>{{ myCurrency(item?.point_price) }}</span>
-                      </td>
+
                     </tr>
                   </tbody>
                 </table>

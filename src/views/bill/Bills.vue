@@ -20,9 +20,7 @@
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
                   <i class="bi bi-book"></i> ใบขอรับบริการ
-                  <span v-if="pagination"
-                    >({{ parseInt(pagination.total).toLocaleString() || 0 }})</span
-                  >
+                  <span v-if="pagination">({{ parseInt(pagination.total).toLocaleString() || 0 }})</span>
                 </button>
               </li>
               <li class="nav-item">
@@ -42,14 +40,8 @@
                       </button>
                     </div> -->
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.id"
-                        name="id"
-                        class="form-control form-control-sm"
-                        placeholder="ID"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.id" name="id" class="form-control form-control-sm"
+                        placeholder="ID" @keyup.enter="search" />
                     </div>
                     <div class="">
                       <!--                 
@@ -75,35 +67,17 @@
                       /> -->
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.code"
-                        name="code"
-                        class="form-control form-control-sm"
-                        placeholder="Code"
-                        @keyup.enter="search"
-                        autofocus
-                      />
+                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
+                        placeholder="Code" @keyup.enter="search" autofocus />
                     </div>
                     <div class="col-6 col-md-4 col-xl-3">
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        name="taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search" />
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="formSearch.q"
-                        name="q"
-                        class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ"
-                        @keyup.enter="search"
-                      />
+                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
                     </div>
                     <div class="">
                       <button type="submit" class="btn btn-light btn-sm">
@@ -188,41 +162,27 @@
                     </div>
                   </template>
                 </EasyDataTable> -->
-                <BTable
-                  bordered
-                  :items="items"
-                  class=""
-                  :fields="tableFields"
-                  :per-page="pagination.per_page"
-                  :responsive="true"
-                  :small="true"
-                >
+                <BTable bordered :items="items" class="" :fields="tableFields" :per-page="pagination.per_page"
+                  :responsive="true" :small="true">
                   <template #cell(index)="row">
                     {{ row.index + 1 }}
                   </template>
 
                   <template #cell(actions)="row">
                     <div class="d-flex gap-1">
-                      <router-link
-                        class="btn btn-sm btn-outline-secondary"
-                        :to="{ name: 'bills.commitmentForm', params: { code: row.item.code } }"
-                      >
-                        <i class="bi bi-calendar" role="button"></i
-                      ></router-link>
-                      <button
-                        type="button"
-                        @click="showDetail(row.item)"
-                        class="btn btn-outline-secondary btn-sm"
-                      >
+                      <router-link class="btn btn-sm btn-outline-secondary"
+                        :to="{ name: 'bills.commitmentForm', params: { code: row.item.code } }">
+                        <i class="bi bi-calendar" role="button"></i></router-link>
+                      <button type="button" @click="showDetail(row.item)" class="btn btn-outline-secondary btn-sm">
                         <i class="bi bi-eye"></i>
                       </button>
 
-                      <button
-                        type="button"
-                        class="btn btn-outline-secondary btn-sm"
-                        @click="showEdit(row.item)"
-                      >
+                      <button type="button" class="btn btn-outline-secondary btn-sm" @click="showEdit(row.item)">
                         <i class="bi bi-pencil"></i>
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary btn-sm"
+                        @click="openModalCommitment(row.item)">
+                        <i class="bi bi-clock"></i>
                       </button>
                     </div>
                   </template>
@@ -245,12 +205,13 @@
                     <div>
                       <div>{{ row.item.address_name }}</div>
                       <div class="d-flex flex-wrap gap-2">
-                        <small v-if="row.item.agent_name" class="text-danger">{{
-                          row.item.agent_name
-                        }}</small>
                         <BBadge variant="warning" v-if="row.item.customer" class="text-danger">{{
                           row.item?.customer.province
                         }}</BBadge>
+                        <small v-if="row.item.agent_name" class="text-danger">{{
+                          row.item.agent_name
+                        }}</small>
+
                       </div>
                     </div>
                   </template>
@@ -267,14 +228,8 @@
                   </template>
                 </BTable>
 
-                <BPagination
-                  v-model="pagination.current_page"
-                  :total-rows="pagination.total"
-                  :per-page="pagination.per_page"
-                  size="sm"
-                  class="my-0"
-                  @page-click="onChangePage"
-                />
+                <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
+                  :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
 
                 <!-- <div class="table-responsive">
                   <table class="table table-sm">
@@ -329,7 +284,7 @@
                         </td>
 
                         <td>
-                          <div>{{ item.customer?.companyname }}</div>
+                          <div>{{ item.customer?.company name }}</div>
                           <small class="text-danger mx-1">({{ item.agent_name }})</small>
                           <small class="text-secondary mx-1">({{ item.customer.taxnumber }})</small>
                         </td>
@@ -458,41 +413,15 @@
       </div>
     </div>
 
-    <ModalBillCreate
-      ref="modalBillCreateRef"
-      title="สร้างใบขอรับบริการใหม่"
-      :billTypes="billTypes"
-    />
-    <ModalBillDetail
-      ref="modalBillDetailRef"
-      title="รายละเอียดใบขอรับบริการ"
-      :billTypes="billTypes"
-      :data="bill"
-      @onChangeBillStatus="getBillByCode(bill.code)"
-      @onChangeJobStatus="getBillByCode(bill.code)"
-    />
-    <ModalBillEdit
-      ref="modalBillEditRef"
-      title="แก้ไขใบขอรับบริการ"
-      :billTypes="billTypes"
-      :data="bill"
-    />
-    <ModalCommitmentBooking
-      ref="modalCommitmentRef"
-      :bill="bill"
-      @onSave="
-        (data) => {
-          console.log('saved', data)
-          loadData()
-        }
-      "
-      @onReload="
-        (data) => {
-          console.log('reload after booking', data)
-          getBillById(data.id)
-        }
-      "
-    />
+    <ModalBillCreate ref="modalBillCreateRef" title="สร้างใบขอรับบริการใหม่" :billTypes="billTypes" />
+    <ModalBillDetail ref="modalBillDetailRef" title="รายละเอียดใบขอรับบริการ" :billTypes="billTypes" :data="bill"
+      @onChangeBillStatus="getBillByCode(bill.code)" @onChangeJobStatus="getBillByCode(bill.code)" />
+    <ModalBillEdit ref="modalBillEditRef" title="แก้ไขใบขอรับบริการ" :billTypes="billTypes" :data="bill" />
+    <ModalCommitmentBooking ref="modalCommitmentRef" :bill="bill" @onReload="(data) => {
+      getBillById(data.id)
+      loadData()
+    }
+      " />
   </section>
 </template>
 
@@ -771,17 +700,16 @@ const newBill = () => {
   modalBillCreateRef.value.show()
 }
 const openModalCommitment = (item) => {
-  console.log('caldate', item.code)
   errorMsg.value = ''
   bill.value = item
-  // bill.value.items = []
   modalCommitmentRef.value.show()
 }
+
 const onSearch = async () => {
   try {
     pagination.value.current_page = 1
     await loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 
 const resetFormSearch = () => {
@@ -829,7 +757,7 @@ watch(
   (data) => {
     console.log(data)
     pagination.value.current_page = data.page
-    ;(pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
+      ; (pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
     formSearch.value.orderBy = data.sortType
     loadData()
   },
@@ -861,6 +789,8 @@ th {
 }
 
 .checkbox {
-  transform: scale(/*desired magnification*/);
+  transform: scale(
+      /*desired magnification*/
+    );
 }
 </style>

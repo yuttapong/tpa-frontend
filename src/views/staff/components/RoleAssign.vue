@@ -1,5 +1,5 @@
 <template>
-  <BModal v-model="showModal" :title="title" buttonSize="sm" :ok-title="formMode">
+  <BModal v-model="props.visible" :title="title" buttonSize="sm" :ok-title="formMode" @hide="hide">
     <BForm @submit.stop.prevent>
       <div class="d-flex flex-wrap gap-2" v-if="data">
         <div>
@@ -81,8 +81,6 @@
 
 <script setup>
 import { ref, onMounted, watchEffect, watch, computed } from 'vue'
-import { toast } from 'vue3-toastify'
-
 import { api } from '@/helpers/api'
 import { useAppStore } from '@/stores/appStore'
 const emit = defineEmits(['updated', 'created'])
@@ -91,8 +89,6 @@ const props = defineProps({
   data: { type: Object },
   mode: { type: String, default: 'add' },
 })
-
-const appStore = useAppStore()
 
 const items = ref([])
 const selectedLeftItems = ref([])
@@ -136,7 +132,7 @@ const form = ref({
 
 const formMode = computed(() => props.mode)
 
-const getRolePermissons = async () => {
+const getAssigned = async () => {
   const { data } = await api.get(`/v2/roles/user/${props.data.id}/assigned`, {
     params: {},
   })
@@ -156,7 +152,7 @@ watch(
     if (newValue === true) {
       getPermissions()
       if (props.data.id !== undefined && props.data.id > 0) {
-        getRolePermissons()
+        getAssigned()
       }
     }
   },
@@ -181,12 +177,10 @@ const hide = (e) => {
   selectedRightItems.value = []
 }
 const chooseOne = async (e) => {
-  let p = selectedLeftItems.value.map((item) => item)
   let params = {
-    permissions: p,
+    permissions: selectedLeftItems.value,
   }
-  console.log(params)
-  if (params) {
+  if (params.permissions.length > 0) {
     loading.value = false
     const { data, status } = await api.post(`v2/roles/user/${props.data.id}/assign`, params)
     if (status == 200) {
@@ -198,12 +192,12 @@ const chooseOne = async (e) => {
   }
 }
 const removeOne = async (e) => {
-  if (selectedRightItems.value.length > 0) {
+  const params = {
+    permissions: selectedRightItems.value,
+  }
+  if (params.permissions.length > 0) {
     loading.value = true
-    const { data, status } = await api.post(
-      `v2/roles/user/${props.data.id}/revoke`,
-      selectedRightItems.value,
-    )
+    const { data, status } = await api.post(`v2/roles/user/${props.data.id}/revoke`, params)
     if (status == 200) {
       assignedPermissions.value = data?.permissions
       selectedRightItems.value = []
@@ -215,7 +209,7 @@ const chooseAll = async (e) => {
   const params = {
     permissions: permissionsFiltered.value.map((item) => item.id),
   }
-  if (params.length > 0) {
+  if (params.permissions.length > 0) {
     loading.value = true
     const { data, status } = await api.post(`v2/roles/user/${props.data.id}/assign`, params)
     if (status == 200) {
@@ -226,8 +220,10 @@ const chooseAll = async (e) => {
   }
 }
 const removeAll = async (e) => {
-  const params = rolePermissionsFiltered.value.map((item) => item.id)
-  if (params.length > 0) {
+  const params = {
+    permissions: rolePermissionsFiltered.value.map((item) => item.id),
+  }
+  if (params.permissions.length > 0) {
     loading.value = true
     const { data, status } = await api.post(`v2/roles/user/${props.data.id}/revoke`, params)
     if (status == 200) {
@@ -237,52 +233,6 @@ const removeAll = async (e) => {
     loading.value = false
   }
 }
-
-// const submit = async () => {
-//   if (formMode.value == 'add') {
-//     loading.value = true
-//     let params = {
-//       ...form.value,
-//     }
-//     const { data, status } = await api.post('v2/roles', params)
-
-//     if (status == 201) {
-//       emit('onCreated', params)
-//       toast(`${data.message}`, {
-//         theme: 'auto',
-//         type: 'success',
-//         autoClose: 1500,
-//         dangerouslyHTMLString: true,
-//       })
-//       loading.value = false
-//       hide()
-//     }
-
-//   }
-
-//   if (formMode.value == 'edit') {
-//     loading.value = true
-//     let params = {
-//       ...form.value,
-//     }
-//     const { data, status } = await api.put('v2/roles/' + props.data.id, params)
-
-//     if (status == 200) {
-//       emit('onUpdated', data.data)
-//       emit('update:data', data.data)
-//       toast(`${data.message}`, {
-//         theme: 'auto',
-//         type: 'success',
-//         autoClose: 1500,
-//         dangerouslyHTMLString: true,
-//       })
-//       loading.value = false
-//       hide()
-//     }
-//   }
-// }
-
-const cancel = () => {}
 onMounted(() => {})
 </script>
 <style lang="scss" scoped>

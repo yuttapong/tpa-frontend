@@ -45,8 +45,12 @@
     </BForm>
     <template #footer>
       <div class="d-flex flex-warp gap-2">
-        <BButton variant="primary" size="sm" type="button" @click="submit"><i class="bi bi-save"></i> บันทึก</BButton>
-        <BButton variant="outline-secondary" size="sm" type="button" @click="hide"><i class="bi bi-x"></i> ปิด</BButton>
+        <BButton variant="primary" size="sm" type="button" @click="submit"
+          ><i class="bi bi-save"></i> บันทึก</BButton
+        >
+        <BButton variant="outline-secondary" size="sm" type="button" @click="hide"
+          ><i class="bi bi-x"></i> ปิด</BButton
+        >
       </div>
     </template>
   </BModal>
@@ -179,8 +183,8 @@ const submit = async () => {
   }
 }
 
-const cancel = () => { }
-onMounted(() => { })
+const cancel = () => {}
+onMounted(() => {})
 </script>
 <style lang="scss" scoped>
 label {

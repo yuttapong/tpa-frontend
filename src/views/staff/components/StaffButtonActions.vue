@@ -1,19 +1,23 @@
 <template>
   <div class="d-flex flex-wrap gap-1">
-
-    <BButton v-show="canView" @click="clickView" size="sm" variant="outline-secondary"><i class="bi bi-eye"></i>
+    <BButton v-show="canView" @click="clickView" size="sm" variant="outline-secondary"
+      ><i class="bi bi-eye"></i>
     </BButton>
     <BDropdown v-model="show" split-variant="outline-secondary" size="sm" noCaret>
-      <template #button-content><i class="bi bi-three-dots-vertical"></i><span class="visually-hidden">menu</span>
+      <template #button-content
+        ><i class="bi bi-three-dots-vertical"></i><span class="visually-hidden">menu</span>
       </template>
-      <BDropdownItem v-show="canEdit" @click="clickEdit"><i class="bi bi-pencil"></i>แก้ไข
+      <BDropdownItem v-if="canEdit" @click="clickEdit"
+        ><i class="bi bi-pencil"></i>แก้ไข
       </BDropdownItem>
-      <BDropdownItem v-show="canAssingRole" @click="clickAssignRole"><i class="bi bi-lock"></i>กำหนดสิทธิ์
+      <BDropdownItem v-if="canAssignRole" @click="assignRole"
+        ><i class="bi bi-lock"></i>กำหนดสิทธิ์
       </BDropdownItem>
-      <BDropdownItem v-show="canAssingLab" @click="clickAssignLab"><i class="bi bi-building-add"></i>กำหนดห้อง Lab
+      <BDropdownItem v-if="canAssignLab" @click="assignLab"
+        ><i class="bi bi-building-add"></i>กำหนดห้อง Lab
       </BDropdownItem>
       <BDropdownDivider />
-      <BDropdownItem v-show="canCancel && item.canceled_at < 1" @click="clickCancel">
+      <BDropdownItem v-if="canCancel && item.canceled_at < 1" @click="clickCancel">
         <i class="bi bi-ban"></i>ยกเลิก
       </BDropdownItem>
       <BDropdownItem v-if="item.canceled_at > 0" disabled>ถูกยกเลิกแล้ว</BDropdownItem>
@@ -21,7 +25,6 @@
         <BDropdownItem active>Active action</BDropdownItem>
         <BDropdownItem disabled>Disabled action</BDropdownItem> -->
     </BDropdown>
-
   </div>
   <BModal v-model="modalCancel" :title="`ยืนยันยกเลิก ?`" @ok="confirmCancel()">
     <p>
@@ -74,10 +77,10 @@ const props = defineProps({
   canEdit: {
     type: Boolean,
   },
-  canAssingRole: {
+  canAssignRole: {
     type: Boolean,
   },
-  canAssingLab: {
+  canAssignLab: {
     type: Boolean,
   },
   canCancel: {
@@ -105,10 +108,10 @@ const clickView = () => {
 const clickEdit = () => {
   emit('clickEdit', props.data)
 }
-const clickAssignRole = () => {
+const assignRole = () => {
   emit('clickAssignRole', props.data)
 }
-const clickAssignLab = () => {
+const assignLab = () => {
   emit('clickAssignLab', props.data)
 }
 const clickCancel = () => {

@@ -1,73 +1,19 @@
 <template>
   <div class="row">
     <div class="col-12">
-      <div class="p-2 d-flex bd-highlight gap-2">
-        <span class="p-2 bd-highlight border border" role="button">Quotation</span>
-        <span class="p-2 bd-highlight border border" role="button">Bill</span>
-        <span class="p-2 bd-highlight border border" role="button">Invoice</span>
-      </div>
-      <select
-        v-model="roleSelected"
-        class="form-select"
-        @click="onSelected($event)"
-        aria-label="เลือกห้องแล็ป"
-        multiple
-        style="min-height: 200px"
-      >
-        <optgroup label="Roles">
-          <option v-for="(item, key) in filterRoles" :key="item" :value="item">
-            {{ `${item?.name} - ${item.description}` }}
-          </option>
-        </optgroup>
-
-        <optgroup label="Permissions">
-          <option v-for="(item, key) in filterPermissions" :key="item" :value="item">
-            {{ `${item?.name} - ${item?.description}` }}
-          </option>
-        </optgroup>
-      </select>
-
-      <!-- 
-            <select class="form-select mt-2" style="min-height: 200px;" multiple aria-label="เลือกห้องแล็ปย่อย">
-                <option :value="[]">---------- เลือกห้องแล็ปย่อย -------------</option>
-                <option v-for="(item, key) in allSelected" :value="item">{{ `${item?.code} - ${item?.name_th}` }}</option>
-
-            </select> -->
-      <div class="row my-2">
-        <div class="col-4">
-          <button class="btn btn-secondary"><i class="bi bi-arrow-down"></i></button>
-        </div>
-        <div class="col-4">
-          <button class="btn btn-secondary">
-            <i class="bi bi-arrow-down"></i>
-            ...
-            <i class="bi bi-arrow-down"></i>
-          </button>
-        </div>
-        <div class="col-4">
-          <button class="btn btn-success">
-            <i class="bi bi-arrow-down"></i>
-            All Roles & Permissions
-            <i class="bi bi-arrow-down"></i>
-          </button>
-        </div>
-      </div>
-      <select class="form-select" style="min-height: 200px" multiple aria-label="เลือกห้องแล็ปย่อย">
-        <optgroup label="Roles">
-          <option v-for="(item, key) in filterRoles" :key="item" :value="item">
-            {{ `${item?.name} - ${item?.description}` }}
-          </option>
-        </optgroup>
-
-        <optgroup label="Permissions">
-          <option v-for="(item, key) in filterPermissions" :key="item" :value="item">
-            {{ `${item?.name} - ${item?.description}` }}
-          </option>
-        </optgroup>
-      </select>
+      <h5>บทบาท</h5>
+      <ul v-if="filterRoles">
+        <li v-for="(item, key) in filterRoles" :key="key" :value="item">
+          {{ `${item?.name} - ${item.description}` }}
+        </li>
+      </ul>
+      <h5>การอนุญาต</h5>
+      <ul v-if="filterPermissions">
+        <li v-for="(item, key) in filterPermissions" :key="key" :value="item">
+          {{ `${item?.name} - ${item.description}` }}
+        </li>
+      </ul>
     </div>
-
-    <div class="col-12"></div>
   </div>
 </template>
 <script setup>
@@ -75,28 +21,13 @@ import { ref, computed } from 'vue'
 const props = defineProps({
   permissions: {
     type: Array,
-    required: true,
-    default: [],
+    required: false,
+    default: () => [],
   },
   roles: {
     type: Array,
-    required: true,
-    default: [],
-  },
-  defaultRoles: {
-    type: Array,
-    default: [],
-  },
-  defaultPermissions: {
-    type: Array,
-    default: [],
-  },
-  userPermissions: {
-    type: Array,
-    default: [],
-  },
-  onSave: {
-    type: Function,
+    required: false,
+    default: () => [],
   },
 })
 
@@ -104,7 +35,7 @@ const roleSelected = ref()
 
 const items = computed(() => {
   let items = []
-  if (props.roles) {
+  if (props.roles.length > 0) {
     props.roles.map((r) => {
       items.push({
         type: 'role',
@@ -113,7 +44,7 @@ const items = computed(() => {
       })
     })
   }
-  if (props.permissions) {
+  if (props.permissions.length > 0) {
     props.permissions.map((r) => {
       items.push({
         type: 'permission',
@@ -126,10 +57,10 @@ const items = computed(() => {
 })
 
 const filterRoles = computed(() => {
-  return items.value.filter((item) => item.type == 'role')
+  return props.roles.filter((item) => item)
 })
 const filterPermissions = computed(() => {
-  return items.value.filter((item) => item.type == 'permission')
+  return props.permissions.filter((item) => item)
 })
 
 const onSelected = (e, item) => {

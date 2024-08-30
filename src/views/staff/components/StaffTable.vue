@@ -18,9 +18,16 @@
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
           <th>
-            <StaffButtonActions canAssingLab canEdit canView @clickView="viewStaff(item)"
-              @clickAssignLab="viewLabAssign(item)" @clickEdit="viewEdit(item)" canAssingRole
-              @clickAssignRole="viewRoleAssign(item)" />
+            <StaffButtonActions
+              canAssignLab
+              canEdit
+              canView
+              canAssignRole
+              @clickView="viewStaff(item)"
+              @clickAssignLab="viewLabAssign(item)"
+              @clickEdit="viewEdit(item)"
+              @clickAssignRole="viewRoleAssign(item)"
+            />
           </th>
           <th scope="row">{{ item.id }}</th>
           <td>{{ item.code }}</td>
@@ -45,8 +52,7 @@
   </div>
 </template>
 <script setup>
-import { } from 'vue'
-import LabAssignForm from '@/views/staff/components/LabAssignForm.vue'
+import {} from 'vue'
 import StaffButtonActions from '@/views/staff/components/StaffButtonActions.vue'
 import { myFormatDate } from '@/helpers/myformat'
 
@@ -69,6 +75,8 @@ const emit = defineEmits(['onView', 'onEdit', 'onAssignRole'])
 
 const viewStaff = (item) => emit('onView', item)
 const viewLabAssign = (item) => emit('onAssignLab', item)
-const viewRoleAssign = (item) => emit('onAssignRole', item)
+const viewRoleAssign = (item) => {
+  emit('onAssignRole', item)
+}
 const viewEdit = (item) => emit('onEdit', item)
 </script>

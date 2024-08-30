@@ -103,11 +103,11 @@ const formInvoice = ref({
 })
 const formDiscountAdd = ref({
   index: null,
-  discountCustomerType: 'amount',
+  discountCustomerType: 'percentage',
   discountCustomerValue: 0,
-  discountLabType: 'amount',
+  discountLabType: 'percentage',
   discountLabValue: 0,
-  discountOrderType: 'amount',
+  discountOrderType: 'percentage',
   discountOrderValue: 0,
 })
 const hasVat = ref(true)
@@ -157,7 +157,7 @@ const onSearch = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 
 const openModalWorkOrder = () => {
@@ -190,10 +190,13 @@ const addItems = async (item) => {
     point_price: Number(item?.point_price),
     discount: 0,
     discount_percent: 0,
+    discount_lab_type: 'percentage',
     discount_lab: 0,
     discount_lab_percent: 0,
+    discount_order_type: 'percentage',
     discount_order: 0,
     discount_order_percent: 0,
+    discount_customer_type: 'percentage',
     discount_customer: 0,
     discount_customer_percent: 0,
     qty: qty,
@@ -243,10 +246,13 @@ const fillDataBill = async (bill, billItems) => {
         point_price: Number(item?.point_price),
         discount: 0,
         discount_percent: 0,
+        discount_lab_type: 'percentage',
         discount_lab: 0,
         discount_lab_percent: 0,
+        discount_order_type: 'percentage',
         discount_order: 0,
         discount_order_percent: 0,
+        discount_customer_type: 'percentage',
         discount_customer: 0,
         discount_customer_percent: 0,
         qty: qty,
@@ -291,21 +297,16 @@ const fillDataCustomer = async (bill, billItems) => {
     formInvoice.value.bill_code = data?.bill_code
     formInvoice.value.note_customer = bill?.note_customers
 
-    //fill address 
-    if (!formInvoice.value.subdistrict)
-      formInvoice.value.subdistrict = bill.customer?.subdistrict
+    //fill address
+    if (!formInvoice.value.subdistrict) formInvoice.value.subdistrict = bill.customer?.subdistrict
 
-    if (!formInvoice.value.district)
-      formInvoice.value.district = bill.customer?.district
+    if (!formInvoice.value.district) formInvoice.value.district = bill.customer?.district
 
-    if (!formInvoice.value.province)
-      formInvoice.value.province = bill.customer?.province
+    if (!formInvoice.value.province) formInvoice.value.province = bill.customer?.province
 
-    if (!formInvoice.value.postalcode)
-      formInvoice.value.postalcode = bill.customer?.postalcode
+    if (!formInvoice.value.postalcode) formInvoice.value.postalcode = bill.customer?.postalcode
 
-    if (!formInvoice.value.country)
-      formInvoice.value.country = bill.customer?.country
+    if (!formInvoice.value.country) formInvoice.value.country = bill.customer?.country
   }
 }
 
@@ -324,7 +325,6 @@ const showConfirmDeleteItems = async () => {
   }
 }
 
-
 const deleteItems = () => {
   if (itemsSelected.value.length > 0) {
     itemsSelected.value.map((row) => {
@@ -332,12 +332,10 @@ const deleteItems = () => {
         if (String(row.item_id) == String(product.item_id)) {
           formInvoice.value.items.splice(index, 1)
         }
-
       })
     })
     save()
     itemsSelected.value = []
-
   }
 }
 const onChangeCustomerType = (rs) => {
@@ -388,7 +386,6 @@ const totalNet = computed(() => {
  */
 const openModalCustomer = () => {
   if (formInvoice.value.bill_code) {
-
   }
   modalCustomer.value.show()
 }
@@ -615,7 +612,7 @@ const addDiscountCustomer = () => {
 
   formInvoice.value.items = items
   discountCustomer.value = 0
-  save(true);
+  save(true)
 }
 
 const onSelectCustomer = (data) => {
@@ -654,7 +651,6 @@ const openModalPreview = async (inv) => {
   if (data) invoiceStore.invoice = data
 }
 
-
 const openModalBill = (data) => {
   modalBill.value.show()
 }
@@ -679,7 +675,7 @@ const saveAsDraft = (notify = false) => {
   formInvoice.value.invoice_status = 'draft'
   save(notify)
 }
-const saveAndSend = () => { }
+const saveAndSend = () => {}
 
 const getInvoice = async (id) => {
   loading.value = true
@@ -688,21 +684,15 @@ const getInvoice = async (id) => {
     formInvoice.value = data
     hasVat.value = !!formInvoice.value.totalvat
 
-    if (!formInvoice.value.subdistrict)
-      formInvoice.value.subdistrict = data.customer?.subdistrict
+    if (!formInvoice.value.subdistrict) formInvoice.value.subdistrict = data.customer?.subdistrict
 
-    if (!formInvoice.value.district)
-      formInvoice.value.district = data.customer?.district
+    if (!formInvoice.value.district) formInvoice.value.district = data.customer?.district
 
-    if (!formInvoice.value.province)
-      formInvoice.value.province = data.customer?.province
+    if (!formInvoice.value.province) formInvoice.value.province = data.customer?.province
 
-    if (!formInvoice.value.postalcode)
-      formInvoice.value.postalcode = data.customer?.postalcode
+    if (!formInvoice.value.postalcode) formInvoice.value.postalcode = data.customer?.postalcode
 
-    if (!formInvoice.value.country)
-      formInvoice.value.country = data.customer?.country
-
+    if (!formInvoice.value.country) formInvoice.value.country = data.customer?.country
   }
   loading.value = false
 }
@@ -739,22 +729,18 @@ const save = async (notify = false) => {
         loading.value = false
         formInvoice.value = data?.data
 
-        //fill address 
+        //fill address
         let bill = data.data
         if (!formInvoice.value.subdistrict)
           formInvoice.value.subdistrict = bill.customer?.subdistrict
 
-        if (!formInvoice.value.district)
-          formInvoice.value.district = bill.customer?.district
+        if (!formInvoice.value.district) formInvoice.value.district = bill.customer?.district
 
-        if (!formInvoice.value.province)
-          formInvoice.value.province = bill.customer?.province
+        if (!formInvoice.value.province) formInvoice.value.province = bill.customer?.province
 
-        if (!formInvoice.value.postalcode)
-          formInvoice.value.postalcode = bill.customer?.postalcode
+        if (!formInvoice.value.postalcode) formInvoice.value.postalcode = bill.customer?.postalcode
 
-        if (!formInvoice.value.country)
-          formInvoice.value.country = bill.customer?.country
+        if (!formInvoice.value.country) formInvoice.value.country = bill.customer?.country
 
         if (notify) {
           toast(data.message, {
@@ -818,7 +804,8 @@ const tableFields = [
   // { key: 'model', label: 'Model' },
   { key: 'serialnumber', label: 'S/N' },
   { key: 'id_no', label: 'IDNo' },
-  { key: 'cerno', label: 'CerNo' },
+  { key: 'cerno', label: 'Cer No' },
+  { key: 'po_no', label: 'Po No' },
   { key: 'range', label: 'Range' },
   { key: 'range_price', label: 'Range Price' },
   { key: 'point', label: 'Point' },
@@ -831,7 +818,6 @@ const tableFields = [
   { key: 'net', label: 'ราคาหลังลด', sortable: false },
   { key: 'remark', sortable: false, label: 'Remark' },
 ]
-
 
 getCustomerTypes()
 
@@ -851,18 +837,17 @@ onMounted(() => {
     formInvoice.value.discount_pattern = 'A'
   }
 })
-const listPromotionCode = ref([])
+const customerTypeCode = ref()
 
 onUpdated(() => {
   invoiceStore.setForm(formInvoice.value)
   if (formInvoice.value.bill_code) {
     let code = formInvoice.value.bill_code
-    let t = code.replace(/[\-0-9]/g, '').split('')
-    listPromotionCode.value = t
-    console.log('code', t);
+    let temp = code.replace(/[\-0-9]/g, '')
+    customerTypeCode.value = temp
+    console.log('customerTypeCode#', customerTypeCode.value)
   }
 })
-
 </script>
 <template>
   <div>
@@ -885,41 +870,76 @@ onUpdated(() => {
         <div class="col-12 col-md-12">
           <div class="card m-0">
             <div class="card-body p-2">
-
               <form @submit.prevent="onSearch()">
                 <div class="border p-2 my-2">
                   <div class="row g-2">
                     <div class="col-6 col-md-4 col-lg-3">
                       <label>ใบขอรับบริการ</label>
                       <BInputGroup size="sm" class="">
-                        <input type="text" v-model="formInvoice.bill_code" class="form-control form-control-sm"
-                          placeholder="เลขที่ใบขอรับบริการ" disabled="disabled" />
-                        <button class="btn btn-sm btn-text" @click="openModalBill()"><i class="bi bi-search"></i></button>
+                        <input
+                          type="text"
+                          v-model="formInvoice.bill_code"
+                          class="form-control form-control-sm"
+                          placeholder="เลขที่ใบขอรับบริการ"
+                          disabled="disabled"
+                        />
+                        <button class="btn btn-sm btn-text" @click="openModalBill()">
+                          <i class="bi bi-search"></i>
+                        </button>
                       </BInputGroup>
                     </div>
                     <div class="col-6 col-md-4 col-lg-3" v-if="formInvoice.code">
                       <label>Invoice Code</label>
-                      <input type="text" v-model="formInvoice.code" class="form-control form-control-sm"
-                        placeholder="Code" disabled="disabled" />
+                      <input
+                        type="text"
+                        v-model="formInvoice.code"
+                        class="form-control form-control-sm"
+                        placeholder="Code"
+                        disabled="disabled"
+                      />
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.issue_date }]">
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.issue_date }]"
+                    >
                       <label>วันที่ออก Invoice</label>
-                      <BInput type="date" :state="!!formInvoice.issue_date" v-model="formInvoice.issue_date"
-                        class="form-control form-control-sm" placeholder="issue date" />
+                      <BInput
+                        type="date"
+                        :state="!!formInvoice.issue_date"
+                        v-model="formInvoice.issue_date"
+                        class="form-control form-control-sm"
+                        placeholder="issue date"
+                      />
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.invoice_status }]">
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.invoice_status }]"
+                    >
                       <label>สถานะ {{ formInvoice.invoice_status }}</label>
-                      <BFormSelect :options="invoiceStatuses" :state="!!formInvoice.invoice_status"
-                        v-model="formInvoice.invoice_status" size="sm">
+                      <BFormSelect
+                        :options="invoiceStatuses"
+                        :state="!!formInvoice.invoice_status"
+                        v-model="formInvoice.invoice_status"
+                        size="sm"
+                      >
                       </BFormSelect>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.due_within }]">
-                      <label>กำหนดชำระภายใน
-                        <span v-if="formInvoice.due_date">({{ myFormatDate(formInvoice.due_date) }})</span>
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.due_within }]"
+                    >
+                      <label
+                        >กำหนดชำระภายใน
+                        <span v-if="formInvoice.due_date"
+                          >({{ myFormatDate(formInvoice.due_date) }})</span
+                        >
                       </label>
 
-                      <select class="form-select form-select-sm" v-model="formInvoice.due_within"
-                        @change="onChangeDueWithin">
+                      <select
+                        class="form-select form-select-sm"
+                        v-model="formInvoice.due_within"
+                        @change="onChangeDueWithin"
+                      >
                         <option value="">----</option>
                         <option v-for="i in dueWithinList" :value="i.value" :key="i">
                           {{ i.text }}
@@ -927,88 +947,174 @@ onUpdated(() => {
                       </select>
                     </div>
 
-
                     <div class="col-6 col-md-4 col-lg-3">
                       <label>ส่วนลดและการสมสมยอด</label>
-                      <BFormSelect :options="discountTypes" :state="!!formInvoice.discount_pattern"
-                        v-model="formInvoice.discount_pattern" size="sm">
+                      <BFormSelect
+                        :options="discountTypes"
+                        :state="!!formInvoice.discount_pattern"
+                        v-model="formInvoice.discount_pattern"
+                        size="sm"
+                      >
                       </BFormSelect>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[
-                      { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
-                    ]">
-                      <label>ลูกค้า
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[
+                        { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
+                      ]"
+                    >
+                      <label
+                        >ลูกค้า
                         <span v-if="formInvoice.customer_id"> ({{ formInvoice.customer_id }})</span>
-                        <span v-if="formInvoice.customer_type_code"> ({{ formInvoice.customer_type_code }})</span>
+                        <span v-if="formInvoice.customer_type_code">
+                          ({{ formInvoice.customer_type_code }})</span
+                        >
                       </label>
                       <div class="input-group input-group-sm">
-                        <button class="btn btn-outline-secondary" type="button" @click="openModalCustomer">
+                        <button
+                          class="btn btn-outline-secondary"
+                          type="button"
+                          @click="openModalCustomer"
+                        >
                           <i class="bi bi-person"></i>
                         </button>
-                        <input type="search" v-model="formInvoice.customer_name" class="form-control form-control-sm"
-                          placeholder="บริษัท" />
-                        <input type="hidden" v-model="formInvoice.customer_id" class="form-control form-control-sm"
-                          placeholder="รหัสลูกค้า" />
+                        <input
+                          type="search"
+                          v-model="formInvoice.customer_name"
+                          class="form-control form-control-sm"
+                          placeholder="บริษัท"
+                        />
+                        <input
+                          type="hidden"
+                          v-model="formInvoice.customer_id"
+                          class="form-control form-control-sm"
+                          placeholder="รหัสลูกค้า"
+                        />
                       </div>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.customer_type_code }]"
-                      v-if="!formInvoice.customer_type_code">
-                      <label>ประเภทลูกค้า
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.customer_type_code }]"
+                      v-if="!formInvoice.customer_type_code"
+                    >
+                      <label
+                        >ประเภทลูกค้า
                         <span v-if="formInvoice.customer_type_code">
-                          ({{ formInvoice.customer_type_code }})</span>
+                          ({{ formInvoice.customer_type_code }})</span
+                        >
                       </label>
 
-                      <select required class="form-select form-select-sm" v-model="formInvoice.customer_type_code"
-                        @change="onChangeCustomerType">
+                      <select
+                        required
+                        class="form-select form-select-sm"
+                        v-model="formInvoice.customer_type_code"
+                        @change="onChangeCustomerType"
+                      >
                         <option v-for="(item, key) in customerTypes" :key="key" :value="item.code">
                           {{ item.code }} : {{ item.name }} - {{ item.nameen }}
                         </option>
                       </select>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.contact_name }]">
-                      <label>ผู้ติดต่อ
-                        <span v-if="formInvoice.contact_id">({{ formInvoice.contact_id }})</span></label>
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.contact_name }]"
+                    >
+                      <label
+                        >ผู้ติดต่อ
+                        <span v-if="formInvoice.contact_id"
+                          >({{ formInvoice.contact_id }})</span
+                        ></label
+                      >
                       <div class="input-group input-group-sm">
-                        <button class="btn btn-outline-secondary" type="button" @click="openModalContact">
+                        <button
+                          class="btn btn-outline-secondary"
+                          type="button"
+                          @click="openModalContact"
+                        >
                           <i class="bi bi-person-vcard"></i>
                         </button>
-                        <input type="search" v-model="formInvoice.contact_name" class="form-control form-control-sm"
-                          placeholder="" />
+                        <input
+                          type="search"
+                          v-model="formInvoice.contact_name"
+                          class="form-control form-control-sm"
+                          placeholder=""
+                        />
                       </div>
                     </div>
 
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.address }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.address }]"
+                    >
                       <label>ที่อยู่</label>
-                      <BFormTextarea :state="!!formInvoice.address" type="text" v-model="formInvoice.address"
-                        class="form-control form-control-sm" placeholder="ที่อยู่" rows="2" />
+                      <BFormTextarea
+                        :state="!!formInvoice.address"
+                        type="text"
+                        v-model="formInvoice.address"
+                        class="form-control form-control-sm"
+                        placeholder="ที่อยู่"
+                        rows="2"
+                      />
                     </div>
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.subdistrict }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.subdistrict }]"
+                    >
                       <label>ตำบล/แขวง</label>
-                      <BInput type="text" v-model="formInvoice.subdistrict" class="form-control form-control-sm"
-                        placeholder="ตำบล/แขวง" />
+                      <BInput
+                        type="text"
+                        v-model="formInvoice.subdistrict"
+                        class="form-control form-control-sm"
+                        placeholder="ตำบล/แขวง"
+                      />
                     </div>
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.district }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.district }]"
+                    >
                       <label>อำเภอ/เขต</label>
-                      <BInput type="text" v-model="formInvoice.district" class="form-control form-control-sm"
-                        placeholder="อำเภอ/เขต" />
+                      <BInput
+                        type="text"
+                        v-model="formInvoice.district"
+                        class="form-control form-control-sm"
+                        placeholder="อำเภอ/เขต"
+                      />
                     </div>
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.provice }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.provice }]"
+                    >
                       <label>อำเภอ/เขต</label>
-                      <BInput type="text" v-model="formInvoice.province" class="form-control form-control-sm"
-                        placeholder="จังหวัด" />
+                      <BInput
+                        type="text"
+                        v-model="formInvoice.province"
+                        class="form-control form-control-sm"
+                        placeholder="จังหวัด"
+                      />
                     </div>
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.provice }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.provice }]"
+                    >
                       <label>อำเภอ/เขต</label>
-                      <BInput type="text" v-model="formInvoice.postalcode" class="form-control form-control-sm"
-                        placeholder="จังหวัด" />
+                      <BInput
+                        type="text"
+                        v-model="formInvoice.postalcode"
+                        class="form-control form-control-sm"
+                        placeholder="จังหวัด"
+                      />
                     </div>
-
                   </div>
                   <div class="row g-2">
                     <div class="col-12 col-md-6 col-lg-5">
                       <label>Note ลูกค้า</label>
 
-                      <BFormTextarea v-model="formInvoice.note_customer" class="text-danger" rows="2" readonly />
+                      <BFormTextarea
+                        v-model="formInvoice.note_customer"
+                        class="text-danger"
+                        rows="2"
+                        readonly
+                      />
                     </div>
                     <div class="col-12 col-md-6 col-lg-5">
                       <label>Note</label>
@@ -1024,9 +1130,18 @@ onUpdated(() => {
                     โปรดระบุรายการเครื่องมือ
                   </div>
                   <!-- ###################### MODAL ############################ -->
-                  <BModal :id="infoProduct?.item_id" v-model="visibleModalEditItem"
-                    :title="`${infoProduct?.bill_items_code}`" @ok="save()" scrollable size="md" ok-only no-stacking
-                    bodyScrolling ok-title="บันทึก">
+                  <BModal
+                    :id="infoProduct?.item_id"
+                    v-model="visibleModalEditItem"
+                    :title="`${infoProduct?.bill_items_code}`"
+                    @ok="save()"
+                    scrollable
+                    size="md"
+                    ok-only
+                    no-stacking
+                    bodyScrolling
+                    ok-title="บันทึก"
+                  >
                     <template v-if="infoProduct">
                       <div class="row g-1 mb-2">
                         <div class="col-6">เครื่องมือ</div>
@@ -1038,36 +1153,71 @@ onUpdated(() => {
                         <div class="col-3">Range</div>
                         <div class="col-3">
                           <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.range"
-                              min="0" />
+                            <input
+                              type="number"
+                              class="form-control form-control-sm"
+                              v-model="infoProduct.range"
+                              min="0"
+                            />
                           </div>
                         </div>
                         <div class="col-3">Range Price</div>
                         <div class="col-3">
                           <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.range_price"
-                              min="0" />
+                            <input
+                              type="number"
+                              class="form-control form-control-sm"
+                              v-model="infoProduct.range_price"
+                              min="0"
+                            />
                           </div>
                         </div>
                         <div class="col-3">Point</div>
                         <div class="col-3">
                           <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.point"
-                              min="0" />
+                            <input
+                              type="number"
+                              class="form-control form-control-sm"
+                              v-model="infoProduct.point"
+                              min="0"
+                            />
                           </div>
                         </div>
                         <div class="col-3">Point Price</div>
                         <div class="col-3">
                           <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.point_price"
-                              min="0" />
+                            <input
+                              type="number"
+                              class="form-control form-control-sm"
+                              v-model="infoProduct.point_price"
+                              min="0"
+                            />
                           </div>
                         </div>
                         <div class="col-6">ราคาต่อหน่วย</div>
                         <div class="col-6">
                           <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.price" min="0"
-                              @blur="updateDiscountItem('price')" @change="updateDiscountItem('price')" />
+                            <input
+                              type="number"
+                              class="form-control form-control-sm"
+                              v-model="infoProduct.price"
+                              min="0"
+                              @blur="updateDiscountItem('price')"
+                              @change="updateDiscountItem('price')"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-6">PO No.</div>
+                        <div class="col-6">
+                          <div class="input-group input-group-sm">
+                            <input
+                              type="text"
+                              class="form-control form-control-sm"
+                              v-model="infoProduct.po_no"
+                              placeholder="เลขที่ PO"
+                              @blur="updateDiscountItem('po_no')"
+                              @change="updateDiscountItem('po_no')"
+                            />
                           </div>
                         </div>
 
@@ -1078,11 +1228,12 @@ onUpdated(() => {
                           </small> -->
                         </div>
                         <div class="col-6">
-                          <span v-if="infoProduct.discount_customer_percent">{{
-                            myCurrency(infoProduct.discount_customer_percent) }} %
+                          <span v-if="infoProduct.discount_customer_percent"
+                            >{{ myCurrency(infoProduct.discount_customer_percent) }} %
                           </span>
-                          <span v-if="infoProduct.discount_customer">({{ myCurrency(infoProduct.discount_customer)
-                          }})</span>
+                          <span v-if="infoProduct.discount_customer"
+                            >({{ myCurrency(infoProduct.discount_customer) }})</span
+                          >
                         </div>
 
                         <div class="col-6">
@@ -1092,10 +1243,13 @@ onUpdated(() => {
                           </small> -->
                         </div>
                         <div class="col-6">
-                          <span v-if="infoProduct.discount_lab_percent">{{ myCurrency(infoProduct.discount_lab_percent) }}
+                          <span v-if="infoProduct.discount_lab_percent"
+                            >{{ myCurrency(infoProduct.discount_lab_percent) }}
                             %
                           </span>
-                          <span v-if="infoProduct.discount_lab">({{ myCurrency(infoProduct.discount_lab) }})</span>
+                          <span v-if="infoProduct.discount_lab"
+                            >({{ myCurrency(infoProduct.discount_lab) }})</span
+                          >
                         </div>
 
                         <div class="col-6">
@@ -1105,10 +1259,12 @@ onUpdated(() => {
                           </small> -->
                         </div>
                         <div class="col-6">
-                          <span v-if="infoProduct.discount_order_percent">{{
-                            myCurrency(infoProduct.discount_order_percent) }} %
+                          <span v-if="infoProduct.discount_order_percent"
+                            >{{ myCurrency(infoProduct.discount_order_percent) }} %
                           </span>
-                          <span v-if="infoProduct.discount_order">({{ myCurrency(infoProduct.discount_order) }})</span>
+                          <span v-if="infoProduct.discount_order"
+                            >({{ myCurrency(infoProduct.discount_order) }})</span
+                          >
                         </div>
 
                         <div class="col-6">ราคาหลังหักส่วนลด</div>
@@ -1120,18 +1276,36 @@ onUpdated(() => {
                       </div>
                       <div class="input-group input-group-sm mb-3">
                         <label class="input-group-text fw-bold" style="width: 160px">
-                          <i class="bi bi-gift me-2"></i> ส่วนลด Customer</label>
+                          <i class="bi bi-gift me-2"></i> ส่วนลด Customer</label
+                        >
 
-                        <input type="number" v-model="formDiscountAdd.discountCustomerValue"
-                          class="form-control form-control-sm" placeholder="จำนวนเงิน" min="0" style="width: 100px"
-                          @change="updateDiscountItem('customer')" />
+                        <input
+                          type="number"
+                          v-model="formDiscountAdd.discountCustomerValue"
+                          class="form-control form-control-sm"
+                          placeholder="จำนวนเงิน"
+                          min="0"
+                          style="width: 100px"
+                          @change="updateDiscountItem('customer')"
+                        />
 
-                        <select required class="form-select form-select-sm" style="width: 90px"
-                          v-model="formDiscountAdd.discountCustomerType" @change="updateDiscountItem('customer')">
-                          <option value="percentage" :selected="formDiscountAdd.discountCustomerType == 'percentage'">
+                        <select
+                          required
+                          class="form-select form-select-sm"
+                          style="width: 90px"
+                          v-model="formDiscountAdd.discountCustomerType"
+                          @change="updateDiscountItem('customer')"
+                        >
+                          <option
+                            value="percentage"
+                            :selected="formDiscountAdd.discountCustomerType == 'percentage'"
+                          >
                             %
                           </option>
-                          <option value="amount" :selected="formDiscountAdd.discountCustomerType == 'amount'">
+                          <option
+                            value="amount"
+                            :selected="formDiscountAdd.discountCustomerType == 'amount'"
+                          >
                             บาท
                           </option>
                         </select>
@@ -1139,17 +1313,35 @@ onUpdated(() => {
 
                       <div class="input-group input-group-sm mb-3">
                         <label class="input-group-text fw-bold" style="width: 160px">
-                          <i class="bi bi-gift me-2"></i> ส่วนลด Lab</label>
+                          <i class="bi bi-gift me-2"></i> ส่วนลด Lab</label
+                        >
 
-                        <input type="number" v-model="formDiscountAdd.discountLabValue"
-                          class="form-control form-control-sm" placeholder="จำนวนเงิน" min="0" style="width: 100px"
-                          @change="updateDiscountItem('lab')" />
-                        <select required class="form-select form-select-sm" style="width: 90px"
-                          v-model="formDiscountAdd.discountLabType" @change="updateDiscountItem('lab')">
-                          <option value="percentage" :selected="formDiscountAdd.discountLabType == 'percentage'">
+                        <input
+                          type="number"
+                          v-model="formDiscountAdd.discountLabValue"
+                          class="form-control form-control-sm"
+                          placeholder="จำนวนเงิน"
+                          min="0"
+                          style="width: 100px"
+                          @change="updateDiscountItem('lab')"
+                        />
+                        <select
+                          required
+                          class="form-select form-select-sm"
+                          style="width: 90px"
+                          v-model="formDiscountAdd.discountLabType"
+                          @change="updateDiscountItem('lab')"
+                        >
+                          <option
+                            value="percentage"
+                            :selected="formDiscountAdd.discountLabType == 'percentage'"
+                          >
                             %
                           </option>
-                          <option value="amount" :selected="formDiscountAdd.discountLabType == 'amount'">
+                          <option
+                            value="amount"
+                            :selected="formDiscountAdd.discountLabType == 'amount'"
+                          >
                             บาท
                           </option>
                         </select>
@@ -1157,17 +1349,35 @@ onUpdated(() => {
 
                       <div class="input-group input-group-sm mb-3">
                         <label class="input-group-text fw-bold" style="width: 160px">
-                          <i class="bi bi-gift me-2"></i> ส่วนลด Order Type</label>
+                          <i class="bi bi-gift me-2"></i> ส่วนลด Order Type</label
+                        >
 
-                        <input type="number" v-model="formDiscountAdd.discountOrderValue"
-                          class="form-control form-control-sm" placeholder="จำนวนเงิน" min="0" style="width: 100px"
-                          @change="updateDiscountItem('order')" />
-                        <select required class="form-select form-select-sm" style="width: 90px"
-                          v-model="formDiscountAdd.discountOrderType" @change="updateDiscountItem('order')">
-                          <option value="percentage" :selected="formDiscountAdd.discountOrderType == 'percentage'">
+                        <input
+                          type="number"
+                          v-model="formDiscountAdd.discountOrderValue"
+                          class="form-control form-control-sm"
+                          placeholder="จำนวนเงิน"
+                          min="0"
+                          style="width: 100px"
+                          @change="updateDiscountItem('order')"
+                        />
+                        <select
+                          required
+                          class="form-select form-select-sm"
+                          style="width: 90px"
+                          v-model="formDiscountAdd.discountOrderType"
+                          @change="updateDiscountItem('order')"
+                        >
+                          <option
+                            value="percentage"
+                            :selected="formDiscountAdd.discountOrderType == 'percentage'"
+                          >
                             %
                           </option>
-                          <option value="amount" :selected="formDiscountAdd.discountOrderType == 'amount'">
+                          <option
+                            value="amount"
+                            :selected="formDiscountAdd.discountOrderType == 'amount'"
+                          >
                             บาท
                           </option>
                         </select>
@@ -1176,17 +1386,36 @@ onUpdated(() => {
                   </BModal>
 
                   <!-- ######################## TABLE ######################## -->
-                  <BTable busyLoadingText="กำหลังโหลด.." stickyHeader responsive hover small caption-top bordered
-                    :items="formInvoice.items" :fields="tableFields" variant="light">
+                  <BTable
+                    busyLoadingText="กำหลังโหลด.."
+                    stickyHeader
+                    responsive
+                    hover
+                    small
+                    caption-top
+                    bordered
+                    :items="formInvoice.items"
+                    :fields="tableFields"
+                    variant="light"
+                  >
                     <template #cell(index)="row">
                       {{ row.index + 1 }}
                     </template>
 
                     <template #cell(actions)="row">
                       <BButtonGroup>
-
-                        <input type="checkbox" class="mx-1" v-model="itemsSelected" :value="row.item" />
-                        <BButton size="sm" class="mr-1" variant="light" @click="openModalEditItem(row.item, row.index)">
+                        <input
+                          type="checkbox"
+                          class="mx-1"
+                          v-model="itemsSelected"
+                          :value="row.item"
+                        />
+                        <BButton
+                          size="sm"
+                          class="mr-1"
+                          variant="light"
+                          @click="openModalEditItem(row.item, row.index)"
+                        >
                           <i class="bi bi-pencil"></i>
                         </BButton>
                       </BButtonGroup>
@@ -1221,7 +1450,7 @@ onUpdated(() => {
 
                     <template #cell(range)="row">
                       <div class="text-center">
-                        {{ (row.item.range) }}
+                        {{ row.item.range }}
                       </div>
                     </template>
                     <template #cell(range_price)="row">
@@ -1231,7 +1460,7 @@ onUpdated(() => {
                     </template>
                     <template #cell(point)="row">
                       <div class="text-center">
-                        {{ (row.item.point) }}
+                        {{ row.item.point }}
                       </div>
                     </template>
                     <template #cell(point_price)="row">
@@ -1246,22 +1475,34 @@ onUpdated(() => {
                     </template>
                     <template #cell(discount_customer)="row">
                       <div class="text-danger text-end">
-                        <product-discount-detail :index="row.index" v-model:data="row.item"
-                          fieldAmount="discount_customer" fieldPercent="discount_customer_percent" />
+                        <product-discount-detail
+                          :index="row.index"
+                          v-model:data="row.item"
+                          fieldAmount="discount_customer"
+                          fieldPercent="discount_customer_percent"
+                        />
                       </div>
                       <!-- {{ row.item.discount_customer_type }} -->
                     </template>
                     <template #cell(discount_lab)="row">
                       <div class="text-danger text-end">
-                        <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_lab"
-                          fieldPercent="discount_lab_percent" />
+                        <product-discount-detail
+                          :index="row.index"
+                          v-model:data="row.item"
+                          fieldAmount="discount_lab"
+                          fieldPercent="discount_lab_percent"
+                        />
                       </div>
                       <!-- {{ row.item.discount_lab_type }} -->
                     </template>
                     <template #cell(discount_order)="row">
                       <div class="text-danger text-end">
-                        <product-discount-detail :index="row.index" v-model:data="row.item" fieldAmount="discount_order"
-                          fieldPercent="discount_order_percent" />
+                        <product-discount-detail
+                          :index="row.index"
+                          v-model:data="row.item"
+                          fieldAmount="discount_order"
+                          fieldPercent="discount_order_percent"
+                        />
                       </div>
                       <!-- {{ row.item.discount_order_type }} -->
                     </template>
@@ -1280,14 +1521,28 @@ onUpdated(() => {
                   <div class="d-flex flex-wrap gap-3 justify-content-start align-items-center">
                     <div>
                       <BInputGroup>
-                        <BButton type="button" variant="outline-secondary" size="sm" @click="openModalBill('product')">
+                        <BButton
+                          type="button"
+                          variant="outline-secondary"
+                          size="sm"
+                          @click="openModalBill('product')"
+                        >
                           <i class="bi bi-plus"></i> ดึงเครื่องมือ 1
                         </BButton>
-                        <BButton type="button" variant="outline-secondary" size="sm" @click="openModalWorkOrder">
+                        <BButton
+                          type="button"
+                          variant="outline-secondary"
+                          size="sm"
+                          @click="openModalWorkOrder"
+                        >
                           <i class="bi bi-plus"></i> ดึงเครื่องมือ 2
                         </BButton>
-                        <button type="button" class="btn btn-sm btn-danger" @click="showConfirmDeleteItems()"
-                          v-if="itemsSelected.length">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-danger"
+                          @click="showConfirmDeleteItems()"
+                          v-if="itemsSelected.length"
+                        >
                           <i class="bi bi-x"></i> Delete
                           <span>({{ itemsSelected.length }})</span>
                         </button>
@@ -1297,30 +1552,55 @@ onUpdated(() => {
                     <div class="" style="font-size: 14px">
                       <div class="input-group input-group-sm">
                         <label class="input-group-text fw-bold">
-                          <i class="bi bi-gift me-2"></i> ส่วนลดลูกค้า</label>
+                          <i class="bi bi-gift me-2"></i> ส่วนลดลูกค้า</label
+                        >
 
-                        <input type="number" v-model="discountCustomer" class="form-control form-control-sm"
-                          placeholder="จำนวนเงิน" min="0" style="width: 100px" />
-                        <select required class="form-select form-select-sm" style="width: 90px"
-                          v-model="discountCustomerType" @change="onChangeDiscountType">
+                        <input
+                          type="number"
+                          v-model="discountCustomer"
+                          class="form-control form-control-sm"
+                          placeholder="จำนวนเงิน"
+                          min="0"
+                          style="width: 100px"
+                        />
+                        <select
+                          required
+                          class="form-select form-select-sm"
+                          style="width: 90px"
+                          v-model="discountCustomerType"
+                          @change="onChangeDiscountType"
+                        >
                           <option value="percentage" :selected="percentage">%</option>
                           <option value="amount" :selected="amount">บาท</option>
                         </select>
-                        <button class="btn btn-secondary" @click="addDiscountCustomer" type="button">
+                        <button
+                          class="btn btn-secondary"
+                          @click="addDiscountCustomer"
+                          type="button"
+                        >
                           <i class="bi bi-plus"></i>
                         </button>
                       </div>
                     </div>
                     <div class="" style="font-size: 14px">
                       <div class="input-group input-group-sm">
-                        <label class="input-group-text fw-bold"><i class="bi bi-gift me-2"></i> ส่วนลดท้ายบิล</label>
-                        <input type="number" v-model="formInvoice.total_bill_discount" class="text-end" min="0" />
+                        <label class="input-group-text fw-bold"
+                          ><i class="bi bi-gift me-2"></i> ส่วนลดท้ายบิล</label
+                        >
+                        <input
+                          type="number"
+                          v-model="formInvoice.total_bill_discount"
+                          class="text-end"
+                          min="0"
+                        />
                       </div>
                     </div>
                     <div class="" style="font-size: 14px">
                       <div align="center">
-                        <label class="fw-bold"><input type="checkbox" v-model="hasVat" class="form-checkbox" />
-                          คำนวณภาษี (VAT)</label>
+                        <label class="fw-bold"
+                          ><input type="checkbox" v-model="hasVat" class="form-checkbox" />
+                          คำนวณภาษี (VAT)</label
+                        >
                       </div>
                     </div>
                   </div>
@@ -1418,17 +1698,29 @@ onUpdated(() => {
                   <i class="bi bi-calculator"></i> คำนวณ
                 </button> -->
 
-                <button class="btn btn-outline-secondary btn-md mx-1" type="button" v-if="formMode == 'edit'"
-                  @click="openModalPreview(formInvoice)">
+                <button
+                  class="btn btn-outline-secondary btn-md mx-1"
+                  type="button"
+                  v-if="formMode == 'edit'"
+                  @click="openModalPreview(formInvoice)"
+                >
                   <i class="bi bi-eye"></i> ดูตัวอย่าง
                 </button>
-                <button class="btn btn-success btn-md mx-1" type="submit" @click="saveAsDraft(true)">
-                  <i class="bi bi-save"></i> บันทึก (ฉบับร่าง)
+                <button
+                  class="btn btn-success btn-md mx-1"
+                  type="submit"
+                  @click="saveAsDraft(true)"
+                >
+                  <i class="bi bi-save"></i> บันทึก(ฉบับร่าง)
                 </button>
 
-                <button class="btn btn-primary btn-md mx-1" type="submit" @click="saveAndSend()"
-                  v-if="formMode == 'edit'">
-                  <i class="bi bi-save"></i> บันทึกและส่ง
+                <button
+                  class="btn btn-primary btn-md mx-1"
+                  type="submit"
+                  @click="saveAndSend()"
+                  v-if="formMode == 'edit'"
+                >
+                  <i class="bi bi-save"></i> บันทึกเพื่อรอส่ง
                 </button>
                 <spinner :visible="loading" />
               </div>
@@ -1443,40 +1735,71 @@ onUpdated(() => {
         </div>
       </div>
 
-
       <template v-if="formMode === 'add'">
-        <ModalBillSelect mode="customer" ref="modalBill" @onSelectCustomer="fillDataCustomer"
-          @onSelectProduct="fillDataBill" title="ดึงข้อมูลลูกค้า"
-          :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
+        <ModalBillSelect
+          mode="customer"
+          ref="modalBill"
+          @onSelectCustomer="fillDataCustomer"
+          @onSelectProduct="fillDataBill"
+          title="ดึงข้อมูลลูกค้า"
+          :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
+        />
       </template>
       <template v-if="formMode === 'edit'">
-        <ModalBillSelect mode="product" ref="modalBill" @onSelectCustomer="fillDataCustomer"
-          @onSelectProduct="fillDataBill" title="ดึงรายการเครื่องมือ"
+        <ModalBillSelect
+          mode="product"
+          ref="modalBill"
+          @onSelectCustomer="fillDataCustomer"
+          @onSelectProduct="fillDataBill"
+          title="ดึงรายการเครื่องมือ"
           :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
-          :billCode="formInvoice.bill_code" />
+          :billCode="formInvoice.bill_code"
+        />
       </template>
 
-      <ModalWorkOrder ref="modalWorkOrder" @onSelect="addItems"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
-      <ModalCustomer ref="modalCustomer" @onSelect="onSelectCustomer" :customer-types="customerTypes"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" @clear="() => {
-          formInvoice.customer_id = ''
-          formInvoice.customer_name = ''
-        }
-          " />
-      <ModalContact ref="modalContact" @onSelect="onSelectContact"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" @clear="() => {
-          formInvoice.contact_id = ''
-          formInvoice.contact_name = ''
-        }
-          " />
+      <ModalWorkOrder
+        ref="modalWorkOrder"
+        @onSelect="addItems"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
+      />
+      <ModalCustomer
+        ref="modalCustomer"
+        @onSelect="onSelectCustomer"
+        :customer-types="customerTypes"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
+        @clear="
+          () => {
+            formInvoice.customer_id = ''
+            formInvoice.customer_name = ''
+          }
+        "
+      />
+      <ModalContact
+        ref="modalContact"
+        @onSelect="onSelectContact"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
+        @clear="
+          () => {
+            formInvoice.contact_id = ''
+            formInvoice.contact_name = ''
+          }
+        "
+      />
 
-      <BModal v-if="itemView" v-model="visibleModalConfirmDel" id="modal__confirmDelItems" okTitle="ใช่"
-        ok-variant="danger" cancel-title="ไม่ใช่" @cancel="() => {
-          itemView = {}
-          visibleModalConfirmDel = false
-        }
-          ">
+      <BModal
+        v-if="itemView"
+        v-model="visibleModalConfirmDel"
+        id="modal__confirmDelItems"
+        okTitle="ใช่"
+        ok-variant="danger"
+        cancel-title="ไม่ใช่"
+        @cancel="
+          () => {
+            itemView = {}
+            visibleModalConfirmDel = false
+          }
+        "
+      >
         <template #header> ยืนยันลบรายการ ? </template>
 
         <p>
@@ -1485,7 +1808,8 @@ onUpdated(() => {
               <BTr>
                 <BTh rowspan="3" class="text-center">{{ itemView.product_name }}</BTh>
                 <BTh stacked-heading="Item Code" class="text-start">
-                  {{ itemView.bill_items_code }}</BTh>
+                  {{ itemView.bill_items_code }}</BTh
+                >
                 <BTd stacked-heading="ID No.">{{ itemView.id_no }}</BTd>
                 <BTd stacked-heading="Model">{{ itemView.model }}</BTd>
                 <BTd stacked-heading="S/N.">{{ itemView.serialnumber }}</BTd>
@@ -1497,12 +1821,21 @@ onUpdated(() => {
           </BTableSimple>
         </p>
       </BModal>
-      <BModal v-if="itemView" v-model="visibleModalPreview" id="modal__preview" okTitle="ปิด" okOnly okVariant="secondary"
-        size="xl" @cancel="() => {
-          itemView = {}
-          visibleModalPreview = false
-        }
-          ">
+      <BModal
+        v-if="itemView"
+        v-model="visibleModalPreview"
+        id="modal__preview"
+        okTitle="ปิด"
+        okOnly
+        okVariant="secondary"
+        size="xl"
+        @cancel="
+          () => {
+            itemView = {}
+            visibleModalPreview = false
+          }
+        "
+      >
         <template #header>ID# {{ itemView?.id }} </template>
 
         <p>

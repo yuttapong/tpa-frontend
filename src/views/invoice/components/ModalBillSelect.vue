@@ -47,7 +47,6 @@
                       <th scope="col" class="fw-bold">วันที่</th>
                       <th scope="col" class="fw-bold">ลูกค้า</th>
                       <th scope="col" class="fw-bold">สถานะ</th>
-
                     </tr>
                     <tr>
                       <th scope="col" class="fw-bold">
@@ -65,7 +64,6 @@
                         <select v-model="formSearchProduct.bill_status" class="form-control form-control-sm"
                           placeholder="สถานะ" @keyup.enter="search()" />
                       </th>
-
                     </tr>
                   </thead>
                   <tbody>
@@ -85,7 +83,6 @@
                       </td>
 
                       <td>{{ item.bill_status }}<br /></td>
-
                     </tr>
                   </tbody>
                 </table>
@@ -93,12 +90,10 @@
               <!-- End small tables -->
             </div>
             <div class="col-12 col-md-6" id="detail">
-
               <BAlert :model-value="!bill.id" variant="warning" dismissible><i class="bi bi-info-circle"></i>
                 โปรดเลือกใบขอรับบริการ
               </BAlert>
               <BTabs :active-id="mode" small v-model="currentTab" @activate-tab="setTab" class="">
-
                 <BTab title="ข้อมูลลูกค้า" id="customer">
                   <div class="text-center mt-2">
                     <Spinner :visible="workorderLoading" />
@@ -115,7 +110,8 @@
                           bill?.company_id
                         }}</BTh>
                         <BTh stacked-heading="ประเภทลูกค้า" class="text-start">
-                          {{ bill.customer?.customer_type?.code }} : {{ bill.customer?.customer_type?.name }}</BTh>
+                          {{ bill.customer?.customer_type?.code }} :
+                          {{ bill.customer?.customer_type?.name }}</BTh>
                         <BTh stacked-heading="ลูกค้า/บริษัท" class="text-start">{{
                           bill.address_name
                         }}</BTh>
@@ -132,8 +128,7 @@
                     </BTbody>
                   </BTableSimple>
                 </BTab>
-                <BTab :title="`เครื่องมือ (${(bill.items ? bill.items.length : 0)})`" id="product">
-
+                <BTab :title="`เครื่องมือ (${bill.items ? bill.items.length : 0})`" id="product">
                   <div class="d-flex flex-row gap-2 my-2">
                     <BButton type="button" @click="selectAll(bill.items)" value="All" size="sm" variant="text"
                       class="mx-2">
@@ -142,7 +137,6 @@
                     <BButton type="button" @click="clearAll()" size="sm" variant="text">
                       <i class="bi bi-x"></i> ไม่เลือก
                     </BButton>
-
                   </div>
 
                   <div class="table table-responsive" style="height: 450px; overflow: scroll">
@@ -150,8 +144,7 @@
                       <thead>
                         <tr>
                           <th scope="col" class="fw-bold text-center">
-                            <span v-if="selectedItems.length > 0">
-                              {{ selectedItems.length }}</span>
+                            <span v-if="selectedItems.length > 0"> {{ selectedItems.length }}</span>
                           </th>
 
                           <th scope="col" class="fw-bold">Item Code</th>
@@ -205,9 +198,6 @@
                 </BTab>
               </BTabs>
             </div>
-
-
-
           </div>
         </div>
         <div class="modal-footer m-0 p-1 d-block">
@@ -299,7 +289,6 @@ const pagination = ref({
   current_page: 1,
 })
 
-
 const _show = () => {
   loadData()
   invoiceStore.loadCart()
@@ -307,18 +296,17 @@ const _show = () => {
   modalEl.show()
 }
 
-
 const setTab = (tab) => {
   switch (tab) {
     case 0:
       emit('update:mode', 'customer')
-      break;
+      break
     case 1:
       emit('update:mode', 'bill')
-      break;
+      break
     default:
       emit('update:mode', 'customer')
-      break;
+      break
   }
 }
 
@@ -353,7 +341,7 @@ const bill = ref({})
 
 const getBill = async (id) => {
   workorderLoading.value = true
-
+  console.log('id', id)
   const { data } = await api.get(`/v2/bills/${id}`, {
     params: {},
   })
@@ -406,10 +394,8 @@ let toggleSelect = function (email) {
 const visibleModalConfirmCustomer = ref(false)
 const visibleModalConfirmBill = ref(false)
 
-
 const confirmSelectCustomer = async () => {
-  if (bill.value.company_id === undefined)
-    return
+  if (bill.value.company_id === undefined) return
 
   const value = await confirm?.({
     props: {
@@ -418,7 +404,7 @@ const confirmSelectCustomer = async () => {
       buttonSize: 'sm',
       noFade: false,
       okTitle: 'ตกลง',
-      cancelTitle: 'ยกเลิก'
+      cancelTitle: 'ยกเลิก',
     },
   })
   if (value) {
@@ -428,15 +414,14 @@ const confirmSelectCustomer = async () => {
   }
 }
 const confirmSelectBill = async () => {
-  if (selectedItems.value.length === 0)
-    return
+  if (selectedItems.value.length === 0) return
   const value = await confirm?.({
     props: {
       title: `ยืนยันดึงข้อมูลใบขอรับเลขที่ # ${bill.value?.code} ?`,
       bodyScrolling: true,
       body: `จำนวน ${selectedItems.value.length} รายการ`,
       okTitle: 'ตกลง',
-      cancelTitle: 'ยกเลิก'
+      cancelTitle: 'ยกเลิก',
     },
   })
   if (value) {

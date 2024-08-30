@@ -141,22 +141,10 @@
             ></button>
           </div>
           <div class="modal-body" style="min-height: 350px">
+            <p>
+              <StaffDetail v-model:data="staff" />
+            </p>
             <ul class="nav nav-tabs" id="staffTab" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link active"
-                  id="detail-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#detail"
-                  type="button"
-                  role="tab"
-                  aria-controls="detail"
-                  aria-selected="true"
-                >
-                  รายละเอียด
-                </button>
-              </li>
-
               <li class="nav-item" role="presentation">
                 <button
                   class="nav-link"
@@ -187,26 +175,11 @@
               </li>
             </ul>
             <div class="tab-content pt-3" id="myTabContent">
-              <div
-                class="tab-pane fade show active"
-                id="home"
-                role="tabpanel"
-                aria-labelledby="detail-tab"
-              >
-                <p>
-                  <StaffDetail v-model:data="staff" />
-                </p>
-              </div>
               <div class="tab-pane fade" id="labs" role="tabpanel" aria-labelledby="labs-tab">
-                <StaffLabAssignment :labs="labs" />
+                <StaffLabsDetail :labs="labs" />
               </div>
               <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="bill-tab">
-                <StaffRoles
-                  :permissions="permissions"
-                  :roles="roles"
-                  :userPermissions="userPermissions.permisions"
-                  :userRoles="userPermissions.roles"
-                />
+                <StaffRoles :permissions="permissions" :roles="roles" />
               </div>
             </div>
           </div>
@@ -246,7 +219,7 @@ import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { myFormatDate } from '@/helpers/myformat'
 import { Modal } from 'bootstrap'
-import StaffLabAssignment from './components/StaffLabAssignment.vue'
+import StaffLabsDetail from './components/StaffLabsDetail.vue'
 import StaffDetail from './components/StaffDetail.vue'
 import StaffRoles from './components/StaffRoles.vue'
 import LabAssignForm from './components/LabAssignForm.vue'
@@ -329,38 +302,31 @@ const onChangePage = (page) => {
   loadData()
 }
 
-const getAllRoles = async () => {
+const getStaff = async (id) => {
   try {
-    const rs = await api.get('/v2/roles')
-    roles.value = rs.data
+    const { data } = await api.get('/v2/staffs/' + id)
+    staff.value = data
   } catch (error) {}
 }
-const getAllPermissions = async () => {
+
+const getUserPermissions = async (staffId) => {
   try {
-    const rs = await api.get('/v2/roles/permissions')
-    permissions.value = rs.data
+    const { data } = await api.get(`/v2/staffs/${staffId}/permissions`)
+    roles.value = data?.roles
+    permissions.value = data?.permissions
   } catch (error) {}
 }
-const getUserPermissions = async (id) => {
+const getLabs = async (staffId) => {
   try {
-    const rs = await api.get('/v2/roles/user/' + id)
-    userPermissions.value = rs.data
-  } catch (error) {}
-}
-const getLabs = async () => {
-  try {
-    const rs = await api.get('/v2/labs/all')
-    labs.value = rs.data
+    const { data } = await api.get(`/v2/staffs/${staffId}/labs/`)
+    labs.value = data
   } catch (error) {}
 }
 const showStaff = (item) => {
-  getAllRoles()
-  getAllPermissions()
-  getUserPermissions(item.id)
-  getLabs()
-  modal.value.show()
-  console.log('item', item)
   staff.value = item
+  getUserPermissions(item.id)
+  modal.value.show()
+  getStaff(item.id)
   loading.value = false
 }
 const showLabAssign = (item) => {
@@ -369,6 +335,7 @@ const showLabAssign = (item) => {
   staff.value = item
 }
 const showRoleAssign = (item) => {
+  console.log('roleassign', item)
   visibleModalRole.value = true
   staff.value = item
 }

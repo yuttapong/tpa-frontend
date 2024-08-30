@@ -52,10 +52,10 @@
                   <th scope="col" class="fw-bold">Code</th>
                   <th scope="col" class="fw-bold">Name</th>
                   <th scope="col" class="fw-bold">Barcode</th>
-                  <th scope="col" class="fw-bold">Point</th>
-                  <th scope="col" class="fw-bold">Point Price</th>
                   <th scope="col" class="fw-bold">Range</th>
                   <th scope="col" class="fw-bold">Range Price</th>
+                  <th scope="col" class="fw-bold">Point</th>
+                  <th scope="col" class="fw-bold">Point Price</th>
                   <th scope="col" class="fw-bold">Price</th>
                   <th scope="col" class="fw-bold">Total</th>
 
@@ -84,10 +84,11 @@
                     <ProductMeta :item="item" />
                   </td>
                   <td>{{ item.barcode_no }}</td>
-                  <td>{{ parseFloat(item.point).toLocaleString() }}</td>
-                  <td>{{ parseFloat(item.point_price).toLocaleString() }}</td>
                   <td>{{ parseFloat(item.range_value).toLocaleString() }}</td>
                   <td>{{ parseFloat(item.range_price).toLocaleString() }}</td>
+                  <td>{{ parseFloat(item.point).toLocaleString() }}</td>
+                  <td>{{ parseFloat(item.point_price).toLocaleString() }}</td>
+
                   <td>{{ parseFloat(item.price).toLocaleString() }}</td>
                   <td>{{ parseFloat(item.total).toLocaleString() }}</td>
 

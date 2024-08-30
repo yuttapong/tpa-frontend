@@ -256,21 +256,24 @@
             <div class="modal-footer">
               <div class="row g-1">
                 <div class="col-12">
-
+                  <Spinner :visible="loadingCommitment" />
                   <button type="button" class="btn btn-secondary btn-sm" @click="reloadData()">
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลดข้อมูล
                   </button>
-                  <button type="button" class="btn btn-primary btn-sm  ms-2" @click="submit()">
-                    <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
-                  </button>
 
-                  <template v-if="(bill.commitment_date)">
+                  <template v-if="bill.bill_status !== 'completed'">
+                    <button type="button" class="btn btn-primary btn-sm  ms-2" @click="submit()">
+                      <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
+                    </button>
+                  </template>
+
+                  <template v-if="(bill.commitment_date) && bill.bill_status !== 'completed'">
                     <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
                       <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
                     </button>
                   </template>
 
-                  <Spinner :visible="loadingCommitment" />
+
                 </div>
               </div>
               <!-- <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-save me-1"></i>

@@ -216,12 +216,14 @@ const filterValue = ref('')
 const formSearch = ref({
     q: '',
 })
+
 const loadData = async () => {
     loading.value = true
     let params = {
         page: pagination.value.current_page,
         per_page: pagination.value.per_page,
     }
+
     if (filterField.value) {
         params[filterField.value] = filterValue.value
     }

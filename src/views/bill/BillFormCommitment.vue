@@ -37,6 +37,7 @@ const form = ref({
 
 //  commitment
 const billCode = computed(() => route.params?.code)
+console.log(billCode.value)
 const loadingCommitment = ref(false)
 const resultCommitment = ref()
 const messageSuccessCommitment = ref()
@@ -337,7 +338,11 @@ loadData()
               </div>
 
               <div class="border p-3 bg-info rounded">
-                <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
+                <input
+                  type="checkbox"
+                  v-model="searchCommitmentDate"
+                  @change="onChangeConditionCommitment"
+                />
                 หาวันนัดรับเครื่องมือ
                 <div class="row g-2">
                   <div class="col-12 col-lg-8">
@@ -346,8 +351,12 @@ loadData()
                   </div>
                   <div class="col-12 col-lg-4">
                     <label>เลือกวันที่</label>
-                    <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
-                      placeholder="เลือกวันที่" />
+                    <input
+                      type="date"
+                      class="form-control-sm form-control"
+                      v-model="commitmentDate"
+                      placeholder="เลือกวันที่"
+                    />
                   </div>
 
                   <div class="col-12">
@@ -383,7 +392,11 @@ loadData()
                       <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                     </button>
                     <template v-if="form.commitment_date">
-                      <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm ms-2"
+                        @click="cancelBook()"
+                      >
                         <i class="float-start bi bi-x me-2"></i> ยกเลิกวัน
                       </button>
                     </template>
@@ -410,20 +423,19 @@ loadData()
                                         </tr> -->
                     <tr>
                       <th scope="col" class="">#</th>
-                      <th scope="col" nowrap>รหัสงาน<br>Item Id</th>
-                      <th scope="col" nowrap>เลขที่งาน<br>Item Code</th>
-                      <th scope="col">ห้องทดลอง<br>SubLab</th>
-                      <th scope="col" nowrap><br>Lead Time</th>
-                      <th scope="col" nowrap>วันนัดรับ<br>Reserved Date</th>
+                      <th scope="col" nowrap>รหัสงาน<br />Item Id</th>
+                      <th scope="col" nowrap>เลขที่งาน<br />Item Code</th>
+                      <th scope="col">ห้องทดลอง<br />SubLab</th>
+                      <th scope="col" nowrap><br />Lead Time</th>
+                      <th scope="col" nowrap>วันนัดรับ<br />Reserved Date</th>
 
-                      <th scope="col" class="">เครื่องมือ<br>Product</th>
+                      <th scope="col" class="">เครื่องมือ<br />Product</th>
                       <!-- 
                       <th scope="col" class="fw-bold">Barcode</th>
 
                       <th scope="col" class="fw-bold">S/N.</th>
                       <th scope="col" class="fw-bold">ID No.</th> -->
-                      <th scope="col" class="fw-bold">รายละเอียด<br>Test Point</th>
-
+                      <th scope="col" class="fw-bold">รายละเอียด<br />Test Point</th>
                     </tr>
                   </thead>
 
@@ -436,9 +448,11 @@ loadData()
                       <td nowrap>
                         {{ item.item_code }}
                       </td>
-                      <td style="min-width: 150px;">
+                      <td style="min-width: 150px">
                         <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
-                        <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
+                        <small class="ms-2 text-danger"
+                          >{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small
+                        >
                       </td>
                       <td nowrap>{{ item?.product?.calhour }}</td>
                       <td nowrap>
@@ -451,19 +465,15 @@ loadData()
                         </div>
                       </td>
 
-                      <td style="min-width: 350px;">
-
-                        <BRow align-h="start" gutter-x="1" style="font-size: 13px;">
+                      <td style="min-width: 350px">
+                        <BRow align-h="start" gutter-x="1" style="font-size: 13px">
                           <BCol sm="3" alignSelf="center">
                             <div class="text-decoration-underline fw-bold">Id.No</div>
                             <div class="d-block">{{ item?.id_no }}</div>
                           </BCol>
                           <BCol sm="3" alignSelf="center">
                             <div class="text-decoration-underline fw-bold">Model</div>
-                            <div class="d-item">{{
-                              (item.model)
-                            }}
-                            </div>
+                            <div class="d-item">{{ item.model }}</div>
                           </BCol>
                           <BCol sm="3" alignSelf="center">
                             <div class="text-decoration-underline fw-bold">S/N</div>
@@ -471,16 +481,15 @@ loadData()
                           </BCol>
                           <BCol sm="3" alignSelf="center">
                             <div class="text-decoration-underline fw-bold">Barcode</div>
-                            <div class="d-block">{{
-                              (item.barcode_no)
-                            }}
-                            </div>
+                            <div class="d-block">{{ item.barcode_no }}</div>
                           </BCol>
                         </BRow>
-                        <BBadge v-if="item.manufaturer_name" variant="warning me-2">{{ item?.manufaturer_name }}
+                        <BBadge v-if="item.manufaturer_name" variant="warning me-2"
+                          >{{ item?.manufaturer_name }}
                         </BBadge>
                         <span v-if="item.product && item.product.is_job">
-                          {{ item.product_name }}</span>
+                          {{ item.product_name }}</span
+                        >
                       </td>
                       <!-- <td>
                         <span>{{ item?.barcode_no }}</span>
@@ -493,18 +502,14 @@ loadData()
                         <span>{{ item?.id_no }}</span>
                       </td> -->
                       <td>
-
-                        <BRow align-h="start" gutter-x="1" style="font-size: 13px;">
+                        <BRow align-h="start" gutter-x="1" style="font-size: 13px">
                           <BCol sm="3" alignSelf="center">
                             <div class="text-decoration-underline fw-bold">Range</div>
                             <div class="d-block">{{ item.range_value }}</div>
                           </BCol>
                           <BCol sm="3" alignSelf="center">
                             <div class="text-decoration-underline fw-bold">Range Price</div>
-                            <div class="d-block">{{
-                              myCurrency(item.range_price)
-                            }}
-                            </div>
+                            <div class="d-block">{{ myCurrency(item.range_price) }}</div>
                           </BCol>
                           <BCol sm="3" alignSelf="center">
                             <div class="text-decoration-underline fw-bold">Point</div>
@@ -512,15 +517,11 @@ loadData()
                           </BCol>
                           <BCol sm="3" alignSelf="center">
                             <div class="text-decoration-underline fw-bold">Pont Price</div>
-                            <div class="d-block">{{
-                              myCurrency(item.point_price)
-                            }}
-                            </div>
+                            <div class="d-block">{{ myCurrency(item.point_price) }}</div>
                           </BCol>
                         </BRow>
                         <span>{{ item?.test_point }}</span>
                       </td>
-
                     </tr>
                   </tbody>
                 </table>
@@ -531,7 +532,11 @@ loadData()
         </div>
       </div>
     </div>
-    <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" @onConfirm="updateCommitmentDate" />
+    <ConfirmCommitment
+      ref="modalConfirm"
+      :data="resultCommitment"
+      @onConfirm="updateCommitmentDate"
+    />
   </section>
 </template>
 

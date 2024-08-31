@@ -6,5 +6,10 @@ const picked = ref(new Date())
 </script>
 
 <template>
-  <Datepicker v-model="picked" :locale="th" class="form-control form-control-sm" />
+  <Datepicker v-model="picked" :locale="th" class="d-inline-block" />
 </template>
+<style>
+.v3dp__clearable {
+  display: inline;
+}
+</style>

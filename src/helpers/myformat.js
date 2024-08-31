@@ -10,10 +10,12 @@ export const myCurrency = (value) => {
   if (value === '') return
   return currency(value, { precision: 2, separator: ',', symbol: '' }).format()
 }
+
 export const myFormatDate = (value, options) => {
   if (!value) {
     return
   }
+
   if (value == undefined) return ''
   if (value == null) return ''
   if (value == '') return ''

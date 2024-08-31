@@ -1,6 +1,8 @@
 <template>
-  <span v-if="data[fieldAmount]" class="mx-1">-{{ myCurrency(data[fieldAmount]) }}</span>
-  <small v-if="data[fieldPercent]"><br />({{ myCurrency(Number(data[fieldPercent])) }} %) </small>
+  <!-- <div v-if="data[fieldPercent]" class="d-inline-block" style="width: 3.5rem;">{{ myCurrency(Number(data[fieldPercent]))
+  }} %
+  </div> -->
+  <div v-if="data[fieldAmount]" class="d-inline-block" style="width: 3.5rem;">-{{ myCurrency(data[fieldAmount]) }}</div>
 </template>
 <script setup>
 import { myCurrency } from '@/helpers/myformat'

@@ -14,6 +14,7 @@ import InvoiceButtonActions from './components/InvoiceButtonActions.vue'
 import { toast } from 'vue3-toastify'
 import { fromUnixTime } from 'date-fns'
 import printJS from "print-js"
+import DatePicker from '@/components/DatePicker.vue'
 
 const row = ref({})
 const items = ref([])
@@ -323,6 +324,11 @@ const print = () => {
                         </div>
                       </div>
                       <div class="">
+
+
+
+                      </div>
+                      <div class="">
                         <div class="input-group">
                           <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
                             placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
@@ -338,7 +344,7 @@ const print = () => {
                       </div>
                     </div>
                   </form>
-
+                  <DatePicker v-model="formSearch.due_date" :clearable="true" />
                   <!-- tables -->
 
                   <BTable :items="items" :fields="tableFields" :per-page="pagination.per_page" :responsive="true"

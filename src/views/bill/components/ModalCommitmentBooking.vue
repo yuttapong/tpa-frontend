@@ -72,11 +72,11 @@
                       <label>Priority</label>
                       <BillPriority v-model="commitmentPriority" />
                     </div>
-                    <div class="col-12 col-lg-4">
+                    <!-- <div class="col-12 col-lg-4">
                       <label>เลือกวันที่</label>
                       <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
                         placeholder="เลือกวันที่" />
-                    </div>
+                    </div> -->
 
                     <div class="col-12">
                       <div v-if="messageErrorCommitment" class="alert alert-danger">
@@ -257,6 +257,7 @@
               <div class="row g-1">
                 <div class="col-12">
                   <Spinner :visible="loadingCommitment" />
+
                   <button type="button" class="btn btn-secondary btn-sm" @click="reloadData()">
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลดข้อมูล
                   </button>
@@ -305,6 +306,7 @@ import { myCurrency, myFormatDate } from '@/helpers/myformat'
 import Spinner from '@/components/Spinner.vue'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
+import { formatDate, formatISO } from 'date-fns'
 const { isRevealed, reveal, confirm, cancel, onReveal, onConfirm, onCancel }
   = useConfirmDialog()
 
@@ -367,9 +369,22 @@ const messageSuccessCommitment = ref()
 const messageErrorCommitment = ref()
 const commitmentDate = ref()
 const commitmentPriority = ref('medium')
+const commitmentDateFinal = computed(() => {
 
+  if (resultCommitment.value && resultCommitment.value.data.items !== undefined) {
+    let items = resultCommitment.value.data.items || []
+    let temp = []
+    items.map((item) => {
+      temp.push(new Date(item.reserved_date))
+    })
+    console.log(temp);
+    let maxDate = new Date(Math.max.apply(null, temp))
+    return formatISO(maxDate)
+  }
+  return;
+})
 const findCommitmentDate = async () => {
-  if (commitmentDate.value === undefined || commitmentPriority.value === undefined) {
+  if (commitmentPriority.value === undefined) {
     messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
     return
   }
@@ -411,7 +426,7 @@ const findCommitmentDate = async () => {
   messageErrorCommitment.value = ''
   messageSuccessCommitment.value = ''
 
-  if (commitmentDate.value === undefined || commitmentPriority.value === undefined) {
+  if (commitmentPriority.value === undefined) {
     messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
     return
   }
@@ -441,6 +456,14 @@ const findCommitmentDate = async () => {
       })
 
     resultCommitment.value = data
+    console.log("result", resultCommitment.value);
+    console.log("date", commitmentDateFinal.value);
+
+    setTimeout(() => {
+      resultCommitment.value.data.document_date = props.bill.document_date
+      resultCommitment.value.data.commitment_date = commitmentDateFinal.value
+    }, 200)
+
     loadingCommitment.value = false
     if (data.success) {
       let message = `ประมวลผลตารางคิวงานสำเร็จ`

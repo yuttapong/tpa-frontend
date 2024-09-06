@@ -268,7 +268,7 @@
                     </button>
                   </template>
 
-                  <template v-if="(bill.commitment_date) && bill.bill_status !== 'completed'">
+                  <template v-if="bill.bill_status !== 'completed'">
                     <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
                       <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
                     </button>
@@ -434,7 +434,7 @@ const findCommitmentDate = async () => {
 
   try {
     const { data } = await axios
-      .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills/inquiry', params, {
+      .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${appStore.token}`,
@@ -462,6 +462,7 @@ const findCommitmentDate = async () => {
     setTimeout(() => {
       resultCommitment.value.data.document_date = props.bill.document_date
       resultCommitment.value.data.commitment_date = commitmentDateFinal.value
+      updateCommitmentDate()
     }, 200)
 
     loadingCommitment.value = false
@@ -584,7 +585,7 @@ const updateCommitmentDate = async () => {
       type: 'success',
       dangerouslyHTMLString: true,
     })
-    confirmCommitmentToKanban(params)
+    // confirmCommitmentToKanban(params)
     setTimeout(() => {
       emit('update:bill', data)
       reloadData()

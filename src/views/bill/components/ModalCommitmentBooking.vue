@@ -1,10 +1,7 @@
 <template>
   <div class="commitment">
-
-
-
     <form @submit="submit()">
-      <div class="modal" ref="modalRef" id="modal">
+      <div class="modal" ref="modalRef" id="modalCommitment">
         <div class="modal-dialog modal-dialog-scrollable modal-fullscreen modal-info">
           <div class="modal-content">
             <div class="modal-header">
@@ -307,6 +304,7 @@ import Spinner from '@/components/Spinner.vue'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
 import { formatDate, formatISO } from 'date-fns'
+import { string } from 'i/lib/util'
 const { isRevealed, reveal, confirm, cancel, onReveal, onConfirm, onCancel }
   = useConfirmDialog()
 
@@ -401,13 +399,11 @@ const findCommitmentDate = async () => {
         product_name: item.product_name,
         barcode_no: item.barcode_no,
         serialnumber: item.serialnumber,
-        // reserved_date: form.value?.document_date,
         sorter: item.sorter,
         sublab_id: item.sublab_id,
         workorder_id: item.item_id,
         service_status_id: item.service_status_id,
         is_job: item.product.is_job,
-        // product: item.product,
       }
       _items.push(filteredItem)
     }
@@ -609,7 +605,7 @@ const reloadData = async () => {
 onMounted(() => {
   modalEl = new Modal(modalRef.value)
   console.log(modalEl);
-  var myModal = document.getElementById('modal')
+  var myModal = document.getElementById('modalCommitment')
   myModal.addEventListener("shown.bs.modal", (e) => {
     messageErrorCommitment.value = ""
     messageSuccessCommitment.value = ""

@@ -84,6 +84,7 @@
                         <i class="bi bi-search"></i>
                       </button>
                     </div>
+
                     <div>
                       <Spinner :visible="loading" />
                     </div>
@@ -162,8 +163,19 @@
                     </div>
                   </template>
                 </EasyDataTable> -->
+                <div class="my-2">
+                  <div class="">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" @click="openModalBulkCommitment()">
+                      <i class="bi bi-clock"></i>
+                      จองคิวห้องทดลอง
+                    </button>
+                  </div>
+                </div>
                 <BTable bordered :items="items" class="" :fields="tableFields" :per-page="pagination.per_page"
                   :responsive="true" :small="true">
+                  <template #cell(select)="row">
+                    <BFormCheckbox v-model="billSelected" :value="row.item" />
+                  </template>
                   <template #cell(index)="row">
                     {{ row.index + 1 }}
                   </template>
@@ -422,6 +434,10 @@
       loadData()
     }
       " />
+    <ModalCommitmentBulkBooking ref="modalCommitmentBulkRef" :bills="billSelected" @onReload="(data) => {
+      loadData()
+    }
+      " />
   </section>
 </template>
 
@@ -443,6 +459,7 @@ import JobButtonStatus from '@/views/bill/components/JobButtonStatus.vue'
 import BillCode from '@/views/bill/components/BillCode.vue'
 import ModalBillCreate from '@/views/bill/components/ModalBillCreate.vue'
 import ModalCommitmentBooking from '@/views/bill/components/ModalCommitmentBooking.vue'
+import ModalCommitmentBulkBooking from '@/views/bill/components/ModalCommitmentBulkBooking.vue'
 import ModalBillDetail from '@/views/bill/components/ModalBillDetail.vue'
 import ModalBillEdit from '@/views/bill/components/ModalBillEdit.vue'
 import DatePicker from '@/components/DatePicker.vue'
@@ -460,6 +477,8 @@ const loadingCancelCommitment = ref(false)
 const loading = ref(false)
 const loadingItems = ref(true)
 const bill = ref({})
+const billSelected = ref([])
+
 const billTypes = ref([])
 const invoice = ref({})
 const modalViewRef = ref(null)
@@ -470,6 +489,7 @@ const modalBillCreateRef = ref(null)
 const modalBillDetailRef = ref(null)
 const modalBillEditRef = ref(null)
 const modalCommitmentRef = ref(null)
+const modalCommitmentBulkRef = ref(null)
 const dateSelect = ref(new Date())
 const resultCancelCommitment = ref({})
 const formSearch = ref({
@@ -544,6 +564,8 @@ const getBillByCode = async (code) => {
     loadingItems.value = false
   }
 }
+
+
 
 const showDetail = (item) => {
   loadingItems.value = true
@@ -705,6 +727,16 @@ const openModalCommitment = (item) => {
   modalCommitmentRef.value.show()
 }
 
+const openModalBulkCommitment = (item) => {
+  errorMsg.value = ''
+  console.log(billSelected.value.length);
+  if (billSelected.value.length === 0) {
+    console.log('please select a bill');
+    return false
+  }
+  modalCommitmentBulkRef.value.show()
+}
+
 const onSearch = async () => {
   try {
     pagination.value.current_page = 1
@@ -717,10 +749,9 @@ const resetFormSearch = () => {
   formSearch.value.q = ''
 }
 onSearch()
+
 onMounted(() => {
   errorMsg.value = ''
-  // modalView.value = new Modal(modalViewRef.value)
-  // modalInvoice.value = new Modal(modalInvoiceRef.value)
 })
 
 const headers = [
@@ -737,6 +768,7 @@ const headers = [
   { text: 'Bill Status', value: 'bill_status' },
 ]
 const tableFields = [
+  { label: 'เลือก', key: 'select' },
   { label: 'Actions', key: 'actions' },
   { label: 'Code', key: 'code' },
   { label: 'วันที่', key: 'document_date' },

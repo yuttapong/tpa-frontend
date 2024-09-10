@@ -1,3 +1,27 @@
-@import 'vue-sweetalert2/src/variables';
-$swal2-background: #990000;
-@import 'vue-sweetalert2/src/sweetalert2';
+@import 'sweetalert2/src/variables';
+$swal2-background: #ffffff;
+// CONFIRM BUTTON
+$swal2-confirm-button-order: null;
+$swal2-confirm-button-border: 0;
+$swal2-confirm-button-border-radius: 0.25em;
+$swal2-confirm-button-background-color: #0d79d2;
+$swal2-confirm-button-color: $swal2-white;
+$swal2-confirm-button-font-size: 0.75em;
+
+// DENY BUTTON
+$swal2-deny-button-order: null;
+$swal2-deny-button-border: 0;
+$swal2-deny-button-border-radius: 0.25em;
+$swal2-deny-button-background-color: #dc3741;
+$swal2-deny-button-color: $swal2-white;
+$swal2-deny-button-font-size: 0.75em;
+
+// CANCEL BUTTON
+$swal2-cancel-button-order: null;
+$swal2-cancel-button-border: 0;
+$swal2-cancel-button-border-radius: 0.25em;
+$swal2-cancel-button-background-color: #6e7881;
+$swal2-cancel-button-color: $swal2-white;
+$swal2-cancel-button-font-size: 0.75em;
+
+@import 'sweetalert2/src/sweetalert2';

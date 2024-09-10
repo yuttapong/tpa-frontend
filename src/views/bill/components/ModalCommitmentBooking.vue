@@ -1,15 +1,15 @@
 <template>
   <div class="commitment">
-
-
-
     <form @submit="submit()">
-      <div class="modal" ref="modalRef" id="modal">
+      <div class="modal" ref="modalRef" id="modalCommitment">
         <div class="modal-dialog modal-dialog-scrollable modal-fullscreen modal-info">
           <div class="modal-content">
             <div class="modal-header">
+              <Spinner :visible="loading" class="me-2" />
               <h5 class="modal-title" v-html="title"></h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                style="font-size: 2rem;"></button>
             </div>
             <div class="modal-body">
               <!-- ########################################################### -->
@@ -72,11 +72,11 @@
                       <label>Priority</label>
                       <BillPriority v-model="commitmentPriority" />
                     </div>
-                    <div class="col-12 col-lg-4">
+                    <!-- <div class="col-12 col-lg-4">
                       <label>เลือกวันที่</label>
                       <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
                         placeholder="เลือกวันที่" />
-                    </div>
+                    </div> -->
 
                     <div class="col-12">
                       <div v-if="messageErrorCommitment" class="alert alert-danger">
@@ -104,7 +104,7 @@
 
 
                 </div>
-                <Spinner :visible="loading" class="me-2" />
+
                 <div class="my-2 table-responsive">
                   <table class="table table-sm table-bordered table-striped">
                     <thead>
@@ -257,6 +257,7 @@
               <div class="row g-1">
                 <div class="col-12">
                   <Spinner :visible="loadingCommitment" />
+
                   <button type="button" class="btn btn-secondary btn-sm" @click="reloadData()">
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลดข้อมูล
                   </button>
@@ -267,7 +268,7 @@
                     </button>
                   </template>
 
-                  <template v-if="(bill.commitment_date) && bill.bill_status !== 'completed'">
+                  <template v-if="bill.bill_status !== 'completed'">
                     <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
                       <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
                     </button>
@@ -288,7 +289,7 @@
 
   </div>
 
-  <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" @onConfirm="updateCommitmentDate" />
+  <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" />
 </template>
 
 <script setup>
@@ -305,6 +306,8 @@ import { myCurrency, myFormatDate } from '@/helpers/myformat'
 import Spinner from '@/components/Spinner.vue'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
+import { formatDate, formatISO } from 'date-fns'
+import { string } from 'i/lib/util'
 const { isRevealed, reveal, confirm, cancel, onReveal, onConfirm, onCancel }
   = useConfirmDialog()
 
@@ -367,9 +370,24 @@ const messageSuccessCommitment = ref()
 const messageErrorCommitment = ref()
 const commitmentDate = ref()
 const commitmentPriority = ref('medium')
+const commitmentDateFinal = computed(() => {
+
+  if (resultCommitment.value && resultCommitment.value.data.items !== undefined) {
+    let items = resultCommitment.value.data.items || []
+    let temp = []
+    items.map((item) => {
+      temp.push(new Date(item.reserved_date))
+    })
+    console.log(temp);
+    let maxDate = new Date(Math.max.apply(null, temp))
+    return formatISO(maxDate)
+  }
+  return;
+})
+
 
 const findCommitmentDate = async () => {
-  if (commitmentDate.value === undefined || commitmentPriority.value === undefined) {
+  if (commitmentPriority.value === undefined) {
     messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
     return
   }
@@ -386,13 +404,11 @@ const findCommitmentDate = async () => {
         product_name: item.product_name,
         barcode_no: item.barcode_no,
         serialnumber: item.serialnumber,
-        // reserved_date: form.value?.document_date,
         sorter: item.sorter,
         sublab_id: item.sublab_id,
         workorder_id: item.item_id,
         service_status_id: item.service_status_id,
         is_job: item.product.is_job,
-        // product: item.product,
       }
       _items.push(filteredItem)
     }
@@ -411,7 +427,7 @@ const findCommitmentDate = async () => {
   messageErrorCommitment.value = ''
   messageSuccessCommitment.value = ''
 
-  if (commitmentDate.value === undefined || commitmentPriority.value === undefined) {
+  if (commitmentPriority.value === undefined) {
     messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
     return
   }
@@ -419,7 +435,7 @@ const findCommitmentDate = async () => {
 
   try {
     const { data } = await axios
-      .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills/inquiry', params, {
+      .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${appStore.token}`,
@@ -441,6 +457,13 @@ const findCommitmentDate = async () => {
       })
 
     resultCommitment.value = data
+
+
+    setTimeout(() => {
+      resultCommitment.value.data.document_date = props.bill.document_date
+      updateCommitmentDate()
+    }, 200)
+
     loadingCommitment.value = false
     if (data.success) {
       let message = `ประมวลผลตารางคิวงานสำเร็จ`
@@ -468,44 +491,7 @@ const submit = () => {
   }
 }
 
-const confirmCommitmentToKanban = async (params) => {
-  const { data } = await axios
-    .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${appStore.token}`,
-      },
-    })
-    .catch((err) => {
-      loadingCommitment.value = false
 
-      if (err.response) {
-        let data = err.response?.data
-        if (data) {
-          messageErrorCommitment.value = data.message
-        } else {
-          messageErrorCommitment.value = err.message
-        }
-      } else {
-        messageErrorCommitment.value = err.message
-      }
-      toast(messageErrorCommitment, {
-        theme: 'auto',
-        type: 'default',
-        dangerouslyHTMLString: true,
-      })
-    })
-  if (data) {
-    loadingCommitment.value = false
-    if (data.message !== undefined) {
-      toast(data.message, {
-        theme: 'auto',
-        type: 'default',
-        dangerouslyHTMLString: true,
-      })
-    }
-  }
-}
 const cancelBook = async (event) => {
 
 
@@ -561,7 +547,7 @@ const updateCommitmentDate = async () => {
       type: 'success',
       dangerouslyHTMLString: true,
     })
-    confirmCommitmentToKanban(params)
+    // confirmCommitmentToKanban(params)
     setTimeout(() => {
       emit('update:bill', data)
       reloadData()
@@ -585,7 +571,7 @@ const reloadData = async () => {
 onMounted(() => {
   modalEl = new Modal(modalRef.value)
   console.log(modalEl);
-  var myModal = document.getElementById('modal')
+  var myModal = document.getElementById('modalCommitment')
   myModal.addEventListener("shown.bs.modal", (e) => {
     messageErrorCommitment.value = ""
     messageSuccessCommitment.value = ""

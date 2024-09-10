@@ -44,6 +44,7 @@ app.use(abilitiesPlugin, ability)
 app.use(router)
 app.use(createBootstrap())
 app.use(VueSweetalert2)
+window.Swal = app.config.globalProperties.$swal
 app.use(VueAwesomePaginate)
 app.use(Vue3Toasity, {
   autoClose: 3000,

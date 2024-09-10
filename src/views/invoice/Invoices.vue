@@ -13,8 +13,9 @@ import { myCurrency, myFormatDate } from '@/helpers/myformat'
 import InvoiceButtonActions from './components/InvoiceButtonActions.vue'
 import { toast } from 'vue3-toastify'
 import { fromUnixTime } from 'date-fns'
-import printJS from "print-js"
+import printJS from 'print-js'
 import DatePicker from '@/components/DatePicker.vue'
+import InvoiceStatus from '@/views/invoice/components/InvoiceStatus.vue'
 
 const row = ref({})
 const items = ref([])
@@ -61,7 +62,7 @@ const headers = [
   // { text: 'ID', value: 'id' },
   { text: 'Code', value: 'code' },
   { text: 'วันที่', value: 'issue_date' },
-  { text: 'Due Date', value: 'due_date' },
+  { text: 'กำหนดชำระ', value: 'due_date' },
   { text: 'Total', value: 'totalnet' },
   { text: 'ผู้ติดต่อ', value: 'contact_name' },
   { text: 'บริษัท/ลูกค้า', value: 'customer_name' },
@@ -73,12 +74,12 @@ const tableFields = [
   { label: '#', key: 'index' },
   { label: 'Action', key: 'actions' },
   { label: 'code', key: 'code' },
+  { label: 'สถานะ', key: 'invoice_status' },
   { label: 'วันที่', key: 'issue_date' },
-  { label: 'Due Date', key: 'due_date' },
+  { label: 'กำหนดชำระ', key: 'due_date' },
   { label: 'Total', key: 'totalnet' },
   { label: 'ผู้ติดต่อ', key: 'contact_name' },
   { label: 'บริษัท/ลูกค้า', key: 'customer_name' },
-  { label: 'สถานะ', key: 'invoice_status' },
 ]
 
 const serverOptions = ref({
@@ -121,7 +122,7 @@ const getInvoiceById = async (item) => {
       invoiceStore.setInvoice(data)
       loading.value = false
     }
-  } catch (error) { }
+  } catch (error) {}
 }
 
 const clickView = (item) => {
@@ -132,7 +133,7 @@ const clickView = (item) => {
   getInvoiceById(item)
 }
 const clickCancel = async (row, form) => {
-  console.log('cancel', form);
+  console.log('cancel', form)
   const { data, status } = await api.patch(`v2/invoices/${row.item.id}/actions/cancel`, {
     id: row.item.id,
     remark: form.remark,
@@ -162,17 +163,16 @@ const clickEdit = (data) => {
   // });
   // window.open(resolvedRoute.href, '_blank');
   router.push({
-    name: "invoices.edit",
-    params: { id: data.item.id }
-  });
+    name: 'invoices.edit',
+    params: { id: data.item.id },
+  })
 }
-
 
 const search = async () => {
   pagination.value.current_page = 1
   try {
     loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
@@ -205,8 +205,8 @@ watch(
 
 const print = () => {
   printJS({
-    printable: "print",
-    type: "html",
+    printable: 'print',
+    type: 'html',
     header: `ใบแจ้งหนี้เลขที่ : ${invoiceStore.invoice?.code}`,
     targetStyles: ['*'],
     font: 'Sarabun',
@@ -217,7 +217,7 @@ const print = () => {
     body { 
       color: red; 
       font-family: 'Sarabun', sans-serif,
-    }`
+    }`,
   })
   // var divContents = document.getElementById("print").innerHTML;
   // var a = window.open('', '', 'height=500, width=500');
@@ -294,11 +294,20 @@ const print = () => {
               <div class="tab-content pt-2">
                 <div class="tab-pane fade show active qt-index" id="qt-index">
                   <div class="my-2">
-                    <button @click="setFilterStatus(null)" class="btn btn-sm btn-light" type="button">
+                    <button
+                      @click="setFilterStatus(null)"
+                      class="btn btn-sm btn-light"
+                      type="button"
+                    >
                       ทั้งหมด
                     </button>
-                    <button v-for="item in invoiceStatuses" :key="item" @click="setFilterStatus(item)"
-                      class="btn btn-sm btn-light" type="button">
+                    <button
+                      v-for="item in invoiceStatuses"
+                      :key="item"
+                      @click="setFilterStatus(item)"
+                      class="btn btn-sm btn-light"
+                      type="button"
+                    >
                       {{ item.text }}
                     </button>
                   </div>
@@ -306,32 +315,61 @@ const print = () => {
                   <form @submit.prevent="search()">
                     <div class="d-flex gap-2 flex-wrap my-2">
                       <div>
-                        <router-link class="btn btn-sm btn-primary" :to="{ name: 'invoices.create' }">
+                        <router-link
+                          class="btn btn-sm btn-primary"
+                          :to="{ name: 'invoices.create' }"
+                        >
                           <i class="bi bi-plus"></i> สร้างใบแจ้งหนี้
                         </router-link>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
-                            placeholder="Code" @keyup.enter="search" />
+                          <input
+                            type="search"
+                            v-model="formSearch.code"
+                            name="code"
+                            class="form-control form-control-sm"
+                            placeholder="Code"
+                            @keyup.enter="search"
+                          />
                         </div>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
-                            class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                            @keyup.enter="search" />
+                          <input
+                            type="search"
+                            v-model="formSearch.taxnumber"
+                            name="taxnumber"
+                            class="form-control form-control-sm"
+                            placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                            @keyup.enter="search"
+                          />
                         </div>
                       </div>
                       <div class="">
-
-
-
+                        <DatePicker
+                          v-model="formSearch.due_date"
+                          :clearable="true"
+                          placeholder="วันที่"
+                        />
+                      </div>
+                      <div class="">
+                        <DatePicker
+                          v-model="formSearch.due_date"
+                          :clearable="true"
+                          placeholder="กำหนดชำระ"
+                        />
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
-                            placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
+                          <input
+                            type="search"
+                            v-model="formSearch.q"
+                            name="q"
+                            class="form-control form-control-sm"
+                            placeholder="ลูกค้า/ผู้ติดต่อ"
+                            @keyup.enter="search"
+                          />
                         </div>
                       </div>
                       <div>
@@ -344,18 +382,28 @@ const print = () => {
                       </div>
                     </div>
                   </form>
-                  <DatePicker v-model="formSearch.due_date" :clearable="true" />
+
                   <!-- tables -->
 
-                  <BTable :items="items" :fields="tableFields" :per-page="pagination.per_page" :responsive="true"
-                    :small="true">
-                    <template #cell(index)="row" style="min-height: 500px;">
+                  <BTable
+                    :items="items"
+                    :fields="tableFields"
+                    :per-page="pagination.per_page"
+                    :responsive="true"
+                    small
+                    striped
+                  >
+                    <template #cell(index)="row">
                       {{ row.index + 1 }}
                     </template>
 
                     <template #cell(actions)="row">
                       <div class="d-flex gap-1">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" @click="clickView(row.item)">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary btn-sm"
+                          @click="clickView(row.item)"
+                        >
                           <i class="bi bi-eye"></i>
                         </button>
                         <!-- <RouterLink :to="`invoices/edit/${row.item.id}`">
@@ -373,10 +421,14 @@ const print = () => {
                         <!-- <button type="button" class="btn btn-outline-secondary btn-sm" @click="() => { }">
                           <i class="bi bi-trash"></i>
                         </button> -->
-                        <InvoiceButtonActions :data="row" canEdit canCancel @clickEdit="clickEdit"
-                          @clickCancel="clickCancel" />
+                        <InvoiceButtonActions
+                          :data="row"
+                          canEdit
+                          canCancel
+                          @clickEdit="clickEdit"
+                          @clickCancel="clickCancel"
+                        />
                       </div>
-
                     </template>
                     <!-- <template #cell(bill_items_code)="row">
                       <div style="min-width: 140px" class="">
@@ -385,7 +437,23 @@ const print = () => {
                     </template> -->
                     <template #cell(code)="row">
                       <div class="" style="width: 150px">
-                        <BillCode :data="row.item.code" role="button" @click="clickView(row.item)" />
+                        <BillCode
+                          :data="row.item.code"
+                          role="button"
+                          @click="clickView(row.item)"
+                        />
+                      </div>
+                    </template>
+
+                    <template #cell(invoice_status)="row">
+                      <div class="">
+                        <InvoiceStatus v-model="row.item.invoice_status" />
+                      </div>
+                    </template>
+
+                    <template #cell(issue_date)="row">
+                      <div class="" style="width: 120px" v-if="row.item.issue_date">
+                        {{ myFormatDate(row.item.issue_date) }}
                       </div>
                     </template>
                     <template #cell(due_date)="row">
@@ -393,34 +461,30 @@ const print = () => {
                         {{ myFormatDate(row.item.due_date) }}
                       </div>
                     </template>
-                    <template #cell(issue_date)="row">
-                      <div class="" style="width: 120px" v-if="row.item.issue_date">
-                        {{ myFormatDate(row.item.issue_date) }}
-                      </div>
-                    </template>
                     <template #cell(totalnet)="row">
                       <div class="" style="width: 80px">
                         {{ myCurrency(row.item.totalnet) }}
                       </div>
                     </template>
-                    <template #cell(invoice_status)="row">
-                      <div class="">
-                        {{ row.item.invoice_status }}
-                      </div>
-                    </template>
+
                     <template #cell(customer_name)="row">
                       <div class="">
                         {{ row.item.customer_name }}
                       </div>
                       <div class="d-flex gap-3 justify-content-start ms-2 text-secondary">
                         <small class=""> {{ row.item.contact_name }}</small>
-
                       </div>
                     </template>
                   </BTable>
 
-                  <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
-                    :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
+                  <BPagination
+                    v-model="pagination.current_page"
+                    :total-rows="pagination.total"
+                    :per-page="pagination.per_page"
+                    size="sm"
+                    class="my-0"
+                    @page-click="onChangePage"
+                  />
 
                   <!--  tables -->
 
@@ -440,41 +504,10 @@ const print = () => {
       <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">รายละเอียดใบแจ้งหนี้ #{{ invoiceStore.invoice.id }}
+            <h5 class="modal-title">
+              รายละเอียดใบแจ้งหนี้ #{{ invoiceStore.invoice.id }}
               <BButton variant="outline-text">{{ invoiceStore.invoice?.invoice_status }}</BButton>
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <page class="A4" id="print">
-              <InvoiceDetail @print="print()" />
-            </page>
-
-          </div>
-          <div class="modal-footer d-block">
-            <div class="d-flex flex-wrap gap-2 justify-content-end">
-              <div v-if="invoiceStore.invoice.id !== undefined && invoiceStore.invoice.cancel_remark">
-                หมายเหตุยกเลิก:
-                <span class="ms-2 text-danger"> {{ invoiceStore.invoice?.cancel_remark }}
-                  ( {{ myFormatDate(fromUnixTime(invoiceStore.invoice.canceled_at)) }})</span>
-              </div>
-              <div><button type="button" class="btn btn-secondary" @click="print()">
-                  <i class="bi bi-printer"></i>
-                  พิมพ์</button></div>
-              <div><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                  <i class="bi bi-x"></i>ปิด</button></div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- <div class="modal" ref="modalAddRef">
-      <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Invoice</h5>
             <button
               type="button"
               class="btn-close"
@@ -482,30 +515,39 @@ const print = () => {
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body"></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <div class="modal-body">
+            <page class="A4" id="print">
+              <InvoiceDetail @print="print()" />
+            </page>
+          </div>
+          <div class="modal-footer d-block">
+            <div class="d-flex flex-wrap gap-2 justify-content-end">
+              <div
+                v-if="invoiceStore.invoice.id !== undefined && invoiceStore.invoice.cancel_remark"
+              >
+                หมายเหตุยกเลิก:
+                <span class="ms-2 text-danger">
+                  {{ invoiceStore.invoice?.cancel_remark }} (
+                  {{ myFormatDate(fromUnixTime(invoiceStore.invoice.canceled_at)) }})</span
+                >
+              </div>
+              <div>
+                <button type="button" class="btn btn-secondary" @click="print()">
+                  <i class="bi bi-printer"></i>
+                  พิมพ์
+                </button>
+              </div>
+              <div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  <i class="bi bi-x"></i>ปิด
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
-// .qt-detail {
-//   .row {
-//     margin-bottom: 20px;
-//     font-size: 15px;
-//   }
-
-//   .card-title {
-//     color: #012970;
-//   }
-
-//   .label {
-//     font-weight: 600;
-//     color: rgba(1, 41, 112, 0.6);
-//   }
-// }
-</style>
+<style lang="scss" scoped></style>

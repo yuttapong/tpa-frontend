@@ -9,7 +9,7 @@ import { myFormatDate, myCurrency } from '@/helpers/myformat'
 const invoiceStore = useInvoiceStore()
 
 const data = computed(() => invoiceStore.invoice)
-onMounted(() => { })
+onMounted(() => {})
 </script>
 <template>
   <section class="section">
@@ -17,7 +17,10 @@ onMounted(() => { })
       <div class="row">
         <div class="col-6">
           <p>
-            <img src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg" height="60" />
+            <img
+              src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg"
+              height="60"
+            />
           </p>
         </div>
         <div class="col-6">
@@ -58,9 +61,9 @@ onMounted(() => { })
               <th scope="col" nowrap class="fw-bold">ลำดับที่</th>
               <th scope="col" class="fw-bold">รายการ</th>
 
-              <th scope="col" class="fw-bold" nowrap>ส่วนลด</th>
-              <th scope="col" class="fw-bold" nowrap>ราคา</th>
-              <th scope="col" class="fw-bold" nowrap>ราคารวม</th>
+              <th scope="col" class="fw-bold text-end" nowrap>ส่วนลด</th>
+              <th scope="col" class="fw-bold text-end" nowrap>ราคา</th>
+              <th scope="col" class="fw-bold text-end" nowrap>ราคารวม</th>
             </tr>
           </thead>
           <tbody v-if="data && data.items">
@@ -73,9 +76,9 @@ onMounted(() => { })
                 <ProductMeta :item="item" />
               </td>
 
-              <td class="text-right">{{ parseFloat(item.discount).toLocaleString() }}</td>
-              <td class="text-right">{{ parseFloat(item.price).toLocaleString() }}</td>
-              <td class="text-right">
+              <td class="text-end">{{ parseFloat(item.discount).toLocaleString() }}</td>
+              <td class="text-end">{{ parseFloat(item.price).toLocaleString() }}</td>
+              <td class="text-end">
                 {{ (parseFloat(item.price) - parseFloat(item.discount)).toLocaleString() }}
               </td>
             </tr>
@@ -84,9 +87,9 @@ onMounted(() => { })
             <tr>
               <td></td>
               <td></td>
-              <td class="text-right">{{ parseFloat(data?.totaldiscount).toLocaleString() }}</td>
-              <td class="text-right">{{ parseFloat(data?.totalprice).toLocaleString() }}</td>
-              <td class="text-right">{{ parseFloat(data?.totalnet).toLocaleString() }}</td>
+              <td class="text-end">{{ parseFloat(data?.totaldiscount).toLocaleString() }}</td>
+              <td class="text-end">{{ parseFloat(data?.totalprice).toLocaleString() }}</td>
+              <td class="text-end">{{ parseFloat(data?.totalnet).toLocaleString() }}</td>
             </tr>
           </tfoot>
         </table>
@@ -105,23 +108,6 @@ onMounted(() => { })
       <div class="row g-1">
         <div class="col-12 col-md-6" style="font-size: 14px">
           <div class="row border border-danger m-1">
-            <!-- <div class="col-6 text-end">ส่วนลด Customer</div>
-            <div class="col-6">
-              <div class="text-end fw-bold">
-                - {{ myCurrency(data.totaldiscount) }}
-              </div>
-            </div>
-
-            <div class="col-6 text-end">ส่วนลด Lab</div>
-            <div class="col-6">
-              <div class="text-end fw-bold">- {{ myCurrency(data.totalLabDiscount) }}</div>
-            </div>
-            <div class="col-6 text-end">ส่วนลด Order Type</div>
-            <div class="col-6">
-              <div class="text-end fw-bold">
-                - {{ myCurrency(data?.totalOrderTypeDiscount) }}
-              </div>
-            </div> -->
             <div class="col-6 text-end">ส่วนลดสินค้า</div>
             <div class="col-6">
               <div class="text-end fw-bold text-danger">
@@ -130,10 +116,10 @@ onMounted(() => { })
             </div>
             <div class="col-6 text-end">ส่วนลดท้ายบิล</div>
             <div class="col-6">
-              <div class="text-end fw-bold text-danger">- {{ myCurrency(invoiceStore.totalBillDiscount) }}</div>
+              <div class="text-end fw-bold text-danger">
+                - {{ myCurrency(invoiceStore.totalBillDiscount) }}
+              </div>
             </div>
-
-
           </div>
         </div>
         <div class="col-12 col-md-6" style="font-size: 14px">
@@ -144,7 +130,7 @@ onMounted(() => { })
             </div>
           </div>
           <div class="row" v-if="data?.totaldiscount > 0">
-            <div class="col-6 text-end">ส่วนลดทั้งหมด</div>
+            <div class="col-6 text-end text-danger">ส่วนลดทั้งหมด</div>
             <div class="col-6">
               <div class="text-end fw-bold text-danger">
                 - {{ myCurrency(invoiceStore.totalAllDiscount) }}
@@ -182,7 +168,6 @@ onMounted(() => { })
       </div>
       <!-- #################### END SUMMAYRY ####################### -->
     </div>
-
   </section>
 </template>
 
@@ -197,7 +182,7 @@ div[size='A4'] {
   margin-bottom: 0.5cm;
   box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
 
-  >p,
+  > p,
   span,
   li,
   td {
@@ -212,7 +197,6 @@ div[size='A4'][layout='portrait'] {
 }
 
 @media print {
-
   body,
   page {
     margin: 0;

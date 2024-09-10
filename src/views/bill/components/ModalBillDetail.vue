@@ -94,10 +94,10 @@
                     </td>
                     <td style="min-width: 200px;">
                       <!-- <JobStatus v-model="row.job_status" /> -->
-                      <div class=""><small>{{ row?.lab.name_th }} #{{ row.lab.id }}</small></div>
+                      <div class=""><small>{{ row?.lab?.name_th }} #{{ row.lab.id }}</small></div>
                       <div class="ms-2 border-bottom">
                         <small class="fs-italic">
-                          {{ row?.sublab.name_th }} #{{ row.sublab.id }}</small>
+                          {{ row?.sublab?.name_th }} #{{ row.sublab.id }}</small>
                       </div>
                       <div v-if="row.current_service_status" style="font-size: 12px"
                         class="border-bottom text-danger fw-bold">

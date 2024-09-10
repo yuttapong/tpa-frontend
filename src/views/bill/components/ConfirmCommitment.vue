@@ -31,12 +31,8 @@
 
           </div>
           <div class="modal-footer">
-
-            <button type="button" class="btn btn-primary btn-sm" @click="confirm()">
-              <i class="bi bi-check"></i> ยืนยัน
-            </button>
             <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-              <i class="bi bi-x"></i> ไม่
+              <i class="bi bi-x"></i> ปิด
             </button>
 
           </div>
@@ -56,7 +52,7 @@ const emit = defineEmits(['onHide', 'onShow', 'onConfirm'])
 const props = defineProps({
   title: {
     type: String,
-    default: 'ยืนยันข้อมูล Commitment Date ?',
+    default: 'ข้อมูลการการจองห้องทดลอง',
   },
   data: {
     type: Object,

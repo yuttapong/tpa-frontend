@@ -90,79 +90,7 @@
                     </div>
                   </div>
                 </form>
-                <!-- Small tables -->
-                <!-- <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-                  :on-click="onChangePage" /> -->
-                <!-- <EasyDataTable
-                  class="my-3"
-                  :headers="headers"
-                  :items="items"
-                  alternating
-                  v-model:server-options="serverOptions"
-                  :server-items-length="pagination.total"
-                  v-model:items-selected="itemsSelected"
-                  show-index
-                  border-cell
-                  fixed-header
-                >
-                  <template #item-actions="item">
-                    <div class="btn-group gap-1" role="group" aria-label="Basic example">
-                      <div>
-                        <button
-                          type="button"
-                          class="btn btn-outline-secondary btn-sm"
-                          @click="showDetail(item)"
-                        >
-                          <i class="bi bi-eye"></i>
-                        </button>
-                      </div>
-                
 
-                      <div>
-                        <router-link
-                          class="btn btn-outline-secondary btn-sm"
-                          :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
-                          title="คำนวณวันนัดรับ"
-                        >
-                          <i class="bi bi-calendar" role="button"></i
-                        ></router-link>
-                      </div>
-                      <div>
-                        <button
-                          type="button"
-                          class="btn btn-outline-secondary btn-sm"
-                          @click="showEdit(item)"
-                        >
-                          <i class="bi bi-pen"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </template>
-                  <template #item-address_name="item"
-                    >{{ item.address_name }}
-
-                    <div>{{ item.customer.taxnumber }}</div>
-                  </template>
-                  <template #item-code="item">
-                    <BillCode :data="item.code" role="button" @click="showDetail(item)" />
-                  </template>
-                  <template #item-document_date="item">
-                    <div class="fw-bold" v-if="item.document_date">
-                      {{ myFormatDate(item.document_date) }}
-                    </div>
-                  </template>
-                  <template #item-commitment_date="item">
-                    <div class="fw-bold" v-if="item.commitment_date">
-                      {{ item.commitment_date ? myFormatDate(item.commitment_date) : null }}
-                    </div>
-                  </template>
-                  <template #item-bill_status="item">
-                    <div class="fw-bold">
-                      <BillStatus v-model="item.bill_status" />
-                    </div>
-                  </template>
-                </EasyDataTable> -->
                 <div class="my-2">
                   <div class="">
                     <button type="button" class="btn btn-outline-secondary btn-sm" @click="openModalBulkCommitment()">
@@ -174,7 +102,8 @@
                 <BTable bordered :items="items" class="" :fields="tableFields" :per-page="pagination.per_page"
                   :responsive="true" :small="true">
                   <template #cell(select)="row">
-                    <BFormCheckbox v-model="billSelected" :value="row.item" />
+                    <BFormCheckbox v-model="billSelected" :value="row.item" class="block"
+                      style="width: 32px;height: 24px; " />
                   </template>
                   <template #cell(index)="row">
                     {{ row.index + 1 }}
@@ -182,9 +111,9 @@
 
                   <template #cell(actions)="row">
                     <div class="d-flex gap-1">
-                      <router-link class="btn btn-sm btn-outline-secondary"
+                      <!-- <router-link class="btn btn-sm btn-outline-secondary"
                         :to="{ name: 'bills.commitmentForm', params: { code: row.item.code } }">
-                        <i class="bi bi-calendar" role="button"></i></router-link>
+                        <i class="bi bi-calendar" role="button"></i></router-link> -->
                       <button type="button" @click="showDetail(row.item)" class="btn btn-outline-secondary btn-sm">
                         <i class="bi bi-eye"></i>
                       </button>
@@ -243,76 +172,7 @@
                 <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
                   :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
 
-                <!-- <div class="table-responsive">
-                  <table class="table table-sm">
-                    <thead>
-                      <tr>
-                        <th scope="col" class="fw-bold text-decoration-underline">Action</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">#ID</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Code</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Date</th>
-                        <th scope="col" class="fw-bold text-decoration-underline" nowrap>
-                          Commitment Date
-                        </th>
 
-                        <th scope="col" class="fw-bold text-decoration-underline">Customer</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(item, index) in items" :key="index">
-                        <th scope="row" nowrap>
-                          <router-link
-                            :to="{ name: 'bills.commitmentForm', params: { code: item.code } }"
-                          >
-                            <i class="bi bi-calendar mx-1" role="button"></i
-                          ></router-link>
-                          <router-link
-                            :to="{ name: 'bills.formEdit', params: { code: item.code } }"
-                          >
-                            <i class="bi bi-pencil mx-1" role="button"></i
-                          ></router-link>
-                          <i class="bi bi-search mx-1" @click="showDetail(item)" role="button"></i>
-                        </th>
-                        <th scope="row">{{ item.id }}</th>
-                        <td align="left" nowrap>
-                          <router-link
-                            :to="`/bills/code/${item.code}`"
-                            class="w-full d-block fw-bold border bg-dark text-white p-1"
-                            target="_blank"
-                          >
-                            {{ item.code }}
-                          </router-link>
-                        </td>
-                        <td>
-                          <span class="badge bg-light text-dark" v-if="item.document_date">{{
-                            myFormatDate(new Date(item?.document_date))
-                          }}</span>
-                        </td>
-                        <td>
-                          <span class="badge bg-light text-dark" v-if="item.commitment_date">{{
-                            myFormatDate(new Date(item?.commitment_date))
-                          }}</span>
-                        </td>
-
-                        <td>
-                          <div>{{ item.customer?.company name }}</div>
-                          <small class="text-danger mx-1">({{ item.agent_name }})</small>
-                          <small class="text-secondary mx-1">({{ item.customer.taxnumber }})</small>
-                        </td>
-                        <td>{{ item.progress_status }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <vue-awesome-paginate
-                  :total-items="pagination.total"
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                /> -->
-                <!-- End small tables -->
               </div>
             </div>
             <div class="tab-content pt-2">
@@ -436,8 +296,12 @@
       " />
     <ModalCommitmentBulkBooking ref="modalCommitmentBulkRef" :bills="billSelected" @onReload="(data) => {
       loadData()
-    }
-      " />
+    }" @onComplete="(data) => {
+  console.log('oncomplete', data);
+  billSelected.value = []
+  loadData()
+}
+  " />
   </section>
 </template>
 
@@ -528,7 +392,7 @@ const loadData = async () => {
 }
 
 const onChangePage = (e, page) => {
-  console.log(page)
+  billSelected.value = []
   pagination.value.current_page = page
   loadData()
 }
@@ -577,6 +441,7 @@ const showDetail = (item) => {
   modalBillDetailRef.value.show()
   getBillByCode(item.code)
 }
+
 const showEdit = (item) => {
   loadingItems.value = true
   errorMsg.value = ''
@@ -666,64 +531,13 @@ const cancelBill = async (item) => {
   return
 }
 
-const newInvoice = () => {
-  errorMsg.value = ''
-  const i = bill.value
-  if (itemsSelected.value.length === 0) {
-    errorMsg.value = 'โปรดเลือกรายการเครื่องมืออย่างน้อย 1 รายการ'
-    return false
-  }
-  invoice.value = {
-    bill_id: i.id,
-    bill_code: i.code,
-    customer_name: i.customer?.companyname,
-    document_date: i.document_date,
-    address_name: i.address_name,
-    address_detail: i.address_detail,
-    contact_name: i.agent_name,
-    discount: 0,
-  }
-  invoice.value.items = itemsSelected.value
-  if (itemsSelected.value.length > 0) {
-    itemsSelected.value.map((item) => {
-      const product = {
-        item_id: item.item_id,
-        item_code: item.item_code,
-        bill_id: item.bill_id,
-        product_name: item.product_name,
-        product_id: item.product_id,
-        product: item?.product,
-        id_no: item.id_no,
-        model: item.model,
-        serialnumber: item.serialnumber,
-        barcode_no: item.barcode_no,
-        price: item.total,
-        manufaturer_name: item.manufaturer_name,
-        lab: item.lab,
-      }
-      invoiceStore.addItem(product)
-    })
-  }
-  modalView.value.hide()
-  router.push({ name: 'invoices.create' })
-}
-
-// const createInvoice = () => {
-//   alert('สร้างใบแจ้งนี้สำเร็จ')
-//   invoice.value = {}
-//   bill.value = {}
-//   errorMsg.value = ''
-//   itemsSelected.value = []
-//   modalView.value.hide()
-//   modalInvoice.value.hide()
-// }
-
 const newBill = () => {
   modalBillCreateRef.value.show()
 }
 const openModalCommitment = (item) => {
   errorMsg.value = ''
   bill.value = item
+  console.log(bill.value);
   modalCommitmentRef.value.show()
 }
 

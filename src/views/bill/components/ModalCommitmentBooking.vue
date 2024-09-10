@@ -5,8 +5,11 @@
         <div class="modal-dialog modal-dialog-scrollable modal-fullscreen modal-info">
           <div class="modal-content">
             <div class="modal-header">
+              <Spinner :visible="loading" class="me-2" />
               <h5 class="modal-title" v-html="title"></h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                style="font-size: 2rem;"></button>
             </div>
             <div class="modal-body">
               <!-- ########################################################### -->
@@ -101,7 +104,7 @@
 
 
                 </div>
-                <Spinner :visible="loading" class="me-2" />
+
                 <div class="my-2 table-responsive">
                   <table class="table table-sm table-bordered table-striped">
                     <thead>
@@ -286,7 +289,7 @@
 
   </div>
 
-  <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" @onConfirm="updateCommitmentDate" />
+  <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" />
 </template>
 
 <script setup>
@@ -381,6 +384,8 @@ const commitmentDateFinal = computed(() => {
   }
   return;
 })
+
+
 const findCommitmentDate = async () => {
   if (commitmentPriority.value === undefined) {
     messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
@@ -452,12 +457,10 @@ const findCommitmentDate = async () => {
       })
 
     resultCommitment.value = data
-    console.log("result", resultCommitment.value);
-    console.log("date", commitmentDateFinal.value);
+
 
     setTimeout(() => {
       resultCommitment.value.data.document_date = props.bill.document_date
-      resultCommitment.value.data.commitment_date = commitmentDateFinal.value
       updateCommitmentDate()
     }, 200)
 
@@ -488,44 +491,7 @@ const submit = () => {
   }
 }
 
-const confirmCommitmentToKanban = async (params) => {
-  const { data } = await axios
-    .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${appStore.token}`,
-      },
-    })
-    .catch((err) => {
-      loadingCommitment.value = false
 
-      if (err.response) {
-        let data = err.response?.data
-        if (data) {
-          messageErrorCommitment.value = data.message
-        } else {
-          messageErrorCommitment.value = err.message
-        }
-      } else {
-        messageErrorCommitment.value = err.message
-      }
-      toast(messageErrorCommitment, {
-        theme: 'auto',
-        type: 'default',
-        dangerouslyHTMLString: true,
-      })
-    })
-  if (data) {
-    loadingCommitment.value = false
-    if (data.message !== undefined) {
-      toast(data.message, {
-        theme: 'auto',
-        type: 'default',
-        dangerouslyHTMLString: true,
-      })
-    }
-  }
-}
 const cancelBook = async (event) => {
 
 

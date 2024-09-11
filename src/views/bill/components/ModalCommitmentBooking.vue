@@ -5,20 +5,15 @@
         <div class="modal-dialog modal-dialog-scrollable modal-fullscreen modal-info">
           <div class="modal-content">
             <div class="modal-header bg-primary">
-              <Spinner :visible="loading" class="me-2" />
+
               <h5 class="modal-title text-white" v-html="title"></h5>
 
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                style="font-size: 2rem"
-              ></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                style="font-size: 2rem"></button>
             </div>
             <div class="modal-body">
               <!-- ########################################################### -->
-
+              <Spinner :visible="loading" class="me-2" />
               <!-- #####################START######################## -->
               <form @submit.prevent="onSearch()">
                 <div class="d-flex flex-wrap gap-3">
@@ -68,11 +63,7 @@
                 </div>
 
                 <div class="border p-2">
-                  <input
-                    type="checkbox"
-                    v-model="searchCommitmentDate"
-                    @change="onChangeConditionCommitment"
-                  />
+                  <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
                   กำหนดวันนัดรับเครื่องมือ
                   <div class="row g-2">
                     <div class="col-12 col-lg-8">
@@ -155,21 +146,14 @@
                     </thead>
 
                     <tbody v-if="bill.items">
-                      <tr
-                        v-for="(item, index) in bill.items"
-                        :key="index"
-                        :class="
-                          item.product && item.product.is_job != 1
-                            ? 'text-decoration-line-through'
-                            : ''
-                        "
-                      >
+                      <tr v-for="(item, index) in bill.items" :key="index" :class="item.product && item.product.is_job != 1
+                        ? 'text-decoration-line-through'
+                        : ''
+                        ">
                         <td>{{ index + 1 }})</td>
                         <td nowrap>
                           <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
-                          <small class="ms-2 text-danger"
-                            >{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small
-                          >
+                          <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
                         </td>
                         <td>{{ item?.product?.calhour }}</td>
                         <td nowrap>
@@ -206,12 +190,10 @@
                               <div class="d-block">{{ item.barcode_no }}</div>
                             </BCol>
                           </BRow>
-                          <BBadge v-if="item.manufaturer_name" variant="warning me-2"
-                            >{{ item?.manufaturer_name }}
+                          <BBadge v-if="item.manufaturer_name" variant="warning me-2">{{ item?.manufaturer_name }}
                           </BBadge>
                           <span v-if="item.product && item.product.is_job">
-                            {{ item.product_name }}</span
-                          >
+                            {{ item.product_name }}</span>
                         </td>
                         <!-- <td>
                           <span>{{ item?.barcode_no }}</span>
@@ -257,18 +239,18 @@
                 <div class="col-12">
                   <Spinner :visible="loadingCommitment" />
 
-                  <button type="button" class="btn btn-secondary btn-sm" @click="reloadData()">
+                  <button type="button" class="btn btn-secondary btn-sm" @click="reloadData()" :disabled="loading">
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลดข้อมูล
                   </button>
 
-                  <template v-if="bill.bill_status !== 'completed'">
-                    <button type="button" class="btn btn-primary btn-sm ms-2" @click="submit()">
+                  <template v-if="bill.bill_status !== 'completed' || !bill.id">
+                    <button type="button" class="btn btn-primary btn-sm ms-2" @click="submit()" :disabled="loading">
                       <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                     </button>
                   </template>
 
-                  <template v-if="bill.bill_status !== 'completed'">
-                    <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
+                  <template v-if="bill.bill_status !== 'completed' || !bill.id">
+                    <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()" :disabled="loading">
                       <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
                     </button>
                   </template>
@@ -304,6 +286,7 @@ import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
 import { formatDate, formatISO } from 'date-fns'
 import { string } from 'i/lib/util'
+import { useBillStore } from '@/stores/billStore'
 const { isRevealed, reveal, confirm, cancel, onReveal, onConfirm, onCancel } = useConfirmDialog()
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload'])
@@ -315,12 +298,13 @@ const props = defineProps({
   onCancel: {
     type: Function,
   },
-  bill: {
-    type: Object,
-  },
+  // bill: {
+  //   type: Object,
+  // },
 })
 const appStore = useAppStore()
-
+const billStore = useBillStore()
+const bill = computed(() => billStore.bill)
 let modalEl = null
 let modalRef = ref(null)
 
@@ -331,7 +315,7 @@ const hide = () => {
   modalEl.hide()
 }
 const resetForm = () => {
-  emit('update:bill', {})
+  emit('update:bill', null)
   resultCommitment.value = {}
   messageErrorCommitment.value = ''
   messageSuccessCommitment.value = ''
@@ -347,10 +331,18 @@ const messageSuccessCommitment = ref()
 const messageErrorCommitment = ref()
 const commitmentDate = ref()
 const commitmentPriority = ref('medium')
-const billId = computed(() => props.bill.id)
-const getBillById = async (id) => {
-  const { data } = await api.get('/v2/bills/' + id)
-  emit('update:bill', data)
+const billId = computed(() => billStore.bill.id)
+
+const getBillById = async () => {
+  loading.value = true
+  const { data } = await api.get('/v2/bills/' + billId.value)
+  if (data) {
+    console.log('object', data);
+    billStore.setBill(data)
+
+    loading.value = false
+  }
+
 }
 const findCommitmentDate = async () => {
   if (commitmentPriority.value === undefined) {
@@ -359,7 +351,7 @@ const findCommitmentDate = async () => {
   }
 
   let _items = []
-  props.bill.items.filter((item) => {
+  bill.value.items.filter((item) => {
     if (Number(item.product.is_job) == 1) {
       let filteredItem = {
         duration: parseInt(item.product?.duration),
@@ -380,9 +372,9 @@ const findCommitmentDate = async () => {
   })
   const params = {
     priority: commitmentPriority.value,
-    bill_id: props.bill.id,
-    code: props.bill.code,
-    document_date: props.bill.document_date,
+    bill_id: bill.value.id,
+    code: bill.value.code,
+    document_date: bill.value.document_date,
     commitment_date: commitmentDate.value,
     items: _items,
   }
@@ -422,12 +414,13 @@ const findCommitmentDate = async () => {
     resultCommitment.value = data
 
     setTimeout(() => {
-      resultCommitment.value.data.document_date = props.bill.document_date
+      resultCommitment.value.data.document_date = bill.value.document_date
       updateCommitmentDate(resultCommitment.value.data)
     }, 200)
 
     loadingCommitment.value = false
     if (data.success) {
+
       let message = `ประมวลผลตารางคิวงานสำเร็จ`
       messageSuccessCommitment.value = message
       modalConfirm.value.show()
@@ -455,10 +448,10 @@ const submit = () => {
 
 const cancelBook = async (event) => {
   let params = {
-    commitment_date: props.bill.commitment_date,
-    bill_id: props.bill.id,
+    commitment_date: bill.value.commitment_date,
+    bill_id: bill.value.id,
   }
-
+  loading.value = true
   const { data } = await axios
     .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + params.bill_id, {
       data: {},
@@ -469,7 +462,7 @@ const cancelBook = async (event) => {
     })
     .catch((err) => {
       loadingCommitment.value = false
-
+      loading.value = false
       if (err.response) {
         let data = err.response?.data
         if (data) {
@@ -480,6 +473,7 @@ const cancelBook = async (event) => {
       } else {
         messageErrorCommitment.value = err.message
       }
+
       toast(messageErrorCommitment, {
         theme: 'auto',
         type: 'default',
@@ -488,42 +482,45 @@ const cancelBook = async (event) => {
       })
     })
   if (data.success) {
-    clearCommitmentDate(props.bill.id)
+
     loadingCommitment.value = false
+    loading.value = false
     toast('ยกเลิกสำเร็จ', {
       theme: 'auto',
       type: 'default',
       dangerouslyHTMLString: true,
       position: toast.POSITION.TOP_CENTER,
     })
-    setTimeout(() => reloadData(), 500)
+    clearCommitmentDate(bill.value.id)
   }
 }
 const updateCommitmentDate = async (params) => {
-  const { data } = await api.post(`/v2/bills/${props.bill.id}/commitment`, params)
+  const { data } = await api.post(`/v2/bills/${bill.value.id}/commitment`, params)
   if (data) {
+    reloadData()
     toast(data.message, {
       theme: 'auto',
       type: 'success',
       dangerouslyHTMLString: true,
     })
-    // confirmCommitmentToKanban(params)
-    setTimeout(() => {
-      emit('update:bill', data)
-      reloadData()
-    }, 3000)
+    resetForm();
+    hide()
   }
 }
 const clearCommitmentDate = async (billId) => {
   const { data, status } = await api.delete(`/v2/bills/${billId}/commitment`)
 
   if (status == 200) {
-    emit('update:bill', data.data)
+    getBillById()
+    emit('onReload')
+    resetForm();
+    hide()
   }
 }
 
 const reloadData = async () => {
-  emit('onReload', props.bill)
+  getBillById()
+  emit('onReload', bill.value)
   loading.value = true
   setTimeout(() => (loading.value = false), 200)
 }
@@ -532,8 +529,7 @@ onMounted(() => {
   modalEl = new Modal(modalRef.value)
   var myModal = document.getElementById('modalCommitment')
   myModal.addEventListener('shown.bs.modal', (e) => {
-    messageErrorCommitment.value = ''
-    messageSuccessCommitment.value = ''
+    getBillById()
   })
   myModal.addEventListener('hide.bs.modal', (e) => {
     resetForm()
@@ -556,8 +552,7 @@ defineExpose({ show, hide })
 </script>
 
 <style lang="scss" scoped>
-.commitment {
-}
+.commitment {}
 
 .table-bill-items {
   border: solid 1px #130f0f;

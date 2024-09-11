@@ -69,6 +69,9 @@ export const useBillStore = defineStore('bill', {
     setForm(data) {
       this.form = data
     },
+    setBill(data) {
+      this.bill = data
+    },
     setWorkOrder(data) {
       this.workorder = data
     },

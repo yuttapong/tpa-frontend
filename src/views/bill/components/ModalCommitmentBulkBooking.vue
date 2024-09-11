@@ -7,13 +7,8 @@
             <div class="modal-header bg-primary">
               <h5 class="modal-title text-white" v-html="title"></h5>
 
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                style="font-size: 2rem"
-              ></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                style="font-size: 2rem"></button>
             </div>
             <div class="modal-body">
               <!-- ########################################################### -->
@@ -23,61 +18,45 @@
                 <!-- ใบขอรับบริการ
                                 <BBadge variant="danger">{{ bills.length }}</BBadge> รายการ -->
                 <Spinner :visible="loading" class="me-2" />
-                <h6 class="mt-3">ใบขอรับบริการ ({{ bills.length }})</h6>
+                <h6 class="mt-3">ใบขอรับบริการ ({{ billSelected.length }})</h6>
 
                 <div class="accordion mb-2" id="accordionBills" v-if="!loading">
-                  <div
-                    class="accordion-item"
-                    v-for="(bill, bKey) in billSelectedFilterd"
-                    :key="bKey"
-                  >
+                  <div class="accordion-item" v-for="(bill, bKey) in billSelected" :key="bKey">
                     <h2 class="accordion-header">
-                      <button
-                        class="accordion-button"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        :data-bs-target="`#collapse${bKey}`"
-                        aria-expanded="true"
-                        :aria-controls="`#collapse${bKey}`"
-                      >
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        :data-bs-target="`#collapse${bKey}`" aria-expanded="true" :aria-controls="`#collapse${bKey}`">
                         <div class="d-flex flex-wrap gap-2 justify-content-between">
                           <div class="">
                             {{ bKey + 1 }})
-                            <div class="mx-2 fw-bold d-inline-block" style="width: 125px">
-                              {{ bill?.code }}
+                            <div class="mx-2 fw-bold d-inline-block" style="min-width: 125px">
+                              {{ bill?.code }} {{ bill?.bill_id }}
                             </div>
                           </div>
 
                           <div>
-                            <i class="bi bi-calendar me-1"></i
-                            >{{ myFormatDate(bill?.document_date) }}
-                            <BBadge variant="success">
-                              {{ myFormatDate(bill?.commitment_date) }}</BBadge
-                            >
+                            <i class="bi bi-calendar me-1"></i>{{ myFormatDate(bill.document_date) }}
+                            <BBadge variant="success" v-if="hasCommitmentDate(bill.commitment_date)">
+                              {{ myFormatDate(bill.commitment_date) }}</BBadge>
                           </div>
 
                           <div class="d-none d-md-block">{{ bill?.address_name }}</div>
-                          <div class="" v-if="bill.items">({{ bill.items.length }})</div>
+                          <div class="" v-if="bill && bill.items">({{ bill.items.length }})</div>
                         </div>
                       </button>
                     </h2>
-                    <div
-                      :id="`collapse${bKey}`"
-                      class="accordion-collapse collapse"
-                      data-bs-parent="#accordionExample"
-                    >
+                    <div :id="`collapse${bKey}`" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                       <div class="accordion-body" style="overflow-y: scroll; height: 180px">
                         <div class="d-block d-md-none">{{ bill?.address_name }}</div>
-                        <p v-if="bill.note_customers" class="text-danger p-1">
+                        <p v-if="bill" class="text-danger p-1">
                           {{ bill?.note_customers }}
                         </p>
-                        <BTableSimple class="" bordered hover small style="" v-if="bill.items">
+                        <BTableSimple class="" bordered hover small style="" v-if="bill && bill.items">
                           <BThead>
                             <BTr>
                               <BTh class="text-center">ลำดับ</BTh>
                               <BTh>ItemID</BTh>
                               <BTh>ItemCode</BTh>
-                              <BTh>วันที่ส่ง</BTh>
+                              <BTh>ห้องทดลอง</BTh>
                               <BTh>วันนัดรับ</BTh>
                               <BTh class="text-left">เครื่องมือ</BTh>
                               <BTh class="text-left">ID NO.</BTh>
@@ -97,13 +76,22 @@
 
                               <BTd class="">
                                 {{ item.item_code }}
+
                               </BTd>
                               <BTd class="">
-                                {{ myFormatDate(bill.document_date) }}
+                                {{ item.lab?.name_th }} #{{ item.lab_id }}
+                                <div>
+                                  <small class="fw-bold text-danger">{{ item?.sublab?.name_th }} #{{ item.sublab_id
+                                  }}</small>
+                                </div>
                               </BTd>
                               <BTd class="">
-                                {{ myFormatDate(item.reserved_date) }}
+
+                                <span v-if="hasCommitmentDate(item.reserved_date)">
+
+                                  {{ myFormatDate(item.reserved_date).toLocaleString() }}</span>
                               </BTd>
+
 
                               <BTd>
                                 {{ item?.product_name }}
@@ -118,7 +106,9 @@
                                 {{ item?.serialnumber }}
                               </BTd>
                               <BTd class="text-center">
+
                                 <JobStatus v-model="item.job_status" />
+                                <div> {{ item.service_status_id }}</div>
                               </BTd>
                             </BTr>
                           </BTbody>
@@ -129,11 +119,7 @@
                 </div>
 
                 <div class="border p-2">
-                  <input
-                    type="checkbox"
-                    v-model="searchCommitmentDate"
-                    @change="onChangeConditionCommitment"
-                  />
+                  <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
                   กำหนดวันนัดรับเครื่องมือ
                   <div class="row g-2">
                     <div class="col-8 col-lg-8">
@@ -157,14 +143,13 @@
                     </BTr>
                   </BThead>
                   <BTbody>
-                    <BTr
-                      v-for="(err, key) in listErrors"
-                      :key="key"
-                      class=""
-                      :class="err.type == 'error' ? 'text-danger' : 'text-success'"
-                    >
+                    <BTr v-for="(err, key) in listErrors" :key="key" class=""
+                      :class="err.type == 'error' ? 'text-danger' : 'text-success'">
                       <BTd class="" nowrap>{{ err.code }}</BTd>
-                      <BTd class="">{{ myFormatDate(err.bill?.commitment_date) }}</BTd>
+
+                      <BTd :class="err.type == 'error' ? 'text-danger' : 'text-success'">{{
+                        err.bill.commitment_date
+                      }}</BTd>
                       <BTd :class="err.type == 'error' ? 'text-danger' : 'text-success'">{{
                         err.message
                       }}</BTd>
@@ -178,22 +163,13 @@
             <div class="modal-footer">
               <div class="row g-1">
                 <div class="col-12">
-                  <button
-                    type="button"
-                    :disabled="loading"
-                    class="btn btn-secondary btn-sm"
-                    @click="reloadData()"
-                  >
+                  <button type="button" :disabled="loading" class="btn btn-secondary btn-sm" @click="reloadData()">
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลดข้อมูล
                   </button>
 
                   <template v-if="bills && bills.length > 0">
-                    <button
-                      type="button"
-                      class="btn btn-primary btn-sm ms-2"
-                      :disabled="loading || Boolean()"
-                      @click="submit()"
-                    >
+                    <button type="button" class="btn btn-primary btn-sm ms-2" :disabled="loading || Boolean()"
+                      @click="submit()">
                       <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                     </button>
                   </template>
@@ -214,31 +190,16 @@
     </form>
   </div>
 
-  <BModal
-    v-if="visibleModalConfirmBook"
-    v-model="visibleModalConfirmBook"
-    id="modal-confirm-book"
-    cancel-title="ยกเลิก"
-    ok-title="ใช่"
-    @ok="findCommitmentDate()"
-    @cancel="visibleModalConfirmBook = false"
-    title="ยืนยันจองคิวห้องทดลอง"
-  >
+  <BModal v-if="visibleModalConfirmBook" v-model="visibleModalConfirmBook" id="modal-confirm-book" cancel-title="ยกเลิก"
+    ok-title="ใช่" @ok="findCommitmentDate()" @cancel="visibleModalConfirmBook = false" title="ยืนยันจองคิวห้องทดลอง">
     <div class="d-flex flex-wrap gap-2">
       <div v-for="item in billSelectedFilterd" :key="item">
         <div class="border bg-dark text-white p-1">{{ item.code }}</div>
       </div>
     </div>
   </BModal>
-  <BModal
-    v-if="visibleModalCancelBook"
-    v-model="visibleModalCancelBook"
-    id="modal-cancel-book"
-    cancel-title="ไม่ใช่"
-    ok-title="ใช่, ยกเลิก"
-    @cancel="visibleModalCancelBook = false"
-    title="ยืนยันยกเลิกคิวห้องทดลอง"
-  >
+  <BModal v-if="visibleModalCancelBook" v-model="visibleModalCancelBook" id="modal-cancel-book" cancel-title="ไม่ใช่"
+    ok-title="ใช่, ยกเลิก" @cancel="visibleModalCancelBook = false" title="ยืนยันยกเลิกคิวห้องทดลอง">
   </BModal>
 </template>
 
@@ -326,7 +287,6 @@ const submit = () => {
 }
 
 const resetForm = () => {
-  emit('update:bills', [])
   billSelected.value = []
   listErrors.value = []
   messageErrorCommitment.value = ''
@@ -360,16 +320,20 @@ const getItems = () => {
                 model: item.model,
                 sorter: item.sorter,
                 sublab_id: item.sublab_id,
+                sublab: item.sublab,
+                lab: item.lab,
                 workorder_id: item.item_id,
                 service_status_id: item.service_status_id,
                 is_job: item.product.is_job,
+                reserved_date: item?.reserved_date,
               }
               _items.push(filteredItem)
               return filteredItem
             }
           })
         }
-        const params = {
+        loading.value = false
+        let params = {
           priority: commitmentPriority.value,
           bill_id: bill.id,
           code: bill.code,
@@ -386,8 +350,9 @@ const getItems = () => {
           approver_name: bill?.approver_name,
           items: _items,
         }
-        loading.value = false
-        bill = params
+        bill.bill_id = bill.id;
+        bill.priority = commitmentPriority.value
+
       })
       .catch((err) => (loading.value = false))
     return bill
@@ -395,7 +360,12 @@ const getItems = () => {
 }
 
 const listErrors = ref([])
-
+const hasCommitmentDate = (date) => {
+  if (!date) return false
+  if (String(date) === '0000-00-00 00:00:00') return false
+  if (String(date) === '0000-00-00') return false
+  return true
+}
 const findCommitmentDate = async () => {
   listErrors.value = []
   if (commitmentPriority.value === undefined) {
@@ -452,19 +422,18 @@ const findCommitmentDate = async () => {
         const billData = resultBill?.data?.data
         console.log('bill', billData)
         bill._success = messageSuccessCommitment.value
-        bill.commitment_date = billData
+        bill.commitment_date = billData?.commitment_date
         toast(resultBill.data?.message || message, {
           theme: 'auto',
           type: 'success',
           position: toast.POSITION.TOP_CENTER,
           dangerouslyHTMLString: true,
         })
-        billSelected.value[index] = bill
         listErrors.value.push({
           type: 'success',
           code: bill.code,
           message: messageSuccessCommitment.value,
-          bill: bill,
+          bill: billData,
         })
         loopCount += 1
       }
@@ -473,6 +442,7 @@ const findCommitmentDate = async () => {
       bill._error = messageErrorCommitment.value
     }
     if (totalBill == loopCount) {
+      getItems()
       emit('onComplete', loopCount)
     }
     return bill
@@ -539,7 +509,7 @@ const clearCommitmentDate = async (billId) => {
 }
 
 const reloadData = async () => {
-  emit('onReload', props.bills)
+  // emit('onReload', props.bills)
   loading.value = true
   setTimeout(() => (loading.value = false), 2000)
 }
@@ -575,8 +545,7 @@ defineExpose({ show, hide })
 </script>
 
 <style lang="scss" scoped>
-.commitment {
-}
+.commitment {}
 
 .table-bill-items {
   border: solid 1px #130f0f;

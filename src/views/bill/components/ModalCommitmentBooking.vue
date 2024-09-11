@@ -4,19 +4,23 @@
       <div class="modal" ref="modalRef" id="modalCommitment">
         <div class="modal-dialog modal-dialog-scrollable modal-fullscreen modal-info">
           <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary">
               <Spinner :visible="loading" class="me-2" />
-              <h5 class="modal-title" v-html="title"></h5>
+              <h5 class="modal-title text-white" v-html="title"></h5>
 
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                style="font-size: 2rem;"></button>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                style="font-size: 2rem"
+              ></button>
             </div>
             <div class="modal-body">
               <!-- ########################################################### -->
 
               <!-- #####################START######################## -->
               <form @submit.prevent="onSearch()">
-
                 <div class="d-flex flex-wrap gap-3">
                   <div class="">
                     <label class="text-decoration-underline fw-bold">Bill ID</label>
@@ -61,11 +65,14 @@
                     <label class="text-decoration-underline fw-bold">Remark</label>
                     <p class="">{{ bill?.remark }}</p>
                   </div>
-
                 </div>
 
                 <div class="border p-2">
-                  <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
+                  <input
+                    type="checkbox"
+                    v-model="searchCommitmentDate"
+                    @change="onChangeConditionCommitment"
+                  />
                   กำหนดวันนัดรับเครื่องมือ
                   <div class="row g-2">
                     <div class="col-12 col-lg-8">
@@ -101,8 +108,6 @@
                       </div>
                     </div>
                   </div>
-
-
                 </div>
 
                 <div class="my-2 table-responsive">
@@ -123,21 +128,19 @@
                       <tr>
                         <th scope="col" class="">#</th>
                         <th scope="col" class="fw-bold">
-                          <div>ห้องทดลอง</div>SubLab
-
-
+                          <div>ห้องทดลอง</div>
+                          SubLab
                         </th>
                         <th scope="col" class="fw-bold">Cal Hour</th>
                         <th scope="col" class="fw-bold" nowrap>
-                          <div>วันนัดรับ</div>Reserved Date
-
+                          <div>วันนัดรับ</div>
+                          Reserved Date
                         </th>
                         <th scope="col" class="">Item Id</th>
                         <th scope="col" class="">Item Code</th>
                         <th scope="col" class="">
-                          <div>เครื่องมือ</div>Product
-
-
+                          <div>เครื่องมือ</div>
+                          Product
                         </th>
                         <!-- 
                         <th scope="col" class="fw-bold">Barcode</th>
@@ -145,20 +148,28 @@
                         <th scope="col" class="fw-bold">S/N.</th>
                         <th scope="col" class="fw-bold">ID No.</th> -->
                         <th scope="col" class="fw-bold">
-                          <div>รายละเอียด</div> Test Point
-
-
+                          <div>รายละเอียด</div>
+                          Test Point
                         </th>
                       </tr>
                     </thead>
 
                     <tbody v-if="bill.items">
-                      <tr v-for="(item, index) in bill.items" :key="index"
-                        :class="item.product && item.product.is_job != 1 ? 'text-decoration-line-through' : ''">
+                      <tr
+                        v-for="(item, index) in bill.items"
+                        :key="index"
+                        :class="
+                          item.product && item.product.is_job != 1
+                            ? 'text-decoration-line-through'
+                            : ''
+                        "
+                      >
                         <td>{{ index + 1 }})</td>
                         <td nowrap>
                           <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
-                          <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
+                          <small class="ms-2 text-danger"
+                            >{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small
+                          >
                         </td>
                         <td>{{ item?.product?.calhour }}</td>
                         <td nowrap>
@@ -166,7 +177,8 @@
                           <!-- <JobButtonStatus :data="item?.service_status_id"/> -->
 
                           <div v-if="item.current_service_status">
-                            {{ item.current_service_status.status_id }} : {{ item?.current_service_status.status_name }}
+                            {{ item.current_service_status.status_id }} :
+                            {{ item?.current_service_status.status_name }}
                           </div>
                         </td>
                         <td>
@@ -175,19 +187,15 @@
                         <td nowrap>
                           {{ item.item_code }}
                         </td>
-                        <td style="min-width: 350px;">
-
-                          <BRow align-h="start" gutter-x="1" style="font-size: 13px;">
+                        <td style="min-width: 350px">
+                          <BRow align-h="start" gutter-x="1" style="font-size: 13px">
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">Id.No</div>
                               <div class="d-block">{{ item?.id_no }}</div>
                             </BCol>
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">Model</div>
-                              <div class="d-item">{{
-                                (item.model)
-                              }}
-                              </div>
+                              <div class="d-item">{{ item.model }}</div>
                             </BCol>
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">S/N</div>
@@ -195,16 +203,15 @@
                             </BCol>
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">Barcode</div>
-                              <div class="d-block">{{
-                                (item.barcode_no)
-                              }}
-                              </div>
+                              <div class="d-block">{{ item.barcode_no }}</div>
                             </BCol>
                           </BRow>
-                          <BBadge v-if="item.manufaturer_name" variant="warning me-2">{{ item?.manufaturer_name }}
+                          <BBadge v-if="item.manufaturer_name" variant="warning me-2"
+                            >{{ item?.manufaturer_name }}
                           </BBadge>
                           <span v-if="item.product && item.product.is_job">
-                            {{ item.product_name }}</span>
+                            {{ item.product_name }}</span
+                          >
                         </td>
                         <!-- <td>
                           <span>{{ item?.barcode_no }}</span>
@@ -216,19 +223,15 @@
                         <td>
                           <span>{{ item?.id_no }}</span>
                         </td> -->
-                        <td style="min-width: 350px;">
-
-                          <BRow align-h="start" gutter-x="1" style="font-size: 13px;">
+                        <td style="min-width: 350px">
+                          <BRow align-h="start" gutter-x="1" style="font-size: 13px">
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">Range</div>
                               <div class="d-block">{{ item?.range_value }}</div>
                             </BCol>
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">Range Price</div>
-                              <div class="d-item">{{
-                                myCurrency(item.range_price)
-                              }}
-                              </div>
+                              <div class="d-item">{{ myCurrency(item.range_price) }}</div>
                             </BCol>
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">Point</div>
@@ -236,15 +239,11 @@
                             </BCol>
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">Pont Price</div>
-                              <div class="d-block">{{
-                                myCurrency(item.point_price)
-                              }}
-                              </div>
+                              <div class="d-block">{{ myCurrency(item.point_price) }}</div>
                             </BCol>
                           </BRow>
                           {{ item.test_point }}
                         </td>
-
                       </tr>
                     </tbody>
                   </table>
@@ -263,7 +262,7 @@
                   </button>
 
                   <template v-if="bill.bill_status !== 'completed'">
-                    <button type="button" class="btn btn-primary btn-sm  ms-2" @click="submit()">
+                    <button type="button" class="btn btn-primary btn-sm ms-2" @click="submit()">
                       <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
                     </button>
                   </template>
@@ -273,8 +272,6 @@
                       <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
                     </button>
                   </template>
-
-
                 </div>
               </div>
               <!-- <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-save me-1"></i>
@@ -286,7 +283,6 @@
         </div>
       </div>
     </form>
-
   </div>
 
   <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" />
@@ -308,10 +304,9 @@ import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
 import { formatDate, formatISO } from 'date-fns'
 import { string } from 'i/lib/util'
-const { isRevealed, reveal, confirm, cancel, onReveal, onConfirm, onCancel }
-  = useConfirmDialog()
+const { isRevealed, reveal, confirm, cancel, onReveal, onConfirm, onCancel } = useConfirmDialog()
 
-const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'Onreload'])
+const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload'])
 const props = defineProps({
   title: {
     type: String,
@@ -320,13 +315,9 @@ const props = defineProps({
   onCancel: {
     type: Function,
   },
-  billTypes: {
-    type: Object,
-    default: () => []
-  },
   bill: {
     type: Object,
-  }
+  },
 })
 const appStore = useAppStore()
 
@@ -334,65 +325,39 @@ let modalEl = null
 let modalRef = ref(null)
 
 const show = () => {
-  setTimeout(() => reloadData(), 2000)
   modalEl.show()
 }
 const hide = () => {
   modalEl.hide()
 }
-
+const resetForm = () => {
+  emit('update:bill', {})
+  resultCommitment.value = {}
+  messageErrorCommitment.value = ''
+  messageSuccessCommitment.value = ''
+}
 const loading = ref(false)
 const searchCommitmentDate = ref(true)
 const modalConfirm = ref(null)
 
-const form = ref({
-  id: 0,
-  bill_code: '',
-  document_date: '',
-  items: [],
-  company_id: '',
-  address_name: '',
-  address_detail: '',
-  cert_address_name: '',
-  cert_address_detail: '',
-  agent_id: '',
-  agent_name: '',
-  status: '',
-  bill_status: '',
-  service_status_id: 0,
-})
-
 //  commitment
-const billCode = computed(() => props.bill.code)
 const loadingCommitment = ref(false)
 const resultCommitment = ref()
 const messageSuccessCommitment = ref()
 const messageErrorCommitment = ref()
 const commitmentDate = ref()
 const commitmentPriority = ref('medium')
-const commitmentDateFinal = computed(() => {
-
-  if (resultCommitment.value && resultCommitment.value.data.items !== undefined) {
-    let items = resultCommitment.value.data.items || []
-    let temp = []
-    items.map((item) => {
-      temp.push(new Date(item.reserved_date))
-    })
-    console.log(temp);
-    let maxDate = new Date(Math.max.apply(null, temp))
-    return formatISO(maxDate)
-  }
-  return;
-})
-
-
+const billId = computed(() => props.bill.id)
+const getBillById = async (id) => {
+  const { data } = await api.get('/v2/bills/' + id)
+  emit('update:bill', data)
+}
 const findCommitmentDate = async () => {
   if (commitmentPriority.value === undefined) {
     messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
     return
   }
-  // let d1 = form.value?.document_date ? new Date(`${form.value?.document_date} 00:00:00`) : ''
-  // let d2 = new Date(`${commitmentDate.value} 00:00:00`)
+
   let _items = []
   props.bill.items.filter((item) => {
     if (Number(item.product.is_job) == 1) {
@@ -417,8 +382,6 @@ const findCommitmentDate = async () => {
     priority: commitmentPriority.value,
     bill_id: props.bill.id,
     code: props.bill.code,
-    // document_date: d1 ? formatISO(toZonedTime(form.value.document_date, timezone)) : '',
-    // commitment_date: d2 ? formatISO(toZonedTime(d2, timezone)) : '',
     document_date: props.bill.document_date,
     commitment_date: commitmentDate.value,
     items: _items,
@@ -458,10 +421,9 @@ const findCommitmentDate = async () => {
 
     resultCommitment.value = data
 
-
     setTimeout(() => {
       resultCommitment.value.data.document_date = props.bill.document_date
-      updateCommitmentDate()
+      updateCommitmentDate(resultCommitment.value.data)
     }, 200)
 
     loadingCommitment.value = false
@@ -491,10 +453,7 @@ const submit = () => {
   }
 }
 
-
 const cancelBook = async (event) => {
-
-
   let params = {
     commitment_date: props.bill.commitment_date,
     bill_id: props.bill.id,
@@ -525,6 +484,7 @@ const cancelBook = async (event) => {
         theme: 'auto',
         type: 'default',
         dangerouslyHTMLString: true,
+        position: toast.POSITION.TOP_CENTER,
       })
     })
   if (data.success) {
@@ -534,12 +494,12 @@ const cancelBook = async (event) => {
       theme: 'auto',
       type: 'default',
       dangerouslyHTMLString: true,
+      position: toast.POSITION.TOP_CENTER,
     })
     setTimeout(() => reloadData(), 500)
   }
 }
-const updateCommitmentDate = async () => {
-  const params = resultCommitment.value.data
+const updateCommitmentDate = async (params) => {
   const { data } = await api.post(`/v2/bills/${props.bill.id}/commitment`, params)
   if (data) {
     toast(data.message, {
@@ -558,48 +518,46 @@ const clearCommitmentDate = async (billId) => {
   const { data, status } = await api.delete(`/v2/bills/${billId}/commitment`)
 
   if (status == 200) {
-    emit("update:bill", data.data)
+    emit('update:bill', data.data)
   }
 }
 
 const reloadData = async () => {
   emit('onReload', props.bill)
-  loading.value = true;
-  setTimeout(() => loading.value = false, 2000)
+  loading.value = true
+  setTimeout(() => (loading.value = false), 200)
 }
 
 onMounted(() => {
   modalEl = new Modal(modalRef.value)
-  console.log(modalEl);
   var myModal = document.getElementById('modalCommitment')
-  myModal.addEventListener("shown.bs.modal", (e) => {
-    messageErrorCommitment.value = ""
-    messageSuccessCommitment.value = ""
+  myModal.addEventListener('shown.bs.modal', (e) => {
+    messageErrorCommitment.value = ''
+    messageSuccessCommitment.value = ''
   })
-  myModal.addEventListener("hide.bs.modal", (e) => {
-    messageErrorCommitment.value = ""
-    messageSuccessCommitment.value = ""
+  myModal.addEventListener('hide.bs.modal', (e) => {
+    resetForm()
   })
 
   document.onkeydown = function (evt) {
-    evt = evt || window.event;
-    var isEscape = false;
-    if ("key" in evt) {
-      isEscape = (evt.key === "Escape" || evt.key === "Esc");
+    evt = evt || window.event
+    var isEscape = false
+    if ('key' in evt) {
+      isEscape = evt.key === 'Escape' || evt.key === 'Esc'
     } else {
-      isEscape = (evt.keyCode === 27);
+      isEscape = evt.keyCode === 27
     }
     if (isEscape) {
       hide()
     }
-  };
-
+  }
 })
 defineExpose({ show, hide })
 </script>
 
 <style lang="scss" scoped>
-.commitment {}
+.commitment {
+}
 
 .table-bill-items {
   border: solid 1px #130f0f;
@@ -616,4 +574,3 @@ table {
   }
 }
 </style>
-

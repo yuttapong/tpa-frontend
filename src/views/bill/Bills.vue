@@ -20,7 +20,9 @@
               <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
                   <i class="bi bi-book"></i> ใบขอรับบริการ
-                  <span v-if="pagination">({{ parseInt(pagination.total).toLocaleString() || 0 }})</span>
+                  <span v-if="pagination"
+                    >({{ parseInt(pagination.total).toLocaleString() || 0 }})</span
+                  >
                 </button>
               </li>
               <li class="nav-item">
@@ -40,8 +42,14 @@
                       </button>
                     </div> -->
                     <div class="">
-                      <input type="search" v-model="formSearch.id" name="id" class="form-control form-control-sm"
-                        placeholder="ID" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.id"
+                        name="id"
+                        class="form-control form-control-sm"
+                        placeholder="ID"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="">
                       <!--                 
@@ -67,17 +75,35 @@
                       /> -->
                     </div>
                     <div class="">
-                      <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
-                        placeholder="Code" @keyup.enter="search" autofocus />
+                      <input
+                        type="search"
+                        v-model="formSearch.code"
+                        name="code"
+                        class="form-control form-control-sm"
+                        placeholder="Code"
+                        @keyup.enter="search"
+                        autofocus
+                      />
                     </div>
                     <div class="col-6 col-md-4 col-xl-3">
-                      <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
-                        class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.taxnumber"
+                        name="taxnumber"
+                        class="form-control form-control-sm"
+                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="">
-                      <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
-                        placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
+                      <input
+                        type="search"
+                        v-model="formSearch.q"
+                        name="q"
+                        class="form-control form-control-sm"
+                        placeholder="ลูกค้า/ผู้ติดต่อ"
+                        @keyup.enter="search"
+                      />
                     </div>
                     <div class="">
                       <button type="submit" class="btn btn-light btn-sm">
@@ -91,19 +117,44 @@
                   </div>
                 </form>
 
-                <div class="my-2">
+                <div class="my-2 d-flex flex-wrap gap-2">
                   <div class="">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" @click="openModalBulkCommitment()">
+                    <button type="button" class="btn btn-primary btn-sm" @click="newBill()">
+                      <i class="bi bi-plus"></i>
+                      สร้างใบขอรับบริการ
+                    </button>
+                  </div>
+                  <div class="">
+                    <button
+                      type="button"
+                      v-if="billSelected.length"
+                      class="btn btn-outline-secondary btn-sm"
+                      @click="openModalBulkCommitment()"
+                    >
                       <i class="bi bi-clock"></i>
-                      จองคิวห้องทดลอง
+                      จองคิวห้องทดลอง ({{ billSelected.length }})
                     </button>
                   </div>
                 </div>
-                <BTable bordered :items="items" class="" :fields="tableFields" :per-page="pagination.per_page"
-                  :responsive="true" :small="true">
+                <BTable
+                  bordered
+                  :items="items"
+                  class=""
+                  :fields="tableFields"
+                  :per-page="pagination.per_page"
+                  :responsive="true"
+                  :small="true"
+                >
                   <template #cell(select)="row">
-                    <BFormCheckbox v-model="billSelected" :value="row.item" class="block"
-                      style="width: 32px;height: 24px; " />
+                    <div v-if="!hasCommitmentDate(row.item.commitment_date)">
+                      <BFormCheckbox
+                        v-model="billSelected"
+                        :value="row.item"
+                        class="block"
+                        style="width: 32px; height: 24px; background-color: darkgrey"
+                      />
+                    </div>
+                    <!-- {{ row.item.commitment_date }} -->
                   </template>
                   <template #cell(index)="row">
                     {{ row.index + 1 }}
@@ -114,22 +165,34 @@
                       <!-- <router-link class="btn btn-sm btn-outline-secondary"
                         :to="{ name: 'bills.commitmentForm', params: { code: row.item.code } }">
                         <i class="bi bi-calendar" role="button"></i></router-link> -->
-                      <button type="button" @click="showDetail(row.item)" class="btn btn-outline-secondary btn-sm">
+                      <button
+                        type="button"
+                        @click="showDetail(row.item)"
+                        class="btn btn-outline-secondary btn-sm"
+                      >
                         <i class="bi bi-eye"></i>
                       </button>
 
-                      <button type="button" class="btn btn-outline-secondary btn-sm" @click="showEdit(row.item)">
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        @click="showEdit(row.item)"
+                      >
                         <i class="bi bi-pencil"></i>
                       </button>
-                      <button type="button" class="btn btn-outline-secondary btn-sm"
-                        @click="openModalCommitment(row.item)">
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        @click="openModalCommitment(row.item)"
+                      >
                         <i class="bi bi-clock"></i>
                       </button>
                     </div>
                   </template>
                   <template #cell(code)="row">
-                    <div class="" style="width: 130px">
+                    <div class="text-center" style="width: 130px">
                       <BillCode :data="row.item.code" role="button" @click="showDetail(row.item)" />
+                      {{ row.item.id }}
                     </div>
                   </template>
                   <template #cell(document_date)="row">
@@ -152,7 +215,6 @@
                         <small v-if="row.item.agent_name" class="text-danger">{{
                           row.item.agent_name
                         }}</small>
-
                       </div>
                     </div>
                   </template>
@@ -169,10 +231,14 @@
                   </template>
                 </BTable>
 
-                <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
-                  :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
-
-
+                <BPagination
+                  v-model="pagination.current_page"
+                  :total-rows="pagination.total"
+                  :per-page="pagination.per_page"
+                  size="sm"
+                  class="my-0"
+                  @page-click="onChangePage"
+                />
               </div>
             </div>
             <div class="tab-content pt-2">
@@ -285,23 +351,49 @@
       </div>
     </div>
 
-    <ModalBillCreate ref="modalBillCreateRef" title="สร้างใบขอรับบริการใหม่" :billTypes="billTypes" />
-    <ModalBillDetail ref="modalBillDetailRef" title="รายละเอียดใบขอรับบริการ" :billTypes="billTypes" :data="bill"
-      @onChangeBillStatus="getBillByCode(bill.code)" @onChangeJobStatus="getBillByCode(bill.code)" />
-    <ModalBillEdit ref="modalBillEditRef" title="แก้ไขใบขอรับบริการ" :billTypes="billTypes" :data="bill" />
-    <ModalCommitmentBooking ref="modalCommitmentRef" :bill="bill" @onReload="(data) => {
-      getBillById(data.id)
-      loadData()
-    }
-      " />
-    <ModalCommitmentBulkBooking ref="modalCommitmentBulkRef" :bills="billSelected" @onReload="(data) => {
-      loadData()
-    }" @onComplete="(data) => {
-  console.log('oncomplete', data);
-  billSelected.value = []
-  loadData()
-}
-  " />
+    <ModalBillCreate
+      ref="modalBillCreateRef"
+      title="สร้างใบขอรับบริการใหม่"
+      :billTypes="billTypes"
+    />
+    <ModalBillDetail
+      ref="modalBillDetailRef"
+      title="รายละเอียดใบขอรับบริการ"
+      :billTypes="billTypes"
+      :data="bill"
+      @onChangeBillStatus="getBillByCode(bill.code)"
+      @onChangeJobStatus="getBillByCode(bill.code)"
+    />
+    <ModalBillEdit
+      ref="modalBillEditRef"
+      title="แก้ไขใบขอรับบริการ"
+      :billTypes="billTypes"
+      :data="bill"
+    />
+    <ModalCommitmentBooking
+      ref="modalCommitmentRef"
+      :bill="bill"
+      @onReload="
+        (data) => {
+          loadData()
+        }
+      "
+    />
+    <ModalCommitmentBulkBooking
+      ref="modalCommitmentBulkRef"
+      :bills="billSelected"
+      @onReload="
+        (data) => {
+          loadData()
+        }
+      "
+      @onComplete="
+        (data) => {
+          billSelected.value = []
+          loadData()
+        }
+      "
+    />
   </section>
 </template>
 
@@ -329,6 +421,7 @@ import ModalBillEdit from '@/views/bill/components/ModalBillEdit.vue'
 import DatePicker from '@/components/DatePicker.vue'
 import { useBillStore } from '@/stores/billStore'
 import { myCurrency } from '@/helpers/myformat'
+import { isValid, parse } from 'date-fns'
 const appStore = new useAppStore()
 const billStore = new useBillStore()
 const items = ref([])
@@ -356,6 +449,8 @@ const modalCommitmentRef = ref(null)
 const modalCommitmentBulkRef = ref(null)
 const dateSelect = ref(new Date())
 const resultCancelCommitment = ref({})
+const errorMsg = ref()
+const itemsSelected = ref([])
 const formSearch = ref({
   year: new Date(),
   code: '',
@@ -365,6 +460,12 @@ const formSearch = ref({
 
 const invoiceStore = useInvoiceStore()
 
+const hasCommitmentDate = (date) => {
+  if (!date) return false
+  if (String(date) === '0000-00-00 00:00:00') return false
+  if (String(date) === '0000-00-00') return false
+  return true
+}
 const loadData = async () => {
   loading.value = true
   let params = {
@@ -404,6 +505,7 @@ const getBillTypes = async () => {
 getBillTypes()
 
 const getBillById = async (id) => {
+  bill.value = {}
   try {
     const { data } = await api.get('/v2/bills/' + id)
     if (data) {
@@ -416,6 +518,7 @@ const getBillById = async (id) => {
   }
 }
 const getBillByCode = async (code) => {
+  bill.value = {}
   try {
     const { data } = await api.get('/v2/bills/code/' + code)
     if (data) {
@@ -429,15 +532,12 @@ const getBillByCode = async (code) => {
   }
 }
 
-
-
 const showDetail = (item) => {
   loadingItems.value = true
   errorMsg.value = ''
   itemsSelected.value = []
   bill.value = item
   bill.value.items = []
-  // modalView.value.show()
   modalBillDetailRef.value.show()
   getBillByCode(item.code)
 }
@@ -448,6 +548,25 @@ const showEdit = (item) => {
   itemsSelected.value = []
   billStore.formEdit = item
   modalBillEditRef.value.show()
+}
+const newBill = () => {
+  modalBillCreateRef.value.show()
+}
+const openModalCommitment = (item) => {
+  errorMsg.value = ''
+  bill.value = item
+  modalCommitmentRef.value.show()
+  getBillByCode(item.code)
+}
+
+const openModalBulkCommitment = () => {
+  errorMsg.value = ''
+
+  if (billSelected.value.length === 0) {
+    console.log('please select a bill')
+    return false
+  }
+  modalCommitmentBulkRef.value.show()
 }
 
 const onChangeBillStatus = (result) => {
@@ -472,8 +591,6 @@ const onChangeJobStatus = (result) => {
     getBillById(result.data.bill_id)
   }
 }
-const errorMsg = ref()
-const itemsSelected = ref([])
 
 const cancelBill = async (item) => {
   resultCancelCommitment.value = {}
@@ -531,31 +648,11 @@ const cancelBill = async (item) => {
   return
 }
 
-const newBill = () => {
-  modalBillCreateRef.value.show()
-}
-const openModalCommitment = (item) => {
-  errorMsg.value = ''
-  bill.value = item
-  console.log(bill.value);
-  modalCommitmentRef.value.show()
-}
-
-const openModalBulkCommitment = (item) => {
-  errorMsg.value = ''
-  console.log(billSelected.value.length);
-  if (billSelected.value.length === 0) {
-    console.log('please select a bill');
-    return false
-  }
-  modalCommitmentBulkRef.value.show()
-}
-
 const onSearch = async () => {
   try {
     pagination.value.current_page = 1
     await loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 
 const resetFormSearch = () => {
@@ -603,7 +700,7 @@ watch(
   (data) => {
     console.log(data)
     pagination.value.current_page = data.page
-      ; (pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
+    ;(pagination.value.per_page = data.rowsPerPage), (formSearch.value.sortBy = data.sortBy)
     formSearch.value.orderBy = data.sortType
     loadData()
   },
@@ -635,8 +732,6 @@ th {
 }
 
 .checkbox {
-  transform: scale(
-      /*desired magnification*/
-    );
+  transform: scale(/*desired magnification*/);
 }
 </style>

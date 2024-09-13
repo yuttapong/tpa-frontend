@@ -2,10 +2,12 @@
   <div class="commitment">
     <form @submit="submit()">
       <div class="modal" ref="modalRef" id="modalBulk">
-        <div class="modal-dialog modal-dialog-scrollable modal-fullscreen modal-info">
+        <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
           <div class="modal-content">
-            <div class="modal-header bg-primary">
-              <h5 class="modal-title text-white" v-html="title"></h5>
+            <div class="modal-header" :class="type == 'BOOK' ? ' bg-primary' : ' bg-danger'">
+              <h5 class="modal-title text-white">
+                {{ type == 'BOOK' ? 'จองคิวทดสอบเครื่องมือ' : 'ยกเลิกจองคิว' }}
+              </h5>
 
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                 style="font-size: 2rem"></button>
@@ -57,7 +59,9 @@
                               <BTh>ItemID</BTh>
                               <BTh>ItemCode</BTh>
                               <BTh>ห้องทดลอง</BTh>
-                              <BTh>วันนัดรับ</BTh>
+                              <BTh>CalHour</BTh>
+                              <BTh>Reserved Date</BTh>
+
                               <BTh class="text-left">เครื่องมือ</BTh>
                               <BTh class="text-left">ID NO.</BTh>
                               <BTh class="text-left">Model</BTh>
@@ -65,26 +69,27 @@
                               <BTh class="text-center">สถานะ</BTh>
                             </BTr>
                           </BThead>
-                          <BTbody>
+                          <BTbody v-if="bill.items">
                             <BTr v-for="(item, itemIndex) in bill.items" :key="itemIndex">
                               <BTd class="text-center">
                                 {{ itemIndex + 1 }}
                               </BTd>
                               <BTd class="">
-                                {{ item.workorder_id }}
+                                {{ item?.workorder_id }}
                               </BTd>
 
                               <BTd class="">
-                                {{ item.item_code }}
+                                {{ item?.item_code }}
 
                               </BTd>
                               <BTd class="">
-                                {{ item.lab?.name_th }} #{{ item.lab_id }}
+                                {{ item?.lab?.name_th }} #{{ item.lab_id }}
                                 <div>
                                   <small class="fw-bold text-danger">{{ item?.sublab?.name_th }} #{{ item.sublab_id
                                   }}</small>
                                 </div>
                               </BTd>
+                              <BTd class="">{{ item?.product?.calhour }}</BTd>
                               <BTd class="">
 
                                 <span v-if="hasCommitmentDate(item.reserved_date)">
@@ -118,34 +123,59 @@
                   </div>
                 </div>
 
-                <div class="border p-2">
-                  <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
-                  กำหนดวันนัดรับเครื่องมือ
-                  <div class="row g-2">
-                    <div class="col-8 col-lg-8">
-                      <label>Priority</label>
-                      <BillPriority v-model="commitmentPriority" />
-                    </div>
-                    <div class="col-4 col-lg-4">
-                      <Spinner :visible="loadingCommitment" />
+                <div v-if="props.type == 'CANCEL'" class="border p-2">
+                  <div class="row g-3">
+                    <div class="col-12 col-lg-4">
+                      <div class="mt-4 ms-3">
+                        <input type="checkbox" class="" v-model="acceptedCancel" />
+                        <label class="ms-1">ยืนยันยกเลิกจองคิวห้องทดลอง</label>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <div v-if="props.type == 'BOOK'" class="border p-2">
+
+                  <div class="row g-3">
+                    <div class="col-12 col-lg-4">
+                      <label>Priority</label>
+                      <BillPriority v-model="commitmentPriority" @onChange="onChangePriority" />
+
+                    </div>
+                    <div class="col-12 col-lg-4" v-if="commitmentPriority == 'high'">
+                      <label>เลือกวันที่</label>
+                      <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
+                        placeholder="เลือกวันที่" />
+
+                    </div>
+                    <div class="col-12 col-lg-4">
+                      <div class="mt-4 ms-3">
+                        <input type="checkbox" class="" v-model="acceptedCommitmentDate"
+                          @change="onChangeConditionCommitment" />
+                        <label class="ms-1">ยืนยันจองคิวห้องทดลอง</label>
+                      </div>
+                    </div>
+                  </div>
+                  <Spinner :visible="loadingCommitment" class="me-2" />
+                  <div v-if="messageErrorCommitment" class="alert alert-danger">
+                    {{ messageErrorCommitment }}
+                  </div>
+                </div>
               </form>
+
               <section v-if="listErrors && listErrors.length > 0">
                 <h6 class="mt-3">ผลลัพธ์</h6>
                 <BTableSimple class="my-3" small caption-top responsive bordered>
                   <BThead head-variant="dark">
                     <BTr>
                       <BTh width="200">เลขที่ใบขอรับ</BTh>
-                      <BTh width="200">วันนัดรับ</BTh>
+                      <BTh width="200">Commitment Date</BTh>
                       <BTh>ผลลัพธ์</BTh>
                     </BTr>
                   </BThead>
                   <BTbody>
                     <BTr v-for="(err, key) in listErrors" :key="key" class=""
                       :class="err.type == 'error' ? 'text-danger' : 'text-success'">
-                      <BTd class="" nowrap>{{ err.code }}</BTd>
+                      <BTd class="" nowrap>{{ err.bill.code }}</BTd>
 
                       <BTd :class="err.type == 'error' ? 'text-danger' : 'text-success'">{{
                         err.bill.commitment_date
@@ -164,23 +194,21 @@
               <div class="row g-1">
                 <div class="col-12">
                   <button type="button" :disabled="loading" class="btn btn-secondary btn-sm" @click="reloadData()">
-                    <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลดข้อมูล
+                    <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลด
                   </button>
 
-                  <template v-if="bills && bills.length > 0">
-                    <button type="button" class="btn btn-primary btn-sm ms-2" :disabled="loading || Boolean()"
-                      @click="submit()">
-                      <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
+                  <template v-if="bills && bills.length > 0 && type == 'BOOK'">
+                    <button type="button" class="btn btn-primary btn-sm ms-2"
+                      :disabled="loading || !acceptedCommitmentDate" @click="submit()">
+                      <i class="float-start bi bi-clock me-2"></i> จองคิว
                     </button>
                   </template>
-                  <!--
-                                    <template v-if="bill.bill_status !== 'completed'">
-                                        <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
-                                            <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
-                                        </button>
-                                    </template> 
-                                
-                                -->
+                  <template v-if="bills && bills.length > 0 && type == 'CANCEL'">
+                    <button type="button" class="btn btn-danger btn-sm ms-2" :disabled="loading || !acceptedCancel"
+                      @click="cancelBook()">
+                      <i class="float-start bi bi-ban me-2"></i> ยกเลิกจองคิว
+                    </button>
+                  </template>
                 </div>
               </div>
             </div>
@@ -192,9 +220,21 @@
 
   <BModal v-if="visibleModalConfirmBook" v-model="visibleModalConfirmBook" id="modal-confirm-book" cancel-title="ยกเลิก"
     ok-title="ใช่" @ok="findCommitmentDate()" @cancel="visibleModalConfirmBook = false" title="ยืนยันจองคิวห้องทดลอง">
+    <div class="row g3 mb-2">
+      <div class="col-4 fw-bold">Priority</div>
+      <div class="col-8">{{ commitmentPriority }}</div>
+    </div>
+    <div class="row g3 mb-2">
+      <div class="col-4 fw-bold">Commitment Date</div>
+      <div class="col-8">{{ commitmentDate ? showDateTimeZone(commitmentDate) : '' }}</div>
+    </div>
+    <div class="row g3 mb-2">
+      <div class="col-4 fw-bold">ใบขอรับบริการ</div>
+      <div class="col-8">{{ billSelectedFilterd ? billSelectedFilterd.length : 0 }} </div>
+    </div>
     <div class="d-flex flex-wrap gap-2">
       <div v-for="item in billSelectedFilterd" :key="item">
-        <div class="border bg-dark text-white p-1">{{ item.code }}</div>
+        <div class="border bg-secondary text-white p-1">{{ item.code }}</div>
       </div>
     </div>
   </BModal>
@@ -217,14 +257,19 @@ import { myCurrency, myFormatDate } from '@/helpers/myformat'
 import Spinner from '@/components/Spinner.vue'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
-import { formatDate, formatISO } from 'date-fns'
+import { formatDate, formatISO, format } from 'date-fns'
 import JobStatus from './JobStatus.vue'
+
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload', 'onComplete'])
 const props = defineProps({
+  type: {
+    type: String,
+    default: 'BOOK',
+  },
   title: {
     type: String,
-    default: 'จองคิวทดสอบเครื่องมือ',
+    default: 'จองคิวห้องทดลอง',
   },
   onCancel: {
     type: Function,
@@ -249,7 +294,7 @@ const hide = () => {
 }
 
 const loading = ref(false)
-const searchCommitmentDate = ref(true)
+const acceptedCommitmentDate = ref(false)
 const visibleModalConfirmBook = ref(false)
 const visibleModalCancelBook = ref(false)
 const form = ref({
@@ -271,17 +316,42 @@ const form = ref({
 
 //  commitment
 const loadingCommitment = ref(false)
-const resultCommitment = ref()
 const messageSuccessCommitment = ref()
 const messageErrorCommitment = ref()
+const acceptedCancel = ref(false)
 const commitmentDate = ref()
 const commitmentPriority = ref('medium')
 
 const billSelected = ref([])
-const billSelectedFilterd = computed(() => billSelected.value)
+const billSelectedFilterd = computed(() => {
+  // if (props.type == 'BOOK') {
+  //   billSelected.value = billSelected.value.filter((item => !hasCommitmentDate(item.commitment_date)))
+  // } else if (props.type == 'CANCEL') {
+  //   billSelected.value = billSelected.value.filter((item => hasCommitmentDate(item.commitment_date)))
+  // }
+  return billSelected.value
+
+})
 
 const submit = () => {
-  if (searchCommitmentDate.value === true) {
+
+  messageErrorCommitment.value = ''
+  messageSuccessCommitment.value = ''
+
+  if (commitmentPriority.value === undefined) {
+    messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
+    return
+  }
+  if (commitmentPriority.value === 'high') {
+    if (!commitmentDate.value) {
+      messageErrorCommitment.value = 'โปรดระบุ commitment date ที่ต้องการ'
+      return
+    }
+  } else {
+    commitmentDate.value = ''
+  }
+
+  if (acceptedCommitmentDate.value === true) {
     visibleModalConfirmBook.value = true
   }
 }
@@ -291,15 +361,18 @@ const resetForm = () => {
   listErrors.value = []
   messageErrorCommitment.value = ''
   messageSuccessCommitment.value = ''
+  acceptedCancel.value = false
+  acceptedCommitmentDate = false
 }
-
+const showDateTimeZone = (date) => {
+  return date ? format(new Date(date), "dd/MM/yyyy HH:mm z") : ''
+}
 const getItems = () => {
   billSelected.value = []
   loading.value = true
   if (props.bills.length == 0) {
     return []
   }
-
   billSelected.value = props.bills.map((bill, index) => {
     let _items = []
     api
@@ -314,6 +387,7 @@ const getItems = () => {
                 lab_id: item.lab_id,
                 product_id: item.product_id,
                 product_name: item.product_name,
+                product: item?.product,
                 barcode_no: item.barcode_no,
                 serialnumber: item.serialnumber,
                 id_no: item.id_no,
@@ -357,15 +431,18 @@ const getItems = () => {
       .catch((err) => (loading.value = false))
     return bill
   })
+
 }
 
 const listErrors = ref([])
+
 const hasCommitmentDate = (date) => {
   if (!date) return false
   if (String(date) === '0000-00-00 00:00:00') return false
   if (String(date) === '0000-00-00') return false
   return true
 }
+
 const findCommitmentDate = async () => {
   listErrors.value = []
   if (commitmentPriority.value === undefined) {
@@ -373,14 +450,16 @@ const findCommitmentDate = async () => {
     return
   }
 
-  messageErrorCommitment.value = ''
-  messageSuccessCommitment.value = ''
-
   loadingCommitment.value = true
   let totalBill = billSelected.value.length
   let loopCount = 0
   billSelected.value.map(async (bill, index) => {
-    delete bill.commitment_date
+    if (commitmentPriority.value !== 'high') {
+      delete bill.commitment_date
+    } else {
+      bill.commitment_date = commitmentDate.value ? formatISO(commitmentDate.value) : ''
+    }
+
     bill.priority = commitmentPriority.value
     const { data } = await axios
       .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', bill, {
@@ -412,17 +491,17 @@ const findCommitmentDate = async () => {
         loopCount += 1
       })
 
-    loadingCommitment.value = false
+
     if (data.success) {
       let message = `ประมวลผลตารางคิวงานสำเร็จ`
       messageSuccessCommitment.value = message
       const params = data.data
+      loadingCommitment.value = true
       const resultBill = await api.post(`/v2/bills/${params.bill_id}/commitment`, params)
       if (resultBill.data) {
         const billData = resultBill?.data?.data
-        console.log('bill', billData)
         bill._success = messageSuccessCommitment.value
-        bill.commitment_date = billData?.commitment_date
+        bill.commitment_date = formatISO(billData?.commitment_date)
         toast(resultBill.data?.message || message, {
           theme: 'auto',
           type: 'success',
@@ -436,10 +515,12 @@ const findCommitmentDate = async () => {
           bill: billData,
         })
         loopCount += 1
+        loadingCommitment.value = false
       }
     } else {
       messageErrorCommitment.value = data.message
       bill._error = messageErrorCommitment.value
+      loadingCommitment.value = false
     }
     if (totalBill == loopCount) {
       getItems()
@@ -452,60 +533,74 @@ const findCommitmentDate = async () => {
 const onChangeConditionCommitment = (e) => {
   let checked = e.target.checked
   if (checked == false) {
-    commitmentDate.value = null
+
   }
 }
 
-const cancelBook = async (event) => {
-  let params = {
-    commitment_date: props.bill.commitment_date,
-    bill_id: props.bill.id,
-  }
+const cancelBook = () => {
+  let totalBill = billSelected.value.length
+  let loopCount = 0
+  billSelected.value.map(async (bill, billIndex) => {
+    const rsCancel = await axios
+      .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + bill.id, {
+        data: {},
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${appStore.token}`,
+        },
+      })
+      .catch((err) => {
+        loadingCommitment.value = false
 
-  const { data } = await axios
-    .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + params.bill_id, {
-      data: {},
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${appStore.token}`,
-      },
-    })
-    .catch((err) => {
-      loadingCommitment.value = false
-
-      if (err.response) {
-        let data = err.response?.data
-        if (data) {
-          messageErrorCommitment.value = data.message
+        if (err.response) {
+          let data = err.response?.data
+          if (data) {
+            messageErrorCommitment.value = data.message
+          } else {
+            messageErrorCommitment.value = err.message
+          }
         } else {
           messageErrorCommitment.value = err.message
         }
-      } else {
-        messageErrorCommitment.value = err.message
-      }
-      toast(messageErrorCommitment, {
-        theme: 'auto',
-        type: 'default',
-        dangerouslyHTMLString: true,
+        listErrors.value.push({
+          type: 'error',
+          message: messageErrorCommitment.value,
+          bill: bill,
+        })
+        loopCount += 1
+        toast(messageErrorCommitment, {
+          theme: 'auto',
+          type: 'default',
+          dangerouslyHTMLString: true,
+        })
       })
-    })
-  if (data.success) {
-    clearCommitmentDate(props.bill.id)
-    loadingCommitment.value = false
-    toast('ยกเลิกสำเร็จ', {
-      theme: 'auto',
-      type: 'default',
-      dangerouslyHTMLString: true,
-    })
-    setTimeout(() => reloadData(), 500)
-  }
-}
-const clearCommitmentDate = async (billId) => {
-  const { data, status } = await api.delete(`/v2/bills/${billId}/commitment`)
+    if (rsCancel.status == 200) {
+      const { data, status } = await api.delete(`/v2/bills/${bill.id}/commitment`)
+      bill.commitment_date = ""
+      loadingCommitment.value = false
+      console.log(data, status);
+      if (data.success) {
+        loopCount += 1
+        listErrors.value.push({
+          type: 'success',
+          message: "ยกเลิกคิวจองสำเร็จ",
+          bill: bill,
+        })
+        toast('ยกเลิกสำเร็จ', {
+          theme: 'auto',
+          type: 'default',
+          dangerouslyHTMLString: true,
+        })
+      }
+    }
+    console.log(totalBill, loopCount);
+    if (totalBill == loopCount) {
+      getItems()
+      emit('onComplete', loopCount)
+    }
+    return bill
+  })
 
-  if (status == 200) {
-    emit('update:bill', data.data)
-  }
 }
 
 const reloadData = async () => {

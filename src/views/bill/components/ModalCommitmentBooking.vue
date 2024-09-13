@@ -41,8 +41,7 @@
                     <template v-else>
                       <p>-</p>
                     </template>
-                    <!-- <input type="date" v-model="form.commitment_date" name="commitment_date"
-                                            id="commitment_date" class="form-control form-control-sm" readonly> -->
+
                   </div>
                   <div class="">
                     <label class="text-decoration-underline fw-bold">ลูกค้า</label>
@@ -63,18 +62,26 @@
                 </div>
 
                 <div class="border p-2">
-                  <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
-                  กำหนดวันนัดรับเครื่องมือ
+
                   <div class="row g-2">
-                    <div class="col-12 col-lg-8">
+                    <div class="col-12 col-lg-4">
                       <label>Priority</label>
-                      <BillPriority v-model="commitmentPriority" />
+                      <BillPriority v-model="commitmentPriority" @onChange="onChangePriority" />
+
                     </div>
-                    <!-- <div class="col-12 col-lg-4">
+                    <div class="col-12 col-lg-4" v-if="commitmentPriority == 'high'">
                       <label>เลือกวันที่</label>
                       <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
                         placeholder="เลือกวันที่" />
-                    </div> -->
+
+                    </div>
+                    <div class="col-12 col-lg-4">
+                      <div class="mt-4 ms-3">
+                        <input type="checkbox" class="" v-model="acceptedCommitmentDate"
+                          @change="onChangeConditionCommitment" />
+                        <label class="ms-1">ยืนยันจองคิวห้องทดลอง</label>
+                      </div>
+                    </div>
 
                     <div class="col-12">
                       <div v-if="messageErrorCommitment" class="alert alert-danger">
@@ -158,7 +165,7 @@
                         <td>{{ item?.product?.calhour }}</td>
                         <td nowrap>
                           <span>{{ item?.reserved_date }}</span>
-                          <!-- <JobButtonStatus :data="item?.service_status_id"/> -->
+
 
                           <div v-if="item.current_service_status">
                             {{ item.current_service_status.status_id }} :
@@ -240,26 +247,23 @@
                   <Spinner :visible="loadingCommitment" />
 
                   <button type="button" class="btn btn-secondary btn-sm" @click="reloadData()" :disabled="loading">
-                    <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลดข้อมูล
+                    <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลด
                   </button>
 
-                  <template v-if="bill.bill_status !== 'completed' || !bill.id">
+                  <template
+                    v-if="bill.bill_status !== 'completed' && bill.id && acceptedCommitmentDate && !hasCommitmentDate(bill.commitment_date)">
                     <button type="button" class="btn btn-primary btn-sm ms-2" @click="submit()" :disabled="loading">
-                      <i class="float-start bi bi-clock me-2"></i> เริ่มคำนวณ
+                      <i class="float-start bi bi-clock me-2"></i> จองคิว
                     </button>
                   </template>
 
-                  <template v-if="bill.bill_status !== 'completed' || !bill.id">
+                  <template v-if="bill.bill_status !== 'completed' && bill.id && hasCommitmentDate(bill.commitment_date)">
                     <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()" :disabled="loading">
-                      <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
+                      <i class="float-start bi bi-x me-2"></i> ยกเลิกคิว
                     </button>
                   </template>
                 </div>
               </div>
-              <!-- <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-save me-1"></i>
-                สร้างใบขอรับบริการ</button>
-              <button class="btn btn-sm btn-secondary" @click="hide"><i class="bi bi-x me-1"></i>
-                ยกเลิก</button> -->
             </div>
           </div>
         </div>
@@ -287,7 +291,7 @@ import axios from 'axios'
 import { formatDate, formatISO } from 'date-fns'
 import { string } from 'i/lib/util'
 import { useBillStore } from '@/stores/billStore'
-const { isRevealed, reveal, confirm, cancel, onReveal, onConfirm, onCancel } = useConfirmDialog()
+
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload'])
 const props = defineProps({
@@ -298,9 +302,6 @@ const props = defineProps({
   onCancel: {
     type: Function,
   },
-  // bill: {
-  //   type: Object,
-  // },
 })
 const appStore = useAppStore()
 const billStore = useBillStore()
@@ -315,13 +316,14 @@ const hide = () => {
   modalEl.hide()
 }
 const resetForm = () => {
-  emit('update:bill', null)
   resultCommitment.value = {}
   messageErrorCommitment.value = ''
   messageSuccessCommitment.value = ''
+  acceptedCancel.value = false
+  acceptedCommitmentDate = false
 }
 const loading = ref(false)
-const searchCommitmentDate = ref(true)
+const acceptedCommitmentDate = ref(false)
 const modalConfirm = ref(null)
 
 //  commitment
@@ -337,12 +339,17 @@ const getBillById = async () => {
   loading.value = true
   const { data } = await api.get('/v2/bills/' + billId.value)
   if (data) {
-    console.log('object', data);
     billStore.setBill(data)
 
     loading.value = false
   }
 
+}
+
+const onChangePriority = (data) => {
+  if (commitmentPriority.value !== 'high') {
+    commitmentDate.value = ""
+  }
 }
 const findCommitmentDate = async () => {
   if (commitmentPriority.value === undefined) {
@@ -374,8 +381,8 @@ const findCommitmentDate = async () => {
     priority: commitmentPriority.value,
     bill_id: bill.value.id,
     code: bill.value.code,
-    document_date: bill.value.document_date,
-    commitment_date: commitmentDate.value,
+    document_date: (bill.value.document_date),
+    commitment_date: commitmentDate.value ? formatISO(commitmentDate.value) : '',
     items: _items,
   }
 
@@ -386,6 +393,15 @@ const findCommitmentDate = async () => {
     messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
     return
   }
+  if (commitmentPriority.value === 'high') {
+    if (!commitmentDate.value) {
+      messageErrorCommitment.value = 'โปรดระบุ commitment date ที่ต้องการ'
+      return
+    }
+  } else {
+    commitmentDate.value = ''
+  }
+
   loadingCommitment.value = true
 
   try {
@@ -410,7 +426,7 @@ const findCommitmentDate = async () => {
           messageErrorCommitment.value = err.message
         }
       })
-
+    console.log('result', data);
     resultCommitment.value = data
 
     setTimeout(() => {
@@ -429,19 +445,18 @@ const findCommitmentDate = async () => {
     }
   } catch (error) {
     resultCommitment.value = error
-    console.log('error', error)
     loadingCommitment.value = false
   }
 }
 const onChangeConditionCommitment = (e) => {
   let checked = e.target.checked
   if (checked == false) {
-    commitmentDate.value = null
+
   }
 }
 
 const submit = () => {
-  if (searchCommitmentDate.value === true) {
+  if (acceptedCommitmentDate.value === true) {
     findCommitmentDate()
   }
 }
@@ -504,7 +519,6 @@ const updateCommitmentDate = async (params) => {
       dangerouslyHTMLString: true,
     })
     resetForm();
-    hide()
   }
 }
 const clearCommitmentDate = async (billId) => {
@@ -524,7 +538,12 @@ const reloadData = async () => {
   loading.value = true
   setTimeout(() => (loading.value = false), 200)
 }
-
+const hasCommitmentDate = (date) => {
+  if (!date) return false
+  if (String(date) === '0000-00-00 00:00:00') return false
+  if (String(date) === '0000-00-00') return false
+  return true
+}
 onMounted(() => {
   modalEl = new Modal(modalRef.value)
   var myModal = document.getElementById('modalCommitment')

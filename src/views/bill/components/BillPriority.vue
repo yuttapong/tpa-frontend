@@ -12,10 +12,13 @@
   </div>
 </template>
 <script setup>
-import {  } from 'vue'
+import { } from 'vue'
 const props = defineProps({
   modelValue: {
-    type: String
+    type: String,
+  },
+  onChange: {
+    type: Function,
   }
 });
 const emit = defineEmits(['update:modelValue']);
@@ -39,6 +42,7 @@ const commitmentPriority = [
 ]
 const onChange = (e) => {
   emit("update:modelValue", e.target.value)
+  emit('onChange', e.target.value)
 }
 
 </script>

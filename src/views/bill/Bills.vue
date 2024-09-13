@@ -100,19 +100,27 @@
                   </div>
                   <div class="">
                     <button type="button" v-if="billSelected.length" class="btn btn-outline-secondary btn-sm"
-                      @click="openModalBulkCommitment()">
+                      @click="openModalBulkCommitmentBook()">
                       <i class="bi bi-clock"></i>
                       จองคิวห้องทดลอง ({{ billSelected.length }})
+                    </button>
+                  </div>
+                  <div>
+                    <button type="button" v-if="billSelected.length" class="btn btn-outline-danger btn-sm"
+                      @click="openModalBulkCommitmentCancel()">
+                      <i class="bi bi-clock"></i>
+                      ยกเลิกจองคิว ({{ billSelected.length }})
                     </button>
                   </div>
                 </div>
                 <BTable bordered :items="items" class="" :fields="tableFields" :per-page="pagination.per_page"
                   :responsive="true" :small="true">
+
                   <template #cell(select)="row">
-                    <div v-if="!hasCommitmentDate(row.item.commitment_date)">
-                      <BFormCheckbox v-model="billSelected" :value="row.item" class="block"
-                        style="width: 32px; height: 24px; background-color: darkgrey" />
-                    </div>
+                    <!-- <div v-if="!hasCommitmentDate(row.item.commitment_date)"> -->
+                    <BFormCheckbox v-model="billSelected" :value="row.item" class="block"
+                      style="width: 32px; height: 24px; background-color: darkgrey" />
+                    <!-- </div> -->
                     <!-- {{ row.item.commitment_date }} -->
                   </template>
                   <template #cell(index)="row">
@@ -302,7 +310,7 @@
       loadData()
     }
       " />
-    <ModalCommitmentBulkBooking ref="modalCommitmentBulkRef" :bills="billSelected" @onReload="(data) => {
+    <ModalCommitmentBulkBooking :type="commitmentActionType" ref="modalCommitmentBulkRef" :bills="billSelected" @onReload="(data) => {
       loadData()
     }
       " @onComplete="(data) => {
@@ -310,6 +318,7 @@
     loadData()
   }
     " />
+
   </section>
 </template>
 
@@ -353,18 +362,14 @@ const bill = ref({})
 const billSelected = ref([])
 
 const billTypes = ref([])
-const invoice = ref({})
-const modalViewRef = ref(null)
-const modalView = ref(null)
-const modalInvoiceRef = ref(null)
-const modalInvoice = ref(null)
+
 const modalBillCreateRef = ref(null)
 const modalBillDetailRef = ref(null)
 const modalBillEditRef = ref(null)
 const modalCommitmentRef = ref(null)
 const modalCommitmentBulkRef = ref(null)
-const dateSelect = ref(new Date())
 const resultCancelCommitment = ref({})
+const commitmentActionType = ref('BOOK')
 const errorMsg = ref()
 const itemsSelected = ref([])
 const formSearch = ref({
@@ -375,6 +380,14 @@ const formSearch = ref({
 })
 
 const invoiceStore = useInvoiceStore()
+
+const billSelectedForCancel = computed(() => {
+  return billSelected.value.filter((item => {
+    if (hasCommitmentDate(item.commitment_date)) {
+      return item
+    }
+  }))
+})
 
 const hasCommitmentDate = (date) => {
   if (!date) return false
@@ -480,9 +493,18 @@ const openModalCommitment = (item) => {
 
 }
 
-const openModalBulkCommitment = () => {
+const openModalBulkCommitmentBook = () => {
   errorMsg.value = ''
-
+  commitmentActionType.value = 'BOOK'
+  if (billSelected.value.length === 0) {
+    console.log('please select a bill')
+    return false
+  }
+  modalCommitmentBulkRef.value.show()
+}
+const openModalBulkCommitmentCancel = () => {
+  errorMsg.value = ''
+  commitmentActionType.value = 'CANCEL'
   if (billSelected.value.length === 0) {
     console.log('please select a bill')
     return false
@@ -490,84 +512,8 @@ const openModalBulkCommitment = () => {
   modalCommitmentBulkRef.value.show()
 }
 
-const onChangeBillStatus = (result) => {
-  if (result.success) {
-    toast(result.message, {
-      autoClose: 500,
-      theme: 'auto',
-      type: 'success',
-      dangerouslyHTMLString: true,
-    })
-    getBillByCode(result.data.code)
-  }
-}
-const onChangeJobStatus = (result) => {
-  if (result.success) {
-    toast(result.message, {
-      autoClose: 500,
-      theme: 'auto',
-      type: 'success',
-      dangerouslyHTMLString: true,
-    })
-    getBillById(result.data.bill_id)
-  }
-}
 
-const cancelBill = async (item) => {
-  resultCancelCommitment.value = {}
-  let params = {
-    bill_id: item.id,
-    bill_code: item.code,
-  }
-  loadingCancelCommitment.value = true
-  const { data } = await axios
-    .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${appStore.token}`,
-      },
-    })
-    .catch((err) => {
-      resultCancelCommitment.value.success = false
-      loadingCancelCommitment.value = false
-      if (err.response) {
-        let data = err.response?.data
-        if (data) {
-          resultCancelCommitment.value.message = data.message
-          toast(data.message, {
-            theme: 'auto',
-            type: 'default',
-            dangerouslyHTMLString: true,
-          })
-        } else {
-          resultCancelCommitment.value.message = err.message
-          toast(err.message, {
-            theme: 'auto',
-            type: 'default',
-            dangerouslyHTMLString: true,
-          })
-        }
-      } else {
-        resultCancelCommitment.value.message = err.message
-        toast(err.message, {
-          theme: 'auto',
-          type: 'default',
-          dangerouslyHTMLString: true,
-        })
-      }
-    })
-  if (data) {
-    resultCancelCommitment.value.success = true
-    resultCancelCommitment.value.message = data.message
-    loadingCancelCommitment.value = false
-    toast(data.message, {
-      theme: 'auto',
-      type: 'success',
-      dangerouslyHTMLString: true,
-    })
-  }
-  return
-}
+
 
 const onSearch = async () => {
   try {

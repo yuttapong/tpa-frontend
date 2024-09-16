@@ -452,11 +452,8 @@ const updateDiscountItem = (type) => {
   let row = infoProduct.value
   let percent = 0
   let amount = 0
-  let poinPrice = Number(row.point) * Number(row.point_price)
-  let rangePrice = Number(row.range) * Number(row.range_price)
-  //let price = poinPrice + rangePrice
-  let price = pointRangeToPricePerUnit(row.point, row.point_price, row.range, row.range_price);
-
+  let price = row.price
+  // let price = pointRangeToPricePerUnit(row.point, row.point_price, row.range, row.range_price);
   row.total = price
 
   if (type) {
@@ -575,7 +572,13 @@ const updateDiscountItem = (type) => {
 const calculate = () => {
   let items = formInvoice.value.items.map((item) => {
     //let price = Number(item.price)
-    let price = pointRangeToPricePerUnit(item.point, item.point_price, item.range, item.range_price);
+    let price = 0;
+    if (Number(item.point) == 0 && Number(item.point_price) == 0 && Number(item.range) == 0 && Number(item.range_price) == 0) {
+      price = pointRangeToPricePerUnit(item.point, item.point_price, item.range, item.range_price);
+    } else {
+      price = Number(item.price)
+    }
+
     let total = Number(item.price)
 
     let discount =
@@ -1087,32 +1090,34 @@ onUpdated(() => {
                         <div class="col-6">Item Code</div>
                         <div class="col-6">{{ infoProduct.bill_items_code }}</div>
 
-                        <div class="col-3">Range</div>
-                        <div class="col-3">
-                          <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.range"
-                              min="0" />
-                          </div>
-                        </div>
-                        <div class="col-3">Range Price</div>
-                        <div class="col-3">
-                          <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.range_price"
-                              min="0" />
-                          </div>
-                        </div>
                         <div class="col-3">Point</div>
                         <div class="col-3">
                           <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.point"
-                              min="0" />
+                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.point" min="0"
+                              @blur="updateDiscountItem('point')" @change="updateDiscountItem('point')" />
                           </div>
                         </div>
                         <div class="col-3">Point Price</div>
                         <div class="col-3">
                           <div class="input-group input-group-sm">
                             <input type="number" class="form-control form-control-sm" v-model="infoProduct.point_price"
-                              min="0" />
+                              min="0" @blur="updateDiscountItem('point_price')"
+                              @change="updateDiscountItem('point_price')" />
+                          </div>
+                        </div>
+                        <div class="col-3">Range</div>
+                        <div class="col-3">
+                          <div class="input-group input-group-sm">
+                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.range" min="0"
+                              @blur="updateDiscountItem('range')" @change="updateDiscountItem('range')" />
+                          </div>
+                        </div>
+                        <div class="col-3">Range Price</div>
+                        <div class="col-3">
+                          <div class="input-group input-group-sm">
+                            <input type="number" class="form-control form-control-sm" v-model="infoProduct.range_price"
+                              min="0" @blur="updateDiscountItem('range_price')"
+                              @change="updateDiscountItem('range_price')" />
                           </div>
                         </div>
                         <div class="col-6">ราคาต่อหน่วย</div>
@@ -1122,6 +1127,8 @@ onUpdated(() => {
                               @blur="updateDiscountItem('price')" @change="updateDiscountItem('price')" />
                           </div>
                         </div>
+
+
                         <div class="col-6">PO No.</div>
                         <div class="col-6">
                           <div class="input-group input-group-sm">
@@ -1244,9 +1251,9 @@ onUpdated(() => {
                     <template #cell(actions)="row">
                       <BButtonGroup>
                         <input type="checkbox" class="mx-1" v-model="itemsSelected" :value="row.item" />
-                        <BButton size="sm" class="mr-1" variant="" @click="openModalEditItem(row.item, row.index)">
+                        <!-- <BButton size="sm" class="mr-1" variant="" @click="openModalEditItem(row.item, row.index)">
                           <i class="bi bi-pencil"></i>
-                        </BButton>
+                        </BButton> -->
                       </BButtonGroup>
                     </template>
                     <template #cell(bill_code)="row">
@@ -1321,8 +1328,9 @@ onUpdated(() => {
                       <div class="text-end" style="width: 7.5rem">
                         <!-- {{ myCurrency(row.item.price) }} -->
                         <div class="input-group input-group-sm">
-                          <BButton type="button"><i class="bi bi-calculator"></i></BButton>
-                          <BInput type="number" min="0" v-model="row.item.price" style="width: 5rem" class="text-end" />
+                          <!-- <BButton type="button"><i class="bi bi-calculator"></i></BButton> -->
+                          <BInput disabled type="number" min="0" v-model="row.item.price" style="width: 5rem"
+                            class="text-end" />
 
                         </div>
 

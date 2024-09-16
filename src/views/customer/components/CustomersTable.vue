@@ -31,6 +31,11 @@
               <span class="badge bg-war text-dark p-2 mx-1">
                 <i class="bi bi-person-vcard"></i> {{ item.taxnumber }}</span>
             </p>
+            <div v-if="item.note" class="fst-italic">
+              <small>
+                {{ item?.note }}
+              </small>
+            </div>
           </td>
           <td>{{ item.province }}</td>
           <td>

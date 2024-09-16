@@ -1,11 +1,11 @@
 <template>
     <div class="pagetitle">
-        <h1>เครื่องมือ ({{ pagination.total }})</h1>
+        <h1>สินค้า - บริการ ({{ pagination.total }})</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><router-link tag="a" to="/">Home</router-link></li>
                 <li class="breadcrumb-item">ข้อมูล</li>
-                <li class="breadcrumb-item active">เครื่องมือ</li>
+                <li class="breadcrumb-item active">สินค้า - บริการ</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -25,7 +25,7 @@
 
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
-                                    data-bs-target="#qt-index">เครื่องมือ</button>
+                                    data-bs-target="#qt-index">สินค้า/บริการ</button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab"
@@ -78,7 +78,8 @@
                                         <tr>
                                             <th scope="col">#</th>
                                             <th scope="col">Code</th>
-                                            <th scope="col">Name</th>
+                                            <th scope="col">รายการ</th>
+                                            <th scope="col" nowrap>เครื่องมือ</th>
                                             <th scope="col">CalPoint</th>
                                             <th scope="col">CalHour</th>
                                             <th scope="col">Duration (Minutes)</th>
@@ -94,6 +95,11 @@
                                                 <span class="badge bg-dark text-light">{{ item.code }}</span>
                                             </td>
                                             <td>{{ item.name }}</td>
+                                            <td>
+
+                                                <input type="checkbox" v-model="item.is_job" true-value="1" false-value="0"
+                                                    @change="onChangeIsJob(item)" />
+                                            </td>
                                             <td>{{ item.calpoint }}</td>
                                             <td>{{ item.calhour }}</td>
                                             <td>{{ item.duration }}</td>
@@ -161,9 +167,11 @@ import avatar from "@/assets/img/profile-img.jpg"
 import { api } from "@/helpers/api";
 import Spinner from "@/components/Spinner.vue";
 import { useAppStore } from '@/stores/appStore'
+import { useToast } from "bootstrap-vue-next";
 
 
 const row = ref({})
+const toast = useToast()
 const appStore = useAppStore()
 const items = ref({})
 const pagination = ref({
@@ -211,6 +219,13 @@ const search = () => {
 const onChangePage = (page) => {
     pagination.value.current_page = page
     loadData()
+}
+const onChangeIsJob = async (row) => {
+    console.log(row.is_job);
+    const { status } = await api.patch(`/v2/products/${row.id}/set-job`, {
+        is_job: row.is_job
+    })
+
 }
 
 

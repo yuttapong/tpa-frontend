@@ -66,12 +66,12 @@
                             <div class="col-6 col-md-6 col-lg-6">
                               <label>Note Customer</label>
                               <textarea type="text" v-model="form.note_customers" class="form-control form-control-sm"
-                                placeholder="commitment_date" disabled />
+                                placeholder="commitment_date" disabled rows="4" />
                             </div>
                             <div class="col-6 col-md-6 col-lg-6">
                               <label>Remark</label>
                               <textarea type="text" v-model="form.remark" class="form-control form-control-sm"
-                                placeholder="Remark" />
+                                placeholder="Remark" rows="4" />
                             </div>
                           </div>
                           <!-- ############ START BUTTON ################# -->
@@ -236,59 +236,63 @@
                               </div>
                             </div>
                             <div class="col-12 p-0 m-0">
-                              <EasyDataTable class="m-0" :headers="headers" :items="formItems" alternating
-                                v-model:items-selected="itemsSelected" show-index border-cell :loading="loading"
-                                :rowsPerPage="10" fixed-header>
-                                <template #empty-message> ไม่มีรายการเครื่องมือใด ๆ </template>
+                              <BTable stickyHeader responsive small caption-top bordered striped variant="light"
+                                :fields="headers" :items="formItems" alternating>
 
-                                <template #item-item_code="item">
-                                  <input type="text" v-model="item.item_code" class="" style="width: 115px"
-                                    @change="updateItemField('item_code', item)" />
+                                <template #cell(item_code)="row">
+                                  <BInput size="sm" type="text" v-model="row.item.item_code" class="" style="width: 150px"
+                                    @change="updateItemField('item_code', row)" />
                                 </template>
-                                <template #item-product_name="item">
-                                  {{ item.product.code }}<br />
-                                  {{ item.product_name }}
+                                <template #cell(product_name)="row">
+                                  <div class="fw-bold" style="min-width: 150px;">{{ row?.item?.product?.code }}</div>
+                                  {{ row.item?.product_name }}
                                 </template>
-                                <template #item-qty="item">
-                                  <input type="number" v-model="item.qty" class="" style="width: 50px"
-                                    @change="updateItemField('qty', item)" />
+
+                                <template #cell(qty)="row">
+                                  <input type="number" v-model="row.item.qty" class="" style="width: 50px"
+                                    @change="updateItemField('qty', row)" />
                                 </template>
-                                <template #item-test_point="item">
-                                  <input type="text" v-model="item.test_point" class="w-100"
-                                    @change="updateItemField('test_point', item)" />
+
+                                <template #cell(test_point)="row">
+                                  <BFormTextarea size="sm" v-model="row.item.test_point" class="w-100"
+                                    style="min-width: 200px;" @change="updateItemField('test_point', row)" />
                                 </template>
-                                <template #item-range_value="item">
-                                  <input type="number" v-model="item.range_value" class="" style="width: 50px"
-                                    @change="updateItemField('range_value', item)" />
+                                <template #cell(point)="row">
+                                  <BInput size="sm" type="number" v-model="row.item.point" class="w-full"
+                                    style="width: 50px" @change="updateItemField('point', row)" />
                                 </template>
-                                <template #item-range_price="item">
-                                  <input type="number" v-model="item.point" class="" style="width: 50px"
-                                    @change="updateItemField('point', item)" />
+                                <template #cell(point_price)="row">
+                                  <BInput size="sm" type="number" v-model="row.item.point_price" class="w-full"
+                                    style="width: 95px" @change="updateItemField('point_price', row)" />
                                 </template>
-                                <template #item-point="item">
-                                  <input type="number" v-model="item.range_value" class="" style="width: 50px"
-                                    @change="updateItemField('range_value', item)" />
+                                <template #cell(range_value)="row">
+                                  <BInput size="sm" type="number" v-model="row.item.range_value" class="w-full"
+                                    style="width: 50px" @change="updateItemField('range_value', row)" />
                                 </template>
-                                <template #item-point_price="item">
-                                  <input type="number" v-model="item.point_price" class="" style="width: 50px"
-                                    @change="updateItemField('point_price', item)" />
+                                <template #cell(range_price)="row">
+                                  <BInput size="sm" type="number" v-model="row.item.range_price" class="w-full"
+                                    style="width: 95px" @change="updateItemField('range_price', row)" />
                                 </template>
-                                <template #item-discount="item">
-                                  <input type="number" v-model="item.discount" class="" style="width: 80px"
-                                    @change="updateItemField('discount', item)" />
+
+                                <template #cell(price)="row">
+                                  <BInput size="sm" type="number" v-model="row.item.price" class="" style="width: 80px"
+                                    @change="updateItemField('price', row)" />
                                 </template>
-                                <template #item-total="item">
-                                  <input type="number" v-model="item.total" class="" style="width: 80px"
-                                    @change="updateItemField('total', item)" />
+                                <template #cell(discount)="row">
+                                  <BInput size="sm" type="number" v-model="row.item.discount" class="" style="width: 95px"
+                                    @change="updateItemField('discount', row)" />
                                 </template>
-                                <templat #item-showTotal>
-                                  <input type="number" class="" style="width: 80px"
-                                    :value="(Number(item.price) - Number(item.discount)) * Number(item.qty)" disabled />
-                                </templat>
-                                <template #item-remark="item">
-                                  <input type="text" v-model="item.remark" class="w-100 w-full" />
+                                <template #cell(total)="row">
+                                  {{ myCurrency(row.item.total) }}
+                                  <!-- <BInput size="sm" type="number" class="w-full" style="width: 300px"
+                                    :value="(Number(row.item.price) * 1) - Number(row.item.discount)" disabled /> -->
                                 </template>
-                              </EasyDataTable>
+                                <template #cell(remark)="row">
+                                  <BFormTextarea size="sm" v-model="row.item.remark" class="w-100 w-full"
+                                    style="min-width: 200px" />
+                                </template>
+
+                              </BTable>
 
                               <div class="row">
                                 <div class="col-12 col-md-6 py-2">
@@ -390,7 +394,7 @@
 <script setup>
 import { onMounted, computed, ref, onUpdated } from 'vue'
 import { Modal } from 'bootstrap'
-import { myFormatDate } from '@/helpers/myformat'
+import { myFormatDate, myCurrency } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
 import JobButtonStatus from './JobButtonStatus.vue'
@@ -421,7 +425,7 @@ let modalEl = null
 let modalRef = ref(null)
 
 const show = () => {
-  getBillByCode(billStore.formEdit.code)
+  getBillById(billStore.formEdit.id)
   modalEl.show()
   form.value = billStore.formEdit
 }
@@ -429,9 +433,9 @@ const hide = () => {
   modalEl.hide()
 }
 
-const getBillByCode = async (code) => {
+const getBillById = async (id) => {
   try {
-    const { data } = await api.get('/v2/bills/code/' + code)
+    const { data } = await api.get('/v2/bills/' + billStore.formEdit?.id)
     if (data) {
       billStore.formEdit = data
       if (data.items) {
@@ -457,20 +461,21 @@ const certAddresses = ref([])
 const form = computed(() => billStore.formEdit)
 const formItems = computed(() => billStore.items || [])
 const headers = [
-  { text: 'Sorter', value: 'sorter' },
-  { text: 'ItemCode', value: 'item_code' },
-  { text: 'เครื่องมือ', value: 'product_name' },
-  { text: 'Test Point', value: 'test_point' },
-  { text: 'Range', value: 'range_value' },
-  { text: 'Range Price', value: 'range_price' },
-  { text: 'Point', value: 'point' },
-  { text: 'Pont Price', value: 'point_price' },
-  { text: 'ส่วนลด', value: 'discount' },
-  { text: 'Price', value: 'price' },
-  { text: 'จำนวน', value: 'qty' },
-  { text: 'Total', value: 'total' },
-  { text: 'หมายเหตุ', value: 'remark' },
-  // { text: 'Total', value: 'total' },
+  { label: 'No.', key: 'sorter' },
+  { label: 'ItemCode', key: 'item_code' },
+  { label: 'เครื่องมือ', key: 'product_name', stickyColumn: true },
+  { label: 'Test Point', key: 'test_point' },
+  { label: 'Point', key: 'point' },
+  { label: 'Pont Price', key: 'point_price' },
+  { label: 'Range', key: 'range_value' },
+  { label: 'Range Price', key: 'range_price' },
+  { label: 'Price', key: 'price' },
+  { label: 'จำนวน', key: 'qty' },
+  { label: 'ส่วนลด', key: 'discount' },
+
+  { label: 'Total', key: 'total' },
+  { label: 'หมายเหตุ', key: 'remark' },
+  // { label: 'Total', key: 'total' },
 ]
 const totalPrice = computed(() => {
   return formItems.value
@@ -505,17 +510,23 @@ const calculate = () => {
     let discount = item.discount ? Number(item.discount) : 0;
     item.qty = qty
     item.total = total - discount * qty;
-    console.log(item);
     return item;
   })
-  console.log(newItems[1]);
   billStore.items = newItems
 }
-const updateItemField = (name, item) => {
-  // let data = carts.value[item.index]["product_id"]
+const updateItemField = (name, data) => {
+  console.log('row', data.index, data.field.key, data.value);
+  let items = billStore.items.map((row, rowKey) => {
 
-  console.log(name, item)
-  //billStore.updateItems(data)
+    if (rowKey == data.index) {
+      console.log(rowKey, data.index, data.value);
+      row[data.field.key] = data.value
+      row.total = Number(data.item.qty) * Number(data.item.price)
+    }
+    return row
+  })
+  billStore.setItems(items)
+  calculate()
 }
 const openModalProducts = () => {
   modalProduct.value.show()
@@ -616,7 +627,12 @@ const removeSelectedItems = () => {
   let items = itemsSelected.value
   console.log(items)
   let _items = []
-  items.map((item) => { })
+  items.map((item, key) => {
+    console.log(key, item);
+
+  })
+
+  form.value.items = billStore.formItems
 }
 
 const createBill = () => {

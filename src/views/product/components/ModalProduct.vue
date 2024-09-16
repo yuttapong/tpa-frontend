@@ -5,12 +5,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">สินค้า</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <!-- Small tables -->
@@ -18,25 +13,12 @@
               <form @submit.prevent="onSearch()">
                 <div class="row g-2">
                   <div class="col-6 col-md-4 col-lg-3">
-                    <input
-                      type="search"
-                      v-model="formSearchProduct.q"
-                      name="q"
-                      class="form-control form-control-sm"
-                      placeholder="ชื่อสินค้า"
-                      @keyup.enter="onSearch()"
-                    />
+                    <input type="search" v-model="formSearchProduct.q" name="q" class="form-control form-control-sm"
+                      placeholder="ชื่อสินค้า" @keyup.enter="onSearch()" />
                   </div>
                   <div class="col-6 col-md-4 col-lg-3">
-                    <input
-                      type="search"
-                      v-model="formSearchProduct.code"
-                      name="code"
-                      class="form-control form-control-sm"
-                      placeholder="Code"
-                      :disabled="loading"
-                      @keyup.enter="onSearch()"
-                    />
+                    <input type="search" v-model="formSearchProduct.code" name="code" class="form-control form-control-sm"
+                      placeholder="Code" :disabled="loading" @keyup.enter="onSearch()" />
                   </div>
 
                   <div class="col-6 col-md-4 col-lg-3">
@@ -51,7 +33,8 @@
                     <th scope="col"></th>
                     <!-- <th scope="col">#</th> -->
                     <th scope="col">Code</th>
-                    <th scope="col">Name</th>
+                    <th scope="col">รายการ</th>
+                    <th scope="col">เครื่องมือ</th>
 
                     <th scope="col">cal price</th>
                     <th scope="col">cal point</th>
@@ -76,6 +59,9 @@
                       <span v-if="item.serialnumber" class="mx-1 p-1">{{ item.serialnumber }}</span> -->
                     </td>
 
+                    <td>
+                      <input type="checkbox" disabled v-model="item.is_job" true-value="1" false-value="0" />
+                    </td>
                     <td>{{ item.calprice }}</td>
                     <td>{{ item.calpoint }}</td>
                     <td>{{ item.calhour }}</td>
@@ -86,14 +72,8 @@
             <!-- End small tables -->
           </div>
           <div class="modal-footer d-block">
-            <vue-awesome-paginate
-              :total-items="pagination.total"
-              :items-per-page="pagination.per_page"
-              :max-pages-shown="5"
-              v-model="pagination.current_page"
-              :on-click="onChangePage"
-              class=""
-            />
+            <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+              :max-pages-shown="5" v-model="pagination.current_page" :on-click="onChangePage" class="" />
 
             <div class="float-end">
               <button type="button" class="btn btn-primary btn-sm ms-2" @click="select">
@@ -140,13 +120,13 @@ const onSearch = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const onChangePage = async (page) => {
   pagination.value.current_page = page
   try {
     loadData()
-  } catch (error) {}
+  } catch (error) { }
 }
 const loadData = async () => {
   let params = {
@@ -187,3 +167,10 @@ onMounted(() => {
 })
 defineExpose({ show: _show })
 </script>
+<style lang="scss" scoped>
+input[type="checkbox"] {
+  width: 2em;
+  height: 2rem;
+  accent-color: rgb(14, 108, 180);
+}
+</style>

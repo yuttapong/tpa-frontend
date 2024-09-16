@@ -52,6 +52,10 @@
                 <p class="text-wrap fst-italic text-danger">{{ bill.note_customers }}</p>
               </div>
               <div class="col-12 col-md-6">
+                <label class="fw-bold text-decoration-underline">Note</label>
+                <p class="text-wrap fst-italic text-danger">{{ bill?.customer?.note }}</p>
+              </div>
+              <div class="col-12 col-md-6">
                 <label class="fw-bold text-decoration-underline">หมายเหตุ</label>
                 <p class="word-wrap">{{ bill.remark }}</p>
               </div>

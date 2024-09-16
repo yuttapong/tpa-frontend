@@ -469,16 +469,17 @@ const showDetail = (item) => {
   itemsSelected.value = []
   bill.value = item
   bill.value.items = []
-  console.log('showDetail', item);
   billStore.setBill(item)
   modalBillDetailRef.value.show()
-  getBillByCode(item.code)
+  getBillById(item.id)
 }
 
 const showEdit = (item) => {
   loadingItems.value = true
   errorMsg.value = ''
   itemsSelected.value = []
+  bill.value = item
+  bill.value.items = []
   billStore.formEdit = item
   modalBillEditRef.value.show()
 }

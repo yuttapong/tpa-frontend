@@ -122,7 +122,7 @@ const getInvoiceById = async (item) => {
       invoiceStore.setInvoice(data)
       loading.value = false
     }
-  } catch (error) { }
+  } catch (error) {}
 }
 
 const clickView = (item) => {
@@ -147,7 +147,6 @@ const clickCancel = async (row, form) => {
       autoClose: 2000,
       dangerouslyHTMLString: true,
     })
-
   } else if (status == 422) {
     toast(`${data.message}`, {
       theme: 'auto',
@@ -173,7 +172,7 @@ const search = async () => {
   pagination.value.current_page = 1
   try {
     loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 const resetFormSearch = () => {
   formSearch.value.taxnumber = ''
@@ -295,11 +294,20 @@ const print = () => {
               <div class="tab-content pt-2">
                 <div class="tab-pane fade show active qt-index" id="qt-index">
                   <div class="my-2">
-                    <button @click="setFilterStatus(null)" class="btn btn-sm btn-light" type="button">
+                    <button
+                      @click="setFilterStatus(null)"
+                      class="btn btn-sm btn-light"
+                      type="button"
+                    >
                       ทั้งหมด
                     </button>
-                    <button v-for="item in invoiceStatuses" :key="item" @click="setFilterStatus(item)"
-                      class="btn btn-sm btn-light" type="button">
+                    <button
+                      v-for="item in invoiceStatuses"
+                      :key="item"
+                      @click="setFilterStatus(item)"
+                      class="btn btn-sm btn-light"
+                      type="button"
+                    >
                       {{ item.text }}
                     </button>
                   </div>
@@ -307,34 +315,69 @@ const print = () => {
                   <form @submit.prevent="search()">
                     <div class="d-flex gap-2 flex-wrap my-2">
                       <div>
-                        <router-link class="btn btn-sm btn-primary" :to="{ name: 'invoices.create' }">
+                        <router-link
+                          class="btn btn-sm btn-primary"
+                          :to="{ name: 'invoices.create' }"
+                        >
                           <i class="bi bi-plus"></i> สร้างใบแจ้งหนี้
                         </router-link>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input type="search" v-model="formSearch.code" name="code" class="form-control form-control-sm"
-                            placeholder="Code" @keyup.enter="search" />
+                          <input
+                            type="search"
+                            v-model="formSearch.code"
+                            name="code"
+                            class="form-control form-control-sm"
+                            placeholder="Code"
+                            @keyup.enter="search"
+                          />
                         </div>
                       </div>
                       <div class="">
                         <div class="input-group">
-                          <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
-                            class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                            @keyup.enter="search" />
+                          <input
+                            type="search"
+                            v-model="formSearch.taxnumber"
+                            name="taxnumber"
+                            class="form-control form-control-sm"
+                            placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                            @keyup.enter="search"
+                          />
                         </div>
                       </div>
                       <div class="">
-                        <DatePicker v-model="formSearch.due_date" :clearable="true" placeholder="วันที่" />
+                        <BInputGroup size="sm">
+                          <BButton variant="light">กำหนดชำระ</BButton>
+                          <BInput
+                            size="sm"
+                            type="date"
+                            v-model="formSearch.due_date_start"
+                            :clearable="true"
+                            placeholder="วันที่"
+                          />
+
+                          <BInput
+                            size="sm"
+                            type="date"
+                            v-model="formSearch.due_date_end"
+                            :clearable="true"
+                            placeholder="กำหนดชำระ"
+                          />
+                        </BInputGroup>
                       </div>
                       <div class="">
-                        <DatePicker v-model="formSearch.due_date" :clearable="true" placeholder="กำหนดชำระ" />
+                        <input
+                          type="search"
+                          v-model="formSearch.q"
+                          name="q"
+                          class="form-control form-control-sm"
+                          placeholder="ลูกค้า/ผู้ติดต่อ"
+                          @keyup.enter="search"
+                        />
                       </div>
                       <div class="">
-                        <div class="input-group">
-                          <input type="search" v-model="formSearch.q" name="q" class="form-control form-control-sm"
-                            placeholder="ลูกค้า/ผู้ติดต่อ" @keyup.enter="search" />
-                        </div>
+                        <div class="input-group"></div>
                       </div>
                       <div>
                         <button type="submit" class="btn btn-light btn-sm">
@@ -349,15 +392,25 @@ const print = () => {
 
                   <!-- tables -->
 
-                  <BTable :items="items" :fields="tableFields" :per-page="pagination.per_page" :responsive="true" small
-                    striped>
+                  <BTable
+                    :items="items"
+                    :fields="tableFields"
+                    :per-page="pagination.per_page"
+                    :responsive="true"
+                    small
+                    striped
+                  >
                     <template #cell(index)="row">
                       {{ row.index + 1 }}
                     </template>
 
                     <template #cell(actions)="row">
                       <div class="d-flex gap-1">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" @click="clickView(row.item)">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary btn-sm"
+                          @click="clickView(row.item)"
+                        >
                           <i class="bi bi-eye"></i>
                         </button>
                         <!-- <RouterLink :to="`invoices/edit/${row.item.id}`">
@@ -375,8 +428,13 @@ const print = () => {
                         <!-- <button type="button" class="btn btn-outline-secondary btn-sm" @click="() => { }">
                           <i class="bi bi-trash"></i>
                         </button> -->
-                        <InvoiceButtonActions :data="row" canEdit canCancel @clickEdit="clickEdit"
-                          @clickCancel="clickCancel" />
+                        <InvoiceButtonActions
+                          :data="row"
+                          canEdit
+                          canCancel
+                          @clickEdit="clickEdit"
+                          @clickCancel="clickCancel"
+                        />
                       </div>
                     </template>
                     <!-- <template #cell(bill_items_code)="row">
@@ -386,7 +444,11 @@ const print = () => {
                     </template> -->
                     <template #cell(code)="row">
                       <div class="" style="width: 150px">
-                        <BillCode :data="row.item.code" role="button" @click="clickView(row.item)" />
+                        <BillCode
+                          :data="row.item.code"
+                          role="button"
+                          @click="clickView(row.item)"
+                        />
                       </div>
                     </template>
 
@@ -422,8 +484,14 @@ const print = () => {
                     </template>
                   </BTable>
 
-                  <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
-                    :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
+                  <BPagination
+                    v-model="pagination.current_page"
+                    :total-rows="pagination.total"
+                    :per-page="pagination.per_page"
+                    size="sm"
+                    class="my-0"
+                    @page-click="onChangePage"
+                  />
 
                   <!--  tables -->
 
@@ -447,7 +515,12 @@ const print = () => {
               รายละเอียดใบแจ้งหนี้ #{{ invoiceStore.invoice.id }}
               <BButton variant="outline-text">{{ invoiceStore.invoice?.invoice_status }}</BButton>
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <page class="A4" id="print">
@@ -456,11 +529,14 @@ const print = () => {
           </div>
           <div class="modal-footer d-block">
             <div class="d-flex flex-wrap gap-2 justify-content-end">
-              <div v-if="invoiceStore.invoice.id !== undefined && invoiceStore.invoice.cancel_remark">
+              <div
+                v-if="invoiceStore.invoice.id !== undefined && invoiceStore.invoice.cancel_remark"
+              >
                 หมายเหตุยกเลิก:
                 <span class="ms-2 text-danger">
                   {{ invoiceStore.invoice?.cancel_remark }} (
-                  {{ myFormatDate(fromUnixTime(invoiceStore.invoice.canceled_at)) }})</span>
+                  {{ myFormatDate(fromUnixTime(invoiceStore.invoice.canceled_at)) }})</span
+                >
               </div>
               <div>
                 <button type="button" class="btn btn-secondary" @click="print()">

@@ -338,7 +338,11 @@ loadData()
               </div>
 
               <div class="border p-3 bg-info rounded">
-                <input type="checkbox" v-model="searchCommitmentDate" @change="onChangeConditionCommitment" />
+                <input
+                  type="checkbox"
+                  v-model="searchCommitmentDate"
+                  @change="onChangeConditionCommitment"
+                />
                 หาวันนัดรับเครื่องมือ
                 <div class="row g-2">
                   <div class="col-12 col-lg-8">
@@ -347,8 +351,12 @@ loadData()
                   </div>
                   <div class="col-12 col-lg-4">
                     <label>เลือกวันที่</label>
-                    <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
-                      placeholder="เลือกวันที่" />
+                    <input
+                      type="date"
+                      class="form-control-sm form-control"
+                      v-model="commitmentDate"
+                      placeholder="เลือกวันที่"
+                    />
                   </div>
 
                   <div class="col-12">
@@ -387,12 +395,14 @@ loadData()
                       </button>
                     </template>
                     <template v-if="form.commitment_date && bill?.bill_status !== 'completed'">
-                      <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()">
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm ms-2"
+                        @click="cancelBook()"
+                      >
                         <i class="float-start bi bi-x me-2"></i> ยกเลิกจองคิว
                       </button>
                     </template>
-
-
                   </div>
                 </div>
               </div>
@@ -441,7 +451,9 @@ loadData()
                       </td>
                       <td style="min-width: 150px">
                         <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
-                        <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
+                        <small class="ms-2 text-danger"
+                          >{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small
+                        >
                       </td>
                       <td nowrap>{{ item?.product?.calhour }}</td>
                       <td nowrap>
@@ -473,10 +485,12 @@ loadData()
                             <div class="d-block">{{ item.barcode_no }}</div>
                           </BCol>
                         </BRow>
-                        <BBadge v-if="item.manufaturer_name" variant="warning me-2">{{ item?.manufaturer_name }}
+                        <BBadge v-if="item.manufaturer_name" variant="warning me-2"
+                          >{{ item?.manufaturer_name }}
                         </BBadge>
                         <span v-if="item.product && item.product.is_job">
-                          {{ item.product_name }}</span>
+                          {{ item.product_name }}</span
+                        >
                       </td>
                       <!-- <td>
                         <span>{{ item?.barcode_no }}</span>
@@ -519,7 +533,11 @@ loadData()
         </div>
       </div>
     </div>
-    <ConfirmCommitment ref="modalConfirm" :data="resultCommitment" @onConfirm="updateCommitmentDate" />
+    <ConfirmCommitment
+      ref="modalConfirm"
+      :data="resultCommitment"
+      @onConfirm="updateCommitmentDate"
+    />
   </section>
 </template>
 

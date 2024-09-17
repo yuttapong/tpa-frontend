@@ -5,11 +5,15 @@
         <div class="modal-dialog modal-dialog-scrollable modal-fullscreen modal-info">
           <div class="modal-content">
             <div class="modal-header bg-primary">
-
               <h5 class="modal-title text-white" v-html="title"></h5>
 
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                style="font-size: 2rem"></button>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                style="font-size: 2rem"
+              ></button>
             </div>
             <div class="modal-body">
               <!-- ########################################################### -->
@@ -41,7 +45,6 @@
                     <template v-else>
                       <p>-</p>
                     </template>
-
                   </div>
                   <div class="">
                     <label class="text-decoration-underline fw-bold">ลูกค้า</label>
@@ -62,23 +65,28 @@
                 </div>
 
                 <div class="border p-2">
-
                   <div class="row g-2">
                     <div class="col-12 col-lg-4">
                       <label>Priority</label>
                       <BillPriority v-model="commitmentPriority" @onChange="onChangePriority" />
-
                     </div>
                     <div class="col-12 col-lg-4" v-if="commitmentPriority == 'high'">
                       <label>เลือกวันที่</label>
-                      <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
-                        placeholder="เลือกวันที่" />
-
+                      <input
+                        type="date"
+                        class="form-control-sm form-control"
+                        v-model="commitmentDate"
+                        placeholder="เลือกวันที่"
+                      />
                     </div>
                     <div class="col-12 col-lg-4">
                       <div class="mt-4 ms-3">
-                        <input type="checkbox" class="" v-model="acceptedCommitmentDate"
-                          @change="onChangeConditionCommitment" />
+                        <input
+                          type="checkbox"
+                          class=""
+                          v-model="acceptedCommitmentDate"
+                          @change="onChangeConditionCommitment"
+                        />
                         <label class="ms-1">ยืนยันจองคิวห้องทดลอง</label>
                       </div>
                     </div>
@@ -130,6 +138,7 @@
                           SubLab
                         </th>
                         <th scope="col" class="fw-bold">Cal Hour</th>
+                        <th scope="col" class="fw-bold">Duration</th>
                         <th scope="col" class="fw-bold" nowrap>
                           <div>วันนัดรับ</div>
                           Reserved Date
@@ -153,19 +162,26 @@
                     </thead>
 
                     <tbody v-if="bill.items">
-                      <tr v-for="(item, index) in bill.items" :key="index" :class="item.product && item.product.is_job != 1
-                        ? 'text-decoration-line-through'
-                        : ''
-                        ">
+                      <tr
+                        v-for="(item, index) in bill.items"
+                        :key="index"
+                        :class="
+                          item.product && item.product.is_job != 1
+                            ? 'text-decoration-line-through'
+                            : ''
+                        "
+                      >
                         <td>{{ index + 1 }})</td>
                         <td nowrap>
                           <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
-                          <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
+                          <small class="ms-2 text-danger"
+                            >{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small
+                          >
                         </td>
-                        <td>{{ item?.product?.calhour }}</td>
+                        <td nowrap>{{ item?.product?.calhour }} (ชม.)</td>
+                        <td nowrap>{{ item?.product?.duration }} (นาที)</td>
                         <td nowrap>
                           <span>{{ item?.reserved_date }}</span>
-
 
                           <div v-if="item.current_service_status">
                             {{ item.current_service_status.status_id }} :
@@ -197,10 +213,12 @@
                               <div class="d-block">{{ item.barcode_no }}</div>
                             </BCol>
                           </BRow>
-                          <BBadge v-if="item.manufaturer_name" variant="warning me-2">{{ item?.manufaturer_name }}
+                          <BBadge v-if="item.manufaturer_name" variant="warning me-2"
+                            >{{ item?.manufaturer_name }}
                           </BBadge>
                           <span v-if="item.product && item.product.is_job">
-                            {{ item.product_name }}</span>
+                            {{ item.product_name }}</span
+                          >
                         </td>
                         <!-- <td>
                           <span>{{ item?.barcode_no }}</span>
@@ -246,19 +264,46 @@
                 <div class="col-12">
                   <Spinner :visible="loadingCommitment" />
 
-                  <button type="button" class="btn btn-secondary btn-sm" @click="reloadData()" :disabled="loading">
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    @click="reloadData()"
+                    :disabled="loading"
+                  >
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลด
                   </button>
 
                   <template
-                    v-if="bill.bill_status !== 'completed' && bill.id && acceptedCommitmentDate && !hasCommitmentDate(bill.commitment_date)">
-                    <button type="button" class="btn btn-primary btn-sm ms-2" @click="submit()" :disabled="loading">
+                    v-if="
+                      bill.bill_status !== 'completed' &&
+                      bill.id &&
+                      acceptedCommitmentDate &&
+                      !hasCommitmentDate(bill.commitment_date)
+                    "
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm ms-2"
+                      @click="submit()"
+                      :disabled="loading"
+                    >
                       <i class="float-start bi bi-clock me-2"></i> จองคิว
                     </button>
                   </template>
 
-                  <template v-if="bill.bill_status !== 'completed' && bill.id && hasCommitmentDate(bill.commitment_date)">
-                    <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()" :disabled="loading">
+                  <template
+                    v-if="
+                      bill.bill_status !== 'completed' &&
+                      bill.id &&
+                      hasCommitmentDate(bill.commitment_date)
+                    "
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm ms-2"
+                      @click="cancelBook()"
+                      :disabled="loading"
+                    >
                       <i class="float-start bi bi-x me-2"></i> ยกเลิกคิว
                     </button>
                   </template>
@@ -291,7 +336,6 @@ import axios from 'axios'
 import { formatDate, formatISO } from 'date-fns'
 import { string } from 'i/lib/util'
 import { useBillStore } from '@/stores/billStore'
-
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload'])
 const props = defineProps({
@@ -343,25 +387,24 @@ const getBillById = async () => {
 
     loading.value = false
   }
-
 }
 
 const onChangePriority = (data) => {
   if (commitmentPriority.value !== 'high') {
-    commitmentDate.value = ""
+    commitmentDate.value = ''
   }
 }
+
 const findCommitmentDate = async () => {
   if (commitmentPriority.value === undefined) {
     messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
     return
   }
-
   let _items = []
   bill.value.items.filter((item) => {
     if (Number(item.product.is_job) == 1) {
       let filteredItem = {
-        duration: parseInt(item.product?.duration),
+        duration: item.product?.duration,
         item_code: item.item_code,
         lab_id: item.lab_id,
         product_id: item.product_id,
@@ -381,8 +424,7 @@ const findCommitmentDate = async () => {
     priority: commitmentPriority.value,
     bill_id: bill.value.id,
     code: bill.value.code,
-    document_date: (bill.value.document_date),
-    commitment_date: commitmentDate.value ? formatISO(commitmentDate.value) : '',
+    document_date: bill.value.document_date,
     items: _items,
   }
 
@@ -397,6 +439,8 @@ const findCommitmentDate = async () => {
     if (!commitmentDate.value) {
       messageErrorCommitment.value = 'โปรดระบุ commitment date ที่ต้องการ'
       return
+    } else {
+      params.commitment_date = commitmentDate.value ? formatISO(commitmentDate.value) : ''
     }
   } else {
     commitmentDate.value = ''
@@ -426,7 +470,7 @@ const findCommitmentDate = async () => {
           messageErrorCommitment.value = err.message
         }
       })
-    console.log('result', data);
+    console.log('result', data)
     resultCommitment.value = data
 
     setTimeout(() => {
@@ -436,7 +480,6 @@ const findCommitmentDate = async () => {
 
     loadingCommitment.value = false
     if (data.success) {
-
       let message = `ประมวลผลตารางคิวงานสำเร็จ`
       messageSuccessCommitment.value = message
       modalConfirm.value.show()
@@ -451,7 +494,6 @@ const findCommitmentDate = async () => {
 const onChangeConditionCommitment = (e) => {
   let checked = e.target.checked
   if (checked == false) {
-
   }
 }
 
@@ -497,7 +539,6 @@ const cancelBook = async (event) => {
       })
     })
   if (data.success) {
-
     loadingCommitment.value = false
     loading.value = false
     toast('ยกเลิกสำเร็จ', {
@@ -518,7 +559,7 @@ const updateCommitmentDate = async (params) => {
       type: 'success',
       dangerouslyHTMLString: true,
     })
-    resetForm();
+    resetForm()
   }
 }
 const clearCommitmentDate = async (billId) => {
@@ -527,7 +568,7 @@ const clearCommitmentDate = async (billId) => {
   if (status == 200) {
     getBillById()
     emit('onReload')
-    resetForm();
+    resetForm()
     hide()
   }
 }
@@ -571,7 +612,8 @@ defineExpose({ show, hide })
 </script>
 
 <style lang="scss" scoped>
-.commitment {}
+.commitment {
+}
 
 .table-bill-items {
   border: solid 1px #130f0f;

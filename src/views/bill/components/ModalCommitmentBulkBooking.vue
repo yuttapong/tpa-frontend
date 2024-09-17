@@ -9,8 +9,13 @@
                 {{ type == 'BOOK' ? 'จองคิวทดสอบเครื่องมือ' : 'ยกเลิกจองคิว' }}
               </h5>
 
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                style="font-size: 2rem"></button>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                style="font-size: 2rem"
+              ></button>
             </div>
             <div class="modal-body">
               <!-- ########################################################### -->
@@ -25,8 +30,14 @@
                 <div class="accordion mb-2" id="accordionBills" v-if="!loading">
                   <div class="accordion-item" v-for="(bill, bKey) in billSelected" :key="bKey">
                     <h2 class="accordion-header">
-                      <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                        :data-bs-target="`#collapse${bKey}`" aria-expanded="true" :aria-controls="`#collapse${bKey}`">
+                      <button
+                        class="accordion-button"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        :data-bs-target="`#collapse${bKey}`"
+                        aria-expanded="true"
+                        :aria-controls="`#collapse${bKey}`"
+                      >
                         <div class="d-flex flex-wrap gap-2 justify-content-between">
                           <div class="">
                             {{ bKey + 1 }})
@@ -36,9 +47,14 @@
                           </div>
 
                           <div>
-                            <i class="bi bi-calendar me-1"></i>{{ myFormatDate(bill.document_date) }}
-                            <BBadge variant="success" v-if="hasCommitmentDate(bill.commitment_date)">
-                              {{ myFormatDate(bill.commitment_date) }}</BBadge>
+                            <i class="bi bi-calendar me-1"></i
+                            >{{ myFormatDate(bill.document_date) }}
+                            <BBadge
+                              variant="success"
+                              v-if="hasCommitmentDate(bill.commitment_date)"
+                            >
+                              {{ myFormatDate(bill.commitment_date) }}</BBadge
+                            >
                           </div>
 
                           <div class="d-none d-md-block">{{ bill?.address_name }}</div>
@@ -46,13 +62,24 @@
                         </div>
                       </button>
                     </h2>
-                    <div :id="`collapse${bKey}`" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div
+                      :id="`collapse${bKey}`"
+                      class="accordion-collapse collapse"
+                      data-bs-parent="#accordionExample"
+                    >
                       <div class="accordion-body" style="overflow-y: scroll; height: 180px">
                         <div class="d-block d-md-none">{{ bill?.address_name }}</div>
                         <p v-if="bill" class="text-danger p-1">
                           {{ bill?.note_customers }}
                         </p>
-                        <BTableSimple class="" bordered hover small style="" v-if="bill && bill.items">
+                        <BTableSimple
+                          class=""
+                          bordered
+                          hover
+                          small
+                          style=""
+                          v-if="bill && bill.items"
+                        >
                           <BThead>
                             <BTr>
                               <BTh class="text-center">ลำดับ</BTh>
@@ -60,6 +87,7 @@
                               <BTh>ItemCode</BTh>
                               <BTh>ห้องทดลอง</BTh>
                               <BTh>CalHour</BTh>
+                              <BTh>Duration</BTh>
                               <BTh>Reserved Date</BTh>
 
                               <BTh class="text-left">เครื่องมือ</BTh>
@@ -80,23 +108,22 @@
 
                               <BTd class="">
                                 {{ item?.item_code }}
-
                               </BTd>
                               <BTd class="">
                                 {{ item?.lab?.name_th }} #{{ item.lab_id }}
                                 <div>
-                                  <small class="fw-bold text-danger">{{ item?.sublab?.name_th }} #{{ item.sublab_id
-                                  }}</small>
+                                  <small class="fw-bold text-danger"
+                                    >{{ item?.sublab?.name_th }} #{{ item.sublab_id }}</small
+                                  >
                                 </div>
                               </BTd>
-                              <BTd class="">{{ item?.product?.calhour }}</BTd>
+                              <BTd class="">{{ item?.product?.calhour }} (ชม.)</BTd>
+                              <BTd class="">{{ item?.product?.duration }} (นาที)</BTd>
                               <BTd class="">
-
                                 <span v-if="hasCommitmentDate(item.reserved_date)">
-
-                                  {{ myFormatDate(item.reserved_date).toLocaleString() }}</span>
+                                  {{ myFormatDate(item.reserved_date).toLocaleString() }}</span
+                                >
                               </BTd>
-
 
                               <BTd>
                                 {{ item?.product_name }}
@@ -111,9 +138,8 @@
                                 {{ item?.serialnumber }}
                               </BTd>
                               <BTd class="text-center">
-
                                 <JobStatus v-model="item.job_status" />
-                                <div> {{ item.service_status_id }}</div>
+                                <div>{{ item.service_status_id }}</div>
                               </BTd>
                             </BTr>
                           </BTbody>
@@ -134,23 +160,28 @@
                   </div>
                 </div>
                 <div v-if="props.type == 'BOOK'" class="border p-2">
-
                   <div class="row g-3">
                     <div class="col-12 col-lg-4">
                       <label>Priority</label>
                       <BillPriority v-model="commitmentPriority" @onChange="onChangePriority" />
-
                     </div>
                     <div class="col-12 col-lg-4" v-if="commitmentPriority == 'high'">
                       <label>เลือกวันที่</label>
-                      <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
-                        placeholder="เลือกวันที่" />
-
+                      <input
+                        type="date"
+                        class="form-control-sm form-control"
+                        v-model="commitmentDate"
+                        placeholder="เลือกวันที่"
+                      />
                     </div>
                     <div class="col-12 col-lg-4">
                       <div class="mt-4 ms-3">
-                        <input type="checkbox" class="" v-model="acceptedCommitmentDate"
-                          @change="onChangeConditionCommitment" />
+                        <input
+                          type="checkbox"
+                          class=""
+                          v-model="acceptedCommitmentDate"
+                          @change="onChangeConditionCommitment"
+                        />
                         <label class="ms-1">ยืนยันจองคิวห้องทดลอง</label>
                       </div>
                     </div>
@@ -173,8 +204,12 @@
                     </BTr>
                   </BThead>
                   <BTbody>
-                    <BTr v-for="(err, key) in listErrors" :key="key" class=""
-                      :class="err.type == 'error' ? 'text-danger' : 'text-success'">
+                    <BTr
+                      v-for="(err, key) in listErrors"
+                      :key="key"
+                      class=""
+                      :class="err.type == 'error' ? 'text-danger' : 'text-success'"
+                    >
                       <BTd class="" nowrap>{{ err.bill.code }}</BTd>
 
                       <BTd :class="err.type == 'error' ? 'text-danger' : 'text-success'">{{
@@ -193,19 +228,32 @@
             <div class="modal-footer">
               <div class="row g-1">
                 <div class="col-12">
-                  <button type="button" :disabled="loading" class="btn btn-secondary btn-sm" @click="reloadData()">
+                  <button
+                    type="button"
+                    :disabled="loading"
+                    class="btn btn-secondary btn-sm"
+                    @click="reloadData()"
+                  >
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลด
                   </button>
 
                   <template v-if="bills && bills.length > 0 && type == 'BOOK'">
-                    <button type="button" class="btn btn-primary btn-sm ms-2"
-                      :disabled="loading || !acceptedCommitmentDate" @click="submit()">
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm ms-2"
+                      :disabled="loading || !acceptedCommitmentDate"
+                      @click="submit()"
+                    >
                       <i class="float-start bi bi-clock me-2"></i> จองคิว
                     </button>
                   </template>
                   <template v-if="bills && bills.length > 0 && type == 'CANCEL'">
-                    <button type="button" class="btn btn-danger btn-sm ms-2" :disabled="loading || !acceptedCancel"
-                      @click="cancelBook()">
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm ms-2"
+                      :disabled="loading || !acceptedCancel"
+                      @click="cancelBook()"
+                    >
                       <i class="float-start bi bi-ban me-2"></i> ยกเลิกจองคิว
                     </button>
                   </template>
@@ -218,8 +266,16 @@
     </form>
   </div>
 
-  <BModal v-if="visibleModalConfirmBook" v-model="visibleModalConfirmBook" id="modal-confirm-book" cancel-title="ยกเลิก"
-    ok-title="ใช่" @ok="findCommitmentDate()" @cancel="visibleModalConfirmBook = false" title="ยืนยันจองคิวห้องทดลอง">
+  <BModal
+    v-if="visibleModalConfirmBook"
+    v-model="visibleModalConfirmBook"
+    id="modal-confirm-book"
+    cancel-title="ยกเลิก"
+    ok-title="ใช่"
+    @ok="findCommitmentDate()"
+    @cancel="visibleModalConfirmBook = false"
+    title="ยืนยันจองคิวห้องทดลอง"
+  >
     <div class="row g3 mb-2">
       <div class="col-4 fw-bold">Priority</div>
       <div class="col-8">{{ commitmentPriority }}</div>
@@ -230,7 +286,7 @@
     </div>
     <div class="row g3 mb-2">
       <div class="col-4 fw-bold">ใบขอรับบริการ</div>
-      <div class="col-8">{{ billSelectedFilterd ? billSelectedFilterd.length : 0 }} </div>
+      <div class="col-8">{{ billSelectedFilterd ? billSelectedFilterd.length : 0 }}</div>
     </div>
     <div class="d-flex flex-wrap gap-2">
       <div v-for="item in billSelectedFilterd" :key="item">
@@ -238,8 +294,15 @@
       </div>
     </div>
   </BModal>
-  <BModal v-if="visibleModalCancelBook" v-model="visibleModalCancelBook" id="modal-cancel-book" cancel-title="ไม่ใช่"
-    ok-title="ใช่, ยกเลิก" @cancel="visibleModalCancelBook = false" title="ยืนยันยกเลิกคิวห้องทดลอง">
+  <BModal
+    v-if="visibleModalCancelBook"
+    v-model="visibleModalCancelBook"
+    id="modal-cancel-book"
+    cancel-title="ไม่ใช่"
+    ok-title="ใช่, ยกเลิก"
+    @cancel="visibleModalCancelBook = false"
+    title="ยืนยันยกเลิกคิวห้องทดลอง"
+  >
   </BModal>
 </template>
 
@@ -259,7 +322,6 @@ import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
 import { formatDate, formatISO, format } from 'date-fns'
 import JobStatus from './JobStatus.vue'
-
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload', 'onComplete'])
 const props = defineProps({
@@ -330,11 +392,9 @@ const billSelectedFilterd = computed(() => {
   //   billSelected.value = billSelected.value.filter((item => hasCommitmentDate(item.commitment_date)))
   // }
   return billSelected.value
-
 })
 
 const submit = () => {
-
   messageErrorCommitment.value = ''
   messageSuccessCommitment.value = ''
 
@@ -362,10 +422,10 @@ const resetForm = () => {
   messageErrorCommitment.value = ''
   messageSuccessCommitment.value = ''
   acceptedCancel.value = false
-  acceptedCommitmentDate = false
+  acceptedCommitmentDate.value = false
 }
 const showDateTimeZone = (date) => {
-  return date ? format(new Date(date), "dd/MM/yyyy HH:mm z") : ''
+  return date ? format(new Date(date), 'dd/MM/yyyy HH:mm z') : ''
 }
 const getItems = () => {
   billSelected.value = []
@@ -382,7 +442,7 @@ const getItems = () => {
           bill.items = data.items.map((item) => {
             if (Number(item.product.is_job) == 1) {
               let filteredItem = {
-                duration: parseInt(item.product?.duration),
+                duration: item.product?.duration,
                 item_code: item.item_code,
                 lab_id: item.lab_id,
                 product_id: item.product_id,
@@ -424,14 +484,12 @@ const getItems = () => {
           approver_name: bill?.approver_name,
           items: _items,
         }
-        bill.bill_id = bill.id;
+        bill.bill_id = bill.id
         bill.priority = commitmentPriority.value
-
       })
       .catch((err) => (loading.value = false))
     return bill
   })
-
 }
 
 const listErrors = ref([])
@@ -491,7 +549,6 @@ const findCommitmentDate = async () => {
         loopCount += 1
       })
 
-
     if (data.success) {
       let message = `ประมวลผลตารางคิวงานสำเร็จ`
       messageSuccessCommitment.value = message
@@ -533,7 +590,6 @@ const findCommitmentDate = async () => {
 const onChangeConditionCommitment = (e) => {
   let checked = e.target.checked
   if (checked == false) {
-
   }
 }
 
@@ -576,14 +632,14 @@ const cancelBook = () => {
       })
     if (rsCancel.status == 200) {
       const { data, status } = await api.delete(`/v2/bills/${bill.id}/commitment`)
-      bill.commitment_date = ""
+      bill.commitment_date = ''
       loadingCommitment.value = false
-      console.log(data, status);
+      console.log(data, status)
       if (data.success) {
         loopCount += 1
         listErrors.value.push({
           type: 'success',
-          message: "ยกเลิกคิวจองสำเร็จ",
+          message: 'ยกเลิกคิวจองสำเร็จ',
           bill: bill,
         })
         toast('ยกเลิกสำเร็จ', {
@@ -593,14 +649,13 @@ const cancelBook = () => {
         })
       }
     }
-    console.log(totalBill, loopCount);
+    console.log(totalBill, loopCount)
     if (totalBill == loopCount) {
       getItems()
       emit('onComplete', loopCount)
     }
     return bill
   })
-
 }
 
 const reloadData = async () => {
@@ -640,7 +695,8 @@ defineExpose({ show, hide })
 </script>
 
 <style lang="scss" scoped>
-.commitment {}
+.commitment {
+}
 
 .table-bill-items {
   border: solid 1px #130f0f;

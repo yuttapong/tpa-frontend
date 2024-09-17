@@ -9,7 +9,7 @@ import { myFormatDate, myCurrency } from '@/helpers/myformat'
 const invoiceStore = useInvoiceStore()
 
 const data = computed(() => invoiceStore.invoice)
-onMounted(() => { })
+onMounted(() => {})
 </script>
 <template>
   <section class="section">
@@ -17,7 +17,10 @@ onMounted(() => { })
       <div class="row">
         <div class="col-6">
           <p>
-            <img src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg" height="60" />
+            <img
+              src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg"
+              height="60"
+            />
           </p>
         </div>
         <div class="col-6">
@@ -65,6 +68,7 @@ onMounted(() => { })
               <th scope="col" class="fw-bold text-end" nowrap>ส่วนลด</th>
 
               <th scope="col" class="fw-bold text-end" nowrap>รวมเป็นเงิน</th>
+              <th scope="col" class="fw-bold" nowrap>หมายเหตุ</th>
             </tr>
           </thead>
           <tbody v-if="data && data.items">
@@ -87,6 +91,7 @@ onMounted(() => { })
               <td class="text-end">
                 {{ (parseFloat(item.price) - parseFloat(item.discount)).toLocaleString() }}
               </td>
+              <td class="text-left">{{ item.remark }}</td>
             </tr>
           </tbody>
           <tfoot>
@@ -101,6 +106,7 @@ onMounted(() => { })
               <td class="text-end">{{ parseFloat(data?.totalprice).toLocaleString() }}</td>
               <td class="text-end">{{ parseFloat(data?.totaldiscount).toLocaleString() }}</td>
               <td class="text-end">{{ parseFloat(data?.totalnet).toLocaleString() }}</td>
+              <td></td>
             </tr>
           </tfoot>
         </table>
@@ -193,7 +199,7 @@ div[size='A4'] {
   margin-bottom: 0.5cm;
   box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
 
-  >p,
+  > p,
   span,
   li,
   td {
@@ -208,7 +214,6 @@ div[size='A4'][layout='portrait'] {
 }
 
 @media print {
-
   body,
   page {
     margin: 0;

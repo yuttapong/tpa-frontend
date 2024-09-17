@@ -192,10 +192,11 @@
 
                           <th scope="col" class="fw-bold">Item Code</th>
                           <th scope="col" class="fw-bold">เครื่องมือ</th>
-                          <th scope="col" class="fw-bold">Range</th>
-                          <th scope="col" class="fw-bold">Range Price</th>
                           <th scope="col" class="fw-bold">Point</th>
-                          <th scope="col" class="fw-bold">Point Price</th>
+                          <th scope="col" class="fw-bold" nowrap>Point Price</th>
+                          <th scope="col" class="fw-bold">Range</th>
+                          <th scope="col" class="fw-bold" nowrap>Range Price</th>
+
                           <th scope="col" class="fw-bold">จำนวนเงิน</th>
                           <th scope="col" class="fw-bold">สถานะ</th>
                         </tr>
@@ -230,13 +231,13 @@
                             </div>
                             <ProductMeta :item="item" />
                           </td>
-                          <td class="text-right">{{ item.range_value }}<br /></td>
-                          <td class="text-right">
-                            {{ Number(item.range_price).toLocaleString() }}
-                          </td>
                           <td class="text-right">{{ item.point }}</td>
                           <td class="text-right">
                             {{ Number(item.point_price).toLocaleString() }}
+                          </td>
+                          <td class="text-right">{{ item.range_value }}<br /></td>
+                          <td class="text-right">
+                            {{ Number(item.range_price).toLocaleString() }}
                           </td>
 
                           <td class="text-right">{{ Number(item.price).toLocaleString() }}</td>

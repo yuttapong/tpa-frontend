@@ -54,8 +54,9 @@ onMounted(() => {})
         </div>
       </div>
       <spinner :visible="data && !data.items" />
-      <div size="">
-        <table class="table table-sm table-condensed table-bordered">
+
+      <div size="table-responsive">
+        <table class="table table-sm table-condensed table-bordered" style="width: 100%">
           <thead>
             <tr>
               <th scope="col" nowrap class="fw-bold">ลำดับที่</th>
@@ -65,9 +66,13 @@ onMounted(() => {})
               <th scope="col" class="fw-bold">Range</th>
               <th scope="col" class="fw-bold">Range Price</th>
               <th scope="col" class="fw-bold text-end" nowrap>ราคา</th>
-              <th scope="col" class="fw-bold text-end" nowrap>ส่วนลด</th>
-
-              <th scope="col" class="fw-bold text-end" nowrap>รวมเป็นเงิน</th>
+              <th scope="col" class="fw-bold text-end" nowrap>QTY</th>
+              <th scope="col" class="fw-bold text-end" nowrap>จำนวนเงิน</th>
+              <th scope="col" class="fw-bold text-end text-danger" nowrap>ส่วนลด</th>
+              <th scope="col" class="fw-bold text-end text-success" nowrap>
+                VAT({{ data.vat_percent }}%)
+              </th>
+              <th scope="col" class="fw-bold text-end" nowrap>ยอดรวมสุทธิ</th>
               <th scope="col" class="fw-bold" nowrap>หมายเหตุ</th>
             </tr>
           </thead>
@@ -81,109 +86,108 @@ onMounted(() => {})
                 <ProductMeta :item="item" />
               </td>
 
-              <td class="text-end">{{ parseFloat(item.point).toLocaleString() }}</td>
-              <td class="text-end">{{ parseFloat(item.point_price).toLocaleString() }}</td>
-              <td class="text-end">{{ parseFloat(item.range).toLocaleString() }}</td>
-              <td class="text-end">{{ parseFloat(item.range_price).toLocaleString() }}</td>
+              <td class="text-end">{{ myCurrency(item.point) }}</td>
+              <td class="text-end">{{ myCurrency(item.point_price) }}</td>
+              <td class="text-end">{{ myCurrency(item.range) }}</td>
+              <td class="text-end">{{ myCurrency(item.range_price) }}</td>
 
-              <td class="text-end">{{ parseFloat(item.price).toLocaleString() }}</td>
-              <td class="text-end">{{ parseFloat(item.discount).toLocaleString() }}</td>
-              <td class="text-end">
-                {{ (parseFloat(item.price) - parseFloat(item.discount)).toLocaleString() }}
+              <td class="text-end">{{ myCurrency(item.price) }}</td>
+              <td class="text-end">{{ myCurrency(item.qty) }}</td>
+              <td class="text-end">{{ myCurrency(item.total) }}</td>
+              <td class="text-end text-danger">
+                <span v-if="item.discount">-{{ myCurrency(item.discount) }}</span>
+              </td>
+
+              <td class="text-end text-success">
+                <span v-if="item.vat">+{{ myCurrency(item.vat) }}</span>
+              </td>
+              <td class="text-end fw-bold">
+                {{ myCurrency(item.net) }}
               </td>
               <td class="text-left">{{ item.remark }}</td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <th colspan="8"></th>
 
-              <td class="text-end">{{ parseFloat(data?.totalprice).toLocaleString() }}</td>
-              <td class="text-end">{{ parseFloat(data?.totaldiscount).toLocaleString() }}</td>
-              <td class="text-end">{{ parseFloat(data?.totalnet).toLocaleString() }}</td>
-              <td></td>
+              <th class="text-end">{{ myCurrency(data?.totalprice) }}</th>
+              <th class="text-end">{{ myCurrency(data?.totaldiscount) }}</th>
+              <th class="text-end">{{ myCurrency(data?.totalvat) }}</th>
+              <th class="text-end">{{ myCurrency(data?.totalnet) }}</th>
+              <th></th>
+            </tr>
+            <tr>
+              <td colspan="13">
+                <!-- #################### START SUMMAYRY ####################### -->
+                <div class="">
+                  <div class="row g-2">
+                    <div class="col-12 col-md-6" style="font-size: 14px">
+                      <div class="row border border-danger m-1">
+                        <div class="col-6 text-end">ส่วนลดสินค้า</div>
+                        <div class="col-6">
+                          <div class="text-end fw-bold text-danger">
+                            - {{ myCurrency(invoiceStore.totalDiscount) }}
+                          </div>
+                        </div>
+                        <div class="col-6 text-end">ส่วนลดท้ายบิล</div>
+                        <div class="col-6">
+                          <div class="text-end fw-bold text-danger">
+                            - {{ myCurrency(invoiceStore.totalBillDiscount) }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-6" style="font-size: 14px">
+                      <div class="row">
+                        <div class="col-6 text-end">รวมเงิน</div>
+                        <div class="col-6">
+                          <div class="text-end fw-bold">{{ myCurrency(data.totalprice) }}</div>
+                        </div>
+                      </div>
+                      <div class="row" v-if="data?.totaldiscount > 0">
+                        <div class="col-6 text-end text-danger">ส่วนลดทั้งหมด</div>
+                        <div class="col-6">
+                          <div class="text-end fw-bold text-danger">
+                            - {{ myCurrency(invoiceStore.totalAllDiscount) }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-6 text-end">คงเหลือ</div>
+                        <div class="col-6">
+                          <div class="text-end fw-bold text-decoration-underline">
+                            {{ myCurrency(invoiceStore.totalPriceAfterDiscount) }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row text-success">
+                        <div class="col-6 text-end">
+                          ภาษีมูลค่าเพิ่ม (VAT) {{ data?.vat_percent }} %
+                        </div>
+                        <div class="col-6">
+                          <div class="text-end fw-bold text-decoration-underline">
+                            {{ myCurrency(data?.totalvat) }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-6 text-end">จำนวนเงินทั้งสิ้น</div>
+                        <div class="col-6">
+                          <div class="text-end fw-bold h4 text-decoration-underline">
+                            {{ myCurrency(data?.totalnet) }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- #################### END SUMMAYRY ####################### -->
+              </td>
             </tr>
           </tfoot>
         </table>
       </div>
-      <!-- <div class="row g-3">
-        <div class="col-3"></div>
-        <div class="col-3">Total Price: {{ parseFloat(data?.totalprice).toLocaleString() }}</div>
-        <div class="col-3">
-          Total Discount : {{ parseFloat(data?.totaldiscount).toLocaleString() }}
-        </div>
-        <div class="col-3">Total Net : {{ parseFloat(data?.totalnet).toLocaleString() }}</div>
-      </div> -->
-
-      <!-- #################### START SUMMAYRY ####################### -->
-
-      <div class="row g-1">
-        <div class="col-12 col-md-6" style="font-size: 14px">
-          <div class="row border border-danger m-1">
-            <div class="col-6 text-end">ส่วนลดสินค้า</div>
-            <div class="col-6">
-              <div class="text-end fw-bold text-danger">
-                - {{ myCurrency(invoiceStore.totalDiscount) }}
-              </div>
-            </div>
-            <div class="col-6 text-end">ส่วนลดท้ายบิล</div>
-            <div class="col-6">
-              <div class="text-end fw-bold text-danger">
-                - {{ myCurrency(invoiceStore.totalBillDiscount) }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6" style="font-size: 14px">
-          <div class="row">
-            <div class="col-6 text-end">รวมเงิน</div>
-            <div class="col-6">
-              <div class="text-end fw-bold">{{ myCurrency(data.totalprice) }}</div>
-            </div>
-          </div>
-          <div class="row" v-if="data?.totaldiscount > 0">
-            <div class="col-6 text-end text-danger">ส่วนลดทั้งหมด</div>
-            <div class="col-6">
-              <div class="text-end fw-bold text-danger">
-                - {{ myCurrency(invoiceStore.totalAllDiscount) }}
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6 text-end">คงเหลือ</div>
-            <div class="col-6">
-              <div class="text-end fw-bold text-decoration-underline">
-                {{ myCurrency(invoiceStore.totalPriceAfterDiscount) }}
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6 text-end">ภาษีมูลค่าเพิ่ม (VAT)</div>
-            <div class="col-6">
-              <div class="text-end fw-bold text-decoration-underline">
-                {{ myCurrency(data?.totalvat) }}
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6 text-end">จำนวนเงินทั้งสิ้น</div>
-            <div class="col-6">
-              <div class="text-end fw-bold h4 text-decoration-underline">
-                {{ myCurrency(data?.totalnet) }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12">
-          <!-- <textarea v-model="data?.remark" class="form-control" placeholder="Remark หมายเหตุ..."></textarea> -->
-        </div>
-      </div>
-      <!-- #################### END SUMMAYRY ####################### -->
     </div>
   </section>
 </template>

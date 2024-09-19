@@ -115,14 +115,7 @@ const formDiscountAdd = ref({
 const hasVat = ref(true)
 
 const items = computed(() => formInvoice.value.items)
-const vatPercent = computed(() => {
-  if (!hasVat.value) {
-    return 0
-  }
-  if (hasVat.value) {
-    return appStore.settings.vat || 7
-  }
-})
+const vatPercent = computed(() => formInvoice.value.vat_percent || 0)
 const discountCustomer = ref(0)
 const discountCustomerType = ref('percentage')
 const loadData = async () => {
@@ -169,14 +162,7 @@ const openModalWorkOrder = () => {
 const addItems = async (item) => {
   let qty = 1
   let price = Number(item.price)
-  // let price = pointRangeToPricePerUnit(
-  //   item.point,
-  //   item.point_price,
-  //   item.range_value,
-  //   item.range_price,
-  // )
   let total = Number(price) * qty
-  let grand_total = Number(total)
   let row = {
     is_job: item.product.is_job || 1,
     item_id: 0,
@@ -212,7 +198,7 @@ const addItems = async (item) => {
     price: price,
     vat: 0,
     total: total,
-    grand_total: grand_total,
+    net: total,
     product: item?.product,
     staff_id: appStore.user.id,
     invoice_item_id: item?.invoice_item_id,
@@ -229,15 +215,8 @@ const fillDataBill = async (bill, billItems) => {
   if (billItems.length > 0) {
     billItems.map((item) => {
       let qty = 1
-      // let price = pointRangeToPricePerUnit(
-      //   item.point,
-      //   item.point_price,
-      //   item.range_value,
-      //   item.range_price,
-      // )
       let price = Number(item.price)
       let total = Number(price) * qty
-      let grand_total = Number(total)
       let row = {
         is_job: item.product.is_job || 1,
         item_id: 0,
@@ -273,7 +252,7 @@ const fillDataBill = async (bill, billItems) => {
         price: price,
         vat: 0,
         total: total,
-        grand_total: grand_total,
+        net: total,
         product: item?.product,
         staff_id: appStore.user.id,
         invoice_item_id: item?.invoice_item_id,
@@ -352,7 +331,7 @@ const deleteItems = () => {
     itemsSelected.value = []
   }
 }
-const onChangeCustomerType = (rs) => {
+const onChangeCustomerType = () => {
   calculate()
 }
 const calPriceFromPointAndRange = (row) => {
@@ -425,54 +404,49 @@ const totalNet = computed(() => {
  * แสดง Modal เลือกลูกค้า
  */
 const openModalCustomer = () => {
-  if (formInvoice.value.bill_code) {
-  }
   modalCustomer.value.show()
 }
 
-const isEmpty = (v) => {
-  if (typeof v === null) return true
-}
 /**
  * แสดง Modal แก้ไขรายการ
  */
-const openModalEditItem = (row, index) => {
-  infoProduct.value = row
-  formDiscountAdd.value.index = index
-  let defaultDiscountType = 'amount'
+// const openModalEditItem = (row, index) => {
+//   infoProduct.value = row
+//   formDiscountAdd.value.index = index
+//   let defaultDiscountType = 'amount'
 
-  formDiscountAdd.value.discountCustomerType = row.discount_customer_type
-    ? row.discount_customer_type
-    : defaultDiscountType
-  formDiscountAdd.value.discountLabType = row.discount_lab_type
-    ? row.discount_lab_type
-    : defaultDiscountType
-  formDiscountAdd.value.discountOrderType = row.discount_order_type
-    ? row.discount_order_type
-    : defaultDiscountType
+//   formDiscountAdd.value.discountCustomerType = row.discount_customer_type
+//     ? row.discount_customer_type
+//     : defaultDiscountType
+//   formDiscountAdd.value.discountLabType = row.discount_lab_type
+//     ? row.discount_lab_type
+//     : defaultDiscountType
+//   formDiscountAdd.value.discountOrderType = row.discount_order_type
+//     ? row.discount_order_type
+//     : defaultDiscountType
 
-  if (row.discount_customer_type == 'percentage') {
-    formDiscountAdd.value.discountCustomerValue = Number(row?.discount_customer_percent)
-  } else if (row.discount_customer_type == 'amount') {
-    formDiscountAdd.value.discountCustomerValue = Number(row?.discount_customer)
-  }
+//   if (row.discount_customer_type == 'percentage') {
+//     formDiscountAdd.value.discountCustomerValue = Number(row?.discount_customer_percent)
+//   } else if (row.discount_customer_type == 'amount') {
+//     formDiscountAdd.value.discountCustomerValue = Number(row?.discount_customer)
+//   }
 
-  // lab
-  if (row.discount_lab_type == 'percentage') {
-    formDiscountAdd.value.discountLabValue = Number(row?.discount_lab_percent)
-  } else if (row.discount_lab_type == 'amount') {
-    formDiscountAdd.value.discountLabValue = Number(row?.discount_lab)
-  }
+//   // lab
+//   if (row.discount_lab_type == 'percentage') {
+//     formDiscountAdd.value.discountLabValue = Number(row?.discount_lab_percent)
+//   } else if (row.discount_lab_type == 'amount') {
+//     formDiscountAdd.value.discountLabValue = Number(row?.discount_lab)
+//   }
 
-  // order
-  if (row.discount_order_type == 'percentage') {
-    formDiscountAdd.value.discountOrderValue = Number(row?.discount_order_percent)
-  } else if (row.discount_order_type == 'amount') {
-    formDiscountAdd.value.discountOrderValue = Number(row?.discount_order)
-  }
+//   // order
+//   if (row.discount_order_type == 'percentage') {
+//     formDiscountAdd.value.discountOrderValue = Number(row?.discount_order_percent)
+//   } else if (row.discount_order_type == 'amount') {
+//     formDiscountAdd.value.discountOrderValue = Number(row?.discount_order)
+//   }
 
-  visibleModalEditItem.value = true
-}
+//   visibleModalEditItem.value = true
+// }
 const updatePriceItems = (row) => {
   calculate()
 }
@@ -605,32 +579,27 @@ const updateDiscountItem = (type) => {
 const calculate = () => {
   let items = formInvoice.value.items.map((item) => {
     let price = Number(item.price)
-    // let price = 0
-    // if (
-    //   Number(item.point) == 0 &&
-    //   Number(item.point_price) == 0 &&
-    //   Number(item.range) == 0 &&
-    //   Number(item.range_price) == 0
-    // ) {
-    //   price = pointRangeToPricePerUnit(item.point, item.point_price, item.range, item.range_price)
-    // } else {
-    //   price = Number(item.price)
-    // }
+    let total = Number(item.price) * Number(item.qty)
 
     let discount =
       Number(item.discount_customer) + Number(item.discount_lab) + Number(item.discount_order)
     item.discount = discount
     item.price = price
-    item.total = price
-    item.net = price - discount
+    item.total = total
+    item.vat = 0
+    if (Number(formInvoice.value.vat_percent) > 0) {
+      item.vat =
+        ((Number(item.total) - Number(item.discount)) * formInvoice.value.vat_percent) / 100
+    }
 
+    item.net = price - discount + item.vat
     return item
   })
   formInvoice.value.items = items
-  formInvoice.totaldiscount = totalAllDiscount.value
-  formInvoice.totalprice = totalPrice.value
-  formInvoice.totavat = totalVat.value
-  formInvoice.totalnet = totalNet.value
+  formInvoice.value.totaldiscount = totalAllDiscount.value
+  formInvoice.value.totalprice = totalPrice.value
+  formInvoice.value.totavat = totalVat.value
+  formInvoice.value.totalnet = totalNet.value
 }
 
 /**
@@ -646,16 +615,16 @@ const addDiscountCustomer = () => {
     let amount = 0
     // let price = pointRangeToPricePerUnit(item.point, item.point_price, item.range, item.range_price)
     let price = Number(item.price)
-    let grand_total = Number(item.net)
+    let total = Number(item.price) * Number(item.qty)
 
-    if (item.product && Number(item.product.is_job) === 1 && Number(price > 0)) {
+    if (item.product && Number(item.product.is_job) === 1 && Number(total > 0)) {
       if (discountType == 'percentage') {
         item.discount_customer_percent = discountValue
-        amount = (price * discountValue) / 100
+        amount = (total * discountValue) / 100
         percent = Number(discountValue).toFixed(2)
       } else if (discountType == 'amount') {
         amount = discountValue
-        percent = Number((discountValue * 100) / price).toFixed(2)
+        percent = Number((discountValue * 100) / total).toFixed(2)
       }
     }
 
@@ -665,9 +634,13 @@ const addDiscountCustomer = () => {
 
     let discount =
       Number(item.discount_customer) + Number(item.discount_lab) + Number(item.discount_order)
-    grand_total = price - discount
-    item.total = price
-    item.net = grand_total
+    item.price = price
+    item.total = total
+    item.discount = discount
+    if (formInvoice.value.vat_percent) {
+      item.vat = ((total - discount) * formInvoice.value.vat_percent) / 100
+    }
+    item.net = total - discount + item.vat
     return item
   })
 
@@ -691,18 +664,17 @@ const onChangeDiscountTypeOfItems = (item, typeName, discountType) => {
 
   let percent = 0
   let amount = 0
-  let price = pointRangeToPricePerUnit(item.point, item.point_price, item.range, item.range_price)
-  //let price = Number(item.price)
-  let grand_total = Number(item.net)
+  let price = Number(item.price)
+  let total = Number(item.price) * Number(item.qty)
 
-  if (item.product && Number(item.product.is_job) === 1 && Number(price > 0)) {
+  if (item.product && Number(item.product.is_job) === 1 && Number(total > 0)) {
     if (discountType == 'percentage') {
       // item["discount_" + typeName + "_percent"] = discountValue
-      amount = (price * discountValue) / 100
+      amount = (total * discountValue) / 100
       percent = Number(discountValue).toFixed(2)
     } else if (discountType == 'amount') {
       amount = discountValue
-      percent = Number((discountValue * 100) / price).toFixed(2)
+      percent = Number((discountValue * 100) / total).toFixed(2)
     }
   }
   item[`discount_${typeName}_type`] = discountType
@@ -711,10 +683,14 @@ const onChangeDiscountTypeOfItems = (item, typeName, discountType) => {
 
   let discount =
     Number(item.discount_customer) + Number(item.discount_lab) + Number(item.discount_order)
-  grand_total = price - discount
-  item.total = price
+
+  item.price = price
+  item.total = total
   item.discount = discount
-  item.net = grand_total
+  if (formInvoice.value.vat_percent) {
+    item.vat = ((total - discount) * formInvoice.value.vat_percent) / 100
+  }
+  item.net = total - discount + item.vat
   formInvoice.value.items[index] = item
 }
 
@@ -786,8 +762,8 @@ const getInvoice = async (id) => {
   if (data) {
     formInvoice.value = data
     hasVat.value = !!formInvoice.value.totalvat
-
-    if (!formInvoice.value.subdistrict) formInvoice.value.subdistrict = data.customer?.subdistrict
+    if (formInvoice.value.tot)
+      if (!formInvoice.value.subdistrict) formInvoice.value.subdistrict = data.customer?.subdistrict
 
     if (!formInvoice.value.district) formInvoice.value.district = data.customer?.district
 
@@ -918,9 +894,11 @@ const tableFields = [
   { key: 'discount_customer', label: 'ส่วนลด Cust', sortable: false },
   { key: 'discount_lab', label: 'ส่วนลด Lab', sortable: false },
   { key: 'discount_order', label: 'ส่วนลด Order', sortable: false },
+  { key: 'qty', label: 'QTY', sortable: false },
+  { key: 'total', label: 'จำนวนเงิน', sortable: false },
   { key: 'discount', label: 'ส่วนลด', sortable: false },
-  { key: 'vat', label: 'Vat', sortable: false },
-  { key: 'net', label: 'ราคาหลังลด', sortable: false },
+  { key: 'vat', label: 'VAT', sortable: false },
+  { key: 'net', label: ' ยอดรวมสุทธิ', sortable: false },
   { key: 'remark', sortable: false, label: 'Remark' },
 ]
 
@@ -940,6 +918,7 @@ onMounted(() => {
     formInvoice.value.due_within = 0
     formInvoice.value.invoice_status = 'draft'
     formInvoice.value.discount_pattern = 'A'
+    formInvoice.value.vat_percent = appStore.settings.vat
   }
 })
 const customerTypeCode = ref()
@@ -1782,11 +1761,18 @@ onUpdated(() => {
                         -{{ myCurrency(row.item.discount) }}
                       </div>
                     </template>
+
+                    <template #cell(total)="row">
+                      <div class="fw-bold text-end" style="min-width: 80px">
+                        {{ myCurrency(row.item.total) }}
+                      </div>
+                    </template>
                     <template #cell(net)="row">
                       <div class="fw-bold text-end" style="min-width: 80px">
                         {{ myCurrency(row.item.net) }}
                       </div>
                     </template>
+
                     <template #cell(remark)="row">
                       <div style="width: 200px">
                         <BFormTextarea
@@ -1947,7 +1933,26 @@ onUpdated(() => {
                         </div>
                       </div>
                       <div class="row">
-                        <div class="col-6 text-end">VAT {{ vatPercent }}%</div>
+                        <div class="col-6 text-end">
+                          <BButtonGroup size="sm">
+                            <BButton type="button" variant="light" text>VAT</BButton>
+                            <BFormSelect
+                              v-model="formInvoice.vat_percent"
+                              class="form-select d-inline-block"
+                              @change="calculate"
+                            >
+                              <BFormSelectOption
+                                v-for="(n, i) in 10"
+                                :key="i"
+                                :value="i"
+                                :selected="i == vatPercent"
+                              >
+                                {{ i }}
+                              </BFormSelectOption>
+                            </BFormSelect>
+                            <BButton type="button" variant="light" text>%</BButton>
+                          </BButtonGroup>
+                        </div>
                         <div class="col-6">
                           <div class="text-end fw-bold text-decoration-underline">
                             {{ myCurrency(totalVat) }}

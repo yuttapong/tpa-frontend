@@ -366,6 +366,7 @@
       ref="modalBillCreateRef"
       title="สร้างใบขอรับบริการใหม่"
       :billTypes="billTypes"
+      @onSave="onCreatedBill"
     />
     <ModalBillDetail
       ref="modalBillDetailRef"
@@ -572,6 +573,12 @@ const showEdit = (item) => {
 }
 const newBill = () => {
   modalBillCreateRef.value.show()
+}
+
+const onCreatedBill = (bill) => {
+  onSearch()
+  console.log(bill.data)
+  showEdit(bill.data)
 }
 const openModalCommitment = (item) => {
   errorMsg.value = ''

@@ -7,7 +7,12 @@
             <h5 class="modal-title">
               {{ title }} <span v-if="Number(form.id) > 0"> {{ form.code }}</span>
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <!-- ###################################################################### -->
@@ -22,23 +27,40 @@
                   <div class="accordion" id="accordionBill">
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingCustomer">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseCustomer" aria-expanded="true" aria-controls="collapseCustomer">
+                        <button
+                          class="accordion-button"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseCustomer"
+                          aria-expanded="true"
+                          aria-controls="collapseCustomer"
+                        >
                           <i class="bi bi-person mx-2"></i>
                           1) ข้อมูลทั่วไป
                         </button>
                       </h2>
-                      <div id="collapseCustomer" class="accordion-collapse collapse show"
-                        aria-labelledby="headingCustomer" data-bs-parent="#accordionBill">
+                      <div
+                        id="collapseCustomer"
+                        class="accordion-collapse collapse show"
+                        aria-labelledby="headingCustomer"
+                        data-bs-parent="#accordionBill"
+                      >
                         <div class="accordion-body">
                           <div class="row g-2">
                             <template v-if="form.id === 0">
                               <div class="col-6 col-md-4 col-lg-3">
                                 <label>ประเภทบิล</label>
-                                <select class="form-select form-select-sm" v-model="form.bill_type"
-                                  :disabled="form.id > 0">
+                                <select
+                                  class="form-select form-select-sm"
+                                  v-model="form.bill_type"
+                                  :disabled="form.id > 0"
+                                >
                                   <option value="">-ประเภทบิล-</option>
-                                  <option v-for="(type, key) in billTypes" :key="key" :value="type.value">
+                                  <option
+                                    v-for="(type, key) in billTypes"
+                                    :key="key"
+                                    :value="type.value"
+                                  >
                                     {{ type.value }} : {{ type.text }}
                                   </option>
                                 </select>
@@ -47,38 +69,71 @@
                             <template v-else>
                               <div class="col-6 col-md-4 col-lg-3">
                                 <label>เลขที่</label>
-                                <input type="text" v-model="form.code" name="code" class="form-control form-control-sm"
-                                  placeholder="เลขที่" disabled="disabled" />
+                                <input
+                                  type="text"
+                                  v-model="form.code"
+                                  name="code"
+                                  class="form-control form-control-sm"
+                                  placeholder="เลขที่"
+                                  disabled="disabled"
+                                />
                               </div>
                             </template>
 
                             <div class="col-6 col-md-4 col-lg-3">
                               <label>วันที่</label>
-                              <input type="date" v-model="form.document_date" name="code"
-                                class="form-control form-control-sm" placeholder="Code" />
+                              <input
+                                type="date"
+                                v-model="form.document_date"
+                                name="code"
+                                class="form-control form-control-sm"
+                                placeholder="Code"
+                              />
                             </div>
 
                             <div class="col-6 col-md-4 col-lg-3">
                               <label>วันนัดรับเครื่องมือ</label>
-                              <input type="date" v-model="form.commitment_date" name="commitment_date"
-                                class="form-control form-control-sm" placeholder="commitment_date" disabled />
+                              <input
+                                type="date"
+                                v-model="form.commitment_date"
+                                name="commitment_date"
+                                class="form-control form-control-sm"
+                                placeholder="commitment_date"
+                                disabled
+                              />
                             </div>
                             <div class="col-6 col-md-6 col-lg-6">
                               <label>Note Customer</label>
-                              <textarea type="text" v-model="form.note_customers" class="form-control form-control-sm"
-                                placeholder="commitment_date" disabled rows="4" />
+                              <textarea
+                                type="text"
+                                v-model="form.note_customers"
+                                class="form-control form-control-sm"
+                                placeholder="commitment_date"
+                                disabled
+                                rows="4"
+                              />
                             </div>
                             <div class="col-6 col-md-6 col-lg-6">
                               <label>Remark</label>
-                              <textarea type="text" v-model="form.remark" class="form-control form-control-sm"
-                                placeholder="Remark" rows="4" />
+                              <textarea
+                                type="text"
+                                v-model="form.remark"
+                                class="form-control form-control-sm"
+                                placeholder="Remark"
+                                rows="4"
+                              />
                             </div>
                           </div>
                           <!-- ############ START BUTTON ################# -->
                           <div class="text-end my-2">
-                            <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCustomerAddress" aria-expanded="false"
-                              aria-controls="collapseCustomerAddress">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCustomerAddress"
+                              aria-expanded="false"
+                              aria-controls="collapseCustomerAddress"
+                            >
                               <i class="bi bi-arrow-right"></i> ถัดไป
                             </button>
                           </div>
@@ -88,63 +143,118 @@
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseCustomerAddress" aria-expanded="false"
-                          aria-controls="collapseCustomerAddress">
+                        <button
+                          class="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseCustomerAddress"
+                          aria-expanded="false"
+                          aria-controls="collapseCustomerAddress"
+                        >
                           <i class="bi bi-house-up mx-2"></i>
                           2) ลูกค้า
                         </button>
                       </h2>
-                      <div id="collapseCustomerAddress" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                        data-bs-parent="#accordionBill">
+                      <div
+                        id="collapseCustomerAddress"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingTwo"
+                        data-bs-parent="#accordionBill"
+                      >
                         <div class="accordion-body">
                           <div class="row g-2">
                             <div class="col-12 col-lg-6 col-xl-4">
-                              <label>บริษัท
-                                <span v-if="form.company_id">({{ form.company_id }})</span></label>
-                              <input type="text" v-model="form.address_name" name="customer_name"
-                                class="form-control form-control-sm" placeholder="" @click="addCustomer" />
+                              <label
+                                >บริษัท
+                                <span v-if="form.company_id">({{ form.company_id }})</span></label
+                              >
+                              <input
+                                type="text"
+                                v-model="form.address_name"
+                                name="customer_name"
+                                class="form-control form-control-sm"
+                                placeholder=""
+                                @click="addCustomer"
+                              />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
                               <label>ผู้ติดต่อ</label>
-                              <input type="text" v-model="form.agent_name" name="agent_name"
-                                class="form-control form-control-sm" placeholder="ผู้ติดต่อ" @click="addContact" />
+                              <input
+                                type="text"
+                                v-model="form.agent_name"
+                                name="agent_name"
+                                class="form-control form-control-sm"
+                                placeholder="ผู้ติดต่อ"
+                                @click="addContact"
+                              />
                             </div>
                             <div class="col-12">
                               <label>ที่อยู่</label>
-                              <textarea v-model="form.address_detail" class="form-control form-control-sm" placeholder=""
-                                rows="3" />
+                              <textarea
+                                v-model="form.address_detail"
+                                class="form-control form-control-sm"
+                                placeholder=""
+                                rows="3"
+                              />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
                               <label>ชื่อ(ผู้ส่ง)</label>
-                              <input type="text" v-model="form.sender_name" name="sender_name"
-                                class="form-control form-control-sm" placeholder="ผู้ส่ง" />
+                              <input
+                                type="text"
+                                v-model="form.sender_name"
+                                name="sender_name"
+                                class="form-control form-control-sm"
+                                placeholder="ผู้ส่ง"
+                              />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
                               <label>เบอร์โทร (ผู้ส่ง)</label>
-                              <input type="text" v-model="form.sender_tel" class="form-control form-control-sm"
-                                placeholder="เบอร์โทร" />
+                              <input
+                                type="text"
+                                v-model="form.sender_tel"
+                                class="form-control form-control-sm"
+                                placeholder="เบอร์โทร"
+                              />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
                               <label>email (ผู้ส่ง)</label>
-                              <input type="text" v-model="form.sender_email" class="form-control form-control-sm"
-                                placeholder="email" />
+                              <input
+                                type="text"
+                                v-model="form.sender_email"
+                                class="form-control form-control-sm"
+                                placeholder="email"
+                              />
                             </div>
                             <div class="col-12 col-lg-6 col-xl-4">
                               <label>แผนกงาน (ผู้ส่ง)</label>
-                              <input type="text" v-model="form.sender_department" class="form-control form-control-sm"
-                                placeholder="แผนก" />
+                              <input
+                                type="text"
+                                v-model="form.sender_department"
+                                class="form-control form-control-sm"
+                                placeholder="แผนก"
+                              />
                             </div>
                           </div>
                           <!-- ############ START BUTTON ################# -->
                           <div class="text-end my-2">
-                            <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCustomer" aria-expanded="false" aria-controls="collapseCustomer">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCustomer"
+                              aria-expanded="false"
+                              aria-controls="collapseCustomer"
+                            >
                               <i class="bi bi-arrow-left"></i> ก่อนหน้า
                             </button>
-                            <button class="btn btn-secondary btn-sm ms-3" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCertAddress" aria-expanded="false"
-                              aria-controls="collapseCertAddress">
+                            <button
+                              class="btn btn-secondary btn-sm ms-3"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCertAddress"
+                              aria-expanded="false"
+                              aria-controls="collapseCertAddress"
+                            >
                               <i class="bi bi-arrow-right"></i> ถัดไป
                             </button>
                           </div>
@@ -154,18 +264,36 @@
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingCertAddress">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseCertAddress" aria-expanded="false" aria-controls="collapseCertAddress">
+                        <button
+                          class="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseCertAddress"
+                          aria-expanded="false"
+                          aria-controls="collapseCertAddress"
+                        >
                           <i class="bi bi-house-up mx-2"></i>
                           3) ที่อยู่ส่งใบรับรอง
                         </button>
                       </h2>
-                      <div id="collapseCertAddress" class="accordion-collapse collapse"
-                        aria-labelledby="headingCertAddress" data-bs-parent="#accordionBill">
+                      <div
+                        id="collapseCertAddress"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingCertAddress"
+                        data-bs-parent="#accordionBill"
+                      >
                         <div class="accordion-body">
                           <ul v-if="certAddresses" class="list-unstyled">
-                            <li v-for="a in certAddresses" :key="a" class="border border-bottom p-1">
-                              <input type="radio" class="form-radio me-2" @click="fillCertAddress(a)" />
+                            <li
+                              v-for="a in certAddresses"
+                              :key="a"
+                              class="border border-bottom p-1"
+                            >
+                              <input
+                                type="radio"
+                                class="form-radio me-2"
+                                @click="fillCertAddress(a)"
+                              />
                               <small>
                                 {{ a.customer_name.trim() }}<br />
                                 <div class="ms-2">
@@ -182,23 +310,45 @@
                           <div class="row g-2">
                             <div class="col-12 col-xl-12">
                               <label>บริษัท <span></span></label>
-                              <input type="text" v-model="form.cert_address_name" name="customer_name"
-                                class="form-control form-control-sm" placeholder="" />
+                              <input
+                                type="text"
+                                v-model="form.cert_address_name"
+                                name="customer_name"
+                                class="form-control form-control-sm"
+                                placeholder=""
+                              />
                             </div>
                             <div class="col-12 col-xl-12">
                               <label>ที่อยู่</label>
-                              <textarea type="text" v-model="form.cert_address_detail"
-                                class="form-control form-control-sm" placeholder="ที่อยู่" rows="3" />
+                              <textarea
+                                type="text"
+                                v-model="form.cert_address_detail"
+                                class="form-control form-control-sm"
+                                placeholder="ที่อยู่"
+                                rows="3"
+                              />
                             </div>
                           </div>
                           <!-- ############ START BUTTON ################# -->
                           <div class="text-end my-2">
-                            <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseCustomer" aria-expanded="false" aria-controls="collapseCustomer">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseCustomer"
+                              aria-expanded="false"
+                              aria-controls="collapseCustomer"
+                            >
                               <i class="bi bi-arrow-left"></i> ก่อนหน้า
                             </button>
-                            <button class="btn btn-secondary btn-sm ms-3" type="button" data-bs-toggle="collapse"
-                              data-bs-target="#collapseTools" aria-expanded="false" aria-controls="collapseTools">
+                            <button
+                              class="btn btn-secondary btn-sm ms-3"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseTools"
+                              aria-expanded="false"
+                              aria-controls="collapseTools"
+                            >
                               <i class="bi bi-arrow-right"></i> ถัดไป
                             </button>
                           </div>
@@ -208,79 +358,168 @@
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTools">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseTools" aria-expanded="false" aria-controls="collapseTools">
+                        <button
+                          class="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseTools"
+                          aria-expanded="false"
+                          aria-controls="collapseTools"
+                        >
                           <i class="bi bi-tools mx-2"></i>
                           4) สินค้า/เครื่องมือ ({{ formItems ? formItems.length : 0 }})
                         </button>
                       </h2>
-                      <div id="collapseTools" class="accordion-collapse collapse" aria-labelledby="headingTools"
-                        data-bs-parent="#accordionBill">
+                      <div
+                        id="collapseTools"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingTools"
+                        data-bs-parent="#accordionBill"
+                      >
                         <div class="accordion-body px-3">
                           <div class="row">
                             <div class="col-12 col-md-6 p-1"></div>
                             <div class="col-12 col-md-6 p-1 text-end">
                               <div class="d-flex gap-1 justify-content-end">
-                                <button type="button" class="btn btn-sm btn-success" @click="openModalProducts()">
+                                <button
+                                  type="button"
+                                  class="btn btn-sm btn-success"
+                                  @click="openModalProducts()"
+                                >
                                   <i class="bi bi-plus" role="button"></i> เครื่องมือ
                                 </button>
-                                <button type="button" class="btn btn-sm btn-success" @click="openModalDiscounts()">
+                                <button
+                                  type="button"
+                                  class="btn btn-sm btn-success"
+                                  @click="openModalDiscounts()"
+                                >
                                   <i class="bi bi-plus" role="button"></i> ส่วนลด
                                 </button>
-                                <button type="button" class="btn btn-sm btn-secondary" @click="editItem()">
+                                <button
+                                  type="button"
+                                  class="btn btn-sm btn-secondary"
+                                  @click="editItem()"
+                                >
                                   <i class="bi bi-pencil" role="button"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-danger" @click="removeSelectedItems()">
+                                <button
+                                  type="button"
+                                  class="btn btn-sm btn-danger"
+                                  @click="removeSelectedItems()"
+                                >
                                   <i class="bi bi-x" role="button"></i>
                                 </button>
                               </div>
                             </div>
                             <div class="col-12 p-0 m-0">
-                              <BTable stickyHeader responsive small caption-top bordered striped variant="light"
-                                :fields="headers" :items="formItems" alternating>
-
+                              <BTable
+                                stickyHeader
+                                responsive
+                                small
+                                caption-top
+                                bordered
+                                striped
+                                variant="light"
+                                :fields="headers"
+                                :items="formItems"
+                                alternating
+                              >
                                 <template #cell(item_code)="row">
-                                  <BInput size="sm" type="text" v-model="row.item.item_code" class="" style="width: 150px"
-                                    @change="updateItemField('item_code', row)" />
+                                  <BInput
+                                    size="sm"
+                                    type="text"
+                                    v-model="row.item.item_code"
+                                    class=""
+                                    style="width: 150px"
+                                    @change="updateItemField('item_code', row)"
+                                  />
                                 </template>
                                 <template #cell(product_name)="row">
-                                  <div class="fw-bold" style="min-width: 150px;">{{ row?.item?.product?.code }}</div>
+                                  <div class="fw-bold" style="min-width: 150px">
+                                    {{ row?.item?.product?.code }}
+                                  </div>
                                   {{ row.item?.product_name }}
                                 </template>
 
                                 <template #cell(qty)="row">
-                                  <input type="number" v-model="row.item.qty" class="" style="width: 50px"
-                                    @change="updateItemField('qty', row)" />
+                                  <input
+                                    type="number"
+                                    v-model="row.item.qty"
+                                    class=""
+                                    style="width: 50px"
+                                    @change="updateItemField('qty', row)"
+                                  />
                                 </template>
 
                                 <template #cell(test_point)="row">
-                                  <BFormTextarea size="sm" v-model="row.item.test_point" class="w-100"
-                                    style="min-width: 200px;" @change="updateItemField('test_point', row)" />
+                                  <BFormTextarea
+                                    size="sm"
+                                    v-model="row.item.test_point"
+                                    class="w-100"
+                                    style="min-width: 200px"
+                                    @change="updateItemField('test_point', row)"
+                                  />
                                 </template>
                                 <template #cell(point)="row">
-                                  <BInput size="sm" type="number" v-model="row.item.point" class="w-full"
-                                    style="width: 50px" @change="updateItemField('point', row)" />
+                                  <BInput
+                                    size="sm"
+                                    type="number"
+                                    v-model="row.item.point"
+                                    class="w-full"
+                                    style="width: 50px"
+                                    @change="updateItemField('point', row)"
+                                  />
                                 </template>
                                 <template #cell(point_price)="row">
-                                  <BInput size="sm" type="number" v-model="row.item.point_price" class="w-full"
-                                    style="width: 95px" @change="updateItemField('point_price', row)" />
+                                  <BInput
+                                    size="sm"
+                                    type="number"
+                                    v-model="row.item.point_price"
+                                    class="w-full"
+                                    style="width: 95px"
+                                    @change="updateItemField('point_price', row)"
+                                  />
                                 </template>
                                 <template #cell(range_value)="row">
-                                  <BInput size="sm" type="number" v-model="row.item.range_value" class="w-full"
-                                    style="width: 50px" @change="updateItemField('range_value', row)" />
+                                  <BInput
+                                    size="sm"
+                                    type="number"
+                                    v-model="row.item.range_value"
+                                    class="w-full"
+                                    style="width: 50px"
+                                    @change="updateItemField('range_value', row)"
+                                  />
                                 </template>
                                 <template #cell(range_price)="row">
-                                  <BInput size="sm" type="number" v-model="row.item.range_price" class="w-full"
-                                    style="width: 95px" @change="updateItemField('range_price', row)" />
+                                  <BInput
+                                    size="sm"
+                                    type="number"
+                                    v-model="row.item.range_price"
+                                    class="w-full"
+                                    style="width: 95px"
+                                    @change="updateItemField('range_price', row)"
+                                  />
                                 </template>
 
                                 <template #cell(price)="row">
-                                  <BInput size="sm" type="number" v-model="row.item.price" class="" style="width: 80px"
-                                    @change="updateItemField('price', row)" />
+                                  <BInput
+                                    size="sm"
+                                    type="number"
+                                    v-model="row.item.price"
+                                    class=""
+                                    style="width: 80px"
+                                    @change="updateItemField('price', row)"
+                                  />
                                 </template>
                                 <template #cell(discount)="row">
-                                  <BInput size="sm" type="number" v-model="row.item.discount" class="" style="width: 95px"
-                                    @change="updateItemField('discount', row)" />
+                                  <BInput
+                                    size="sm"
+                                    type="number"
+                                    v-model="row.item.discount"
+                                    class=""
+                                    style="width: 95px"
+                                    @change="updateItemField('discount', row)"
+                                  />
                                 </template>
                                 <template #cell(total)="row">
                                   {{ myCurrency(row.item.total) }}
@@ -288,15 +527,22 @@
                                     :value="(Number(row.item.price) * 1) - Number(row.item.discount)" disabled /> -->
                                 </template>
                                 <template #cell(remark)="row">
-                                  <BFormTextarea size="sm" v-model="row.item.remark" class="w-100 w-full"
-                                    style="min-width: 200px" />
+                                  <BFormTextarea
+                                    size="sm"
+                                    v-model="row.item.remark"
+                                    class="w-100 w-full"
+                                    style="min-width: 200px"
+                                  />
                                 </template>
-
                               </BTable>
 
                               <div class="row">
                                 <div class="col-12 col-md-6 py-2">
-                                  <button type="button" @click="calculate" class="btn btn-success btn-sm">
+                                  <button
+                                    type="button"
+                                    @click="calculate"
+                                    class="btn btn-success btn-sm"
+                                  >
                                     <i class="bi bi-calculator" /> คำนวณ
                                   </button>
                                 </div>
@@ -304,10 +550,8 @@
                                   <div class="row">
                                     <div class="col-6">รวม</div>
                                     <div class="col-6">
-                                      <span class="text-decoration-underline fw-bold">{{
-                                        Number(totalPrice).toLocaleString()
-                                      }}
-
+                                      <span class="text-decoration-underline fw-bold"
+                                        >{{ Number(totalPrice).toLocaleString() }}
                                       </span>
                                     </div>
                                   </div>
@@ -315,8 +559,13 @@
                                     <div class="col-6">VAT(%)</div>
                                     <div class="col-6 d-flex gap-2 justify-content-end">
                                       <div>
-                                        <input type="number" v-model="form.vat_percent"
-                                          class="form-control form-control-sm" style="width: 80px" placeholder="%" />
+                                        <input
+                                          type="number"
+                                          v-model="form.vat_percent"
+                                          class="form-control form-control-sm"
+                                          style="width: 80px"
+                                          placeholder="%"
+                                        />
                                       </div>
                                       <div class="text-decoration-underline fw-bold">
                                         {{ Number(totalVat).toLocaleString() }}
@@ -347,7 +596,11 @@
 
             <ModalProduct ref="modalProduct" @select="onSelectProducts" />
             <ModalCustomer ref="modalCustomer" @select="onSelectCustomer" />
-            <ModalContact ref="modalContact" @select="onSelectContact" v-model:customerId="form.company_id" />
+            <ModalContact
+              ref="modalContact"
+              @select="onSelectContact"
+              v-model:customerId="form.company_id"
+            />
             <!-- ###################################################################### -->
           </div>
           <div class="modal-footer d-block">
@@ -417,7 +670,7 @@ const props = defineProps({
   billId: { type: Number },
   data: {
     type: Object,
-    default: () => { },
+    default: () => {},
   },
 })
 const billStore = useBillStore()
@@ -442,7 +695,7 @@ const getBillById = async (id) => {
         billStore.setItems(data.items)
       }
     }
-  } catch (error) { }
+  } catch (error) {}
 }
 
 onMounted(() => {
@@ -480,11 +733,11 @@ const headers = [
 const totalPrice = computed(() => {
   return formItems.value
     ? formItems.value.reduce((total, item) => {
-      let qty = item.qty ? Number(item.qty) : 1;
-      let price = item.total ? Number(item.total) : 0;
-      let discount = item.discount ? Number(item.discount) : 0;
-      return total += (Number(price) - Number(discount)) * Number(qty)
-    }, 0)
+        let qty = item.qty ? Number(item.qty) : 1
+        let price = item.total ? Number(item.total) : 0
+        let discount = item.discount ? Number(item.discount) : 0
+        return (total += (Number(price) - Number(discount)) * Number(qty))
+      }, 0)
     : 0
 })
 const totalVat = computed(() => {
@@ -495,8 +748,8 @@ const totalVat = computed(() => {
 const grandTotal = computed(() => {
   return formItems.value
     ? formItems.value.reduce((total, item) => {
-      return totalVat.value + totalPrice.value
-    }, 0)
+        return totalVat.value + totalPrice.value
+      }, 0)
     : 0
 })
 
@@ -505,21 +758,20 @@ const itemsSelected = ref([])
 const calculate = () => {
   form.value.grand_total = grandTotal.value
   let newItems = formItems.value.map((item, key) => {
-    let qty = item.qty ? Number(item.qty) : 1;
-    let total = item.total ? Number(item.total) : 0;
-    let discount = item.discount ? Number(item.discount) : 0;
+    let qty = item.qty ? Number(item.qty) : 1
+    let total = item.total ? Number(item.total) : 0
+    let discount = item.discount ? Number(item.discount) : 0
     item.qty = qty
-    item.total = total - discount * qty;
-    return item;
+    item.total = total - discount * qty
+    return item
   })
   billStore.items = newItems
 }
 const updateItemField = (name, data) => {
-  console.log('row', data.index, data.field.key, data.value);
+  console.log('row', data.index, data.field.key, data.value)
   let items = billStore.items.map((row, rowKey) => {
-
     if (rowKey == data.index) {
-      console.log(rowKey, data.index, data.value);
+      console.log(rowKey, data.index, data.value)
       row[data.field.key] = data.value
       row.total = Number(data.item.qty) * Number(data.item.price)
     }
@@ -548,7 +800,7 @@ const loadAddress = async (customerId) => {
       console.log(text)
       form.value.address_detail = text
     }
-  } catch (error) { }
+  } catch (error) {}
 }
 const loadCertAddress = async (customerId) => {
   try {
@@ -557,7 +809,7 @@ const loadCertAddress = async (customerId) => {
       certAddresses.value = data
       console.log('certAddresses', data)
     }
-  } catch (error) { }
+  } catch (error) {}
 }
 const onSelectCustomer = (data) => {
   if (data) {
@@ -628,14 +880,26 @@ const removeSelectedItems = () => {
   console.log(items)
   let _items = []
   items.map((item, key) => {
-    console.log(key, item);
-
+    console.log(key, item)
   })
 
   form.value.items = billStore.formItems
 }
 
 const createBill = () => {
+  form.value.items = billStore.formItems
+  console.log('createBill', form.value)
+
+  api
+    .post('/v2/bills', form.value)
+    .then((rs) => {
+      console.log(rs)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+const updateBill = () => {
   form.value.items = billStore.formItems
   console.log('createBill', form.value)
 

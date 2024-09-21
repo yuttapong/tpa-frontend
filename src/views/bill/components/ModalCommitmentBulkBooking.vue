@@ -67,7 +67,7 @@
                       class="accordion-collapse collapse"
                       data-bs-parent="#accordionExample"
                     >
-                      <div class="accordion-body" style="overflow-y: scroll; height: 180px">
+                      <div class="accordion-body" style="overflow-y: scroll; height: 250px">
                         <div class="d-block d-md-none">{{ bill?.address_name }}</div>
                         <p v-if="bill" class="text-danger p-1">
                           {{ bill?.note_customers }}
@@ -85,15 +85,14 @@
                               <BTh class="text-center">ลำดับ</BTh>
                               <BTh>ItemID</BTh>
                               <BTh>ItemCode</BTh>
-                              <BTh>ห้องทดลอง</BTh>
-                              <BTh>CalHour</BTh>
-                              <BTh>Duration</BTh>
-                              <BTh>Reserved Date</BTh>
-
                               <BTh class="text-left">เครื่องมือ</BTh>
                               <BTh class="text-left">ID NO.</BTh>
                               <BTh class="text-left">Model</BTh>
                               <BTh class="text-left">Serial Number</BTh>
+                              <BTh>ห้องทดลอง</BTh>
+                              <BTh>CalHour</BTh>
+                              <BTh>Duration</BTh>
+                              <BTh>Reserved Date</BTh>
                               <BTh class="text-center">สถานะ</BTh>
                             </BTr>
                           </BThead>
@@ -106,8 +105,23 @@
                                 {{ item?.workorder_id }}
                               </BTd>
 
-                              <BTd class="">
-                                {{ item?.item_code }}
+                              <BTd class="" nowrap>
+                                <div>{{ item?.item_code }}</div>
+                                <BBadge variant="info" v-if="Boolean(item.product.is_job)"
+                                  >JOB</BBadge
+                                >
+                              </BTd>
+                              <BTd>
+                                {{ item?.product_name }}
+                              </BTd>
+                              <BTd class="text-left">
+                                {{ item?.id_no }}
+                              </BTd>
+                              <BTd class="text-left">
+                                {{ item?.model }}
+                              </BTd>
+                              <BTd class="text-left">
+                                {{ item?.serialnumber }}
                               </BTd>
                               <BTd class="">
                                 {{ item?.lab?.name_th }} #{{ item.lab_id }}
@@ -125,18 +139,6 @@
                                 >
                               </BTd>
 
-                              <BTd>
-                                {{ item?.product_name }}
-                              </BTd>
-                              <BTd class="text-left">
-                                {{ item?.id_no }}
-                              </BTd>
-                              <BTd class="text-left">
-                                {{ item?.model }}
-                              </BTd>
-                              <BTd class="text-left">
-                                {{ item?.serialnumber }}
-                              </BTd>
                               <BTd class="text-center">
                                 <JobStatus v-model="item.job_status" />
                                 <div>{{ item.service_status_id }}</div>
@@ -386,11 +388,6 @@ const commitmentPriority = ref('medium')
 
 const billSelected = ref([])
 const billSelectedFilterd = computed(() => {
-  // if (props.type == 'BOOK') {
-  //   billSelected.value = billSelected.value.filter((item => !hasCommitmentDate(item.commitment_date)))
-  // } else if (props.type == 'CANCEL') {
-  //   billSelected.value = billSelected.value.filter((item => hasCommitmentDate(item.commitment_date)))
-  // }
   return billSelected.value
 })
 
@@ -467,23 +464,6 @@ const getItems = () => {
           })
         }
         loading.value = false
-        let params = {
-          priority: commitmentPriority.value,
-          bill_id: bill.id,
-          code: bill.code,
-          document_date: bill.document_date,
-          address_name: bill?.address_name,
-          agent_name: bill?.agent_name,
-          bill_status: bill?.bill_status,
-          progress_status: bill?.progress_status,
-          note_customers: bill?.note_customers,
-          remark: bill?.remark,
-          user_start: bill?.user_start,
-          company_id: bill?.company_id,
-          approve_status: bill?.approve_status,
-          approver_name: bill?.approver_name,
-          items: _items,
-        }
         bill.bill_id = bill.id
         bill.priority = commitmentPriority.value
       })

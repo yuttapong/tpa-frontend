@@ -23,7 +23,10 @@ onMounted(() => {})
             />
           </p>
         </div>
-        <div class="col-6">
+        <div class="col-3">
+          <p class="fw-bolder" style="font-size: 1.2rem">ใบแจ้งหนี้/ใบวางบิล</p>
+        </div>
+        <div class="col-3">
           <p class="fw-bolder" style="font-size: 1.2rem">{{ data?.code }}</p>
         </div>
       </div>
@@ -37,8 +40,8 @@ onMounted(() => {})
           <p>{{ myFormatDate(data?.due_date) }}</p>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
-          <label class="fw-bold text-danger">Invoice Code</label>
-          <p>{{ data?.code }}</p>
+          <label class="fw-bold text-danger">เลขที่ใบขอรับ</label>
+          <p>{{ data?.bill_code }}</p>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
           <label class="fw-bold text-danger">ลูกค้า </label>
@@ -60,7 +63,9 @@ onMounted(() => {})
           <thead>
             <tr>
               <th scope="col" nowrap class="fw-bold">ลำดับที่</th>
+              <th scope="col" class="fw-bold">รหัสสินค้า</th>
               <th scope="col" class="fw-bold">รายการ</th>
+              <th scope="col" class="fw-bold">ใบขอรับ</th>
               <th scope="col" class="fw-bold">Point</th>
               <th scope="col" class="fw-bold">Point Price</th>
               <th scope="col" class="fw-bold">Range</th>
@@ -79,13 +84,13 @@ onMounted(() => {})
           <tbody v-if="data && data.items">
             <tr v-for="(item, index) in data.items" :key="index">
               <th scope="row" class="text-center">{{ index + 1 }}</th>
-              <!-- <td> {{ item.item_code }}</td> -->
+              <td nowrap>{{ item?.product?.code }}</td>
               <td>
                 {{ item.product_name }}
 
                 <ProductMeta :item="item" />
               </td>
-
+              <td nowrap>{{ item?.bill_code }}</td>
               <td class="text-end">{{ myCurrency(item.point) }}</td>
               <td class="text-end">{{ myCurrency(item.point_price) }}</td>
               <td class="text-end">{{ myCurrency(item.range) }}</td>

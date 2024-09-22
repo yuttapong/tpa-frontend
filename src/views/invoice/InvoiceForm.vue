@@ -878,6 +878,7 @@ const tableFields = [
   { key: 'index', label: '#' },
   { key: 'actions', label: 'Actions' },
 
+  { key: 'product_code', label: 'รหัสสินค้า', sortable: false },
   { key: 'product_name', label: 'รายการ', sortable: false, stickyColumn: true },
   { key: 'bill_code', label: 'ใบขอรับ', sortable: false },
   // { key: 'model', label: 'Model' },
@@ -1514,16 +1515,21 @@ onUpdated(() => {
                         </BButton> -->
                       </BButtonGroup>
                     </template>
+                    <template #cell(product_code)="row">
+                      <div style="min-width: 115px" class="">
+                        <small> {{ row.item?.product?.code }}</small>
+                      </div>
+                    </template>
                     <template #cell(bill_code)="row">
                       <div style="min-width: 115px" class="">
                         <small> {{ row.item.bill_code }}</small>
                       </div>
                     </template>
                     <template #cell(product_name)="row">
-                      <div class="text-primary" style="min-width: 115px">
+                      <div class="" style="min-width: 115px">
                         {{ row.item.product_name }}
                       </div>
-                      <small class="text-seconday">Model. {{ row.item.model }}</small>
+                      <small class="text-danger">Model. {{ row.item.model }}</small>
                     </template>
 
                     <template #cell(serialnumber)="row">

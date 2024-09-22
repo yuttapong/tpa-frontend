@@ -2,11 +2,11 @@
   <div class="commitment">
     <form @submit="submit()">
       <div class="modal" ref="modalRef" id="modalBulk">
-        <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
           <div class="modal-content">
-            <div class="modal-header" :class="type == 'BOOK' ? ' bg-primary' : ' bg-danger'">
-              <h5 class="modal-title text-white">
-                {{ type == 'BOOK' ? 'จองคิวทดสอบเครื่องมือ' : 'ยกเลิกจองคิว' }}
+            <div class="modal-header">
+              <h5 class="modal-title" :class="type == 'BOOK' ? 'text-primary' : ' text-danger'">
+                {{ type == 'BOOK' ? 'จองคิว' : 'ยกเลิกจองคิว' }}
               </h5>
 
               <button
@@ -29,7 +29,7 @@
 
                 <div class="accordion mb-2" id="accordionBills" v-if="!loading">
                   <div class="accordion-item" v-for="(bill, bKey) in billSelected" :key="bKey">
-                    <h2 class="accordion-header">
+                    <div class="accordion-header">
                       <button
                         class="accordion-button"
                         type="button"
@@ -59,9 +59,10 @@
 
                           <div class="d-none d-md-block">{{ bill?.address_name }}</div>
                           <div class="" v-if="bill && bill.items">({{ bill.items.length }})</div>
+                          <div><BillStatus :status="bill.bill_status" /></div>
                         </div>
                       </button>
-                    </h2>
+                    </div>
                     <div
                       :id="`collapse${bKey}`"
                       class="accordion-collapse collapse"
@@ -314,8 +315,8 @@ import { Modal } from 'bootstrap'
 import ConfirmCommitment from '@/views/bill/components/ConfirmCommitment.vue'
 import { toast } from 'vue3-toastify'
 import BillButtonStatus from '@/views/bill/components/BillButtonStatus.vue'
+import BillStatus from '@/views/bill/components/BillStatus.vue'
 import JobButtonStatus from '@/views/bill/components/JobButtonStatus.vue'
-import { useConfirmDialog } from '@vueuse/core'
 import { useAppStore } from '@/stores/appStore'
 import { api } from '@/helpers/api'
 import { myCurrency, myFormatDate } from '@/helpers/myformat'

@@ -147,15 +147,94 @@
                     </button>
                   </div>
                 </div>
-                <BTable
+                <BTableSimple
                   bordered
                   :items="items"
                   class=""
-                  :fields="tableFields"
                   :per-page="pagination.per_page"
-                  :responsive="true"
-                  :small="true"
+                  hover
+                  small
+                  caption-top
+                  responsive
                 >
+                  <BThead head-variant="dark">
+                    <!-- <BTr>
+                      <BTh><BFormCheckbox /></BTh>
+                      <BTh colspan="2">ใบขอรับ</BTh>
+                      <BTh colspan="3">รายละเอียด</BTh>
+                      <BTh colspan="2">Accessories</BTh>
+                    </BTr> -->
+                    <BTr>
+                      <BTh><BFormCheckbox @change="onChageSelectAll" v-model="selectAll" /></BTh>
+                      <BTh>Actions</BTh>
+                      <BTh nowrap>เลขที่ใบขอรับ</BTh>
+                      <BTh>วันที่</BTh>
+                      <BTh nowrap>จำนวนเงิน</BTh>
+                      <BTh>ลูกค้า</BTh>
+                      <BTh>สถานะ</BTh>
+                    </BTr>
+                  </BThead>
+                  <BTbody>
+                    <BTr v-for="item in items" :key="item">
+                      <BTh><BFormCheckbox v-model="billSelected" :value="item" /></BTh>
+                      <BTd>
+                        <div class="d-flex gap-1">
+                          <!-- <router-link class="btn btn-sm btn-outline-secondary"
+                        :to="{ name: 'bills.commitmentForm', params: { code: row.item.code } }">
+                        <i class="bi bi-calendar" role="button"></i></router-link> -->
+                          <button
+                            type="button"
+                            @click="showDetail(item)"
+                            class="btn btn-outline-secondary btn-sm"
+                          >
+                            <i class="bi bi-eye"></i>
+                          </button>
+
+                          <button
+                            type="button"
+                            class="btn btn-outline-secondary btn-sm"
+                            @click="showEdit(item)"
+                          >
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-outline-secondary btn-sm"
+                            @click="openModalCommitment(item)"
+                          >
+                            <i class="bi bi-clock"></i>
+                          </button>
+                        </div>
+                      </BTd>
+                      <BTh>
+                        <div class="text-center" style="width: 130px">
+                          <BillCode :data="item.code" role="button" @click="showDetail(item)" />
+                          {{ item.id }}
+                        </div></BTh
+                      >
+                      <BTh>{{ myFormatDate(item.document_date) }}</BTh>
+                      <BTh class="text-end">{{ item.grand_total }}</BTh>
+                      <BTd>
+                        <div>
+                          <div>{{ item.address_name }}</div>
+                          <div class="d-flex flex-wrap gap-2">
+                            <BBadge variant="warning" v-if="item.customer" class="text-danger">{{
+                              item?.customer.province
+                            }}</BBadge>
+                            <small v-if="item.agent_name" class="text-danger">{{
+                              item.agent_name
+                            }}</small>
+                          </div>
+                        </div>
+                      </BTd>
+                      <BTd>
+                        <div class="" style="width: 100px">
+                          <bill-status :status="item.bill_status" />
+                          {{ item.bill_status }}
+                        </div></BTd
+                      >
+                    </BTr>
+                  </BTbody>
                   <template #cell(select)="row">
                     <!-- <div v-if="!hasCommitmentDate(row.item.commitment_date)"> -->
                     <BFormCheckbox
@@ -240,7 +319,7 @@
                       {{ myCurrency(row.item.grand_total) }}
                     </div>
                   </template>
-                </BTable>
+                </BTableSimple>
 
                 <BPagination
                   v-model="pagination.current_page"
@@ -476,7 +555,12 @@ const billSelectedForCancel = computed(() => {
     }
   })
 })
-
+const selectAll = ref(false)
+const onChageSelectAll = (e) => {
+  console.log('selectAll', e.target._modelValue, selectAll.value)
+  if (e.target._modelValue) billSelected.value = items.value
+  else billSelected.value = []
+}
 const hasCommitmentDate = (date) => {
   if (!date) return false
   if (String(date) === '0000-00-00 00:00:00') return false
@@ -511,6 +595,7 @@ const loadData = async () => {
 
 const onChangePage = (e, page) => {
   billSelected.value = []
+  selectAll.value = false
   pagination.value.current_page = page
   loadData()
 }

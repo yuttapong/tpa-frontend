@@ -2,10 +2,10 @@
   <div class="commitment">
     <form @submit="submit()">
       <div class="modal" ref="modalRef" id="modalCommitment">
-        <div class="modal-dialog modal-dialog-scrollable modal-fullscreen modal-info">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
           <div class="modal-content">
-            <div class="modal-header bg-primary">
-              <h5 class="modal-title text-white" v-html="title"></h5>
+            <div class="modal-header">
+              <h5 class="modal-title" v-html="title"></h5>
 
               <button
                 type="button"
@@ -324,17 +324,13 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { Modal } from 'bootstrap'
 import ConfirmCommitment from '@/views/bill/components/ConfirmCommitment.vue'
 import { toast } from 'vue3-toastify'
-import BillButtonStatus from '@/views/bill/components/BillButtonStatus.vue'
-import JobButtonStatus from '@/views/bill/components/JobButtonStatus.vue'
-import { useConfirmDialog } from '@vueuse/core'
 import { useAppStore } from '@/stores/appStore'
 import { api } from '@/helpers/api'
 import { myCurrency, myFormatDate } from '@/helpers/myformat'
 import Spinner from '@/components/Spinner.vue'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
-import { formatDate, formatISO } from 'date-fns'
-import { string } from 'i/lib/util'
+
 import { useBillStore } from '@/stores/billStore'
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload'])

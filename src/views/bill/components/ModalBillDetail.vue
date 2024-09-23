@@ -5,12 +5,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ title }}</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="row">
@@ -49,11 +44,7 @@
               <div class="col-4 col-lg-3">
                 <label class="fw-bold text-decoration-underline">สถานะ</label>
                 <p>
-                  <BillButtonStatus
-                    v-model="bill.bill_status"
-                    :data="bill"
-                    @on-change="onChangeBillStatus"
-                  />
+                  <BillButtonStatus v-model="bill.bill_status" :data="bill" @on-change="onChangeBillStatus" />
                 </p>
               </div>
               <div class="col-12 col-md-6">
@@ -77,10 +68,7 @@
             </div>
 
             <div class="table-responsive">
-              <table
-                class="table table-condensed table-sm table-bordered table-striped"
-                v-if="!loadingItems"
-              >
+              <table class="table table-condensed table-sm table-bordered table-striped" v-if="!loadingItems">
                 <thead>
                   <tr>
                     <th class="fw-bold text-decoration-underline">NO</th>
@@ -97,18 +85,16 @@
                     <th class="fw-bold text-decoration-underline text-end">Total</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="bill.items && bill.items.length > 0">
                   <tr v-for="(row, rowIndex) in bill.items" :key="row">
                     <!-- <th>
                       <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
                     </th> -->
                     <th>{{ rowIndex + 1 }}</th>
                     <td nowrap>
-                      {{ row.item_code }}
+                      {{ row?.item_code }}
                       <div>
-                        <small
-                          >#<span class="text-primary fw-bold">{{ row.item_id }}</span></small
-                        >
+                        <small>#<span class="text-primary fw-bold">{{ row?.item_id }}</span></small>
                       </div>
                     </td>
                     <td style="min-width: 200px">
@@ -117,47 +103,39 @@
                         <small>{{ row?.lab?.name_th }} #{{ row?.lab?.id }}</small>
                       </div>
                       <div class="ms-2 border-bottom">
-                        <small class="fs-italic">
-                          {{ row?.sublab?.name_th }} #{{ row?.sublab?.id }}</small
-                        >
+                        <small class="fs-italic text-secondary">
+                          {{ row?.sublab?.name_th }} #{{ row?.sublab?.id }}</small>
                       </div>
-                      <div
-                        v-if="row.current_service_status"
-                        style="font-size: 12px"
-                        class="border-bottom text-danger fw-bold"
-                      >
+                      <div v-if="row.current_service_status" style="font-size: 12px"
+                        class="border-bottom text-danger fw-bold">
                         {{ row.current_service_status.status_name }} #{{
                           row.current_service_status.status_id
                         }}
                       </div>
-                      <JobButtonStatus
-                        v-model="row.job_status"
-                        :data="row"
-                        @on-change="onChangeJobStatus"
-                      />
+                      <JobButtonStatus v-model="row.job_status" :data="row" @on-change="onChangeJobStatus" />
                     </td>
                     <td nowrap>{{ myFormatDate(row.reserved_date) }}</td>
                     <td style="min-width: 300px">
-                      <BRow align-h="start" gutter-x="1" style="font-size: 13px">
-                        <BCol sm="3" alignSelf="center">
+                      {{ row.test_point }}
+                      <BRow align-h="start" gutter-x="2" style="font-size: 13px">
+                        <BCol alignSelf="center">
                           <div class="text-decoration-underline fw-bold">Id.No</div>
                           <div class="d-block">{{ row?.id_no }}</div>
                         </BCol>
-                        <BCol sm="3" alignSelf="center">
+                        <BCol alignSelf="center">
                           <div class="text-decoration-underline fw-bold">Model</div>
                           <div class="d-item">{{ row.model }}</div>
                         </BCol>
-                        <BCol sm="3" alignSelf="center">
+                        <BCol alignSelf="center">
                           <div class="text-decoration-underline fw-bold">S/N</div>
                           <div class="d-block">{{ row.serialnumber }}</div>
                         </BCol>
-                        <BCol sm="3" alignSelf="center">
+                        <BCol alignSelf="center">
                           <div class="text-decoration-underline fw-bold">Barcode</div>
                           <div class="d-block">{{ row.barcode_no }}</div>
                         </BCol>
                       </BRow>
-                      <BBadge v-if="row.manufaturer_name" variant="warning me-2"
-                        >{{ row?.manufaturer_name }}
+                      <BBadge v-if="row.manufaturer_name" variant="warning me-2">{{ row?.manufaturer_name }}
                       </BBadge>
                       <span v-if="row"> {{ row.product_name }}</span>
                     </td>
@@ -189,7 +167,7 @@
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colspan="6">
+                    <td colspan="5">
                       ค่าบริการ Onsite
                       <span class="ms-3">{{ parseFloat(bill.cost_onsite).toLocaleString() }}</span>
 
@@ -197,22 +175,22 @@
                       <span class="ms-3">{{ parseFloat(bill.cost_travel).toLocaleString() }}</span>
                     </td>
 
-                    <td>รวม</td>
-                    <td colspan="2" class="text-end fw-bold">
+                    <td colspan="2">รวม</td>
+                    <td class="text-end fw-bold">
                       {{ parseFloat(bill.total_price).toLocaleString() }}
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="6"></td>
-                    <td>VAT ({{ parseFloat(bill.vat_percent).toLocaleString() }}%)</td>
-                    <td colspan="2" class="text-end fw-bold">
+                    <td colspan="5"></td>
+                    <td colspan="2">VAT ({{ parseFloat(bill.vat_percent).toLocaleString() }}%)</td>
+                    <td class="text-end fw-bold">
                       {{ parseFloat(bill.vat_total).toLocaleString() }}
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="6"></td>
-                    <td>รวมเป็นเงินทั้งหมด</td>
-                    <td colspan="2" class="text-end fw-bolder text-decoration-underline">
+                    <td colspan="5"></td>
+                    <td colspan="2">รวมเป็นเงินทั้งหมด</td>
+                    <td class="text-end fw-bolder text-decoration-underline">
                       {{ Number(bill.grand_total).toLocaleString() }}
                     </td>
                   </tr>
@@ -220,15 +198,12 @@
               </table>
             </div>
             <p>
-              <label class="me-3 fw-bold text-decoration-underline"
-                >ที่อยู่ในการจัดส่งใบรับรอง:</label
-              >
+              <label class="me-3 fw-bold text-decoration-underline">ที่อยู่ในการจัดส่งใบรับรอง:</label>
               <span class="text-wrap">
                 {{
                   `${bill.cert_address_name} ${bill.cert_address_detail}
                                 ${bill.cert_address_province} ${bill.cert_address_zipcode} ${bill.cert_address_phone}`.trim()
-                }}</span
-              >
+                }}</span>
             </p>
           </div>
           <div class="modal-footer"></div>
@@ -260,7 +235,7 @@ const props = defineProps({
   },
   data: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
 })
 const billStore = useBillStore()

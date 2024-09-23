@@ -9,13 +9,8 @@
                 {{ type == 'BOOK' ? 'จองคิว' : 'ยกเลิกจองคิว' }}
               </h5>
 
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                style="font-size: 2rem"
-              ></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                style="font-size: 2rem"></button>
             </div>
             <div class="modal-body">
               <!-- ########################################################### -->
@@ -30,14 +25,8 @@
                 <div class="accordion mb-2" id="accordionBills" v-if="!loading">
                   <div class="accordion-item" v-for="(bill, bKey) in billSelected" :key="bKey">
                     <div class="accordion-header">
-                      <button
-                        class="accordion-button"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        :data-bs-target="`#collapse${bKey}`"
-                        aria-expanded="true"
-                        :aria-controls="`#collapse${bKey}`"
-                      >
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        :data-bs-target="`#collapse${bKey}`" aria-expanded="true" :aria-controls="`#collapse${bKey}`">
                         <div class="d-flex flex-wrap gap-2 justify-content-between">
                           <div class="">
                             {{ bKey + 1 }})
@@ -47,106 +36,142 @@
                           </div>
 
                           <div>
-                            <i class="bi bi-calendar me-1"></i
-                            >{{ myFormatDate(bill.document_date) }}
-                            <BBadge
-                              variant="success"
-                              v-if="hasCommitmentDate(bill.commitment_date)"
-                            >
-                              {{ myFormatDate(bill.commitment_date) }}</BBadge
-                            >
+                            <i class="bi bi-calendar me-1"></i>{{ myFormatDate(bill.document_date) }}
+                            <BBadge variant="success" v-if="hasCommitmentDate(bill.commitment_date)">
+                              {{ myFormatDate(bill.commitment_date) }}</BBadge>
                           </div>
 
                           <div class="d-none d-md-block">{{ bill?.address_name }}</div>
                           <div class="" v-if="bill && bill.items">({{ bill.items.length }})</div>
-                          <div><BillStatus :status="bill.bill_status" /></div>
+                          <div>
+                            <BillStatus :status="bill.bill_status" />
+                          </div>
                         </div>
                       </button>
                     </div>
-                    <div
-                      :id="`collapse${bKey}`"
-                      class="accordion-collapse collapse"
-                      data-bs-parent="#accordionExample"
-                    >
+                    <div :id="`collapse${bKey}`" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                       <div class="accordion-body" style="overflow-y: scroll; height: 250px">
                         <div class="d-block d-md-none">{{ bill?.address_name }}</div>
                         <p v-if="bill" class="text-danger p-1">
                           {{ bill?.note_customers }}
                         </p>
-                        <BTableSimple
-                          class=""
-                          bordered
-                          hover
-                          small
-                          style=""
-                          v-if="bill && bill.items"
-                        >
-                          <BThead>
-                            <BTr>
-                              <BTh class="text-center">ลำดับ</BTh>
-                              <BTh>ItemID</BTh>
-                              <BTh>ItemCode</BTh>
-                              <BTh class="text-left">เครื่องมือ</BTh>
-                              <BTh class="text-left">ID NO.</BTh>
-                              <BTh class="text-left">Model</BTh>
-                              <BTh class="text-left">Serial Number</BTh>
-                              <BTh>ห้องทดลอง</BTh>
-                              <BTh>CalHour</BTh>
-                              <BTh>Duration</BTh>
-                              <BTh>Reserved Date</BTh>
-                              <BTh class="text-center">สถานะ</BTh>
-                            </BTr>
-                          </BThead>
-                          <BTbody v-if="bill.items">
-                            <BTr v-for="(item, itemIndex) in bill.items" :key="itemIndex">
-                              <BTd class="text-center">
-                                {{ itemIndex + 1 }}
-                              </BTd>
-                              <BTd class="">
-                                {{ item?.workorder_id }}
-                              </BTd>
+                        <template v-if="bill && bill.items">
+                          <BTableSimple class="" bordered hover small style="" v-if="bill && bill.items">
+                            <BThead>
+                              <BTr>
+                                <BTh class="text-center">ลำดับ</BTh>
+                                <BTh>ItemID</BTh>
+                                <BTh>ItemCode</BTh>
+                                <BTh class="text-left">เครื่องมือ</BTh>
+                                <BTh class="text-left">Test Point</BTh>
 
-                              <BTd class="" nowrap>
-                                <div>{{ item?.item_code }}</div>
-                                <BBadge variant="info" v-if="Boolean(item.product.is_job)"
-                                  >JOB</BBadge
-                                >
-                              </BTd>
-                              <BTd>
-                                {{ item?.product_name }}
-                              </BTd>
-                              <BTd class="text-left">
-                                {{ item?.id_no }}
-                              </BTd>
-                              <BTd class="text-left">
-                                {{ item?.model }}
-                              </BTd>
-                              <BTd class="text-left">
-                                {{ item?.serialnumber }}
-                              </BTd>
-                              <BTd class="">
-                                {{ item?.lab?.name_th }} #{{ item.lab_id }}
-                                <div>
-                                  <small class="fw-bold text-danger"
-                                    >{{ item?.sublab?.name_th }} #{{ item.sublab_id }}</small
-                                  >
-                                </div>
-                              </BTd>
-                              <BTd class="">{{ item?.product?.calhour }} (ชม.)</BTd>
-                              <BTd class="">{{ item?.product?.duration }} (นาที)</BTd>
-                              <BTd class="">
-                                <span v-if="hasCommitmentDate(item.reserved_date)">
-                                  {{ myFormatDate(item.reserved_date).toLocaleString() }}</span
-                                >
-                              </BTd>
+                                <BTh>ห้องทดลอง</BTh>
+                                <BTh>CalHour</BTh>
+                                <BTh>Duration</BTh>
+                                <BTh>Reserved Date</BTh>
+                                <BTh class="text-center">สถานะ</BTh>
+                              </BTr>
+                            </BThead>
+                            <BTbody v-if="bill.items && bill.items.length > 0">
+                              <BTr v-for="(item, itemIndex) in bill.items" :key="itemIndex">
+                                <BTd class="text-center">
+                                  {{ itemIndex + 1 }}
+                                </BTd>
+                                <BTd class="">
+                                  {{ item?.item_id }}
+                                </BTd>
 
-                              <BTd class="text-center">
-                                <JobStatus v-model="item.job_status" />
-                                <div>{{ item.service_status_id }}</div>
-                              </BTd>
-                            </BTr>
-                          </BTbody>
-                        </BTableSimple>
+                                <BTd class="" nowrap>
+                                  <div>{{ item?.item_code }}</div>
+
+                                  <template v-if="item.product_id">
+                                    <BBadge variant="info" v-if="Boolean(item?.product?.is_job) == true">JOB
+                                    </BBadge>
+                                  </template>
+
+                                </BTd>
+                                <BTd style="min-width: 290px;">
+
+                                  <BRow align-h="start" gutter-x="2" style="font-size: 13px" small bordered>
+                                    <BCol alignSelf="center">
+                                      <div class="text-decoration-underline fw-bold">Id.No</div>
+                                      <div class="d-block">{{ item?.id_no }}</div>
+                                    </BCol>
+                                    <BCol alignSelf="center">
+                                      <div class="text-decoration-underline fw-bold">Model</div>
+                                      <div class="d-item">{{ item?.model }}</div>
+                                    </BCol>
+                                    <BCol alignSelf="center">
+                                      <div class="text-decoration-underline fw-bold">S/N</div>
+                                      <div class="d-block">{{ item?.serialnumber }}</div>
+                                    </BCol>
+                                    <BCol alignSelf="center">
+                                      <div class="text-decoration-underline fw-bold">Barcode</div>
+                                      <div class="d-block">{{ item?.barcode_no }}</div>
+                                    </BCol>
+                                  </BRow>
+                                  <BBadge v-if="item.manufaturer_name" variant="warning me-2">{{ item?.manufaturer_name }}
+                                  </BBadge>
+                                  <span class="text-primary">{{ item.product_name }}</span>
+                                </BTd>
+                                <BTd class="text-left" style="min-width: 290px;">
+                                  <BRow align-h="start" gutter-x="2" style="font-size: 12px">
+                                    <BCol sm="3" alignSelf="center">
+                                      <div class="text-decoration-underline fw-bold">Range</div>
+                                      <div class="d-block">{{ item?.range_value }}</div>
+                                    </BCol>
+                                    <BCol sm="3" alignSelf="center">
+                                      <div class="text-decoration-underline fw-bold">Range Price</div>
+                                      <div class="d-item">{{ myCurrency(item.range_price) }}</div>
+                                    </BCol>
+                                    <BCol sm="3" alignSelf="center">
+                                      <div class="text-decoration-underline fw-bold">Point</div>
+                                      <div class="d-block">{{ item.point }}</div>
+                                    </BCol>
+                                    <BCol sm="3" alignSelf="center">
+                                      <div class="text-decoration-underline fw-bold">Pont Price</div>
+                                      <div class="d-block">{{ myCurrency(item.point_price) }}</div>
+                                    </BCol>
+                                  </BRow>
+                                  {{ item?.test_point }}
+
+                                </BTd>
+
+                                <BTd class="" nowrap>
+                                  {{ item?.lab?.name_th }} #{{ item?.lab_id }}
+                                  <div>
+                                    <small class="fw-bold text-secondary">{{ item?.sublab?.name_th }} #{{ item?.sublab_id
+                                    }}</small>
+                                  </div>
+                                </BTd>
+                                <BTd class="">{{ item?.product?.calhour }} (ชม.)</BTd>
+                                <BTd class="">{{ item?.product?.duration }} (นาที)</BTd>
+                                <BTd class="" nowrap>
+                                  <span v-if="hasCommitmentDate(item?.reserved_date)">
+                                    {{ myFormatDate(item?.reserved_date).toLocaleString() }}</span>
+                                  <!-- <div v-if="item.current_service_status">
+                                    {{ item.current_service_status.status_id }} :
+                                    {{ item?.current_service_status.status_name }}
+                                  </div> -->
+                                </BTd>
+
+                                <BTd class="text-center" nowrap>
+
+                                  <template v-if="item">
+                                    <JobStatus v-model="item.job_status" />
+
+                                    <div v-if="item.current_service_status" style="font-size: 12px"
+                                      class="border-bottom text-danger">
+                                      {{ item?.current_service_status.status_name }} #{{
+                                        item?.current_service_status.status_id
+                                      }}
+                                    </div>
+                                  </template>
+                                </BTd>
+                              </BTr>
+                            </BTbody>
+                          </BTableSimple>
+                        </template>
                       </div>
                     </div>
                   </div>
@@ -170,21 +195,13 @@
                     </div>
                     <div class="col-12 col-lg-4" v-if="commitmentPriority == 'high'">
                       <label>เลือกวันที่</label>
-                      <input
-                        type="date"
-                        class="form-control-sm form-control"
-                        v-model="commitmentDate"
-                        placeholder="เลือกวันที่"
-                      />
+                      <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
+                        placeholder="เลือกวันที่" />
                     </div>
                     <div class="col-12 col-lg-4">
                       <div class="mt-4 ms-3">
-                        <input
-                          type="checkbox"
-                          class=""
-                          v-model="acceptedCommitmentDate"
-                          @change="onChangeConditionCommitment"
-                        />
+                        <input type="checkbox" class="" v-model="acceptedCommitmentDate"
+                          @change="onChangeConditionCommitment" />
                         <label class="ms-1">ยืนยันจองคิวห้องทดลอง</label>
                       </div>
                     </div>
@@ -207,12 +224,8 @@
                     </BTr>
                   </BThead>
                   <BTbody>
-                    <BTr
-                      v-for="(err, key) in listErrors"
-                      :key="key"
-                      class=""
-                      :class="err.type == 'error' ? 'text-danger' : 'text-success'"
-                    >
+                    <BTr v-for="(err, key) in listErrors" :key="key" class=""
+                      :class="err.type == 'error' ? 'text-danger' : 'text-success'">
                       <BTd class="" nowrap>{{ err.bill.code }}</BTd>
 
                       <BTd :class="err.type == 'error' ? 'text-danger' : 'text-success'">{{
@@ -231,32 +244,19 @@
             <div class="modal-footer">
               <div class="row g-1">
                 <div class="col-12">
-                  <button
-                    type="button"
-                    :disabled="loading"
-                    class="btn btn-secondary btn-sm"
-                    @click="reloadData()"
-                  >
+                  <button type="button" :disabled="loading" class="btn btn-secondary btn-sm" @click="reloadData()">
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลด
                   </button>
 
                   <template v-if="bills && bills.length > 0 && type == 'BOOK'">
-                    <button
-                      type="button"
-                      class="btn btn-primary btn-sm ms-2"
-                      :disabled="loading || !acceptedCommitmentDate"
-                      @click="submit()"
-                    >
+                    <button type="button" class="btn btn-primary btn-sm ms-2"
+                      :disabled="loading || !acceptedCommitmentDate" @click="submit()">
                       <i class="float-start bi bi-clock me-2"></i> จองคิว
                     </button>
                   </template>
                   <template v-if="bills && bills.length > 0 && type == 'CANCEL'">
-                    <button
-                      type="button"
-                      class="btn btn-danger btn-sm ms-2"
-                      :disabled="loading || !acceptedCancel"
-                      @click="cancelBook()"
-                    >
+                    <button type="button" class="btn btn-danger btn-sm ms-2" :disabled="loading || !acceptedCancel"
+                      @click="cancelBook()">
                       <i class="float-start bi bi-ban me-2"></i> ยกเลิกจองคิว
                     </button>
                   </template>
@@ -269,16 +269,8 @@
     </form>
   </div>
 
-  <BModal
-    v-if="visibleModalConfirmBook"
-    v-model="visibleModalConfirmBook"
-    id="modal-confirm-book"
-    cancel-title="ยกเลิก"
-    ok-title="ใช่"
-    @ok="findCommitmentDate()"
-    @cancel="visibleModalConfirmBook = false"
-    title="ยืนยันจองคิวห้องทดลอง"
-  >
+  <BModal v-if="visibleModalConfirmBook" v-model="visibleModalConfirmBook" id="modal-confirm-book" cancel-title="ยกเลิก"
+    ok-title="ใช่" @ok="findCommitmentDate()" @cancel="visibleModalConfirmBook = false" title="ยืนยันจองคิวห้องทดลอง">
     <div class="row g3 mb-2">
       <div class="col-4 fw-bold">Priority</div>
       <div class="col-8">{{ commitmentPriority }}</div>
@@ -297,15 +289,8 @@
       </div>
     </div>
   </BModal>
-  <BModal
-    v-if="visibleModalCancelBook"
-    v-model="visibleModalCancelBook"
-    id="modal-cancel-book"
-    cancel-title="ไม่ใช่"
-    ok-title="ใช่, ยกเลิก"
-    @cancel="visibleModalCancelBook = false"
-    title="ยืนยันยกเลิกคิวห้องทดลอง"
-  >
+  <BModal v-if="visibleModalCancelBook" v-model="visibleModalCancelBook" id="modal-cancel-book" cancel-title="ไม่ใช่"
+    ok-title="ใช่, ยกเลิก" @cancel="visibleModalCancelBook = false" title="ยืนยันยกเลิกคิวห้องทดลอง">
   </BModal>
 </template>
 
@@ -436,33 +421,8 @@ const getItems = () => {
     api
       .get('v2/bills/' + bill.id)
       .then(({ data, status }) => {
-        if (data.items) {
-          bill.items = data.items.map((item) => {
-            if (Number(item.product.is_job) == 1) {
-              let filteredItem = {
-                duration: item.product?.duration,
-                item_code: item.item_code,
-                lab_id: item.lab_id,
-                product_id: item.product_id,
-                product_name: item.product_name,
-                product: item?.product,
-                barcode_no: item.barcode_no,
-                serialnumber: item.serialnumber,
-                id_no: item.id_no,
-                model: item.model,
-                sorter: item.sorter,
-                sublab_id: item.sublab_id,
-                sublab: item.sublab,
-                lab: item.lab,
-                workorder_id: item.item_id,
-                service_status_id: item.service_status_id,
-                is_job: item.product.is_job,
-                reserved_date: item?.reserved_date,
-              }
-              _items.push(filteredItem)
-              return filteredItem
-            }
-          })
+        if (data.items && data.items.length > 0) {
+          bill.items = data.items
         }
         loading.value = false
         bill.bill_id = bill.id
@@ -493,15 +453,40 @@ const findCommitmentDate = async () => {
   let totalBill = billSelected.value.length
   let loopCount = 0
   billSelected.value.map(async (bill, index) => {
+    let items = []
+    bill.items.filter((row) => {
+      if (Boolean(row.product.is_job) === true) {
+        let newRow = {
+          iem_id: row.item_id,
+          item_code: row.item_code,
+          workorder_id: row.item_id,
+          lead_time: row.product.duration,
+          duration: row.product.duration,
+          lab_id: row.lab_id,
+          product_id: row.product_id,
+          reserved_date: row.reserved_date,
+          sorter: row.sorter,
+          sublab_id: row.sublab_id,
+        }
+        items.push(newRow)
+      }
+    })
+
+    let params = {
+      bill_id: bill.id,
+      code: bill.code,
+      document_date: bill.document_date ? formatISO(bill.document_date) : '',
+      priority: commitmentPriority.value,
+      items: items
+    }
     if (commitmentPriority.value !== 'high') {
-      delete bill.commitment_date
+      delete params.commitment_date
     } else {
-      bill.commitment_date = commitmentDate.value ? formatISO(commitmentDate.value) : ''
+      params.commitment_date = commitmentDate.value ? formatISO(commitmentDate.value) : ''
     }
 
-    bill.priority = commitmentPriority.value
     const { data } = await axios
-      .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', bill, {
+      .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${appStore.token}`,
@@ -676,8 +661,7 @@ defineExpose({ show, hide })
 </script>
 
 <style lang="scss" scoped>
-.commitment {
-}
+.commitment {}
 
 .table-bill-items {
   border: solid 1px #130f0f;

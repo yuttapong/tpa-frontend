@@ -7,13 +7,8 @@
             <div class="modal-header">
               <h5 class="modal-title" v-html="title"></h5>
 
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                style="font-size: 2rem"
-              ></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                style="font-size: 2rem"></button>
             </div>
             <div class="modal-body">
               <!-- ########################################################### -->
@@ -72,21 +67,13 @@
                     </div>
                     <div class="col-12 col-lg-4" v-if="commitmentPriority == 'high'">
                       <label>เลือกวันที่</label>
-                      <input
-                        type="date"
-                        class="form-control-sm form-control"
-                        v-model="commitmentDate"
-                        placeholder="เลือกวันที่"
-                      />
+                      <input type="date" class="form-control-sm form-control" v-model="commitmentDate"
+                        placeholder="เลือกวันที่" />
                     </div>
                     <div class="col-12 col-lg-4">
                       <div class="mt-4 ms-3">
-                        <input
-                          type="checkbox"
-                          class=""
-                          v-model="acceptedCommitmentDate"
-                          @change="onChangeConditionCommitment"
-                        />
+                        <input type="checkbox" class="" v-model="acceptedCommitmentDate"
+                          @change="onChangeConditionCommitment" />
                         <label class="ms-1">ยืนยันจองคิวห้องทดลอง</label>
                       </div>
                     </div>
@@ -133,6 +120,16 @@
                                         </tr> -->
                       <tr>
                         <th scope="col" class="">#</th>
+                        <th scope="col" class="">Item Id</th>
+                        <th scope="col" class="">Item Code</th>
+                        <th scope="col" class="">
+                          <div>เครื่องมือ</div>
+                          Product
+                        </th>
+                        <th scope="col" class="fw-bold">
+                          <div>รายละเอียด</div>
+                          Test Point
+                        </th>
                         <th scope="col" class="fw-bold">
                           <div>ห้องทดลอง</div>
                           SubLab
@@ -143,59 +140,33 @@
                           <div>วันนัดรับ</div>
                           Reserved Date
                         </th>
-                        <th scope="col" class="">Item Id</th>
-                        <th scope="col" class="">Item Code</th>
-                        <th scope="col" class="">
-                          <div>เครื่องมือ</div>
-                          Product
-                        </th>
-                        <!-- 
-                        <th scope="col" class="fw-bold">Barcode</th>
 
-                        <th scope="col" class="fw-bold">S/N.</th>
-                        <th scope="col" class="fw-bold">ID No.</th> -->
-                        <th scope="col" class="fw-bold">
-                          <div>รายละเอียด</div>
-                          Test Point
-                        </th>
+                        <th>สถานะ</th>
+
                       </tr>
                     </thead>
 
                     <tbody v-if="bill.items">
-                      <tr
-                        v-for="(item, index) in bill.items"
-                        :key="index"
-                        :class="
-                          item.product && item.product.is_job != 1
-                            ? 'text-decoration-line-through'
-                            : ''
-                        "
-                      >
+                      <tr v-for="(item, index) in bill.items" :key="index" :class="item.product && item.product.is_job != 1
+                        ? 'text-decoration-line-through'
+                        : ''
+                        ">
                         <td>{{ index + 1 }})</td>
-                        <td nowrap>
-                          <div>{{ item.lab?.name_th }} #{{ item.lab_id }}</div>
-                          <small class="ms-2 text-danger"
-                            >{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small
-                          >
-                        </td>
-                        <td nowrap>{{ item?.product?.calhour }} (ชม.)</td>
-                        <td nowrap>{{ item?.product?.duration }} (นาที)</td>
-                        <td nowrap>
-                          <span>{{ item?.reserved_date }}</span>
-
-                          <div v-if="item.current_service_status">
-                            {{ item.current_service_status.status_id }} :
-                            {{ item?.current_service_status.status_name }}
-                          </div>
-                        </td>
                         <td>
                           <span>{{ item.item_id }}</span>
                         </td>
                         <td nowrap>
-                          {{ item.item_code }}
+                          <div>
+                            {{ item.item_code }}
+                          </div>
+                          <template v-if="item.product_id">
+                            <BBadge variant="info" v-if="Boolean(item?.product?.is_job) == true">JOB
+                            </BBadge>
+                          </template>
                         </td>
-                        <td style="min-width: 350px">
-                          <BRow align-h="start" gutter-x="1" style="font-size: 13px">
+                        <td style="min-width: 290px">
+
+                          <BRow align-h="start" gutter-x="1" style="font-size: 12px">
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">Id.No</div>
                               <div class="d-block">{{ item?.id_no }}</div>
@@ -213,25 +184,13 @@
                               <div class="d-block">{{ item.barcode_no }}</div>
                             </BCol>
                           </BRow>
-                          <BBadge v-if="item.manufaturer_name" variant="warning me-2"
-                            >{{ item?.manufaturer_name }}
+                          <BBadge v-if="item.manufaturer_name" variant="warning me-2">{{ item?.manufaturer_name }}
                           </BBadge>
-                          <span v-if="item.product && item.product.is_job">
-                            {{ item.product_name }}</span
-                          >
-                        </td>
-                        <!-- <td>
-                          <span>{{ item?.barcode_no }}</span>
+                          <span class="text-primary">{{ item.product_name }}</span>
                         </td>
 
-                        <td>
-                          <span>{{ item?.serialnumber }}</span>
-                        </td>
-                        <td>
-                          <span>{{ item?.id_no }}</span>
-                        </td> -->
-                        <td style="min-width: 350px">
-                          <BRow align-h="start" gutter-x="1" style="font-size: 13px">
+                        <td style="min-width: 290px">
+                          <BRow align-h="start" gutter-x="2" style="font-size: 12px">
                             <BCol sm="3" alignSelf="center">
                               <div class="text-decoration-underline fw-bold">Range</div>
                               <div class="d-block">{{ item?.range_value }}</div>
@@ -251,6 +210,33 @@
                           </BRow>
                           {{ item.test_point }}
                         </td>
+                        <td nowrap>
+                          <div>{{ item.lab?.name_th }} #{{ item.lab_id }}</div>
+                          <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
+                        </td>
+                        <td nowrap>{{ item?.product?.calhour }} (ชม.)</td>
+                        <td nowrap>{{ item?.product?.duration }} (นาที)</td>
+                        <td nowrap>
+                          <span>{{ item?.reserved_date }}</span>
+                          <!-- 
+                          <div v-if="item.current_service_status">
+                            {{ item.current_service_status.status_id }} :
+                            {{ item?.current_service_status.status_name }}
+                          </div> -->
+                        </td>
+                        <td nowrap>
+                          <template v-if="item">
+                            <JobStatus v-model="item.job_status" />
+
+                            <div v-if="item.current_service_status" style="font-size: 12px"
+                              class="border-bottom text-danger">
+                              {{ item?.current_service_status.status_name }} #{{
+                                item?.current_service_status.status_id
+                              }}
+                            </div>
+                          </template>
+                        </td>
+
                       </tr>
                     </tbody>
                   </table>
@@ -260,50 +246,30 @@
               <!-- ########################################################### -->
             </div>
             <div class="modal-footer">
+              {{ resultCommitment }}
               <div class="row g-1">
                 <div class="col-12">
                   <Spinner :visible="loadingCommitment" />
 
-                  <button
-                    type="button"
-                    class="btn btn-secondary btn-sm"
-                    @click="reloadData()"
-                    :disabled="loading"
-                  >
+                  <button type="button" class="btn btn-secondary btn-sm" @click="reloadData()" :disabled="loading">
                     <i class="float-start bi bi-arrow-clockwise me-2"></i> รีโหลด
                   </button>
 
-                  <template
-                    v-if="
-                      bill.bill_status !== 'completed' &&
-                      bill.id &&
-                      acceptedCommitmentDate &&
-                      !hasCommitmentDate(bill.commitment_date)
-                    "
-                  >
-                    <button
-                      type="button"
-                      class="btn btn-primary btn-sm ms-2"
-                      @click="submit()"
-                      :disabled="loading"
-                    >
+                  <template v-if="bill.bill_status !== 'completed' &&
+                    bill.id &&
+                    acceptedCommitmentDate &&
+                    !hasCommitmentDate(bill.commitment_date)
+                    ">
+                    <button type="button" class="btn btn-primary btn-sm ms-2" @click="submit()" :disabled="loading">
                       <i class="float-start bi bi-clock me-2"></i> จองคิว
                     </button>
                   </template>
 
-                  <template
-                    v-if="
-                      bill.bill_status !== 'completed' &&
-                      bill.id &&
-                      hasCommitmentDate(bill.commitment_date)
-                    "
-                  >
-                    <button
-                      type="button"
-                      class="btn btn-danger btn-sm ms-2"
-                      @click="cancelBook()"
-                      :disabled="loading"
-                    >
+                  <template v-if="bill.bill_status !== 'completed' &&
+                    bill.id &&
+                    hasCommitmentDate(bill.commitment_date)
+                    ">
+                    <button type="button" class="btn btn-danger btn-sm ms-2" @click="cancelBook()" :disabled="loading">
                       <i class="float-start bi bi-x me-2"></i> ยกเลิกคิว
                     </button>
                   </template>
@@ -330,7 +296,7 @@ import { myCurrency, myFormatDate } from '@/helpers/myformat'
 import Spinner from '@/components/Spinner.vue'
 import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
-
+import { formatDate, formatISO, format } from 'date-fns'
 import { useBillStore } from '@/stores/billStore'
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload'])
@@ -359,7 +325,7 @@ const hide = () => {
   modalEl.hide()
 }
 const resetForm = () => {
-  resultCommitment.value = {}
+
   messageErrorCommitment.value = ''
   messageSuccessCommitment.value = ''
   acceptedCommitmentDate.value = false
@@ -391,36 +357,35 @@ const onChangePriority = (data) => {
 }
 
 const findCommitmentDate = async () => {
+  resultCommitment.value = {}
   if (commitmentPriority.value === undefined) {
     messageErrorCommitment.value = 'โปรดเลือก Priority และ ระบุ commitment date ที่ต้องการ'
     return
   }
-  let _items = []
+  let jobItems = []
   bill.value.items.filter((item) => {
-    if (Number(item.product.is_job) == 1) {
+    if (Boolean(item.product.is_job) === true) {
       let filteredItem = {
-        duration: item.product?.duration,
+        item_id: item.item_id,
+        workorder_id: item.item_id,
         item_code: item.item_code,
+        duration: item.product?.duration,
+        lead_time: item.product?.duration,
         lab_id: item.lab_id,
         product_id: item.product_id,
-        product_name: item.product_name,
-        barcode_no: item.barcode_no,
-        serialnumber: item.serialnumber,
         sorter: item.sorter,
         sublab_id: item.sublab_id,
-        workorder_id: item.item_id,
-        service_status_id: item.service_status_id,
         is_job: item.product.is_job,
       }
-      _items.push(filteredItem)
+      jobItems.push(filteredItem)
     }
   })
   const params = {
     priority: commitmentPriority.value,
     bill_id: bill.value.id,
     code: bill.value.code,
-    document_date: bill.value.document_date,
-    items: _items,
+    document_date: bill.value.document_date ? formatISO(bill.value.document_date) : '',
+    items: jobItems,
   }
 
   messageErrorCommitment.value = ''
@@ -440,6 +405,8 @@ const findCommitmentDate = async () => {
   } else {
     commitmentDate.value = ''
   }
+
+
 
   loadingCommitment.value = true
 
@@ -499,6 +466,7 @@ const submit = () => {
 }
 
 const cancelBook = async (event) => {
+  resultCommitment.value = {}
   let params = {
     commitment_date: bill.value.commitment_date,
     bill_id: bill.value.id,
@@ -607,8 +575,7 @@ defineExpose({ show, hide })
 </script>
 
 <style lang="scss" scoped>
-.commitment {
-}
+.commitment {}
 
 .table-bill-items {
   border: solid 1px #130f0f;

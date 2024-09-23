@@ -173,7 +173,7 @@
                       >
                         <td>{{ index + 1 }})</td>
                         <td nowrap>
-                          <div>{{ item.sublab?.name_th }} #{{ item.lab_id }}</div>
+                          <div>{{ item.lab?.name_th }} #{{ item.lab_id }}</div>
                           <small class="ms-2 text-danger"
                             >{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small
                           >
@@ -348,6 +348,9 @@ const billStore = useBillStore()
 const bill = computed(() => billStore.bill)
 let modalEl = null
 let modalRef = ref(null)
+const loading = ref(false)
+const acceptedCommitmentDate = ref(false)
+const modalConfirm = ref(null)
 
 const show = () => {
   modalEl.show()
@@ -359,12 +362,8 @@ const resetForm = () => {
   resultCommitment.value = {}
   messageErrorCommitment.value = ''
   messageSuccessCommitment.value = ''
-  acceptedCancel.value = false
-  acceptedCommitmentDate = false
+  acceptedCommitmentDate.value = false
 }
-const loading = ref(false)
-const acceptedCommitmentDate = ref(false)
-const modalConfirm = ref(null)
 
 //  commitment
 const loadingCommitment = ref(false)

@@ -169,6 +169,7 @@
                       <BTh>Actions</BTh>
                       <BTh nowrap>เลขที่ใบขอรับ</BTh>
                       <BTh>วันที่</BTh>
+                      <BTh>Commitment Date</BTh>
                       <BTh nowrap>จำนวนเงิน</BTh>
                       <BTh>ลูกค้า</BTh>
                       <BTh>สถานะ</BTh>
@@ -176,7 +177,7 @@
                   </BThead>
                   <BTbody>
                     <BTr v-for="item in items" :key="item">
-                      <BTh><BFormCheckbox v-model="billSelected" :value="item" /></BTh>
+                      <BTd><BFormCheckbox v-model="billSelected" :value="item" /></BTd>
                       <BTd>
                         <div class="d-flex gap-1">
                           <!-- <router-link class="btn btn-sm btn-outline-secondary"
@@ -206,14 +207,19 @@
                           </button>
                         </div>
                       </BTd>
-                      <BTh>
+                      <BTd>
                         <div class="text-center" style="width: 130px">
                           <BillCode :data="item.code" role="button" @click="showDetail(item)" />
                           {{ item.id }}
-                        </div></BTh
+                        </div></BTd
                       >
                       <BTh>{{ myFormatDate(item.document_date) }}</BTh>
-                      <BTh class="text-end">{{ item.grand_total }}</BTh>
+                      <BTd>
+                        <div class="" style="width: 100px">
+                          {{ myFormatDate(item.commitment_date) }}
+                        </div>
+                      </BTd>
+                      <BTd class="text-end">{{ item.grand_total }}</BTd>
                       <BTd>
                         <div>
                           <div>{{ item.address_name }}</div>
@@ -235,90 +241,6 @@
                       >
                     </BTr>
                   </BTbody>
-                  <template #cell(select)="row">
-                    <!-- <div v-if="!hasCommitmentDate(row.item.commitment_date)"> -->
-                    <BFormCheckbox
-                      v-model="billSelected"
-                      :value="row.item"
-                      class="block"
-                      style="width: 32px; height: 24px; background-color: darkgrey"
-                    />
-                    <!-- </div> -->
-                    <!-- {{ row.item.commitment_date }} -->
-                  </template>
-                  <template #cell(index)="row">
-                    {{ row.index + 1 }}
-                  </template>
-
-                  <template #cell(actions)="row">
-                    <div class="d-flex gap-1">
-                      <!-- <router-link class="btn btn-sm btn-outline-secondary"
-                        :to="{ name: 'bills.commitmentForm', params: { code: row.item.code } }">
-                        <i class="bi bi-calendar" role="button"></i></router-link> -->
-                      <button
-                        type="button"
-                        @click="showDetail(row.item)"
-                        class="btn btn-outline-secondary btn-sm"
-                      >
-                        <i class="bi bi-eye"></i>
-                      </button>
-
-                      <button
-                        type="button"
-                        class="btn btn-outline-secondary btn-sm"
-                        @click="showEdit(row.item)"
-                      >
-                        <i class="bi bi-pencil"></i>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-outline-secondary btn-sm"
-                        @click="openModalCommitment(row.item)"
-                      >
-                        <i class="bi bi-clock"></i>
-                      </button>
-                    </div>
-                  </template>
-                  <template #cell(code)="row">
-                    <div class="text-center" style="width: 130px">
-                      <BillCode :data="row.item.code" role="button" @click="showDetail(row.item)" />
-                      {{ row.item.id }}
-                    </div>
-                  </template>
-                  <template #cell(document_date)="row">
-                    <div class="" style="width: 100px">
-                      {{ myFormatDate(row.item.document_date) }}
-                    </div>
-                  </template>
-                  <template #cell(commitment_date)="row">
-                    <div class="" style="width: 100px">
-                      {{ myFormatDate(row.item.commitment_date) }}
-                    </div>
-                  </template>
-                  <template #cell(address_name)="row">
-                    <div>
-                      <div>{{ row.item.address_name }}</div>
-                      <div class="d-flex flex-wrap gap-2">
-                        <BBadge variant="warning" v-if="row.item.customer" class="text-danger">{{
-                          row.item?.customer.province
-                        }}</BBadge>
-                        <small v-if="row.item.agent_name" class="text-danger">{{
-                          row.item.agent_name
-                        }}</small>
-                      </div>
-                    </div>
-                  </template>
-                  <template #cell(bill_status)="row">
-                    <div class="" style="width: 100px">
-                      <bill-status :status="row.item.bill_status" />
-                      {{ row.item.bill_status }}
-                    </div>
-                  </template>
-                  <template #cell(grand_total)="row">
-                    <div class="" style="width: 100px">
-                      {{ myCurrency(row.item.grand_total) }}
-                    </div>
-                  </template>
                 </BTableSimple>
 
                 <BPagination

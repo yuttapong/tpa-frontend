@@ -578,21 +578,24 @@ const updateDiscountItem = (type) => {
  */
 const calculate = () => {
   let items = formInvoice.value.items.map((item) => {
+    let qty = Number(item.qty) || 1
     let price = Number(item.price)
-    let total = Number(item.price) * Number(item.qty)
+    let discount = 0
+    let total = price * qty
+    let vatPercent = Number(formInvoice.value.vat_percent)
+    let vat = 0
 
-    let discount =
+    discount =
       Number(item.discount_customer) + Number(item.discount_lab) + Number(item.discount_order)
+
+    if (Number(vatPercent) > 0) {
+      vat = ((total - discount) * vatPercent) / 100
+    }
     item.discount = discount
     item.price = price
     item.total = total
-    item.vat = 0
-    if (Number(formInvoice.value.vat_percent) > 0) {
-      item.vat =
-        ((Number(item.total) - Number(item.discount)) * formInvoice.value.vat_percent) / 100
-    }
-
-    item.net = price - discount + item.vat
+    item.vat = vat
+    item.net = price - discount + vat
     return item
   })
   formInvoice.value.items = items

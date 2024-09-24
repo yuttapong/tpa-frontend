@@ -22,26 +22,42 @@ export const myFormatDate = (value, options) => {
   if (value == '0000-00-00 00:00:00') return ''
   if (value == '0000-00-00') return ''
 
-  return format(value, 'dd/MM/yyyy')
-  let op = {
-    dateStyle: 'short', //  full, long, medium, short
-    timeZone: 'Asia/Bangkok',
-    // hourCycle: 'h24',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
+  const _format = options && options.format ? options.format : 'dd/MM/yyyy'
+  return format(value, _format, {
+    locale: th,
+  })
+}
+
+export const myFormatDateTime = (value, options) => {
+  if (!value) {
+    return
   }
-  if (typeof date === 'number') {
-    let _date = new Date(date)
-    return new Intl.DateTimeFormat(myFormatLang, { ...op, ...options }).format(_date)
-  } else if (typeof date === 'string') {
-    if (date == '0000-00-00 00:00:00') return
-    if (date == '0000-00-00') return
-    if (date == '') return
-    if (typeof date == null) return
-    let _date = new Date(date)
-    return new Intl.DateFormat(myFormatLang, { ...op, ...options }).format(_date)
+
+  if (value == undefined) return ''
+  if (value == null) return ''
+  if (value == '') return ''
+  if (value == '0000-00-00 00:00:00') return ''
+  if (value == '0000-00-00') return ''
+
+  const _format = options && options.format ? options.format : 'dd/MM/yy H:i'
+  return format(value, _format, {
+    locale: th,
+  })
+}
+
+export const myFormatTime = (value, options) => {
+  if (!value) {
+    return
   }
+
+  if (value == undefined) return ''
+  if (value == null) return ''
+  if (value == '') return ''
+  if (value == '0000-00-00 00:00:00') return ''
+  if (value == '0000-00-00') return ''
+
+  const _format = options && options.format ? options.format : 'H:i:s'
+  return format(value, _format)
 }
 
 export const Number = (number) => {

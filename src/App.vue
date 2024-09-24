@@ -5,15 +5,18 @@ import Navbar from './components/layouts/Navbar.vue'
 import { useAppStore } from './stores/appStore'
 import { api } from './helpers/api';
 
-// const appStore = useAppStore()
-// const getSettings = async () => {
-//   const data = await api.get('/v2/configs')
-//   if (data) {
-//   }
-// }
+const appStore = useAppStore()
+const getSettings = async () => {
+  const { data } = await api.get('/v2/settings').catch((err) => {
+    console.log(err);
+  })
+  if (data) {
+    appStore.setSetting(data)
+  }
+}
 
 
-// getSettings()
+getSettings()
 </script>
 
 <template>

@@ -2,7 +2,6 @@
 import { onMounted, computed, ref, reactive, onUpdated, watch } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { myFormatDate } from '@/helpers/myformat'
 import { toast } from 'vue3-toastify'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import { useAppStore } from '@/stores/appStore'
@@ -16,7 +15,7 @@ import ProductDiscountDetail from '@/views/invoice/components/ProductDiscountDet
 import InvoiceDetail from '@/views/invoice/components/InvoiceDetail.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { add, format, formatDate } from 'date-fns'
-import { myCurrency } from '@/helpers/myformat'
+import { myCurrency, myFormatDateTime, myFormatDate } from '@/helpers/myformat'
 import { useModalController, useModal } from 'bootstrap-vue-next'
 import { invoiceStatuses } from '@/config'
 import { pointRangeToPricePerUnit } from '@/helpers/order'
@@ -112,7 +111,6 @@ const formDiscountAdd = ref({
   discountOrderType: 'percentage',
   discountOrderValue: 0,
 })
-const hasVat = ref(true)
 
 const items = computed(() => formInvoice.value.items)
 const vatPercent = computed(() => formInvoice.value.vat_percent || 0)
@@ -214,11 +212,12 @@ const fillDataBill = async (bill, billItems) => {
   formInvoice.value.note_customer = bill.note_customers
   if (billItems.length > 0) {
     billItems.map((item) => {
-      let qty = 1
+      let qty = item.qty || 1
       let price = Number(item.price)
       let total = Number(price) * qty
       let row = {
         is_job: item.product.is_job || 1,
+        has_vat: item.product.has_vat || 1,
         item_id: 0,
         bill_id: item.bill_id,
         bill_items_code: item.item_code,
@@ -407,46 +406,6 @@ const openModalCustomer = () => {
   modalCustomer.value.show()
 }
 
-/**
- * แสดง Modal แก้ไขรายการ
- */
-// const openModalEditItem = (row, index) => {
-//   infoProduct.value = row
-//   formDiscountAdd.value.index = index
-//   let defaultDiscountType = 'amount'
-
-//   formDiscountAdd.value.discountCustomerType = row.discount_customer_type
-//     ? row.discount_customer_type
-//     : defaultDiscountType
-//   formDiscountAdd.value.discountLabType = row.discount_lab_type
-//     ? row.discount_lab_type
-//     : defaultDiscountType
-//   formDiscountAdd.value.discountOrderType = row.discount_order_type
-//     ? row.discount_order_type
-//     : defaultDiscountType
-
-//   if (row.discount_customer_type == 'percentage') {
-//     formDiscountAdd.value.discountCustomerValue = Number(row?.discount_customer_percent)
-//   } else if (row.discount_customer_type == 'amount') {
-//     formDiscountAdd.value.discountCustomerValue = Number(row?.discount_customer)
-//   }
-
-//   // lab
-//   if (row.discount_lab_type == 'percentage') {
-//     formDiscountAdd.value.discountLabValue = Number(row?.discount_lab_percent)
-//   } else if (row.discount_lab_type == 'amount') {
-//     formDiscountAdd.value.discountLabValue = Number(row?.discount_lab)
-//   }
-
-//   // order
-//   if (row.discount_order_type == 'percentage') {
-//     formDiscountAdd.value.discountOrderValue = Number(row?.discount_order_percent)
-//   } else if (row.discount_order_type == 'amount') {
-//     formDiscountAdd.value.discountOrderValue = Number(row?.discount_order)
-//   }
-
-//   visibleModalEditItem.value = true
-// }
 const updatePriceItems = (row) => {
   calculate()
 }
@@ -459,7 +418,7 @@ const updateDiscountItem = (type) => {
   let row = infoProduct.value
   let percent = 0
   let amount = 0
-  let price = row.price
+  let price = Number(row.price)
   // let price = pointRangeToPricePerUnit(row.point, row.point_price, row.range, row.range_price);
   row.total = price
 
@@ -580,17 +539,17 @@ const calculate = () => {
   let items = formInvoice.value.items.map((item) => {
     let qty = Number(item.qty) || 1
     let price = Number(item.price)
-    let discount = 0
     let total = price * qty
     let vatPercent = Number(formInvoice.value.vat_percent)
     let vat = 0
-
+    let discount = 0
+    console.log(item)
     discount =
       Number(item.discount_customer) + Number(item.discount_lab) + Number(item.discount_order)
-
-    if (Number(vatPercent) > 0) {
+    if (vatPercent > 0) {
       vat = ((total - discount) * vatPercent) / 100
     }
+    item.qty = qty
     item.discount = discount
     item.price = price
     item.total = total
@@ -660,40 +619,45 @@ const onChangeDiscountTypeOfItems = (item, typeName, discountType) => {
 
   let discountValue = 0
   if (discountType == 'percentage') {
-    discountValue = item[`discount_${typeName}_percent`]
+    discountValue = Number(item[`discount_${typeName}_percent`])
   } else if (discountType == 'amount') {
-    discountValue = item[`discount_${typeName}`]
+    discountValue = Number(item[`discount_${typeName}`])
   }
 
   let percent = 0
   let amount = 0
+  let qty = Number(item.qty) || 1
   let price = Number(item.price)
-  let total = Number(item.price) * Number(item.qty)
+  let total = price * qty
+  let vat = 0
+  let vatPercent = Number(formInvoice.value.vat_percent)
+  let discount = 0
 
-  if (item.product && Number(item.product.is_job) === 1 && Number(total > 0)) {
+  if (product && Boolean(item.product.is_job) === true && Number(total > 0)) {
     if (discountType == 'percentage') {
-      // item["discount_" + typeName + "_percent"] = discountValue
       amount = (total * discountValue) / 100
-      percent = Number(discountValue).toFixed(2)
+      percent = discountValue.toFixed(2)
     } else if (discountType == 'amount') {
       amount = discountValue
-      percent = Number((discountValue * 100) / total).toFixed(2)
+      percent = ((discountValue * 100) / total).toFixed(2)
     }
   }
+  discount =
+    Number(item.discount_customer) + Number(item.discount_lab) + Number(item.discount_order)
+
   item[`discount_${typeName}_type`] = discountType
   item[`discount_${typeName}`] = amount
   item[`discount_${typeName}_percent`] = percent
 
-  let discount =
-    Number(item.discount_customer) + Number(item.discount_lab) + Number(item.discount_order)
+  if (vatPercent) {
+    vat = ((total - discount) * vatPercent) / 100
+  }
 
   item.price = price
   item.total = total
   item.discount = discount
-  if (formInvoice.value.vat_percent) {
-    item.vat = ((total - discount) * formInvoice.value.vat_percent) / 100
-  }
-  item.net = total - discount + item.vat
+  item.vat = vat
+  item.net = total - discount + vat
   formInvoice.value.items[index] = item
 }
 
@@ -764,7 +728,6 @@ const getInvoice = async (id) => {
   const { data } = await api.get('v2/invoices/' + id)
   if (data) {
     formInvoice.value = data
-    hasVat.value = !!formInvoice.value.totalvat
     if (formInvoice.value.tot)
       if (!formInvoice.value.subdistrict) formInvoice.value.subdistrict = data.customer?.subdistrict
 
@@ -1225,268 +1188,6 @@ onUpdated(() => {
                   <div v-if="errors.items" :class="[{ 'text-danger my-2': errors.items }]">
                     โปรดระบุรายการเครื่องมือ
                   </div>
-                  <!-- ###################### MODAL ############################ -->
-                  <BModal
-                    :id="infoProduct?.item_id"
-                    v-model="visibleModalEditItem"
-                    :title="`${infoProduct?.bill_items_code}`"
-                    @ok="save()"
-                    scrollable
-                    size="md"
-                    ok-only
-                    no-stacking
-                    bodyScrolling
-                    ok-title="บันทึก"
-                  >
-                    <template v-if="infoProduct">
-                      <div class="row g-1 mb-2">
-                        <div class="col-6">เครื่องมือ</div>
-                        <div class="col-6">{{ infoProduct.product_name }}</div>
-
-                        <div class="col-6">Item Code</div>
-                        <div class="col-6">{{ infoProduct.bill_items_code }}</div>
-
-                        <div class="col-3">Point</div>
-                        <div class="col-3">
-                          <div class="input-group input-group-sm">
-                            <input
-                              type="number"
-                              class="form-control form-control-sm"
-                              v-model="infoProduct.point"
-                              min="0"
-                              @blur="updateDiscountItem('point')"
-                              @change="updateDiscountItem('point')"
-                            />
-                          </div>
-                        </div>
-                        <div class="col-3">Point Price</div>
-                        <div class="col-3">
-                          <div class="input-group input-group-sm">
-                            <input
-                              type="number"
-                              class="form-control form-control-sm"
-                              v-model="infoProduct.point_price"
-                              min="0"
-                              @blur="updateDiscountItem('point_price')"
-                              @change="updateDiscountItem('point_price')"
-                            />
-                          </div>
-                        </div>
-                        <div class="col-3">Range</div>
-                        <div class="col-3">
-                          <div class="input-group input-group-sm">
-                            <input
-                              type="number"
-                              class="form-control form-control-sm"
-                              v-model="infoProduct.range"
-                              min="0"
-                              @blur="updateDiscountItem('range')"
-                              @change="updateDiscountItem('range')"
-                            />
-                          </div>
-                        </div>
-                        <div class="col-3">Range Price</div>
-                        <div class="col-3">
-                          <div class="input-group input-group-sm">
-                            <input
-                              type="number"
-                              class="form-control form-control-sm"
-                              v-model="infoProduct.range_price"
-                              min="0"
-                              @blur="updateDiscountItem('range_price')"
-                              @change="updateDiscountItem('range_price')"
-                            />
-                          </div>
-                        </div>
-                        <div class="col-6">ราคาต่อหน่วย</div>
-                        <div class="col-6">
-                          <div class="input-group input-group-sm">
-                            <input
-                              type="number"
-                              class="form-control form-control-sm"
-                              v-model="infoProduct.price"
-                              min="0"
-                              @blur="updateDiscountItem('price')"
-                              @change="updateDiscountItem('price')"
-                            />
-                          </div>
-                        </div>
-
-                        <div class="col-6">PO No.</div>
-                        <div class="col-6">
-                          <div class="input-group input-group-sm">
-                            <input
-                              type="text"
-                              class="form-control form-control-sm"
-                              v-model="infoProduct.po_no"
-                              placeholder="เลขที่ PO"
-                            />
-                          </div>
-                        </div>
-
-                        <div class="col-6">
-                          ส่วนลด Customer
-                          <!-- <small v-if="infoProduct.discount_customer_type">
-                            ({{ infoProduct.discount_customer_type }})
-                          </small> -->
-                        </div>
-                        <div class="col-6">
-                          <span v-if="infoProduct.discount_customer_percent"
-                            >{{ myCurrency(infoProduct.discount_customer_percent) }} %
-                          </span>
-                          <span v-if="infoProduct.discount_customer"
-                            >({{ myCurrency(infoProduct.discount_customer) }})</span
-                          >
-                        </div>
-
-                        <div class="col-6">
-                          ส่วนลด Lab
-                          <!-- <small v-if="infoProduct.discount_lab_type">
-                            ({{ infoProduct.discount_lab_type }})
-                          </small> -->
-                        </div>
-                        <div class="col-6">
-                          <span v-if="infoProduct.discount_lab_percent"
-                            >{{ myCurrency(infoProduct.discount_lab_percent) }}
-                            %
-                          </span>
-                          <span v-if="infoProduct.discount_lab"
-                            >({{ myCurrency(infoProduct.discount_lab) }})</span
-                          >
-                        </div>
-
-                        <div class="col-6">
-                          ส่วนลด Order Type
-                          <!-- <small v-if="infoProduct.discount_order_type">
-                            ({{ infoProduct.discount_order_type }})
-                          </small> -->
-                        </div>
-                        <div class="col-6">
-                          <span v-if="infoProduct.discount_order_percent"
-                            >{{ myCurrency(infoProduct.discount_order_percent) }} %
-                          </span>
-                          <span v-if="infoProduct.discount_order"
-                            >({{ myCurrency(infoProduct.discount_order) }})</span
-                          >
-                        </div>
-
-                        <div class="col-6">ราคาหลังหักส่วนลด</div>
-                        <div class="col-6">{{ myCurrency(infoProduct.net) }}</div>
-                        <div class="col-6">Remark</div>
-                        <div class="col-12">
-                          <textarea class="form-control" v-model="infoProduct.remark"></textarea>
-                        </div>
-                      </div>
-                      <div class="input-group input-group-sm mb-3">
-                        <label class="input-group-text fw-bold" style="width: 160px">
-                          <i class="bi bi-gift me-2"></i> ส่วนลด Customer</label
-                        >
-
-                        <input
-                          type="number"
-                          v-model="formDiscountAdd.discountCustomerValue"
-                          class="form-control form-control-sm"
-                          placeholder="จำนวนเงิน"
-                          min="0"
-                          style="width: 100px"
-                          @change="updateDiscountItem('customer')"
-                        />
-
-                        <select
-                          required
-                          class="form-select form-select-sm"
-                          style="width: 90px"
-                          v-model="formDiscountAdd.discountCustomerType"
-                          @change="updateDiscountItem('customer')"
-                        >
-                          <option
-                            value="percentage"
-                            :selected="formDiscountAdd.discountCustomerType == 'percentage'"
-                          >
-                            %
-                          </option>
-                          <option
-                            value="amount"
-                            :selected="formDiscountAdd.discountCustomerType == 'amount'"
-                          >
-                            บาท
-                          </option>
-                        </select>
-                      </div>
-
-                      <div class="input-group input-group-sm mb-3">
-                        <label class="input-group-text fw-bold" style="width: 160px">
-                          <i class="bi bi-gift me-2"></i> ส่วนลด Lab</label
-                        >
-
-                        <input
-                          type="number"
-                          v-model="formDiscountAdd.discountLabValue"
-                          class="form-control form-control-sm"
-                          placeholder="จำนวนเงิน"
-                          min="0"
-                          style="width: 100px"
-                          @change="updateDiscountItem('lab')"
-                        />
-                        <select
-                          required
-                          class="form-select form-select-sm"
-                          style="width: 90px"
-                          v-model="formDiscountAdd.discountLabType"
-                          @change="updateDiscountItem('lab')"
-                        >
-                          <option
-                            value="percentage"
-                            :selected="formDiscountAdd.discountLabType == 'percentage'"
-                          >
-                            %
-                          </option>
-                          <option
-                            value="amount"
-                            :selected="formDiscountAdd.discountLabType == 'amount'"
-                          >
-                            บาท
-                          </option>
-                        </select>
-                      </div>
-
-                      <div class="input-group input-group-sm mb-3">
-                        <label class="input-group-text fw-bold" style="width: 160px">
-                          <i class="bi bi-gift me-2"></i> ส่วนลด Order Type</label
-                        >
-
-                        <input
-                          type="number"
-                          v-model="formDiscountAdd.discountOrderValue"
-                          class="form-control form-control-sm"
-                          placeholder="จำนวนเงิน"
-                          min="0"
-                          style="width: 100px"
-                          @change="updateDiscountItem('order')"
-                        />
-                        <select
-                          required
-                          class="form-select form-select-sm"
-                          style="width: 90px"
-                          v-model="formDiscountAdd.discountOrderType"
-                          @change="updateDiscountItem('order')"
-                        >
-                          <option
-                            value="percentage"
-                            :selected="formDiscountAdd.discountOrderType == 'percentage'"
-                          >
-                            %
-                          </option>
-                          <option
-                            value="amount"
-                            :selected="formDiscountAdd.discountOrderType == 'amount'"
-                          >
-                            บาท
-                          </option>
-                        </select>
-                      </div>
-                    </template>
-                  </BModal>
 
                   <!-- ######################## TABLE ######################## -->
                   <BTable
@@ -1630,8 +1331,8 @@ onUpdated(() => {
                         <!-- {{ myCurrency(row.item.price) }} -->
                         <div class="input-group input-group-sm">
                           <BButton type="button" @click="calPriceFromPointAndRange(row)"
-                            ><i class="bi bi-calculator"></i
-                          ></BButton>
+                            ><i class="bi bi-calculator"></i>
+                          </BButton>
                           <BInput
                             type="number"
                             min="0"
@@ -1872,14 +1573,6 @@ onUpdated(() => {
                           class="text-end"
                           min="0"
                         />
-                      </div>
-                    </div>
-                    <div class="" style="font-size: 14px">
-                      <div align="center">
-                        <label class="fw-bold"
-                          ><input type="checkbox" v-model="hasVat" class="form-checkbox" />
-                          คำนวณภาษี (VAT)</label
-                        >
                       </div>
                     </div>
                   </div>
@@ -2141,6 +1834,14 @@ onUpdated(() => {
         <p>
           <invoice-detail />
         </p>
+        <template #footer>
+          สร้างเมื่อ:
+          {{
+            myFormatDateTime(itemView.date_starts, {
+              format: 'PPp',
+            })
+          }}
+        </template>
       </BModal>
     </section>
   </div>

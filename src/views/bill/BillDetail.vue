@@ -78,7 +78,7 @@ onBeforeMount(() => {
                   <tfoot>
                     <tr>
                       <td colspan="6"></td>
-                      <td>xxxx</td>
+                      <td></td>
                     </tr>
                   </tfoot>
                 </table>

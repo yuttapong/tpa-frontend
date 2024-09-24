@@ -4,12 +4,12 @@ import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
 import { useInvoiceStore } from '@/stores/invoiceStore'
 import ProductMeta from '@/views/invoice/components/ProductMeta.vue'
-import { myFormatDate, myCurrency } from '@/helpers/myformat'
+import { myFormatDate, myFormatDateTime, myCurrency } from '@/helpers/myformat'
 
 const invoiceStore = useInvoiceStore()
 
 const data = computed(() => invoiceStore.invoice)
-onMounted(() => {})
+onMounted(() => { })
 </script>
 <template>
   <section class="section">
@@ -17,10 +17,7 @@ onMounted(() => {})
       <div class="row">
         <div class="col-6">
           <p>
-            <img
-              src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg"
-              height="60"
-            />
+            <img src="https://tpacal.or.th/wp-content/uploads/2023/12/Logo-Banner-new-1.jpg" height="60" />
           </p>
         </div>
         <div class="col-3">
@@ -114,16 +111,16 @@ onMounted(() => {})
           </tbody>
           <tfoot>
             <tr>
-              <th colspan="8"></th>
+              <th colspan="10"></th>
 
-              <th class="text-end">{{ myCurrency(data?.totalprice) }}</th>
-              <th class="text-end">{{ myCurrency(data?.totaldiscount) }}</th>
-              <th class="text-end">{{ myCurrency(data?.totalvat) }}</th>
-              <th class="text-end">{{ myCurrency(data?.totalnet) }}</th>
+              <th class="text-end fw-bold">{{ myCurrency(data?.totalprice) }}</th>
+              <th class="text-end text-danger fw-bold">{{ myCurrency(data?.totaldiscount) }}</th>
+              <th class="text-end text-success fw-bold">{{ myCurrency(data?.totalvat) }}</th>
+              <th class="text-end fw-bold">{{ myCurrency(data?.totalnet) }}</th>
               <th></th>
             </tr>
             <tr>
-              <td colspan="13">
+              <td colspan="1215">
                 <!-- #################### START SUMMAYRY ####################### -->
                 <div class="">
                   <div class="row g-2">
@@ -208,7 +205,7 @@ div[size='A4'] {
   margin-bottom: 0.5cm;
   box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
 
-  > p,
+  >p,
   span,
   li,
   td {
@@ -223,6 +220,7 @@ div[size='A4'][layout='portrait'] {
 }
 
 @media print {
+
   body,
   page {
     margin: 0;

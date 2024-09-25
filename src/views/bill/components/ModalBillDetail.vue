@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="modal" ref="modalRef">
+    <div class="modal" ref="modalRef" id="modalBillDetail">
       <div class="modal-dialog modal-dialog-scrollable modal-xl">
         <div class="modal-content">
           <div class="modal-header">
@@ -8,6 +8,8 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+
+            <Spinner :visible="loading" />
             <div class="row">
               <div class="col-4 col-lg-3">
                 <label class="fw-bold text-decoration-underline">เลขที่</label>
@@ -21,30 +23,30 @@
                 <label class="fw-bold text-decoration-underline">วันที่</label>
                 <p>{{ bill.document_date ? myFormatDate(bill.document_date) : '' }}</p>
               </div>
-
+              <div class="col-4 col-lg-3">
+                <label class="fw-bold text-decoration-underline">วันนัดรับเครื่องมือ</label>
+                <p v-if="bill.commitment_date">
+                  {{ myFormatDateTime(bill.commitment_date) }}
+                </p>
+              </div>
               <div class="col-4 col-lg-3">
                 <label class="fw-bold text-decoration-underline">ผู้ติดต่อ</label>
                 <p>{{ bill.agent_name }}</p>
               </div>
               <div class="col-12 col-lg-3">
                 <label class="fw-bold text-decoration-underline">ที่อยู่</label>
-                <p>{{ bill.address_name }} {{ bill.address_detail }}</p>
+                <p>{{ bill.address_name }} {{ (bill.address_detail) }}</p>
               </div>
 
               <div class="col-4 col-lg-3">
                 <label class="fw-bold text-decoration-underline">เวลาทำรายการ</label>
                 <p>{{ myFormatDate(bill.date_start) }}</p>
               </div>
-              <div class="col-4 col-lg-3">
-                <label class="fw-bold text-decoration-underline">วันนัดรับเครื่องมือ</label>
-                <p v-if="bill.commitment_date">
-                  {{ myFormatDate(bill.commitment_date) }}
-                </p>
-              </div>
+
               <div class="col-4 col-lg-3">
                 <label class="fw-bold text-decoration-underline">สถานะ</label>
                 <p>
-                  <BillButtonStatus v-model="bill.bill_status" :data="bill" @on-change="onChangeBillStatus" />
+                  <BillStatus v-model="bill.bill_status" />
                 </p>
               </div>
               <div class="col-12 col-md-6">
@@ -52,8 +54,8 @@
                 <p class="text-wrap fst-italic text-danger">{{ bill.note_customers }}</p>
               </div>
               <div class="col-12 col-md-6">
-                <label class="fw-bold text-decoration-underline">Note</label>
-                <p class="text-wrap fst-italic text-danger">{{ bill?.customer?.note }}</p>
+                <label class="fw-bold text-decoration-underline">หมายเหตุ</label>
+                <p class="text-wrap fst-italic text-danger">{{ bill?.customer?.remark }}</p>
               </div>
               <div class="col-12 col-md-6">
                 <label class="fw-bold text-decoration-underline">หมายเหตุ</label>
@@ -66,7 +68,6 @@
                 <span class="visually-hidden">Loading...</span>
               </div>
             </div>
-
             <div class="table-responsive">
               <table class="table table-condensed table-sm table-bordered table-striped" v-if="!loadingItems">
                 <thead>
@@ -85,7 +86,7 @@
                     <th class="fw-bold text-decoration-underline text-end">Total</th>
                   </tr>
                 </thead>
-                <tbody v-if="bill.items && bill.items.length > 0">
+                <tbody v-if="bill.items">
                   <tr v-for="(row, rowIndex) in bill.items" :key="row">
                     <!-- <th>
                       <input type="checkbox" v-model="itemsSelected" name="itemsSelected[]" :value="row" />
@@ -112,7 +113,12 @@
                           row.current_service_status.status_id
                         }}
                       </div>
-                      <JobButtonStatus v-model="row.job_status" :data="row" @on-change="onChangeJobStatus" />
+                      <template v-if="canChangeStatus">
+                        <JobButtonStatus v-model="row.job_status" :data="row" @on-change="onChangeJobStatus" />
+                      </template>
+                      <template v-else>
+                        <JobStatus v-model="row.job_status" />
+                      </template>
                     </td>
                     <td nowrap>{{ myFormatDate(row.reserved_date) }}</td>
                     <td style="min-width: 300px">
@@ -201,12 +207,18 @@
               <label class="me-3 fw-bold text-decoration-underline">ที่อยู่ในการจัดส่งใบรับรอง:</label>
               <span class="text-wrap">
                 {{
-                  `${bill.cert_address_name} ${bill.cert_address_detail}
-                                ${bill.cert_address_province} ${bill.cert_address_zipcode} ${bill.cert_address_phone}`.trim()
+                  certAddress
                 }}</span>
             </p>
           </div>
-          <div class="modal-footer"></div>
+          <div class="modal-footer d-block">
+            <div class="d-flex">
+              <div v-show="canChangeStatus">
+                <label> สถานะ</label>
+                <BillButtonStatus v-model="bill.bill_status" :data="bill" @on-change="onChangeBillStatus" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -216,11 +228,15 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
-import { myFormatDate, myCurrency } from '@/helpers/myformat'
+import { myFormatDate, myFormatDateTime, myCurrency } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
 import JobButtonStatus from './JobButtonStatus.vue'
 import BillButtonStatus from './BillButtonStatus.vue'
+import BillStatus from './BillStatus.vue'
+import Spinner from '@/components/Spinner.vue'
+import { removeUndefinedAndNull } from '@/helpers/string'
+import { api } from '@/helpers/api'
 const emit = defineEmits([
   'onHide',
   'onShow',
@@ -233,34 +249,68 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  data: {
-    type: Object,
-    default: () => { },
-  },
+  canChangeStatus: {
+    type: Boolean
+  }
 })
 const billStore = useBillStore()
+const loading = ref(false)
 let modalEl = null
 let modalRef = ref(null)
 
-const bill = computed(() => props.data)
-
+const bill = computed(() => billStore.bill)
+const title = computed(() => {
+  if (billStore.bill) {
+    return `${bill.value.code}  ID#${bill.value?.id}`
+  }
+})
+const certAddress = computed(() => {
+  let address = `${bill.cert_address_name} ${bill.cert_address_detail}
+                                ${bill.cert_address_province} ${bill.cert_address_zipcode} ${bill.cert_address_phone}`.trim();
+  return removeUndefinedAndNull(address)
+})
 const show = () => {
   modalEl.show()
 }
 const hide = () => {
   modalEl.hide()
 }
-const getBillByCode = async (code) => {
-  return await api.get('v2/bills/code/' + code)
+const getBillById = async (id) => {
+  loading.value = true
+  console.log("load more items", id);
+  const rs = await api.get('v2/bills/' + id).catch(() => {
+    loading.value = false
+  })
+  if (rs.data) {
+    billStore.setBill(rs.data)
+    loading.value = false
+  }
 }
-const onChangeBillStatus = (bill) => {
-  emit('onChangeBillStatus', bill.data)
+const onChangeBillStatus = (result) => {
+  getBillById(result.data.id)
+  setTimeout(() => emit('onChangeBillStatus', bill.value), 3000)
 }
-const onChangeJobStatus = (job) => {
-  emit('onChangeJobStatus', job.data)
+const onChangeJobStatus = (result) => {
+  console.log("onChangeJobStatus", result.data);
+  getBillById(result.data.bill_id)
+  setTimeout(() => emit('onChangeJobStatus', result.data), 3000)
 }
 onMounted(() => {
   modalEl = new Modal(modalRef.value)
+  var modalBillDetail = document.getElementById('modalBillDetail')
+  modalBillDetail.addEventListener('shown.bs.modal', (e) => {
+    console.log('show', bill.value);
+    if (bill.value.id) {
+      getBillById(bill.value.id)
+    }
+
+  })
+  modalBillDetail.addEventListener('hide.bs.modal', (e) => {
+
+  })
+
+
+
   document.onkeydown = function (evt) {
     evt = evt || window.event
     var isEscape = false

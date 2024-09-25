@@ -59,6 +59,13 @@ onMounted(() => { })
         <table class="table table-sm table-condensed table-bordered" style="width: 100%">
           <thead>
             <tr>
+              <th></th>
+              <th colspan="2" align="center">รายการเครื่องมือ</th>
+              <th></th>
+              <th colspan="4" class="text-center">Point and Range</th>
+              <th colspan="7" class="text-center">ส่วนลดและราคา</th>
+            </tr>
+            <tr>
               <th scope="col" nowrap class="fw-bold">ลำดับที่</th>
               <th scope="col" class="fw-bold">รหัสสินค้า</th>
               <th scope="col" class="fw-bold">รายการ</th>

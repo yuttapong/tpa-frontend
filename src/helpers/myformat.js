@@ -39,7 +39,7 @@ export const myFormatDateTime = (value, options) => {
   if (value == '0000-00-00 00:00:00') return ''
   if (value == '0000-00-00') return ''
 
-  const _format = options && options.format ? options.format : 'dd/MM/yy H:i'
+  const _format = options && options.format ? options.format : 'dd/MM/yyyy H:i'
   return format(value, _format, {
     locale: th,
   })

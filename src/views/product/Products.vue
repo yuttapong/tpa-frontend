@@ -73,47 +73,61 @@
                                 </form>
 
                                 <!-- Small tables -->
-                                <table class="table table-sm table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Code</th>
-                                            <th scope="col">รายการ</th>
-                                            <th scope="col" nowrap>เครื่องมือ</th>
-                                            <th scope="col">CalPoint</th>
-                                            <th scope="col">CalHour</th>
-                                            <th scope="col">Duration (Minutes)</th>
-                                            <th scope="col">CalPrice</th>
-                                            <th scope="col">Lab/Sub Lab</th>
-                                            <th scope="col">action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(item, index) in items" :key="index">
-                                            <th scope="row">{{ index + 1 }}</th>
-                                            <td>
-                                                <span class="badge bg-dark text-light">{{ item.code }}</span>
-                                            </td>
-                                            <td>{{ item.name }}</td>
-                                            <td>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Code</th>
+                                                <th scope="col">รายการ</th>
+                                                <th scope="col" nowrap>เครื่องมือ</th>
+                                                <th scope="col" nowrap>No Cal</th>
+                                                <th scope="col" nowrap>No Discount</th>
+                                                <th scope="col">CalPoint</th>
+                                                <th scope="col">CalHour</th>
+                                                <th scope="col">Duration (Minutes)</th>
+                                                <th scope="col">CalPrice</th>
+                                                <th scope="col">Lab/Sub Lab</th>
+                                                <th scope="col">action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item, index) in items" :key="index">
+                                                <th scope="row">{{ index + 1 }}</th>
+                                                <td>
+                                                    <span class="badge bg-dark text-light">{{ item.code }}</span>
+                                                </td>
+                                                <td>{{ item.name }}</td>
+                                                <td>
 
-                                                <input type="checkbox" v-model="item.is_job" true-value="1" false-value="0"
-                                                    @change="onChangeIsJob(item)" />
-                                            </td>
-                                            <td>{{ item.calpoint }}</td>
-                                            <td>{{ item.calhour }}</td>
-                                            <td>{{ item.duration }}</td>
-                                            <td>{{ item.calprice }}</td>
-                                            <td>
-                                                <small class="fw-bold">{{ item.lab.name }}</small>
-                                                <div>{{ item.sublab.name }}</div>
-                                            </td>
-                                            <td>
+                                                    <input type="checkbox" v-model="item.is_job" true-value="1"
+                                                        false-value="0" @change="onChangeIsJob(item)" />
+                                                </td>
+                                                <td>
 
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                    <input type="checkbox" v-model="item.nocaldiscount" true-value="1"
+                                                        false-value="0" @change="onChangeNoCalDiscount(item)" />
+                                                </td>
+                                                <td>
+
+                                                    <input type="checkbox" v-model="item.nodiscount" true-value="1"
+                                                        false-value="0" @change="onChangeNoDiscount(item)" />
+                                                </td>
+                                                <td>{{ item.calpoint }}</td>
+                                                <td>{{ item.calhour }}</td>
+                                                <td>{{ item.duration }}</td>
+                                                <td>{{ item.calprice }}</td>
+                                                <td>
+                                                    <small class="fw-bold">{{ item.lab.name }}</small>
+                                                    <div>{{ item.sublab.name }}</div>
+                                                </td>
+                                                <td>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                                 <!-- End small tables --> <vue-awesome-paginate :total-items="pagination.total"
                                     :items-per-page="pagination.per_page"
                                     :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
@@ -124,28 +138,30 @@
 
 
                                 <!-- Small tables -->
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Code</th>
-                                            <th scope="col">Name</th>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Code</th>
+                                                <th scope="col">Name</th>
 
 
-                                            <th scope="col">action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(item, index) in items" :key="index">
-                                            <th scope="row">{{ index + 1 }}</th>
-                                            <td>{{ item.code }}</td>
-                                            <td>{{ item.name }}</td>
-                                            <td>
+                                                <th scope="col">action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item, index) in items" :key="index">
+                                                <th scope="row">{{ index + 1 }}</th>
+                                                <td>{{ item.code }}</td>
+                                                <td>{{ item.name }}</td>
+                                                <td>
 
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                                 <!-- End small tables -->
                             </div>
 
@@ -224,6 +240,20 @@ const onChangeIsJob = async (row) => {
     console.log(row.is_job);
     const { status } = await api.patch(`/v2/products/${row.id}/set-job`, {
         is_job: row.is_job
+    })
+
+}
+const onChangeNoCalDiscount = async (row) => {
+    console.log(row.is_job);
+    const { status } = await api.patch(`/v2/products/${row.id}/set-nocaldiscount`, {
+        nocaldiscount: row.nocaldiscount
+    })
+
+}
+const onChangeNoDiscount = async (row) => {
+    console.log(row.is_job);
+    const { status } = await api.patch(`/v2/products/${row.id}/set-nodiscount`, {
+        nodiscount: row.nodiscount
     })
 
 }

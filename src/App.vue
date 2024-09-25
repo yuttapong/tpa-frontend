@@ -3,18 +3,20 @@ import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import Navbar from './components/layouts/Navbar.vue'
 import { useAppStore } from './stores/appStore'
-import { api } from './helpers/api';
+import { api } from './helpers/api'
 
 const appStore = useAppStore()
 const getSettings = async () => {
-  const { data } = await api.get('/v2/settings').catch((err) => {
-    console.log(err);
+  const { data, status } = await api.get('/v2/settings').catch((err) => {
+    console.log(err)
   })
-  if (data) {
+
+  if (status == 200) {
     appStore.setSetting(data)
+  } else {
+    appStore.setSetting({})
   }
 }
-
 
 getSettings()
 </script>

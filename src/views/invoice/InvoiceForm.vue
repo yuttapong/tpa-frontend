@@ -61,11 +61,6 @@ const formSearch = ref({
 })
 const customerTypes = ref([])
 
-const invoiceTypes = [
-  { text: '', value: 'onsite' },
-  { text: '', value: 'walk_in' },
-  { text: '', value: 'normal' },
-]
 const discountTypes = [
   { value: 'A', text: 'A:ปกติ (คิดส่วนลดและสะสมยอด)' },
   { value: 'B', text: 'B:ไม่เอาส่วนลดแต่สะสมยอด' },
@@ -271,7 +266,7 @@ const fillDataCustomer = async (bill, billItems) => {
     let data = {
       customer_id: bill?.company_id,
       customer_name: bill?.address_name,
-      address: addressText,
+      address: addressText.replace('null', ''),
       phone: bill?.address_phone,
       contact_id: bill?.agent_id,
       contact_name: bill?.agent_name,
@@ -409,128 +404,128 @@ const openModalCustomer = () => {
 const updatePriceItems = (row) => {
   calculate()
 }
-/**
- * คำนวณส่วนลดให้ให้ฟอร์มใน Modal แก้ไขรายการการย่าย
- * @param {} type
- */
-const updateDiscountItem = (type) => {
-  if (!type) return false
-  let row = infoProduct.value
-  let percent = 0
-  let amount = 0
-  let price = Number(row.price)
-  // let price = pointRangeToPricePerUnit(row.point, row.point_price, row.range, row.range_price);
-  row.total = price
+// /**
+//  * คำนวณส่วนลดให้ให้ฟอร์มใน Modal แก้ไขรายการการย่าย
+//  * @param {} type
+//  */
+// const updateDiscountItem = (type) => {
+//   if (!type) return false
+//   let row = infoProduct.value
+//   let percent = 0
+//   let amount = 0
+//   let price = Number(row.price)
+//   // let price = pointRangeToPricePerUnit(row.point, row.point_price, row.range, row.range_price);
+//   row.total = price
 
-  if (type) {
-    switch (type) {
-      case 'customer':
-        if (formDiscountAdd.value.discountCustomerType == 'percentage') {
-          percent = Number(formDiscountAdd.value.discountCustomerValue)
-          amount = (Number(formDiscountAdd.value.discountCustomerValue) * price) / 100
-        } else {
-          amount = Number(formDiscountAdd.value.discountCustomerValue)
-          percent = (Number(formDiscountAdd.value.discountCustomerValue) * 100) / price
-        }
-        row.discount_customer_type = formDiscountAdd.value.discountCustomerType
-        row.discount_customer_percent = percent
-        row.discount_customer = amount
-        row.discount =
-          Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-        row.net = Number(price) - Number(row.discount)
-        formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
-          if (itemKey === formDiscountAdd.value.index) {
-            item = row
-          }
-          return item
-        })
-        calculate()
-        break
-      case 'lab':
-        if (formDiscountAdd.value.discountLabType == 'percentage') {
-          percent = Number(formDiscountAdd.value.discountLabValue)
-          amount = (Number(formDiscountAdd.value.discountLabValue) * price) / 100
-        } else {
-          amount = Number(formDiscountAdd.value.discountLabValue)
-          percent = (Number(formDiscountAdd.value.discountLabValue) * 100) / price
-        }
-        row.discount_lab_type = formDiscountAdd.value.discountLabType
-        row.discount_lab_percent = percent
-        row.discount_lab = amount
-        row.discount =
-          Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-        row.net = Number(price) - Number(row.discount)
-        formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
-          if (itemKey === formDiscountAdd.value.index) {
-            item = row
-          }
-          return item
-        })
-        calculate()
-        break
-      case 'order':
-        if (formDiscountAdd.value.discountOrderType == 'percentage') {
-          percent = Number(formDiscountAdd.value.discountOrderValue)
-          amount = (Number(formDiscountAdd.value.discountOrderValue) * price) / 100
-        } else {
-          amount = Number(formDiscountAdd.value.discountOrderValue)
-          percent = (Number(formDiscountAdd.value.discountOrderValue) * 100) / price
-        }
-        row.discount_order_type = formDiscountAdd.value.discountOrderType
-        row.discount_order_percent = percent
-        row.discount_order = amount
-        row.discount =
-          Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-        row.net = Number(price) - Number(row.discount)
-        formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
-          if (itemKey === formDiscountAdd.value.index) {
-            item = row
-          }
-          return item
-        })
-        calculate()
-        break
-      case 'price':
-        // discount customer
-        if (row.discount_customer_type == 'percentage') {
-          row.discount_customer_percent = Number(row.discount_customer_percent)
-          row.discount_customer = (Number(row.discount_customer_percent) * price) / 100
-        } else if (row.discount_customer_type == 'amount') {
-          row.discount_customer = Number(row.discount_customer)
-          row.discount_customer_percent = (Number(row.discount_customer) * 100) / price
-        }
-        // discount lab
-        if (row.discount_lab_type == 'percentage') {
-          row.discount_lab_percent = Number(row.discount_lab_percent)
-          row.discount_lab = (Number(row.discount_lab_percent) * price) / 100
-        } else if (row.discount_lab_type == 'amount') {
-          row.discount_lab = Number(row.discount_lab)
-          row.discount_lab_percent = (Number(row.discount_lab) * 100) / price
-        }
-        // discount order
-        if (row.discount_order_type == 'percentage') {
-          row.discount_order_percent = Number(row.discount_order_percent)
-          row.discount_order = (Number(row.discount_order_percent) * price) / 100
-        } else if (row.discount_order_type == 'amount') {
-          row.discount_order = Number(row.discount_order)
-          row.discount_order_percent = (Number(row.discount_order) * 100) / price
-        }
-        //console.log('price', row.discount_customer_percent, row.discount_customer, row.discount_customer_type);
+//   if (type) {
+//     switch (type) {
+//       case 'customer':
+//         if (formDiscountAdd.value.discountCustomerType == 'percentage') {
+//           percent = Number(formDiscountAdd.value.discountCustomerValue)
+//           amount = (Number(formDiscountAdd.value.discountCustomerValue) * price) / 100
+//         } else {
+//           amount = Number(formDiscountAdd.value.discountCustomerValue)
+//           percent = (Number(formDiscountAdd.value.discountCustomerValue) * 100) / price
+//         }
+//         row.discount_customer_type = formDiscountAdd.value.discountCustomerType
+//         row.discount_customer_percent = percent
+//         row.discount_customer = amount
+//         row.discount =
+//           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
+//         row.net = Number(price) - Number(row.discount)
+//         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
+//           if (itemKey === formDiscountAdd.value.index) {
+//             item = row
+//           }
+//           return item
+//         })
+//         calculate()
+//         break
+//       case 'lab':
+//         if (formDiscountAdd.value.discountLabType == 'percentage') {
+//           percent = Number(formDiscountAdd.value.discountLabValue)
+//           amount = (Number(formDiscountAdd.value.discountLabValue) * price) / 100
+//         } else {
+//           amount = Number(formDiscountAdd.value.discountLabValue)
+//           percent = (Number(formDiscountAdd.value.discountLabValue) * 100) / price
+//         }
+//         row.discount_lab_type = formDiscountAdd.value.discountLabType
+//         row.discount_lab_percent = percent
+//         row.discount_lab = amount
+//         row.discount =
+//           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
+//         row.net = Number(price) - Number(row.discount)
+//         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
+//           if (itemKey === formDiscountAdd.value.index) {
+//             item = row
+//           }
+//           return item
+//         })
+//         calculate()
+//         break
+//       case 'order':
+//         if (formDiscountAdd.value.discountOrderType == 'percentage') {
+//           percent = Number(formDiscountAdd.value.discountOrderValue)
+//           amount = (Number(formDiscountAdd.value.discountOrderValue) * price) / 100
+//         } else {
+//           amount = Number(formDiscountAdd.value.discountOrderValue)
+//           percent = (Number(formDiscountAdd.value.discountOrderValue) * 100) / price
+//         }
+//         row.discount_order_type = formDiscountAdd.value.discountOrderType
+//         row.discount_order_percent = percent
+//         row.discount_order = amount
+//         row.discount =
+//           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
+//         row.net = Number(price) - Number(row.discount)
+//         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
+//           if (itemKey === formDiscountAdd.value.index) {
+//             item = row
+//           }
+//           return item
+//         })
+//         calculate()
+//         break
+//       case 'price':
+//         // discount customer
+//         if (row.discount_customer_type == 'percentage') {
+//           row.discount_customer_percent = Number(row.discount_customer_percent)
+//           row.discount_customer = (Number(row.discount_customer_percent) * price) / 100
+//         } else if (row.discount_customer_type == 'amount') {
+//           row.discount_customer = Number(row.discount_customer)
+//           row.discount_customer_percent = (Number(row.discount_customer) * 100) / price
+//         }
+//         // discount lab
+//         if (row.discount_lab_type == 'percentage') {
+//           row.discount_lab_percent = Number(row.discount_lab_percent)
+//           row.discount_lab = (Number(row.discount_lab_percent) * price) / 100
+//         } else if (row.discount_lab_type == 'amount') {
+//           row.discount_lab = Number(row.discount_lab)
+//           row.discount_lab_percent = (Number(row.discount_lab) * 100) / price
+//         }
+//         // discount order
+//         if (row.discount_order_type == 'percentage') {
+//           row.discount_order_percent = Number(row.discount_order_percent)
+//           row.discount_order = (Number(row.discount_order_percent) * price) / 100
+//         } else if (row.discount_order_type == 'amount') {
+//           row.discount_order = Number(row.discount_order)
+//           row.discount_order_percent = (Number(row.discount_order) * 100) / price
+//         }
+//         //console.log('price', row.discount_customer_percent, row.discount_customer, row.discount_customer_type);
 
-        row.discount =
-          Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-        row.net = Number(price) - Number(row.discount)
-        formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
-          if (itemKey === formDiscountAdd.value.index) {
-            item = row
-          }
-          return item
-        })
-        calculate()
-        break
-    }
-  }
-}
+//         row.discount =
+//           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
+//         row.net = Number(price) - Number(row.discount)
+//         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
+//           if (itemKey === formDiscountAdd.value.index) {
+//             item = row
+//           }
+//           return item
+//         })
+//         calculate()
+//         break
+//     }
+//   }
+// }
 
 /**
  * คำนวณตัวเลขทั้งหมดก่อนส่งไปบันทึก DB
@@ -659,6 +654,7 @@ const onChangeDiscountTypeOfItems = (item, typeName, discountType) => {
   item.vat = vat
   item.net = total - discount + vat
   formInvoice.value.items[index] = item
+  calculate()
 }
 
 const onSelectCustomer = (data) => {

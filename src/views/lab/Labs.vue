@@ -62,7 +62,7 @@
                       <td valign="top">{{ skey + 1 }}</td>
                       <td valign="top">{{ sublab.id }}</td>
                       <td>{{ sublab.name_th }}<br><small>{{ sublab.name }}</small></td>
-                      <td>2</td>
+                      <td>{{ sublab.lead_time }}</td>
                       <td>
                         <span class="p-1 me-1 badge bg-dark" v-for="u in sublab.approvers" :key="u">
                           {{ u.name_th }}

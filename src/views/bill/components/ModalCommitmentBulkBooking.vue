@@ -484,6 +484,8 @@ const findCommitmentDate = async () => {
     } else {
       params.commitment_date = commitmentDate.value ? formatISO(commitmentDate.value) : ''
     }
+    // console.log(params);
+    // return false;
 
     const { data } = await axios
       .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {

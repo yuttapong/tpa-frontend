@@ -122,7 +122,6 @@
                     </td>
                     <td nowrap>{{ myFormatDate(row.reserved_date) }}</td>
                     <td style="min-width: 300px">
-                      {{ row.test_point }}
                       <BRow align-h="start" gutter-x="2" style="font-size: 13px">
                         <BCol alignSelf="center">
                           <div class="text-decoration-underline fw-bold">Id.No</div>

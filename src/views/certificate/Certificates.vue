@@ -10,18 +10,13 @@
   </div>
 
   <section class="section profile">
-    <spinner :visible="loading" />
+
 
     <div class="row" v-if="items">
       <div class="col-xl-12">
         <div class="card">
           <div class="card-body pt-3">
-            <ul
-              class="nav nav-tabs nav-tabs-bordered"
-              id="tab_certificate"
-              role="tablist"
-              ref="tabViewRef"
-            >
+            <ul class="nav nav-tabs nav-tabs-bordered" id="tab_certificate" role="tablist" ref="tabViewRef">
               <li class="nav-item" role="presentation">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#qt-index">
                   List ({{ parseInt(pagination.total).toLocaleString() }})
@@ -47,19 +42,13 @@
                       </select>
                     </div>
                     <div class="">
-                      <input
-                        type="search"
-                        v-model="filterValue"
-                        class="form-control form-control-sm"
-                        placeholder="keyword..."
-                        @keyup.enter="search"
-                        autofocus
-                      />
+                      <input type="search" v-model="filterValue" class="form-control form-control-sm"
+                        placeholder="keyword..." @keyup.enter="search" autofocus />
                     </div>
                     <div class="">
-                      <button type="submit" class="btn btn-light btn-sm">
+                      <BButton type="submit" class="btn btn-light btn-sm" :loading="loading">
                         <i class="bi bi-search"></i>
-                      </button>
+                      </BButton>
                     </div>
                   </div>
                 </form>
@@ -80,11 +69,8 @@
                       <tr v-for="(item, index) in items" :key="index">
                         <td scope="row">{{ item.cerid }}</td>
                         <td>
-                          <button
-                            type="button"
-                            class="fw-bold border bg-dark text-white p-1 w-full d-block"
-                            @click="viewCert(item)"
-                          >
+                          <button type="button" class="fw-bold border bg-dark text-white p-1 w-full d-block"
+                            @click="viewCert(item)">
                             {{ item.cerno }}
                           </button>
 
@@ -106,8 +92,7 @@
                         <td>
                           <div class="fw-bold">{{ item?.equipment?.product_name }}</div>
                           <small class="badge bg-warning text-dark">
-                            <i>Model.</i> {{ item.equipment?.model }}</small
-                          >
+                            <i>Model.</i> {{ item.equipment?.model }}</small>
                           <div class="ms-2">
                             <small>{{ item.lab?.name }}</small>
                           </div>
@@ -117,14 +102,10 @@
                     </tbody>
                   </table>
                 </div>
-                <vue-awesome-paginate
-                  :total-items="pagination.total"
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                  class="mt-3"
-                />
+
+
+                <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
+                  :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
               </div>
 
               <div class="tab-pane fade pt-3" id="tab_cert_detail">
@@ -194,12 +175,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Certificate</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <Certificate v-model:data="viewData" />
@@ -270,7 +246,8 @@ const search = () => {
   pagination.value.current_page = 1
   loadData()
 }
-const onChangePage = (page) => {
+const onChangePage = (e, page) => {
+  console.log(page);
   pagination.value.current_page = page
   loadData()
 }

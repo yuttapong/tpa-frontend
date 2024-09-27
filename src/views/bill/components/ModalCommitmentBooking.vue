@@ -136,6 +136,7 @@
                         </th>
                         <th scope="col" class="fw-bold">Cal Hour</th>
                         <th scope="col" class="fw-bold">Duration</th>
+                        <th scope="col" class="fw-bold">LeadTime</th>
                         <th scope="col" class="fw-bold" nowrap>
                           <div>วันนัดรับ</div>
                           Reserved Date
@@ -214,8 +215,15 @@
                           <div>{{ item.lab?.name_th }} #{{ item.lab_id }}</div>
                           <small class="ms-2 text-danger">{{ item.sublab?.name_th }} #{{ item.sublab_id }}</small>
                         </td>
-                        <td nowrap>{{ item?.product?.calhour }} (ชม.)</td>
-                        <td nowrap>{{ item?.product?.duration }} (นาที)</td>
+                        <td class="text-center">
+                          <div>{{ item?.product?.calhour }}</div> (ชม.)
+                        </td>
+                        <td class="text-center">
+                          <div>{{ item?.product?.duration }}</div> (นาที)
+                        </td>
+                        <td class="text-center">
+                          <div>{{ item?.sublab?.lead_time }}</div> (วัน)
+                        </td>
                         <td nowrap>
                           <span>{{ item?.reserved_date }}</span>
                           <!-- 
@@ -370,7 +378,7 @@ const findCommitmentDate = async () => {
         workorder_id: item.item_id,
         item_code: item.item_code,
         duration: item.product?.duration,
-        lead_time: item.product?.duration,
+        lead_time: item?.sublab?.lead_time || 0,
         lab_id: item.lab_id,
         product_id: item.product_id,
         sorter: item.sorter,

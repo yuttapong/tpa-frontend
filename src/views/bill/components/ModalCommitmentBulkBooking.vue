@@ -68,6 +68,7 @@
                                 <BTh>ห้องทดลอง</BTh>
                                 <BTh>CalHour</BTh>
                                 <BTh>Duration</BTh>
+                                <BTh>LeadTime</BTh>
                                 <BTh>Reserved Date</BTh>
                                 <BTh class="text-center">สถานะ</BTh>
                               </BTr>
@@ -144,8 +145,15 @@
                                     }}</small>
                                   </div>
                                 </BTd>
-                                <BTd class="">{{ item?.product?.calhour }} (ชม.)</BTd>
-                                <BTd class="">{{ item?.product?.duration }} (นาที)</BTd>
+                                <BTd class="text-center">
+                                  <div>{{ item?.product?.calhour }}</div> (ชม.)
+                                </BTd>
+                                <BTd class="text-center">
+                                  <div>{{ item?.product?.duration }}</div> (นาที)
+                                </BTd>
+                                <BTd class="text-center">
+                                  <div>{{ item?.sublab?.lead_time }}</div> (วัน)
+                                </BTd>
                                 <BTd class="" nowrap>
                                   <span v-if="hasCommitmentDate(item?.reserved_date)">
                                     {{ myFormatDate(item?.reserved_date).toLocaleString() }}</span>
@@ -460,7 +468,7 @@ const findCommitmentDate = async () => {
           iem_id: row.item_id,
           item_code: row.item_code,
           workorder_id: row.item_id,
-          lead_time: row.product.duration,
+          lead_time: row?.sublab?.lead_time || 0,
           duration: row.product.duration,
           lab_id: row.lab_id,
           product_id: row.product_id,
@@ -484,8 +492,6 @@ const findCommitmentDate = async () => {
     } else {
       params.commitment_date = commitmentDate.value ? formatISO(commitmentDate.value) : ''
     }
-    // console.log(params);
-    // return false;
 
     const { data } = await axios
       .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {

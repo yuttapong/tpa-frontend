@@ -318,6 +318,7 @@ import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
 import { formatDate, formatISO, format } from 'date-fns'
 import JobStatus from './JobStatus.vue'
+import { kanbanBaseUrl } from '@/config'
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload', 'onComplete'])
 const props = defineProps({
@@ -494,7 +495,7 @@ const findCommitmentDate = async () => {
     }
 
     const { data } = await axios
-      .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
+      .post(kanbanBaseUrl + '/v1/bills', params, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${appStore.token}`,
@@ -572,7 +573,7 @@ const cancelBook = () => {
   let loopCount = 0
   billSelected.value.map(async (bill, billIndex) => {
     const rsCancel = await axios
-      .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + bill.id, {
+      .delete(kanbanBaseUrl + '/v1/bills?bill_id=' + bill.id, {
         data: {},
         headers: {
           'Content-Type': 'application/json',

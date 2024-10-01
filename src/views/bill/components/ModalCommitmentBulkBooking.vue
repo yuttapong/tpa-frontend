@@ -68,6 +68,7 @@
                                 <BTh>ห้องทดลอง</BTh>
                                 <BTh>CalHour</BTh>
                                 <BTh>Duration</BTh>
+                                <BTh>LeadTime</BTh>
                                 <BTh>Reserved Date</BTh>
                                 <BTh class="text-center">สถานะ</BTh>
                               </BTr>
@@ -144,8 +145,15 @@
                                     }}</small>
                                   </div>
                                 </BTd>
-                                <BTd class="">{{ item?.product?.calhour }} (ชม.)</BTd>
-                                <BTd class="">{{ item?.product?.duration }} (นาที)</BTd>
+                                <BTd class="text-center">
+                                  <div>{{ item?.product?.calhour }}</div> (ชม.)
+                                </BTd>
+                                <BTd class="text-center">
+                                  <div>{{ item?.product?.duration }}</div> (นาที)
+                                </BTd>
+                                <BTd class="text-center">
+                                  <div>{{ item?.sublab?.lead_time }}</div> (วัน)
+                                </BTd>
                                 <BTd class="" nowrap>
                                   <span v-if="hasCommitmentDate(item?.reserved_date)">
                                     {{ myFormatDate(item?.reserved_date).toLocaleString() }}</span>
@@ -310,6 +318,7 @@ import BillPriority from '@/views/bill/components/BillPriority.vue'
 import axios from 'axios'
 import { formatDate, formatISO, format } from 'date-fns'
 import JobStatus from './JobStatus.vue'
+import { kanbanBaseUrl } from '@/config'
 
 const emit = defineEmits(['onHide', 'onShow', 'onConfirm', 'onReload', 'onComplete'])
 const props = defineProps({
@@ -460,7 +469,7 @@ const findCommitmentDate = async () => {
           iem_id: row.item_id,
           item_code: row.item_code,
           workorder_id: row.item_id,
-          lead_time: row.product.duration,
+          lead_time: row?.sublab?.lead_time || 0,
           duration: row.product.duration,
           lab_id: row.lab_id,
           product_id: row.product_id,
@@ -484,11 +493,9 @@ const findCommitmentDate = async () => {
     } else {
       params.commitment_date = commitmentDate.value ? formatISO(commitmentDate.value) : ''
     }
-    // console.log(params);
-    // return false;
 
     const { data } = await axios
-      .post(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills', params, {
+      .post(kanbanBaseUrl + '/v1/bills', params, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${appStore.token}`,
@@ -566,7 +573,7 @@ const cancelBook = () => {
   let loopCount = 0
   billSelected.value.map(async (bill, billIndex) => {
     const rsCancel = await axios
-      .delete(import.meta.env.VITE_KANBAN_API_URL + '/v1/bills?bill_id=' + bill.id, {
+      .delete(kanbanBaseUrl + '/v1/bills?bill_id=' + bill.id, {
         data: {},
         headers: {
           'Content-Type': 'application/json',

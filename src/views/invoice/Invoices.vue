@@ -319,13 +319,11 @@ const print = () => {
                         <BButton size="sm" variant="light" @click="showModalFilterOfSearch = true">
                           <i class="bi bi-filter"></i>
                         </BButton>
-                        <BButton type="submit" size="sm" variant="light">
+                        <BButton type="submit" size="sm" variant="light" :loading="loading">
                           <i class="bi bi-search"></i>
                         </BButton>
                       </div>
-                      <div>
-                        <Spinner :visible="loading" />
-                      </div>
+
                     </div>
                     <!-- ############start search filter ############### -->
                     <BModal v-model="showModalFilterOfSearch" title="เงือนไขการค้นหา"

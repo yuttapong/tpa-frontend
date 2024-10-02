@@ -187,10 +187,10 @@
 
                         </div>
                       </BTd>
-                      <BTd>
-                        <div class="text-center" style="width: 50px">
-                          <i class="bi bi-person"></i>
-                          {{ item.user_start }}
+                      <BTd nowrap>
+                        <div class="text-center">
+                          <i class="bi bi-person"></i><br>
+                          <small>{{ item?.staff?.name_th }}</small>
                         </div>
                       </BTd>
                       <BTd>

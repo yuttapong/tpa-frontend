@@ -41,92 +41,80 @@
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-index" id="qt-index">
-                <form @submit.prevent="search" class="rounded bg-light border my-2 p-2">
-                  <div class="row">
-                    <div class="col-6 col-md-4 col-xl-3">
-                      <label>Tax Number</label>
-                      <input
-                        type="search"
-                        v-model="formSearch.taxnumber"
-                        name="taxnumber"
-                        class="form-control form-control-sm"
-                        placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                        @keyup.enter="search"
-                      />
+                <form @submit.prevent="onSearch" class="rounded bg-light border my-2 p-2">
+                  <div class="d-flex gap-2">
+                    <div class="">
+                      <input type="search" v-model="formSearch.item_code" class="form-control form-control-sm"
+                        placeholder="Item Code" @keyup.enter="onSearch" autofocus />
                     </div>
-                    <div class="col-6 col-md-4 col-xl-3">
-                      <label>Item ID</label>
-                      <input
-                        type="search"
-                        v-model="formSearch.item_id"
-                        class="form-control form-control-sm"
-                        placeholder="Item ID"
-                        @keyup.enter="search"
-                        autofocus
-                      />
-                    </div>
-                    <div class="col-6 col-md-4 col-xl-3">
-                      <label>Item Code</label>
-                      <input
-                        type="search"
-                        v-model="formSearch.item_code"
-                        class="form-control form-control-sm"
-                        placeholder="Item Code"
-                        @keyup.enter="search"
-                        autofocus
-                      />
-                    </div>
-                    <div class="col-6 col-md-4 col-xl-3">
-                      <label>Bill Code</label>
-                      <input
-                        type="search"
-                        v-model="formSearch.bill_code"
-                        class="form-control form-control-sm"
-                        placeholder="Bill Code"
-                        @keyup.enter="search"
-                        autofocus
-                      />
-                    </div>
-                    <div class="col-12 col-md-6" v-if="labs">
-                      <label>Lab</label>
-
-                      <select
-                        v-model="formSearch.lab_id"
-                        class="form-select form-select-sm"
-                        @change="onSelectLab"
-                      >
-                        <option value="">--Lab--</option>
-                        <option v-for="(item, key) in labs" :key="item.id" :value="item.id">
-                          {{ item.id }} : {{ item.name_th }} - {{ item.name }} ({{
-                            item.sublabs.length
-                          }})
-                        </option>
-                      </select>
-                    </div>
-                    <div class="col-12 col-md-6" v-if="labs">
-                      <label>Sub Lab</label>
-                      <select class="form-select form-select-sm" v-model="formSearch.sublab_id">
-                        <option value="">--SubLab--</option>
-                        <option v-for="(item, key) in sublabs" :key="item" :value="item.id">
-                          {{ item.id }} : {{ item.code }} : {{ item.name_th }} - {{ item.name }}
-                        </option>
-                      </select>
-                    </div>
-                    <div class="col-12 col-md-2">
-                      <button type="submit" class="btn btn-sm btn-text mt-2">
+                    <div class="">
+                      <BButton size="sm" variant="light" @click="showModalFilterOfSearch = true">
+                        <i class="bi bi-filter"></i>
+                      </BButton>
+                      <BButton :loading="loading" type="submit" variant="text" size="sm">
                         <i class="bi bi-search"></i>
-                      </button>
-                      <button type="reset" class="btn btn-sm btn-text mt-2 ms-2">
+                      </BButton>
+                      <BButton type="reset" variant="text" size="sm" @click="onResetSearch(); onSearch()">
                         <i class="bi bi-arrow-clockwise"></i> Reset
-                      </button>
+                      </BButton>
                     </div>
+
                   </div>
+                  <BModal v-model="showModalFilterOfSearch" title="เงือนไขการค้นหา" @cancel="onResetSearch(); onSearch();"
+                    ok-title="ค้นหา" cancel-title="รีเซ็ต" @ok="onSearch()">
+                    <div class="d-flex flex-wrap gap-2">
+
+                      <div class="d-flex gap-3 flex-wrap">
+                        <div class="col-6 col-md-4 col-xl-3">
+                          <label>Tax Number</label>
+                          <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                            class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                            @keyup.enter="onSearch" />
+                        </div>
+                        <div class="col-6 col-md-4 col-xl-3">
+                          <label>Item ID</label>
+                          <input type="search" v-model="formSearch.item_id" class="form-control form-control-sm"
+                            placeholder="Item ID" @keyup.enter="onSearch" />
+                        </div>
+                        <div class="col-6 col-md-4 col-xl-3">
+                          <label>Item Code</label>
+                          <input type="search" v-model="formSearch.item_code" class="form-control form-control-sm"
+                            placeholder="Item Code" @keyup.enter="onSearch" autofocus />
+                        </div>
+                        <div class="col-6 col-md-4 col-xl-3">
+                          <label>Bill Code</label>
+                          <input type="search" v-model="formSearch.bill_code" class="form-control form-control-sm"
+                            placeholder="Bill Code" @keyup.enter="onSearch" />
+                        </div>
+                        <div class="col-12 col-md-6" v-if="labs">
+                          <label>Lab</label>
+
+                          <select v-model="formSearch.lab_id" class="form-select form-select-sm" @change="onSelectLab">
+                            <option value="">--Lab--</option>
+                            <option v-for="(item, key) in labs" :key="item.id" :value="item.id">
+                              {{ item.id }} : {{ item.name_th }} - {{ item.name }} ({{
+                                item.sublabs.length
+                              }})
+                            </option>
+                          </select>
+                        </div>
+                        <div class="col-12 col-md-6" v-if="labs">
+                          <label>Sub Lab</label>
+                          <select class="form-select form-select-sm" v-model="formSearch.sublab_id">
+                            <option value="">--SubLab--</option>
+                            <option v-for="(item, key) in sublabs" :key="item" :value="item.id">
+                              {{ item.id }} : {{ item.code }} : {{ item.name_th }} - {{ item.name }}
+                            </option>
+                          </select>
+                        </div>
+
+                      </div>
+                    </div>
+                  </BModal>
+
                 </form>
                 <!-- Small tables -->
-                <div
-                  class="my-3 p-2 bg-light text-danger"
-                  v-if="taxnumber && Number(pagination.total) > 0"
-                ></div>
+                <div class="my-3 p-2 bg-light text-danger" v-if="taxnumber && Number(pagination.total) > 0"></div>
                 <div class="table-responsive">
                   <table class="table table-sm table-striped table-bordered">
                     <thead>
@@ -136,10 +124,11 @@
                         <th scope="col" class="fw-bold text-decoration-underline">ItemCode</th>
                         <th scope="col" class="fw-bold text-decoration-underline">Status</th>
 
-                        <th scope="col" class="fw-bold text-decoration-underline">Product</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Date</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">Customer</th>
-                        <th scope="col" class="fw-bold text-decoration-underline">EMS Receive</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">สินค้า</th>
+                        <th scope="col" class="fw-bold text-decoration-underline" nowrap>วันที่รับบริการ</th>
+                        <th scope="col" class="fw-bold text-decoration-underline" nowrap>วันที่งานเสร็จ</th>
+                        <th scope="col" class="fw-bold text-decoration-underline">ลูกค้า</th>
+
                       </tr>
                     </thead>
                     <tbody>
@@ -147,43 +136,39 @@
                         <th scope="row">{{ index + 1 }}</th>
                         <td>{{ item.item_id }}</td>
                         <td nowrap>
-                          <small
-                            class="border bg-dark text-white p-1 w-full"
-                            role="button"
-                            @click="openModalWorkOrder(item)"
-                            >{{ item.item_code }}</small
-                          >
+                          <small class="border bg-dark text-white p-1 w-full" role="button"
+                            @click="openModalWorkOrder(item)">{{ item.item_code }}</small>
                         </td>
                         <td>
                           <JobStatus v-model="item.job_status" />
                         </td>
                         <td>
                           <div>{{ item.product_name }}</div>
-                          <span
-                            v-if="item.id_no"
-                            class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
-                            style="min-width: 100px"
-                          >
-                            <i>IdNo.</i> {{ item.id_no }}</span
-                          >
-                          <span
-                            v-if="item.model"
-                            class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
-                            style="min-width: 100px"
-                          >
-                            <i>Model.</i> {{ item.model }}</span
-                          >
-                          <span
-                            v-if="item.serialnumber"
-                            class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
-                            style="min-width: 100px"
-                          >
-                            <i>S/N.</i> {{ item.serialnumber }}</span
-                          >
+                          <div>
+                            <span v-if="item.id_no" class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
+                              style="min-width: 100px">
+                              <i>IdNo.</i> {{ item.id_no }}</span>
+                            <span v-if="item.model" class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
+                              style="min-width: 100px">
+                              <i>Model.</i> {{ item.model }}</span>
+                            <span v-if="item.serialnumber" class="badge bg-dark-subtle text-dark mx-2 d-inline-block"
+                              style="min-width: 100px">
+                              <i>S/N.</i> {{ item.serialnumber }}</span>
+                          </div>
+                          <div class="fw-bold text-danger mt-1">
+                            <small v-if="item.current_service_status">
+                              {{ item?.current_service_status?.id }} - {{ item?.current_service_status?.name }}
+                            </small>
+                          </div>
                         </td>
                         <td>
                           <span class="badge bg-light text-dark">{{
                             item.bill ? myFormatDate(new Date(item.bill.document_date)) : ''
+                          }}</span>
+                        </td>
+                        <td>
+                          <span v-if="item.reserved_date" class="badge bg-light text-dark">{{
+                            item.bill ? myFormatDate(new Date(item.reserved_date)) : ''
                           }}</span>
                         </td>
 
@@ -192,19 +177,19 @@
                           <small class="text-danger mx-1">({{ item.bill?.agent_name }})</small>
                           <small class="text-dark mx-1">({{ item.customer?.taxnumber }})</small>
                         </td>
-                        <td>{{ item.ems_receive }}</td>
+
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <vue-awesome-paginate
-                  :total-items="pagination.total"
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                  class="mt-3"
-                />
+
+
+                <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
+                  :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
+
+                <!-- <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                  :on-click="onChangePage" class="mt-3" /> -->
                 <!-- End small tables -->
               </div>
 
@@ -308,11 +293,7 @@
         </div>
       </div>
     </div>
-    <ModalWorderOrderDetail
-      ref="modalWorkOrder"
-      v-model:data="workorder"
-      :title="workorder?.item_code"
-    />
+    <ModalWorderOrderDetail ref="modalWorkOrder" v-model:data="workorder" :title="workorder?.item_code" />
   </section>
 </template>
 
@@ -320,11 +301,14 @@
 import { onMounted, onBeforeMount, computed, ref } from 'vue'
 import { api } from '@/helpers/api'
 import Spinner from '@/components/Spinner.vue'
-import { myFormatDate, Number } from '@/helpers/myformat'
 import { useAppStore } from '@/stores/appStore'
 import ModalWorderOrderDetail from './components/ModalWorderOrderDetail.vue'
 import { useBillStore } from '@/stores/billStore'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
+import { myCurrency, myFormatDateTime, myFormatDate } from '@/helpers/myformat'
+import { formatISO, isValid, parse, format } from 'date-fns'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const appStore = useAppStore()
 const modalWorkOrder = ref(null)
@@ -340,7 +324,7 @@ const pagination = ref({
   per_page: appStore.settings.page.perPage,
 })
 const loading = ref(true)
-
+const showModalFilterOfSearch = ref(false)
 const formSearch = ref({
   q: '',
   item_code: '',
@@ -349,6 +333,15 @@ const formSearch = ref({
   barcode_no: '',
   lab_id: '',
 })
+
+const onResetSearch = () => {
+  formSearch.value.item_id = ""
+  formSearch.value.item_code = ""
+  formSearch.value.taxnumber = ""
+  formSearch.value.bill_code = ""
+  formSearch.value.barcode_no = ""
+  formSearch.value.lab_id = ""
+}
 const getLabs = async () => {
   const { data } = await api.get('/v2/labs/all')
   if (data) {
@@ -390,15 +383,14 @@ const loadData = async () => {
   }
 }
 const onSelectLab = (e) => {
-  console.log(e.target.value)
   const id = e.target.value
   getSublabs(id)
 }
-const search = async () => {
+const onSearch = async () => {
   pagination.value.current_page = 1
   loadData()
 }
-const onChangePage = (page) => {
+const onChangePage = (e, page) => {
   pagination.value.current_page = page
   loadData()
 }
@@ -413,7 +405,7 @@ const openModalWorkOrder = async (row) => {
 }
 onBeforeMount(() => {
   getLabs()
-  search()
+  onSearch()
 })
 </script>
 <style lang="scss" scoped>

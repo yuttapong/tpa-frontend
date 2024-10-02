@@ -40,7 +40,8 @@
 
               <div class="col-4 col-lg-3">
                 <label class="fw-bold text-decoration-underline">เวลาทำรายการ</label>
-                <p>{{ myFormatDate(bill.date_start) }}</p>
+                <div>{{ myFormatDateTime(bill.date_start) }}</div>
+                <small>({{ (`${bill?.staff?.name_th} ${bill?.staff?.lastname_th}`).trim() }})</small>
               </div>
 
               <div class="col-4 col-lg-3">

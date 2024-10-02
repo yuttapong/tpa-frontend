@@ -61,10 +61,10 @@
                       <tr v-for="(item, index) in items" :key="index">
                         <th scope="row">{{ index + 1 }}</th>
                         <td>
-                        <div class="input-group gap-1">
-                          <button type="type" class="btn btn-sm btn-outline-secondary" @click="openModalQuotation(item)"><i
-                            class="bi bi-eye"></i></button>
-                        </div>
+                          <div class="input-group gap-1">
+                            <button type="type" class="btn btn-sm btn-outline-secondary"
+                              @click="openModalQuotation(item)"><i class="bi bi-eye"></i></button>
+                          </div>
                         </td>
                         <td>
                           <DocCode :data="item.code" @click="openModalQuotation(item)" role="button" />
@@ -86,9 +86,11 @@
                     </tbody>
                   </table>
                 </div>
+
                 <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
                   :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
                   :on-click="onChangePage" />
+
                 <!-- End small tables -->
               </div>
 
@@ -354,7 +356,8 @@ const modalQuotation = ref(null)
 
 
 
-const onChangePage = (page) => {
+const onChangePage = (e, page) => {
+  console.log(e, page);
   pagination.value.current_page = page
   loadData()
 }

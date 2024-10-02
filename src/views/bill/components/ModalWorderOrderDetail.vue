@@ -15,47 +15,48 @@
                 <span class="">{{ row?.item_code }}</span>
               </div>
 
-              <div class="col-4 text-decoration-underline">วันที่รับเครื่องมือ</div>
+              <div class="col-4 text-decoration-underline">วันที่รับบริการ</div>
               <div class="col-8">
                 <span class="">{{ myFormatDate(row?.document_date) }}</span>
               </div>
 
-              <div class="col-4 text-decoration-underline">วันที่จองคิว</div>
+              <div class="col-4 text-decoration-underline">วันที่งานเสร็จ Reserved Date</div>
               <div class="col-8">
-                <span class="">{{ myFormatDate(row?.reserved_at) }}</span>
+                <span class="">{{ myFormatDateTime(row?.reserved_at) }}</span>
               </div>
               <div class="col-4 text-decoration-underline">เครื่องมือ</div>
               <div class="col-8">
-                <span class="">{{ row?.product_name }}</span>
+                <span class="fw-bold">{{ row?.product_name }}</span>
+              </div>
+
+              <div class="col-4 text-decoration-underline">Lab</div>
+              <div class="col-8">
+                <div class="d-inline">{{ row?.lab?.name_th }}</div>
+                <div class="text-secondary ms-2 fst-italic">{{ row?.lab?.name }}</div>
+              </div>
+              <div class="col-4 text-decoration-underline">Sub Lab</div>
+              <div class="col-8">
+                <div class="d-inline">{{ row?.sublab?.name_th }}</div>
+                <div class="text-secondary ms-2 fst-italic">{{ row?.sublab?.name }}</div>
+              </div>
+              <div class="col-4 text-decoration-underline">Test Point</div>
+              <div class="col-8">
+                <span class="d-block">{{ row?.test_point }}</span>
               </div>
               <div class="col-4 text-decoration-underline">สถานะงาน - Job status</div>
               <div class="col-8">
                 <span class="">
                   <JobStatus v-model="row.job_status"></JobStatus>
-
                 </span>
               </div>
+
               <div class="col-4 text-decoration-underline">Tracking Status</div>
               <div class="col-8">
                 <span class="fw-bold text-danger">
                   <div v-if="row.current_service_status">
-                    {{ row.current_service_status.status_name }}
+                    {{ row?.current_service_status?.name }}
                   </div>
                 </span>
-              </div>
-              <div class="col-4 text-decoration-underline">Lab</div>
-              <div class="col-8">
-                <span class="d-inline">{{ row?.lab?.name_th }}</span>
-                <span class="text-secondary ms-2 fst-italic">{{ row?.lab?.name }}</span>
-              </div>
-              <div class="col-4 text-decoration-underline">Sub Lab</div>
-              <div class="col-8">
-                <span class="d-inline">{{ row?.sublab?.name_th }}</span>
-                <span class="text-secondary ms-2 fst-italic">{{ row?.sublab?.name }}</span>
-              </div>
-              <div class="col-4 text-decoration-underline">Test Point</div>
-              <div class="col-8">
-                <span class="d-block">{{ row?.test_point }}</span>
               </div>
             </div>
             <hr />
@@ -75,7 +76,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Modal } from 'bootstrap'
-import { myFormatDate } from '@/helpers/myformat'
+import { myFormatDate, myFormatDateTime } from '@/helpers/myformat'
 import { useBillStore } from '@/stores/billStore'
 import JobStatus from '@/views/bill/components/JobStatus.vue'
 import JobTimeline from './JobTimeline.vue'

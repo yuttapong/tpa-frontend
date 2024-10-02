@@ -39,7 +39,7 @@ export const myFormatDateTime = (value, options) => {
   if (value == '0000-00-00 00:00:00') return ''
   if (value == '0000-00-00') return ''
 
-  const _format = options && options.format ? options.format : 'dd/MM/yyyy H:i'
+  const _format = options && options.format ? options.format : 'dd/MM/yyyy HH:ii'
   return format(value, _format, {
     locale: th,
   })
@@ -56,7 +56,7 @@ export const myFormatTime = (value, options) => {
   if (value == '0000-00-00 00:00:00') return ''
   if (value == '0000-00-00') return ''
 
-  const _format = options && options.format ? options.format : 'H:i:s'
+  const _format = options && options.format ? options.format : 'HH:ii:ss'
   return format(value, _format)
 }
 

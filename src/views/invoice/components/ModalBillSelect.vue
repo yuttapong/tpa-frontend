@@ -5,36 +5,20 @@
         <div class="modal-header">
           <h5 class="modal-title">{{ title }}</h5>
 
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="my-2">
             <form @submit.prevent="search()">
               <div class="d-flex gap-2">
                 <div>
-                  <input
-                    v-model="filterSource"
-                    type="radio"
-                    value="all"
-                    :checked="filterSource == 'all'"
-                    @change="search()"
-                  />
+                  <input v-model="filterSource" type="radio" value="all" :checked="filterSource == 'all'"
+                    @change="search()" />
                   ทั้งหมด
                 </div>
                 <div v-if="customer.id">
-                  <input
-                    v-model="filterSource"
-                    type="radio"
-                    class="ms-3"
-                    value="customer"
-                    :checked="filterSource == 'customer'"
-                    @change="search()"
-                  />
+                  <input v-model="filterSource" type="radio" class="ms-3" value="customer"
+                    :checked="filterSource == 'customer'" @change="search()" />
                   {{ customer.name }}
                 </div>
 
@@ -66,38 +50,19 @@
                     </tr>
                     <tr>
                       <th scope="col" class="fw-bold">
-                        <input
-                          type="search"
-                          v-model="formSearchProduct.code"
-                          class="form-control form-control-sm"
-                          placeholder="เลขที่ใบขอรับริการ"
-                          @keyup.enter="search()"
-                        />
+                        <input type="search" v-model="formSearchProduct.code" class="form-control form-control-sm"
+                          placeholder="เลขที่ใบขอรับริการ" @keyup.enter="search()" />
                       </th>
 
-                      <input
-                        type="date"
-                        v-model="formSearchProduct.document_date"
-                        class="form-control form-control-sm"
-                        placeholder="วันที่"
-                        @change="search()"
-                      />
+                      <input type="date" v-model="formSearchProduct.document_date" class="form-control form-control-sm"
+                        placeholder="วันที่" @change="search()" />
                       <th scope="col" class="fw-bold">
-                        <input
-                          type="search"
-                          v-model="formSearchProduct.q"
-                          class="form-control form-control-sm"
-                          placeholder=""
-                          @keyup.enter="search()"
-                        />
+                        <input type="search" v-model="formSearchProduct.q" class="form-control form-control-sm"
+                          placeholder="" @keyup.enter="search()" />
                       </th>
                       <th scope="col" class="fw-bold">
-                        <select
-                          v-model="formSearchProduct.bill_status"
-                          class="form-control form-control-sm"
-                          placeholder="สถานะ"
-                          @keyup.enter="search()"
-                        />
+                        <select v-model="formSearchProduct.bill_status" class="form-control form-control-sm"
+                          placeholder="สถานะ" @keyup.enter="search()" />
                       </th>
                     </tr>
                   </thead>
@@ -125,8 +90,7 @@
               <!-- End small tables -->
             </div>
             <div class="col-12 col-md-6" id="detail">
-              <BAlert :model-value="!bill.id" variant="warning" dismissible
-                ><i class="bi bi-info-circle"></i>
+              <BAlert :model-value="!bill.id" variant="warning" dismissible><i class="bi bi-info-circle"></i>
                 โปรดเลือกใบขอรับบริการ
               </BAlert>
               <BTabs :active-id="mode" small v-model="currentTab" @activate-tab="setTab" class="">
@@ -147,8 +111,7 @@
                         }}</BTh>
                         <BTh stacked-heading="ประเภทลูกค้า" class="text-start">
                           {{ bill.customer?.customer_type?.code }} :
-                          {{ bill.customer?.customer_type?.name }}</BTh
-                        >
+                          {{ bill.customer?.customer_type?.name }}</BTh>
                         <BTh stacked-heading="ส่วนลูกค้า" class="text-start">
                           <div v-if="customerDiscount" class="text-danger fw-bold">
                             <span>{{ customerDiscount.discount }}</span>
@@ -171,17 +134,14 @@
                       </BTr>
                     </BTbody>
                   </BTableSimple>
+                  <DiscountAndReword v-model:customer-id="bill.company_id" :reward="customerReward"
+                    :discount="customerDiscount" :customerName="bill.address_name" />
+
                 </BTab>
                 <BTab :title="`เครื่องมือ (${bill.items ? bill.items.length : 0})`" id="product">
                   <div class="d-flex flex-row gap-2 my-2">
-                    <BButton
-                      type="button"
-                      @click="selectAll(bill.items)"
-                      value="All"
-                      size="sm"
-                      variant="text"
-                      class="mx-2"
-                    >
+                    <BButton type="button" @click="selectAll(bill.items)" value="All" size="sm" variant="text"
+                      class="mx-2">
                       <i class="bi bi-check"></i> เลือกทั้งหมด
                     </BButton>
                     <BButton type="button" @click="clearAll()" size="sm" variant="text">
@@ -219,12 +179,7 @@
                         <tr v-for="(item, index) in bill.items" :key="index">
                           <th class="text-center align-middle">
                             <template v-if="!isExistItem(item) && item.invoice_item_id == 0">
-                              <input
-                                class="form-checkbox"
-                                v-model="selectedItems"
-                                type="checkbox"
-                                :value="item"
-                              />
+                              <input class="form-checkbox" v-model="selectedItems" type="checkbox" :value="item" />
                             </template>
                           </th>
 
@@ -262,27 +217,17 @@
         <div class="modal-footer m-0 p-1 d-block">
           <div class="row">
             <div class="col-xs-10 col-md-7">
-              <vue-awesome-paginate
-                :total-items="pagination.total"
-                :items-per-page="pagination.per_page"
-                :max-pages-shown="appStore.settings.page.maxPageShow"
-                v-model="pagination.current_page"
-                :on-click="onChangePage"
-                class=""
-              />
+              <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+                :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                :on-click="onChangePage" class="" />
             </div>
 
             <div class="col-xs-2 col-md-5">
               <div class="d-flex gap-2 justify-content-end">
                 <template v-if="currentTab == 0 && mode == 'customer'">
-                  <button
-                    type="button"
-                    class="btn btn-primary btn-sm"
-                    @click="confirmSelectCustomer"
-                  >
+                  <button type="button" class="btn btn-primary btn-sm" @click="confirmSelectCustomer">
                     <i class="bi bi-download"></i> ดึงข้อมูลลูกค้า
-                  </button></template
-                >
+                  </button></template>
                 <template v-if="currentTab == 1 && mode == 'product'">
                   <button type="button" class="btn btn-primary btn-sm" @click="confirmSelectBill">
                     <i class="bi bi-download"></i> ดึงรายการเครื่องมือ
@@ -313,6 +258,7 @@ import { useInvoiceStore } from '@/stores/invoiceStore'
 import Spinner from '@/components/Spinner.vue'
 import { myFormatDate } from '@/helpers/myformat'
 import { BButton, useModal, useModalController } from 'bootstrap-vue-next'
+import DiscountAndReword from '@/views/customer/components/DiscountAndReword.vue'
 const { confirm } = useModalController()
 const { hide, modal, show } = useModal()
 

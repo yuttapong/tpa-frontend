@@ -19,6 +19,7 @@ import { myCurrency, myFormatDateTime, myFormatDate } from '@/helpers/myformat'
 import { useModalController, useModal } from 'bootstrap-vue-next'
 import { invoiceStatuses } from '@/config'
 import { pointRangeToPricePerUnit } from '@/helpers/order'
+import { removeUndefinedAndNull } from '@/helpers/string'
 
 const appStore = useAppStore()
 const pagination = ref({
@@ -145,7 +146,7 @@ const onSearch = async () => {
   pagination.value.total = 0
   try {
     loadData()
-  } catch (error) { }
+  } catch (error) {}
 }
 
 const openModalWorkOrder = () => {
@@ -679,7 +680,8 @@ const onSelectCustomer = (data) => {
   ${customer?.district}
   ${customer?.province}
   ${customer?.postalcode}`.trim()
-  formInvoice.value.address = address.trim()
+  formInvoice.value.address = removeUndefinedAndNull(address)
+  getCustomerStatistics(formInvoice.value.customer_id)
 }
 const openModalContact = () => {
   modalContact.value.show()
@@ -717,25 +719,32 @@ const saveAsDraft = (notify = false) => {
   formInvoice.value.invoice_status = 'draft'
   save(notify)
 }
-const saveAndSend = () => { }
+const saveAndSend = () => {}
 
 const getInvoice = async (id) => {
   loading.value = true
   const { data } = await api.get('v2/invoices/' + id)
   if (data) {
     formInvoice.value = data
-    if (formInvoice.value.tot)
-      if (!formInvoice.value.subdistrict) formInvoice.value.subdistrict = data.customer?.subdistrict
+    let address = removeUndefinedAndNull(data.address)
+    formInvoice.value.address = address
+    if (!formInvoice.value.subdistrict)
+      formInvoice.value.subdistrict = removeUndefinedAndNull(data.customer?.subdistrict)
 
-    if (!formInvoice.value.district) formInvoice.value.district = data.customer?.district
+    if (!formInvoice.value.district)
+      formInvoice.value.district = removeUndefinedAndNull(data.customer?.district)
 
-    if (!formInvoice.value.province) formInvoice.value.province = data.customer?.province
+    if (!formInvoice.value.province)
+      formInvoice.value.province = removeUndefinedAndNull(data.customer?.province)
 
-    if (!formInvoice.value.postalcode) formInvoice.value.postalcode = data.customer?.postalcode
+    if (!formInvoice.value.postalcode)
+      formInvoice.value.postalcode = removeUndefinedAndNull(data.customer?.postalcode)
 
-    if (!formInvoice.value.country) formInvoice.value.country = data.customer?.country
+    if (!formInvoice.value.country)
+      formInvoice.value.country = removeUndefinedAndNull(data.customer?.country)
   }
   loading.value = false
+  getCustomerStatistics(formInvoice.value.customer_id)
 }
 
 const save = async (notify = false) => {
@@ -811,12 +820,12 @@ const save = async (notify = false) => {
           loading.value = false
           hasError.value = true
           errors.value = loading.value = false
-          router.push('/invoices/edit/' + data.data?.id)
-          toast(resultCreate.data.message, {
+          toast('สร้างใบแจ้งหนี้สำเร็จ', {
             theme: 'auto',
             type: 'success',
             dangerouslyHTMLString: true,
           })
+          router.push('/invoices/edit/' + data.data?.id)
         } else if (status == 422) {
           errors.value = data.errors
           loading.value = false
@@ -872,6 +881,12 @@ watch(route, (r) => {
   getInvoice(r.params.id)
 })
 
+const getCustomerStatistics = async (customerId) => {
+  const { data } = await api.post(`v2/customers/${customerId}/statistics`)
+  if (data) return data
+  return data
+}
+
 onMounted(() => {
   if (invoiceId.value !== undefined) {
     getInvoice(invoiceId.value)
@@ -923,8 +938,13 @@ onUpdated(() => {
                     <div class="col-6 col-md-4 col-lg-3">
                       <label>ใบขอรับบริการ</label>
                       <BInputGroup size="sm" class="">
-                        <input type="text" v-model="formInvoice.bill_code" class="form-control form-control-sm"
-                          placeholder="เลขที่ใบขอรับบริการ" disabled="disabled" />
+                        <input
+                          type="text"
+                          v-model="formInvoice.bill_code"
+                          class="form-control form-control-sm"
+                          placeholder="เลขที่ใบขอรับบริการ"
+                          disabled="disabled"
+                        />
                         <button class="btn btn-sm btn-text" @click="openModalBill()">
                           <i class="bi bi-search"></i>
                         </button>
@@ -932,27 +952,56 @@ onUpdated(() => {
                     </div>
                     <div class="col-6 col-md-4 col-lg-3" v-if="formInvoice.code">
                       <label>Invoice Code</label>
-                      <input type="text" v-model="formInvoice.code" class="form-control form-control-sm"
-                        placeholder="เลขที่ใบแจ้งหนี้" disabled="disabled" />
+                      <input
+                        type="text"
+                        v-model="formInvoice.code"
+                        class="form-control form-control-sm"
+                        placeholder="เลขที่ใบแจ้งหนี้"
+                        disabled="disabled"
+                      />
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.issue_date }]">
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.issue_date }]"
+                    >
                       <label>วันที่ออก Invoice</label>
-                      <BInput type="date" :state="!!formInvoice.issue_date" v-model="formInvoice.issue_date"
-                        class="form-control form-control-sm" placeholder="issue date" />
+                      <BInput
+                        type="date"
+                        :state="!!formInvoice.issue_date"
+                        v-model="formInvoice.issue_date"
+                        class="form-control form-control-sm"
+                        placeholder="issue date"
+                      />
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.invoice_status }]">
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.invoice_status }]"
+                    >
                       <label>สถานะ {{ formInvoice.invoice_status }}</label>
-                      <BFormSelect :options="invoiceStatuses" :state="!!formInvoice.invoice_status"
-                        v-model="formInvoice.invoice_status" size="sm">
+                      <BFormSelect
+                        :options="invoiceStatuses"
+                        :state="!!formInvoice.invoice_status"
+                        v-model="formInvoice.invoice_status"
+                        size="sm"
+                      >
                       </BFormSelect>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.due_within }]">
-                      <label>กำหนดชำระภายใน
-                        <span v-if="formInvoice.due_date">({{ myFormatDate(formInvoice.due_date) }})</span>
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.due_within }]"
+                    >
+                      <label
+                        >กำหนดชำระภายใน
+                        <span v-if="formInvoice.due_date"
+                          >({{ myFormatDate(formInvoice.due_date) }})</span
+                        >
                       </label>
 
-                      <select class="form-select form-select-sm" v-model="formInvoice.due_within"
-                        @change="onChangeDueWithin">
+                      <select
+                        class="form-select form-select-sm"
+                        v-model="formInvoice.due_within"
+                        @change="onChangeDueWithin"
+                      >
                         <option value="">----</option>
                         <option v-for="i in dueWithinList" :value="i.value" :key="i">
                           {{ i.text }}
@@ -962,91 +1011,184 @@ onUpdated(() => {
 
                     <div class="col-6 col-md-4 col-lg-3">
                       <label>ส่วนลดและการสมสมยอด</label>
-                      <BFormSelect :options="discountTypes" :state="!!formInvoice.discount_pattern"
-                        v-model="formInvoice.discount_pattern" size="sm">
+                      <BFormSelect
+                        :options="discountTypes"
+                        :state="!!formInvoice.discount_pattern"
+                        v-model="formInvoice.discount_pattern"
+                        size="sm"
+                      >
                       </BFormSelect>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[
-                      { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
-                    ]">
-                      <label>ลูกค้า
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[
+                        { 'text-danger': errors.customer_id, 'text-danger': errors.customer_name },
+                      ]"
+                    >
+                      <label
+                        >ลูกค้า
                         <span v-if="formInvoice.customer_id"> ({{ formInvoice.customer_id }})</span>
 
                         <span v-if="formInvoice.customer_type_code">
-                          ({{ formInvoice.customer_type_code }})</span>
+                          ({{ formInvoice.customer_type_code }})</span
+                        >
                         <span v-if="customerTypeCode"> ({{ customerTypeCode }})</span>
                       </label>
                       <div class="input-group input-group-sm">
-                        <button class="btn btn-outline-secondary" type="button" @click="openModalCustomer">
+                        <button
+                          class="btn btn-outline-secondary"
+                          type="button"
+                          @click="openModalCustomer"
+                        >
                           <i class="bi bi-person"></i>
                         </button>
-                        <input type="search" v-model="formInvoice.customer_name" class="form-control form-control-sm"
-                          placeholder="บริษัท" />
-                        <input type="hidden" v-model="formInvoice.customer_id" class="form-control form-control-sm"
-                          placeholder="รหัสลูกค้า" />
+                        <input
+                          type="search"
+                          v-model="formInvoice.customer_name"
+                          class="form-control form-control-sm"
+                          placeholder="บริษัท"
+                        />
+                        <input
+                          type="hidden"
+                          v-model="formInvoice.customer_id"
+                          class="form-control form-control-sm"
+                          placeholder="รหัสลูกค้า"
+                        />
                       </div>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.customer_type_code }]"
-                      v-if="!formInvoice.customer_type_code">
-                      <label>ประเภทลูกค้า
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.customer_type_code }]"
+                      v-if="!formInvoice.customer_type_code"
+                    >
+                      <label
+                        >ประเภทลูกค้า
                         <span v-if="formInvoice.customer_type_code">
-                          ({{ formInvoice.customer_type_code }})</span>
+                          ({{ formInvoice.customer_type_code }})</span
+                        >
                       </label>
 
-                      <select required class="form-select form-select-sm" v-model="formInvoice.customer_type_code"
-                        @change="onChangeCustomerType">
+                      <select
+                        required
+                        class="form-select form-select-sm"
+                        v-model="formInvoice.customer_type_code"
+                        @change="onChangeCustomerType"
+                      >
                         <option v-for="(item, key) in customerTypes" :key="key" :value="item.code">
                           {{ item.code }} : {{ item.name }} - {{ item.nameen }}
                         </option>
                       </select>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.contact_name }]">
-                      <label>ผู้ติดต่อ
-                        <span v-if="formInvoice.contact_id">({{ formInvoice.contact_id }})</span></label>
+                    <div
+                      class="col-6 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.contact_name }]"
+                    >
+                      <label
+                        >ผู้ติดต่อ
+                        <span v-if="formInvoice.contact_id"
+                          >({{ formInvoice.contact_id }})</span
+                        ></label
+                      >
                       <div class="input-group input-group-sm">
-                        <button class="btn btn-outline-secondary" type="button" @click="openModalContact">
+                        <button
+                          class="btn btn-outline-secondary"
+                          type="button"
+                          @click="openModalContact"
+                        >
                           <i class="bi bi-person-vcard"></i>
                         </button>
-                        <input type="search" v-model="formInvoice.contact_name" class="form-control form-control-sm"
-                          placeholder="" />
+                        <input
+                          type="search"
+                          v-model="formInvoice.contact_name"
+                          class="form-control form-control-sm"
+                          placeholder=""
+                        />
                       </div>
                     </div>
 
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.address }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.address }]"
+                    >
                       <label>ที่อยู่</label>
-                      <BFormTextarea :state="!!formInvoice.address" type="text" v-model="formInvoice.address"
-                        class="form-control form-control-sm" placeholder="ที่อยู่" rows="2" />
+                      <BFormTextarea
+                        :state="!!formInvoice.address"
+                        type="text"
+                        v-model="formInvoice.address"
+                        class="form-control form-control-sm"
+                        placeholder="ที่อยู่"
+                        rows="2"
+                      />
                     </div>
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.subdistrict }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.subdistrict }]"
+                    >
                       <label>ตำบล/แขวง</label>
-                      <BInput type="text" v-model="formInvoice.subdistrict" class="form-control form-control-sm"
-                        placeholder="ตำบล/แขวง" />
+                      <BInput
+                        type="text"
+                        v-model="formInvoice.subdistrict"
+                        class="form-control form-control-sm"
+                        placeholder="ตำบล/แขวง"
+                      />
                     </div>
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.district }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.district }]"
+                    >
                       <label>อำเภอ/เขต</label>
-                      <BInput type="text" v-model="formInvoice.district" class="form-control form-control-sm"
-                        placeholder="อำเภอ/เขต" />
+                      <BInput
+                        type="text"
+                        v-model="formInvoice.district"
+                        class="form-control form-control-sm"
+                        placeholder="อำเภอ/เขต"
+                      />
                     </div>
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.provice }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.provice }]"
+                    >
                       <label>จังหวัด</label>
-                      <BInput type="text" v-model="formInvoice.province" class="form-control form-control-sm"
-                        placeholder="จังหวัด" />
+                      <BInput
+                        type="text"
+                        v-model="formInvoice.province"
+                        class="form-control form-control-sm"
+                        placeholder="จังหวัด"
+                      />
                     </div>
-                    <div class="col-12 col-md-4 col-lg-3" :class="[{ 'text-danger': errors.postalcode }]">
+                    <div
+                      class="col-12 col-md-4 col-lg-3"
+                      :class="[{ 'text-danger': errors.postalcode }]"
+                    >
                       <label>รหัสไปรษณีย์</label>
-                      <BInput type="text" v-model="formInvoice.postalcode" class="form-control form-control-sm"
-                        placeholder="รหัสไปรษณีย์" />
+                      <BInput
+                        type="text"
+                        v-model="formInvoice.postalcode"
+                        class="form-control form-control-sm"
+                        placeholder="รหัสไปรษณีย์"
+                      />
                     </div>
 
                     <div class="col-12 col-md-4 col-lg-5">
                       <label>Note ลูกค้า</label>
 
-                      <BFormTextarea v-model="formInvoice.note_customer" class="text-danger" rows="3"
-                        style="font-size: 13px" size="small" readonly />
+                      <BFormTextarea
+                        v-model="formInvoice.note_customer"
+                        class="text-danger"
+                        rows="3"
+                        style="font-size: 13px"
+                        size="small"
+                        readonly
+                      />
                     </div>
                     <div class="col-12 col-md-4 col-lg-4">
                       <label>Note</label>
-                      <BFormTextarea v-model="formInvoice.remark" rows="3" style="font-size: 13px" size="small" />
+                      <BFormTextarea
+                        v-model="formInvoice.remark"
+                        rows="3"
+                        style="font-size: 13px"
+                        size="small"
+                      />
                     </div>
                   </div>
                 </div>
@@ -1059,15 +1201,30 @@ onUpdated(() => {
                   </div>
 
                   <!-- ######################## TABLE ######################## -->
-                  <BTable busyLoadingText="กำหลังโหลด.." stickyHeader responsive small caption-top bordered
-                    :items="formInvoice.items" :fields="tableFields" striped variant="light">
+                  <BTable
+                    busyLoadingText="กำหลังโหลด.."
+                    stickyHeader
+                    responsive
+                    small
+                    caption-top
+                    bordered
+                    :items="formInvoice.items"
+                    :fields="tableFields"
+                    striped
+                    variant="light"
+                  >
                     <template #cell(index)="row">
                       {{ row.index + 1 }}
                     </template>
 
                     <template #cell(actions)="row">
                       <BButtonGroup>
-                        <input type="checkbox" class="mx-1" v-model="itemsSelected" :value="row.item" />
+                        <input
+                          type="checkbox"
+                          class="mx-1"
+                          v-model="itemsSelected"
+                          :value="row.item"
+                        />
                         <!-- <BButton size="sm" class="mr-1" variant="" @click="openModalEditItem(row.item, row.index)">
                           <i class="bi bi-pencil"></i>
                         </BButton> -->
@@ -1108,7 +1265,13 @@ onUpdated(() => {
                     <template #cell(po_no)="row">
                       <div class="fw-normal" style="min-width: 80px">
                         <!-- <small>{{ row.item.po_no }}</small> -->
-                        <BInput type="text" min="0" v-model="row.item.po_no" style="width: 6rem" class="text-end" />
+                        <BInput
+                          type="text"
+                          min="0"
+                          v-model="row.item.po_no"
+                          style="width: 6rem"
+                          class="text-end"
+                        />
                       </div>
                     </template>
 
@@ -1116,8 +1279,15 @@ onUpdated(() => {
                       <div class="text-center">
                         <!-- {{ row.item.range }} -->
                         <!-- <BInput type="number" min="0" v-model="row.item.range" class="text-end" /> -->
-                        <BInput type="number" min="0" v-model="row.item.range" style="width: 5rem" class="text-end"
-                          @change="updatePriceItems(row.item)" @keyup="updatePriceItems(row.item)" />
+                        <BInput
+                          type="number"
+                          min="0"
+                          v-model="row.item.range"
+                          style="width: 5rem"
+                          class="text-end"
+                          @change="updatePriceItems(row.item)"
+                          @keyup="updatePriceItems(row.item)"
+                        />
                       </div>
                     </template>
                     <template #cell(range_price)="row">
@@ -1125,16 +1295,30 @@ onUpdated(() => {
                         <!-- {{ myCurrency(row.item.range_price) }} -->
                         <!-- <BInput type="number" min="0" v-model="row.item.range_price" style="width: 5rem"
                           class="text-end" /> -->
-                        <BInput type="number" min="0" v-model="row.item.range_price" style="width: 5rem" class="text-end"
-                          @change="updatePriceItems(row.item)" @keyup="updatePriceItems(row.item)" />
+                        <BInput
+                          type="number"
+                          min="0"
+                          v-model="row.item.range_price"
+                          style="width: 5rem"
+                          class="text-end"
+                          @change="updatePriceItems(row.item)"
+                          @keyup="updatePriceItems(row.item)"
+                        />
                       </div>
                     </template>
                     <template #cell(point)="row">
                       <div class="text-center">
                         <!-- {{ row.item.point }} -->
                         <!-- <BInput type="number" min="0" v-model="row.item.point" style="width: 5rem" class="text-end" /> -->
-                        <BInput type="number" min="0" v-model="row.item.point" style="width: 5rem" class="text-end"
-                          @change="updatePriceItems(row.item)" @keyup="updatePriceItems(row.item)" />
+                        <BInput
+                          type="number"
+                          min="0"
+                          v-model="row.item.point"
+                          style="width: 5rem"
+                          class="text-end"
+                          @change="updatePriceItems(row.item)"
+                          @keyup="updatePriceItems(row.item)"
+                        />
                       </div>
                     </template>
                     <template #cell(point_price)="row">
@@ -1142,18 +1326,33 @@ onUpdated(() => {
                         <!-- {{ myCurrency(row.item.point_price) }} -->
                         <!-- <BInput type="number" min="0" v-model="row.item.point_price" style="width: 5rem"
                           class="text-end" /> -->
-                        <BInput type="number" min="0" v-model="row.item.point_price" style="width: 5rem" class="text-end"
-                          @change="updatePriceItems(row.item)" @keyup="updatePriceItems(row.item)" />
+                        <BInput
+                          type="number"
+                          min="0"
+                          v-model="row.item.point_price"
+                          style="width: 5rem"
+                          class="text-end"
+                          @change="updatePriceItems(row.item)"
+                          @keyup="updatePriceItems(row.item)"
+                        />
                       </div>
                     </template>
                     <template #cell(price)="row">
                       <div class="text-end" style="width: 7.5rem">
                         <!-- {{ myCurrency(row.item.price) }} -->
                         <div class="input-group input-group-sm">
-                          <BButton type="button" @click="calPriceFromPointAndRange(row)"><i class="bi bi-calculator"></i>
+                          <BButton type="button" @click="calPriceFromPointAndRange(row)"
+                            ><i class="bi bi-calculator"></i>
                           </BButton>
-                          <BInput type="number" min="0" v-model="row.item.price" style="width: 5rem" class="text-end"
-                            @change="onChangePricePerUnit(row)" @keyup="onChangePricePerUnit(row)" />
+                          <BInput
+                            type="number"
+                            min="0"
+                            v-model="row.item.price"
+                            style="width: 5rem"
+                            class="text-end"
+                            @change="onChangePricePerUnit(row)"
+                            @keyup="onChangePricePerUnit(row)"
+                          />
                         </div>
                       </div>
                     </template>
@@ -1161,12 +1360,19 @@ onUpdated(() => {
                       <div class="text-danger text-center" style="width: 8rem">
                         <div class="input-group input-group-sm">
                           <div>
-                            <BInput type="number" min="0" v-model="row.item.discount_customer_percent" style="width: 5rem"
-                              class="text-end" @change="
+                            <BInput
+                              type="number"
+                              min="0"
+                              v-model="row.item.discount_customer_percent"
+                              style="width: 5rem"
+                              class="text-end"
+                              @change="
                                 onChangeDiscountTypeOfItems(row.item, 'customer', 'percentage')
-                                " @keyup="
-    onChangeDiscountTypeOfItems(row.item, 'customer', 'percentage')
-    " />
+                              "
+                              @keyup="
+                                onChangeDiscountTypeOfItems(row.item, 'customer', 'percentage')
+                              "
+                            />
                           </div>
                           <div>
                             <BButton variant="text">%</BButton>
@@ -1174,9 +1380,15 @@ onUpdated(() => {
                         </div>
                         <div class="input-group input-group-sm">
                           <div>
-                            <BInput type="number" min="0" v-model="row.item.discount_customer" style="width: 5rem"
-                              class="text-end" @change="onChangeDiscountTypeOfItems(row.item, 'customer', 'amount')"
-                              @keyup="onChangeDiscountTypeOfItems(row.item, 'customer', 'amount')" />
+                            <BInput
+                              type="number"
+                              min="0"
+                              v-model="row.item.discount_customer"
+                              style="width: 5rem"
+                              class="text-end"
+                              @change="onChangeDiscountTypeOfItems(row.item, 'customer', 'amount')"
+                              @keyup="onChangeDiscountTypeOfItems(row.item, 'customer', 'amount')"
+                            />
                           </div>
                           <div>
                             <BButton variant="text">฿</BButton>
@@ -1191,9 +1403,15 @@ onUpdated(() => {
                       <div class="text-danger text-center" style="width: 8rem">
                         <div class="input-group input-group-sm">
                           <div>
-                            <BInput type="number" min="0" v-model="row.item.discount_lab_percent" style="width: 5rem"
-                              class="text-end" @change="onChangeDiscountTypeOfItems(row.item, 'lab', 'percentage')"
-                              @keyup="onChangeDiscountTypeOfItems(row.item, 'lab', 'percentage')" />
+                            <BInput
+                              type="number"
+                              min="0"
+                              v-model="row.item.discount_lab_percent"
+                              style="width: 5rem"
+                              class="text-end"
+                              @change="onChangeDiscountTypeOfItems(row.item, 'lab', 'percentage')"
+                              @keyup="onChangeDiscountTypeOfItems(row.item, 'lab', 'percentage')"
+                            />
                           </div>
                           <div>
                             <BButton variant="text">%</BButton>
@@ -1201,9 +1419,15 @@ onUpdated(() => {
                         </div>
                         <div class="input-group input-group-sm">
                           <div>
-                            <BInput type="number" min="0" v-model="row.item.discount_lab" style="width: 5rem"
-                              class="text-end" @change="onChangeDiscountTypeOfItems(row.item, 'lab', 'amount')"
-                              @keyup="onChangeDiscountTypeOfItems(row.item, 'lab', 'amount')" />
+                            <BInput
+                              type="number"
+                              min="0"
+                              v-model="row.item.discount_lab"
+                              style="width: 5rem"
+                              class="text-end"
+                              @change="onChangeDiscountTypeOfItems(row.item, 'lab', 'amount')"
+                              @keyup="onChangeDiscountTypeOfItems(row.item, 'lab', 'amount')"
+                            />
                           </div>
                           <div>
                             <BButton variant="text">฿</BButton>
@@ -1218,9 +1442,15 @@ onUpdated(() => {
                       <div class="text-danger text-center" style="width: 8rem">
                         <div class="input-group input-group-sm">
                           <div>
-                            <BInput type="number" min="0" v-model="row.item.discount_order_percent" style="width: 5rem"
-                              class="text-end" @change="onChangeDiscountTypeOfItems(row.item, 'order', 'percentage')"
-                              @keyup="onChangeDiscountTypeOfItems(row.item, 'order', 'percentage')" />
+                            <BInput
+                              type="number"
+                              min="0"
+                              v-model="row.item.discount_order_percent"
+                              style="width: 5rem"
+                              class="text-end"
+                              @change="onChangeDiscountTypeOfItems(row.item, 'order', 'percentage')"
+                              @keyup="onChangeDiscountTypeOfItems(row.item, 'order', 'percentage')"
+                            />
                           </div>
                           <div>
                             <BButton variant="text">%</BButton>
@@ -1228,9 +1458,15 @@ onUpdated(() => {
                         </div>
                         <div class="input-group input-group-sm">
                           <div>
-                            <BInput type="number" min="0" v-model="row.item.discount_order" style="width: 5rem"
-                              class="text-end" @change="onChangeDiscountTypeOfItems(row.item, 'order', 'amount')"
-                              @keyup="onChangeDiscountTypeOfItems(row.item, 'order', 'amount')" />
+                            <BInput
+                              type="number"
+                              min="0"
+                              v-model="row.item.discount_order"
+                              style="width: 5rem"
+                              class="text-end"
+                              @change="onChangeDiscountTypeOfItems(row.item, 'order', 'amount')"
+                              @keyup="onChangeDiscountTypeOfItems(row.item, 'order', 'amount')"
+                            />
                           </div>
                           <div>
                             <BButton variant="text">฿</BButton>
@@ -1260,7 +1496,13 @@ onUpdated(() => {
 
                     <template #cell(remark)="row">
                       <div style="width: 200px">
-                        <BFormTextarea type="text" min="0" v-model="row.item.remark" size="sm" placeholder="หมายเหตุ" />
+                        <BFormTextarea
+                          type="text"
+                          min="0"
+                          v-model="row.item.remark"
+                          size="sm"
+                          placeholder="หมายเหตุ"
+                        />
                       </div>
                     </template>
                   </BTable>
@@ -1270,14 +1512,28 @@ onUpdated(() => {
                   <div class="d-flex flex-wrap gap-3 justify-content-start align-items-center">
                     <div>
                       <BInputGroup>
-                        <BButton type="button" variant="outline-secondary" size="sm" @click="openModalBill('product')">
+                        <BButton
+                          type="button"
+                          variant="outline-secondary"
+                          size="sm"
+                          @click="openModalBill('product')"
+                        >
                           <i class="bi bi-plus"></i> ดึงเครื่องมือ 1
                         </BButton>
-                        <BButton type="button" variant="outline-secondary" size="sm" @click="openModalWorkOrder">
+                        <BButton
+                          type="button"
+                          variant="outline-secondary"
+                          size="sm"
+                          @click="openModalWorkOrder"
+                        >
                           <i class="bi bi-plus"></i> ดึงเครื่องมือ 2
                         </BButton>
-                        <button type="button" class="btn btn-sm btn-danger" @click="showConfirmDeleteItems()"
-                          v-if="itemsSelected.length">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-danger"
+                          @click="showConfirmDeleteItems()"
+                          v-if="itemsSelected.length"
+                        >
                           <i class="bi bi-x"></i> Delete
                           <span>({{ itemsSelected.length }})</span>
                         </button>
@@ -1287,24 +1543,47 @@ onUpdated(() => {
                     <div class="" style="font-size: 14px">
                       <div class="input-group input-group-sm">
                         <label class="input-group-text fw-bold">
-                          <i class="bi bi-gift me-2"></i> ส่วนลดลูกค้า</label>
+                          <i class="bi bi-gift me-2"></i> ส่วนลดลูกค้า</label
+                        >
 
-                        <input type="number" v-model="discountCustomer" class="form-control form-control-sm"
-                          placeholder="จำนวนเงิน" min="0" style="width: 100px" />
-                        <select required class="form-select form-select-sm" style="width: 90px"
-                          v-model="discountCustomerType" @change="onChangeDiscountType">
+                        <input
+                          type="number"
+                          v-model="discountCustomer"
+                          class="form-control form-control-sm"
+                          placeholder="จำนวนเงิน"
+                          min="0"
+                          style="width: 100px"
+                        />
+                        <select
+                          required
+                          class="form-select form-select-sm"
+                          style="width: 90px"
+                          v-model="discountCustomerType"
+                          @change="onChangeDiscountType"
+                        >
                           <option value="percentage" :selected="percentage">%</option>
                           <option value="amount" :selected="amount">บาท</option>
                         </select>
-                        <button class="btn btn-secondary" @click="addDiscountCustomer" type="button">
+                        <button
+                          class="btn btn-secondary"
+                          @click="addDiscountCustomer"
+                          type="button"
+                        >
                           <i class="bi bi-plus"></i>
                         </button>
                       </div>
                     </div>
                     <div class="" style="font-size: 14px">
                       <div class="input-group input-group-sm">
-                        <label class="input-group-text fw-bold"><i class="bi bi-gift me-2"></i> ส่วนลดท้ายบิล</label>
-                        <input type="number" v-model="formInvoice.total_bill_discount" class="text-end" min="0" />
+                        <label class="input-group-text fw-bold"
+                          ><i class="bi bi-gift me-2"></i> ส่วนลดท้ายบิล</label
+                        >
+                        <input
+                          type="number"
+                          v-model="formInvoice.total_bill_discount"
+                          class="text-end"
+                          min="0"
+                        />
                       </div>
                     </div>
                   </div>
@@ -1370,9 +1649,17 @@ onUpdated(() => {
                         <div class="col-6 text-end">
                           <BButtonGroup size="sm">
                             <BButton type="button" variant="light" text>VAT</BButton>
-                            <BFormSelect v-model="formInvoice.vat_percent" class="form-select d-inline-block"
-                              @change="calculate">
-                              <BFormSelectOption v-for="(n, i) in 10" :key="i" :value="i" :selected="i == vatPercent">
+                            <BFormSelect
+                              v-model="formInvoice.vat_percent"
+                              class="form-select d-inline-block"
+                              @change="calculate"
+                            >
+                              <BFormSelectOption
+                                v-for="(n, i) in 10"
+                                :key="i"
+                                :value="i"
+                                :selected="i == vatPercent"
+                              >
                                 {{ i }}
                               </BFormSelectOption>
                             </BFormSelect>
@@ -1409,21 +1696,36 @@ onUpdated(() => {
           <div class="card">
             <div class="card-body pt-3">
               <div class="d-flex flex-wrap gap-2">
-                <router-link to="/invoices" class="btn btn-outline-secondary btn-md mx-1" type="button">
+                <router-link
+                  to="/invoices"
+                  class="btn btn-outline-secondary btn-md mx-1"
+                  type="button"
+                >
                   <i class="bi bi-arrow-left"></i> กลับ
                 </router-link>
 
-
-                <button class="btn btn-success btn-md mx-1" type="submit" @click="saveAsDraft(true)">
+                <button
+                  class="btn btn-success btn-md mx-1"
+                  type="submit"
+                  @click="saveAsDraft(true)"
+                >
                   <i class="bi bi-save"></i> บันทึก(ฉบับร่าง)
                 </button>
 
-                <button class="btn btn-primary btn-md mx-1" type="submit" @click="saveAndSend()"
-                  v-if="formMode == 'edit'">
+                <button
+                  class="btn btn-primary btn-md mx-1"
+                  type="submit"
+                  @click="saveAndSend()"
+                  v-if="formMode == 'edit'"
+                >
                   <i class="bi bi-save"></i> บันทึกเพื่อรอส่ง
                 </button>
-                <button class="btn btn-outline-secondary btn-md mx-1" type="button" v-if="formMode == 'edit'"
-                  @click="openModalPreview(formInvoice)">
+                <button
+                  class="btn btn-outline-secondary btn-md mx-1"
+                  type="button"
+                  v-if="formMode == 'edit'"
+                  @click="openModalPreview(formInvoice)"
+                >
                   <i class="bi bi-eye"></i> ดูตัวอย่าง
                 </button>
                 <spinner :visible="loading" />
@@ -1440,38 +1742,70 @@ onUpdated(() => {
       </div>
 
       <template v-if="formMode === 'add'">
-        <ModalBillSelect mode="customer" ref="modalBill" @onSelectCustomer="fillDataCustomer"
-          @onSelectProduct="fillDataBill" title="ดึงข้อมูลลูกค้า"
-          :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
+        <ModalBillSelect
+          mode="customer"
+          ref="modalBill"
+          @onSelectCustomer="fillDataCustomer"
+          @onSelectProduct="fillDataBill"
+          title="ดึงข้อมูลลูกค้า"
+          :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
+        />
       </template>
       <template v-if="formMode === 'edit'">
-        <ModalBillSelect mode="product" ref="modalBill" @onSelectCustomer="fillDataCustomer"
-          @onSelectProduct="fillDataBill" title="ดึงรายการเครื่องมือ"
+        <ModalBillSelect
+          mode="product"
+          ref="modalBill"
+          @onSelectCustomer="fillDataCustomer"
+          @onSelectProduct="fillDataBill"
+          title="ดึงรายการเครื่องมือ"
           :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
-          :billCode="formInvoice.bill_code" />
+          :billCode="formInvoice.bill_code"
+        />
       </template>
 
-      <ModalWorkOrder ref="modalWorkOrder" @onSelect="addItems"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" />
-      <ModalCustomer ref="modalCustomer" @onSelect="onSelectCustomer" :customer-types="customerTypes"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" @clear="() => {
-          formInvoice.customer_id = ''
-          formInvoice.customer_name = ''
-        }
-          " />
-      <ModalContact ref="modalContact" @onSelect="onSelectContact"
-        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }" @clear="() => {
-          formInvoice.contact_id = ''
-          formInvoice.contact_name = ''
-        }
-          " />
+      <ModalWorkOrder
+        ref="modalWorkOrder"
+        @onSelect="addItems"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
+      />
+      <ModalCustomer
+        ref="modalCustomer"
+        @onSelect="onSelectCustomer"
+        :customer-types="customerTypes"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
+        @clear="
+          () => {
+            formInvoice.customer_id = ''
+            formInvoice.customer_name = ''
+          }
+        "
+      />
+      <ModalContact
+        ref="modalContact"
+        @onSelect="onSelectContact"
+        :customer="{ id: formInvoice.customer_id, name: formInvoice.customer_name }"
+        @clear="
+          () => {
+            formInvoice.contact_id = ''
+            formInvoice.contact_name = ''
+          }
+        "
+      />
 
-      <BModal v-if="itemView" v-model="visibleModalConfirmDel" id="modal__confirmDelItems" okTitle="ใช่"
-        ok-variant="danger" cancel-title="ไม่ใช่" @cancel="() => {
-          itemView = {}
-          visibleModalConfirmDel = false
-        }
-          ">
+      <BModal
+        v-if="itemView"
+        v-model="visibleModalConfirmDel"
+        id="modal__confirmDelItems"
+        okTitle="ใช่"
+        ok-variant="danger"
+        cancel-title="ไม่ใช่"
+        @cancel="
+          () => {
+            itemView = {}
+            visibleModalConfirmDel = false
+          }
+        "
+      >
         <template #header> ยืนยันลบรายการ ? </template>
 
         <p>
@@ -1480,7 +1814,8 @@ onUpdated(() => {
               <BTr>
                 <BTh rowspan="3" class="text-center">{{ itemView.product_name }}</BTh>
                 <BTh stacked-heading="Item Code" class="text-start">
-                  {{ itemView.bill_items_code }}</BTh>
+                  {{ itemView.bill_items_code }}</BTh
+                >
                 <BTd stacked-heading="ID No.">{{ itemView.id_no }}</BTd>
                 <BTd stacked-heading="Model">{{ itemView.model }}</BTd>
                 <BTd stacked-heading="S/N.">{{ itemView.serialnumber }}</BTd>
@@ -1492,12 +1827,23 @@ onUpdated(() => {
           </BTableSimple>
         </p>
       </BModal>
-      <BModal v-if="itemView" v-model="visibleModalPreview" id="modal__preview" okTitle="ปิด" okOnly okVariant="secondary"
-        size="xl" :title="`ID# ${itemView?.id}`" scrollable @cancel="() => {
-          itemView = {}
-          visibleModalPreview = false
-        }
-          ">
+      <BModal
+        v-if="itemView"
+        v-model="visibleModalPreview"
+        id="modal__preview"
+        okTitle="ปิด"
+        okOnly
+        okVariant="secondary"
+        size="xl"
+        :title="`ID# ${itemView?.id}`"
+        scrollable
+        @cancel="
+          () => {
+            itemView = {}
+            visibleModalPreview = false
+          }
+        "
+      >
         <!-- <template #header>ID# {{ itemView?.id }} </template> -->
 
         <p>

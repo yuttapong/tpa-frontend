@@ -1,1 +1,4 @@
-export const removeUndefinedAndNull = (string) => string.replace(/undefined/g, '')
+export const removeUndefinedAndNull = (text) => {
+  let _text = String(text)
+  return _text.replace(/null|undefined/g, '').trim()
+}

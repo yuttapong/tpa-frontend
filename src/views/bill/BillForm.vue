@@ -13,6 +13,7 @@ import { formatDate, formatISO } from 'date-fns'
 import { timezone } from '@/config'
 import { useAppStore } from '@/stores/appStore'
 import { toast } from 'vue3-toastify'
+import { removeUndefinedAndNull } from '@/helpers/string'
 
 const route = useRoute()
 const appStore = useAppStore()
@@ -111,8 +112,7 @@ const loadAddress = async (customerId) => {
       let a = data[0]
       console.log('addess', data)
       let text = `${a.address} ${a.subdistrict} ${a.district} ${a.province} ${a.postcode}`.trim()
-      console.log(text)
-      form.value.address_detail = text
+      form.value.address_detail = removeUndefinedAndNull(text)
     }
   } catch (error) {}
 }
@@ -182,8 +182,8 @@ const fillCertAddress = (data) => {
   let postcode = data?.postcode
   let country = data.country ? data.country : ''
   let all = `${address} ${subdistrict} ${district} ${province} ${postcode} ${country}`.trim()
-  form.value.cert_address_name = data?.customer_name
-  form.value.cert_address_detail = all.replace('null', '')
+  form.value.cert_address_name = removeUndefinedAndNull(data?.customer_name)
+  form.value.cert_address_detail = removeUndefinedAndNull(all)
   console.log('address cert', all)
 }
 const removeItem = (item, index) => {

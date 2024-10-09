@@ -7,7 +7,7 @@ export const useAppStore = defineStore('app', () => {
   const accesstoken = useLocalStorage('accesstoken', '')
   const expiredAt = useLocalStorage('expiredAt', '')
   const user = useLocalStorage('user', {})
-  const settings = useLocalStorage('settings', {
+  const settingData = useLocalStorage('settingData', {
     lang: 'th_TH',
     timezone: 'Asia/Bangkok',
     page: {
@@ -20,6 +20,7 @@ export const useAppStore = defineStore('app', () => {
   const ability = ref()
   const permissions = computed(() => user.value?.permissions || [])
   const token = computed(() => accesstoken.value)
+  const settings = computed(() => settingData.value)
   function initCasl() {
     const builder = new AbilityBuilder(ability.value)
     if (user.value.role.includes(['admin'])) {
@@ -43,7 +44,7 @@ export const useAppStore = defineStore('app', () => {
     return (accesstoken.value = data)
   }
   function setSetting(data) {
-    return (settings.value = data)
+    return (settingData.value = data)
   }
   function setPermissions(data) {
     return (permissions.value = data)

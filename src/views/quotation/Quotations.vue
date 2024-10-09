@@ -11,7 +11,7 @@
   <!-- End Page Title -->
 
   <section class="section profile">
-    <spinner :visible="loading" />
+
     <div class="row" v-if="items">
       <div class="col-xl-12">
         <div class="card">
@@ -43,6 +43,31 @@
             </ul>
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-index" id="qt-index">
+
+                <form @submit.prevent="search()">
+                  <div class="d-flex flex-wrap gap-2 my-2">
+                    <div class="">
+                      <select v-model="filterField" class="form-select form-select-sm">
+                        <option value="cerno">cerno</option>
+                        <option value="cerid">cerid</option>
+                        <option value="bill_code">bill_code</option>
+                        <option value="item_code">item_code</option>
+                      </select>
+                    </div>
+                    <div class="">
+                      <input type="search" v-model="filterValue" class="form-control form-control-sm"
+                        placeholder="keyword..." @keyup.enter="search" autofocus />
+                    </div>
+                    <div class="">
+
+                      <BButton type="submit" class="btn btn-light btn-sm" :loading="loading">
+                        <i class="bi bi-search"></i>
+                      </BButton>
+                    </div>
+                  </div>
+                </form>
+
+
                 <!-- Small tables -->
                 <div class="table-responsive">
                   <table class="table table-sm">
@@ -87,9 +112,13 @@
                   </table>
                 </div>
 
-                <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
+
+                <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
+                  :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
+
+                <!-- <vue-awesome-paginate :total-items="pagination.total" :items-per-page="pagination.per_page"
                   :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
-                  :on-click="onChangePage" />
+                  :on-click="onChangePage" /> -->
 
                 <!-- End small tables -->
               </div>
@@ -354,14 +383,19 @@ const loading = ref(true)
 const quotation = ref({})
 const modalQuotation = ref(null)
 
+const search = () => {
+  pagination.value.current_page = 1
+  loadData();
+}
 
 
 const onChangePage = (e, page) => {
-  console.log(e, page);
   pagination.value.current_page = page
   loadData()
 }
 const loadData = async () => {
+  items.value = []
+  loading.value = true
   let params = {
     page: pagination.value.current_page,
     per_page: pagination.value.per_page,

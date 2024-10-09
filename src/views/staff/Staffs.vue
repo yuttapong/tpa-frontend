@@ -12,7 +12,7 @@
   <!-- End Page Title -->
 
   <section class="section profile">
-    <spinner :visible="loading" />
+
     <div class="row" v-if="items">
       <div class="col-xl-12">
         <div class="card">
@@ -41,42 +41,31 @@
                     </BButton>
                   </div>
                   <div>
-                    <BFormInput
-                      size=" sm"
-                      type="search"
-                      v-model="formSearch.q"
-                      @keyup.enter="search"
-                    />
+                    <BFormInput size=" sm" type="search" v-model="formSearch.q" @keyup.enter="search" />
                   </div>
                   <div>
-                    <BButton variant="light" size="sm" type="button" @click="search">
+                    <BButton variant="light" size="sm" type="button" @click="search" :loading="loading">
                       <i class="bi bi-search"></i>
                     </BButton>
                   </div>
                 </div>
 
-                <StaffTable
-                  :items="items"
-                  @on-view="showStaff"
-                  @on-assign-lab="showLabAssign"
-                  @on-edit="showEdit"
-                  @on-assign-role="showRoleAssign"
-                />
-                <vue-awesome-paginate
-                  :items-per-page="pagination.per_page"
-                  :max-pages-shown="appStore.settings.page.maxPageShow"
-                  v-model="pagination.current_page"
-                  :on-click="onChangePage"
-                />
+                <StaffTable :items="items" @on-view="showStaff" @on-assign-lab="showLabAssign" @on-edit="showEdit"
+                  @on-assign-role="showRoleAssign" />
+
+                <BPagination v-model="pagination.current_page" :total-rows="pagination.total"
+                  :per-page="pagination.per_page" size="sm" class="my-0" @page-click="onChangePage" />
+
+                <!-- <vue-awesome-paginate :items-per-page="pagination.per_page"
+                  :max-pages-shown="appStore.settings.page.maxPageShow" v-model="pagination.current_page"
+                  :on-click="onChangePage" /> -->
               </div>
 
               <div class="tab-pane fade pt-3 qt-settings" id="qt-settings">
                 <!-- Settings Form -->
                 <form>
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
-                      >Default Appcal Role</label
-                    >
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Default Appcal Role</label>
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check" v-for="(role, key) in kanbanRoles" :key="key">
                         <span class="bi bi-check mx-3"></span>
@@ -87,19 +76,11 @@
                     </div>
                   </div>
                   <div class="row mb-3">
-                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label"
-                      >Kanban Role Level</label
-                    >
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Kanban Role Level</label>
                     <div class="col-md-8 col-lg-9">
                       <div class="form-check" v-for="(role, key) in kanbanRoles" :key="key">
-                        <input
-                          type="radio"
-                          name="kanban_defaultlevvel"
-                          v-model="setting.kanban_defaultLevel"
-                          :value="role.value"
-                          class="mx-3"
-                          :checked="role.value == setting.kanban_defaultLevel"
-                        />
+                        <input type="radio" name="kanban_defaultlevvel" v-model="setting.kanban_defaultLevel"
+                          :value="role.value" class="mx-3" :checked="role.value == setting.kanban_defaultLevel" />
                         <label class="form-check-label" for="changesMade">
                           {{ role.text }}
                         </label>
@@ -121,24 +102,12 @@
     </div>
 
     <!-- ######### START MODAL ############### -->
-    <div
-      class="modal"
-      id="staffModal"
-      ref="modalRef"
-      tabindex="-1"
-      aria-labelledby="staffModalLabel"
-      aria-hidden="true"
-    >
+    <div class="modal" id="staffModal" ref="modalRef" tabindex="-1" aria-labelledby="staffModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="staffModalLabel">Staff</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" style="min-height: 350px">
             <p>
@@ -146,30 +115,14 @@
             </p>
             <ul class="nav nav-tabs" id="staffTab" role="tablist">
               <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link"
-                  id="labs-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#labs"
-                  type="button"
-                  role="tab"
-                  aria-controls="labs"
-                  aria-selected="false"
-                >
+                <button class="nav-link" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs" type="button"
+                  role="tab" aria-controls="labs" aria-selected="false">
                   ห้องแล๊ปที่รับผิดชอบ
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link"
-                  id="roles-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#roles"
-                  type="button"
-                  role="tab"
-                  aria-controls="roles"
-                  aria-selected="false"
-                >
+                <button class="nav-link" id="roles-tab" data-bs-toggle="tab" data-bs-target="#roles" type="button"
+                  role="tab" aria-controls="roles" aria-selected="false">
                   สิทธิ์การใช้งาน
                 </button>
               </li>
@@ -194,21 +147,10 @@
     </div>
     <!-- ###########END MODAL ########### -->
     <LabAssignForm v-model:visible="visibleModalAssignLab" :data="staff" :settings="settings" />
-    <StaffForm
-      :mode="formMode"
-      v-model:visible="visibleModalEdit"
-      :data="staff"
-      :settings="settings"
-      @created="onCreated"
-      @updated="onUpdated"
-    />
-    <RoleAssign
-      :mode="formMode"
-      v-model:visible="visibleModalRole"
-      :data="staff"
-      :settings="settings"
-      @updated="onRoleUpdated"
-    />
+    <StaffForm :mode="formMode" v-model:visible="visibleModalEdit" :data="staff" :settings="settings" @created="onCreated"
+      @updated="onUpdated" />
+    <RoleAssign :mode="formMode" v-model:visible="visibleModalRole" :data="staff" :settings="settings"
+      @updated="onRoleUpdated" />
   </section>
 </template>
 
@@ -272,6 +214,8 @@ const getSettings = async () => {
 }
 getSettings()
 const loadData = async () => {
+  items.value = []
+  loading.value = true
   let params = {
     page: pagination.value.current_page,
     per_page: pagination.value.per_page,
@@ -297,7 +241,7 @@ const search = () => {
   pagination.value.current_page = 1
   loadData()
 }
-const onChangePage = (page) => {
+const onChangePage = (e, page) => {
   pagination.value.current_page = page
   loadData()
 }
@@ -306,7 +250,7 @@ const getStaff = async (id) => {
   try {
     const { data } = await api.get('/v2/staffs/' + id)
     staff.value = data
-  } catch (error) {}
+  } catch (error) { }
 }
 
 const getUserPermissions = async (staffId) => {
@@ -314,13 +258,13 @@ const getUserPermissions = async (staffId) => {
     const { data } = await api.get(`/v2/staffs/${staffId}/permissions`)
     roles.value = data?.roles
     permissions.value = data?.permissions
-  } catch (error) {}
+  } catch (error) { }
 }
 const getLabs = async (staffId) => {
   try {
     const { data } = await api.get(`/v2/staffs/${staffId}/labs/`)
     labs.value = data
-  } catch (error) {}
+  } catch (error) { }
 }
 const showStaff = (item) => {
   staff.value = item

@@ -21,6 +21,7 @@ import { invoiceStatuses } from '@/config'
 import { pointRangeToPricePerUnit } from '@/helpers/order'
 import { removeUndefinedAndNull } from '@/helpers/string'
 import DiscountAndReword from '../customer/components/DiscountAndReword.vue'
+import IsJob from '../bill/components/IsJob.vue'
 
 const appStore = useAppStore()
 const pagination = ref({
@@ -45,6 +46,7 @@ const visibleModalConfirmDel = ref(false)
 const visibleModalPreview = ref(false)
 const itemView = ref({})
 const errors = ref([])
+
 const formMode = computed(() => {
   if (formInvoice.value?.code !== undefined) {
     return 'edit'
@@ -55,7 +57,7 @@ const formMode = computed(() => {
 const modeModalBill = ref('customer')
 
 const invoiceStore = useInvoiceStore()
-
+const settings = computed(() => appStore.settings)
 const formSearch = ref({
   code: '',
   taxnumber: '',
@@ -96,7 +98,7 @@ const dueWithinList = [
 ]
 const formInvoice = ref({
   issue_date: formatDate(new Date(), 'yyyy-MM-dd'),
-  vat_percent: appStore.settings.vat,
+  vat_percent: settings.value.vat,
   items: [],
 })
 const formDiscountAdd = ref({
@@ -110,7 +112,7 @@ const formDiscountAdd = ref({
 })
 
 const items = computed(() => formInvoice.value.items)
-const vatPercent = computed(() => formInvoice.value.vat_percent || 0)
+const vatPercent = computed(() => Number(formInvoice.value.vat_percent))
 const discountCustomer = ref(0)
 const discountCustomerType = ref('percentage')
 const customerDiscount = ref()
@@ -209,16 +211,18 @@ const addItems = async (item) => {
 }
 
 const fillDataBill = async (bill, billItems) => {
-  formInvoice.value.note_customer = bill.note_customers
+  formInvoice.value.note_customer = bill?.note_customers
+  let _items = formInvoice.value.items
   if (billItems.length > 0) {
     billItems.map((item) => {
       let qty = item.qty || 1
       let price = Number(item.price)
       let total = Number(price) * qty
       let row = {
-        is_job: item.product.is_job || 1,
-        has_vat: item.product.has_vat || 1,
         item_id: 0,
+        invoice_id: invoiceId.value,
+        invoice_code: formInvoice.value?.code,
+        has_vat: item.product.has_vat || 1,
         bill_id: item.bill_id,
         bill_items_code: item.item_code,
         bill_items_id: item.item_id,
@@ -255,6 +259,7 @@ const fillDataBill = async (bill, billItems) => {
         product: item?.product,
         staff_id: appStore.user.id,
         invoice_item_id: item?.invoice_item_id,
+        is_job: item.product.is_job || 1,
       }
       //ใส่ส่วนลลูกค้าให้กับเครื่องมีอถ้าหากพบข้อมูล
       if (customerDiscount.value) {
@@ -266,10 +271,13 @@ const fillDataBill = async (bill, billItems) => {
       }
       console.log("customer discount", customerDiscount.value);
       console.log("row item", row);
-      formInvoice.value.items.push(row)
-    })
-  }
+      _items.push(row)
 
+    })
+
+  }
+  formInvoice.value.items = _items
+  console.log("allItems", formInvoice.value.items);
   calculate()
   setTimeout(() => save(), 500)
 }
@@ -422,128 +430,7 @@ const openModalCustomer = () => {
 const updatePriceItems = (row) => {
   calculate()
 }
-// /**
-//  * คำนวณส่วนลดให้ให้ฟอร์มใน Modal แก้ไขรายการการย่าย
-//  * @param {} type
-//  */
-// const updateDiscountItem = (type) => {
-//   if (!type) return false
-//   let row = infoProduct.value
-//   let percent = 0
-//   let amount = 0
-//   let price = Number(row.price)
-//   // let price = pointRangeToPricePerUnit(row.point, row.point_price, row.range, row.range_price);
-//   row.total = price
 
-//   if (type) {
-//     switch (type) {
-//       case 'customer':
-//         if (formDiscountAdd.value.discountCustomerType == 'percentage') {
-//           percent = Number(formDiscountAdd.value.discountCustomerValue)
-//           amount = (Number(formDiscountAdd.value.discountCustomerValue) * price) / 100
-//         } else {
-//           amount = Number(formDiscountAdd.value.discountCustomerValue)
-//           percent = (Number(formDiscountAdd.value.discountCustomerValue) * 100) / price
-//         }
-//         row.discount_customer_type = formDiscountAdd.value.discountCustomerType
-//         row.discount_customer_percent = percent
-//         row.discount_customer = amount
-//         row.discount =
-//           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-//         row.net = Number(price) - Number(row.discount)
-//         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
-//           if (itemKey === formDiscountAdd.value.index) {
-//             item = row
-//           }
-//           return item
-//         })
-//         calculate()
-//         break
-//       case 'lab':
-//         if (formDiscountAdd.value.discountLabType == 'percentage') {
-//           percent = Number(formDiscountAdd.value.discountLabValue)
-//           amount = (Number(formDiscountAdd.value.discountLabValue) * price) / 100
-//         } else {
-//           amount = Number(formDiscountAdd.value.discountLabValue)
-//           percent = (Number(formDiscountAdd.value.discountLabValue) * 100) / price
-//         }
-//         row.discount_lab_type = formDiscountAdd.value.discountLabType
-//         row.discount_lab_percent = percent
-//         row.discount_lab = amount
-//         row.discount =
-//           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-//         row.net = Number(price) - Number(row.discount)
-//         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
-//           if (itemKey === formDiscountAdd.value.index) {
-//             item = row
-//           }
-//           return item
-//         })
-//         calculate()
-//         break
-//       case 'order':
-//         if (formDiscountAdd.value.discountOrderType == 'percentage') {
-//           percent = Number(formDiscountAdd.value.discountOrderValue)
-//           amount = (Number(formDiscountAdd.value.discountOrderValue) * price) / 100
-//         } else {
-//           amount = Number(formDiscountAdd.value.discountOrderValue)
-//           percent = (Number(formDiscountAdd.value.discountOrderValue) * 100) / price
-//         }
-//         row.discount_order_type = formDiscountAdd.value.discountOrderType
-//         row.discount_order_percent = percent
-//         row.discount_order = amount
-//         row.discount =
-//           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-//         row.net = Number(price) - Number(row.discount)
-//         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
-//           if (itemKey === formDiscountAdd.value.index) {
-//             item = row
-//           }
-//           return item
-//         })
-//         calculate()
-//         break
-//       case 'price':
-//         // discount customer
-//         if (row.discount_customer_type == 'percentage') {
-//           row.discount_customer_percent = Number(row.discount_customer_percent)
-//           row.discount_customer = (Number(row.discount_customer_percent) * price) / 100
-//         } else if (row.discount_customer_type == 'amount') {
-//           row.discount_customer = Number(row.discount_customer)
-//           row.discount_customer_percent = (Number(row.discount_customer) * 100) / price
-//         }
-//         // discount lab
-//         if (row.discount_lab_type == 'percentage') {
-//           row.discount_lab_percent = Number(row.discount_lab_percent)
-//           row.discount_lab = (Number(row.discount_lab_percent) * price) / 100
-//         } else if (row.discount_lab_type == 'amount') {
-//           row.discount_lab = Number(row.discount_lab)
-//           row.discount_lab_percent = (Number(row.discount_lab) * 100) / price
-//         }
-//         // discount order
-//         if (row.discount_order_type == 'percentage') {
-//           row.discount_order_percent = Number(row.discount_order_percent)
-//           row.discount_order = (Number(row.discount_order_percent) * price) / 100
-//         } else if (row.discount_order_type == 'amount') {
-//           row.discount_order = Number(row.discount_order)
-//           row.discount_order_percent = (Number(row.discount_order) * 100) / price
-//         }
-//         //console.log('price', row.discount_customer_percent, row.discount_customer, row.discount_customer_type);
-
-//         row.discount =
-//           Number(row.discount_customer) + Number(row.discount_lab) + Number(row.discount_order)
-//         row.net = Number(price) - Number(row.discount)
-//         formInvoice.value.items = formInvoice.value.items.map((item, itemKey) => {
-//           if (itemKey === formDiscountAdd.value.index) {
-//             item = row
-//           }
-//           return item
-//         })
-//         calculate()
-//         break
-//     }
-//   }
-// }
 
 /**
  * คำนวณตัวเลขทั้งหมดก่อนส่งไปบันทึก DB
@@ -690,7 +577,7 @@ const onSelectCustomer = (data) => {
   const customer = data?.customers
   const contact = data?.contacts
 
-  console.log("bill", data);
+
   formInvoice.value.customer_id = customer?.id
   formInvoice.value.customer_id = customer?.id
   formInvoice.value.customer_name = customer?.companyname
@@ -784,11 +671,60 @@ const save = async (notify = false) => {
     formInvoice.value.totalvat = (totalPriceAfterDiscount.value * vatPercent.value) / 100
     formInvoice.value.totalnet = totalNet.value
     formInvoice.value.staff_id = appStore.user.id
+    formInvoice.value.items = formInvoice.value.items.map((i, iKey) => {
+      const data = new Object();
+      data.bill_items_sorter = iKey + 1
+      data.item_id = i.item_id;
+      data.bill_items_id = i.bill_items_id;
+      data.bill_items_code = i.bill_items_code;
+      data.bill_code = i.bill_code;
+      data.bill_id = i.bill_id;
+      data.cerno = i.cerno;
+      data.product_id = i.product_id;
+      data.product_no = i.product_no;
+      data.product_name = i.product_name;
+      data.po_no = i.po_no;
+      data.qty = i.qty;
+      data.price = i.price;
+      data.total = Number(i.total);
+      data.has_vat = i.has_vat;
+      data.net = i.net;
+      data.manufaturer_name = i.manufaturer_name;
+      data.point = i.point;
+      data.point_price = i.point_price;
+      data.range = i.range;
+      data.range_price = i.range_price;
+      data.manufaturer_name = i.manufaturer_name;
+      data.is_job = i.is_job
+      data.invoice_id = i.invoice_id
+      data.invoice_code = i.invoice_code
+      data.id_no = i.id_no
+      data.model = i.is_job
+      data.serialnumber = i.serialnumber
+      data.barcode_no = i.barcode_no
+      data.status = i.status
+      data.test_point = i.test_point
+      data.vat = i.vat
+      data.remark = i.remark
+      data.discount = i.discount
+      data.discount_customer = i.discount_customer
+      data.discount_customer_percent = i.discount_customer_percent
+      data.discount_customer_type = i.discount_customer_type
+      data.discount_lab = i.discount_lab
+      data.discount_lab_percent = i.discount_lab_percent
+      data.discount_lab_type = i.discount_lab_type
+      data.discount_order = i.discount_order
+      data.discount_order_percent = i.discount_order_percent
+      data.discount_order_type = i.discount_order_type
+      data.invoice_item_id = i?.invoice_item_id
 
+      return data
+    })
+    console.log("_items_", formInvoice.value.items);
     if (formMode.value === 'edit') {
       loading.value = true
       const { data, status } = await api
-        .put(`v2/invoices/${formInvoice.value.id}`, formInvoice.value)
+        .post(`v2/invoices/${formInvoice.value.id}`, formInvoice.value)
         .catch((err) => {
           console.error(err)
           errors.value = err.response.data.errors
@@ -805,6 +741,7 @@ const save = async (notify = false) => {
       if (status == 200) {
         loading.value = false
         formInvoice.value = data?.data
+        itemsSelected.value = []
 
         //fill address
         let bill = data.data
@@ -844,6 +781,7 @@ const save = async (notify = false) => {
       try {
         const { data, status } = await api.post('v2/invoices', formInvoice.value)
         if (status == 200) {
+          itemsSelected.value = []
           loading.value = false
           hasError.value = true
           errors.value = loading.value = false
@@ -895,7 +833,7 @@ const tableFields = [
   { key: 'discount_lab', label: 'ส่วนลด Lab', sortable: false },
   { key: 'discount_order', label: 'ส่วนลด Order', sortable: false },
   { key: 'qty', label: 'QTY', sortable: false },
-  { key: 'total', label: 'จำนวนเงิน', sortable: false },
+  { key: 'total', label: 'ราคาสินค้า', sortable: false },
   { key: 'discount', label: 'ส่วนลด', sortable: false },
   { key: 'vat', label: 'VAT', sortable: false },
   { key: 'net', label: ' ยอดรวมสุทธิ', sortable: false },
@@ -926,10 +864,12 @@ onMounted(() => {
   }
   // set default init data
   if (formMode.value == 'add') {
+
     formInvoice.value.due_within = 0
     formInvoice.value.invoice_status = 'draft'
     formInvoice.value.discount_pattern = 'A'
-    formInvoice.value.vat_percent = appStore.settings.vat
+    formInvoice.value.vat_percent = Number(settings.value.vat)
+    console.log("add", formInvoice.value);
   }
 })
 const customerTypeCode = ref()
@@ -1129,11 +1069,13 @@ onUpdated(() => {
                     <template #cell(product_code)="row">
                       <div style="min-width: 115px" class="">
                         <small> {{ row.item?.product?.code }}</small>
+
                       </div>
                     </template>
                     <template #cell(item_code)="row">
                       <div style="min-width: 115px" class="">
                         <small> {{ row.item?.bill_items_code }}</small>
+                        <IsJob :data="row.item?.is_job" />
                       </div>
                     </template>
                     <template #cell(bill_code)="row">

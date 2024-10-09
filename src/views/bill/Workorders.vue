@@ -11,7 +11,7 @@
   <!-- End Page Title -->
 
   <section class="section profile">
-    <spinner :visible="loading" />
+
 
     <div class="row">
       <div class="col-xl-12">
@@ -65,29 +65,30 @@
                     <div class="d-flex flex-wrap gap-2">
 
                       <div class="d-flex gap-3 flex-wrap">
+
                         <div class="col-6 col-md-4 col-xl-3">
-                          <label>Tax Number</label>
-                          <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
-                            class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
-                            @keyup.enter="onSearch" />
-                        </div>
-                        <div class="col-6 col-md-4 col-xl-3">
-                          <label>Item ID</label>
+
                           <input type="search" v-model="formSearch.item_id" class="form-control form-control-sm"
                             placeholder="Item ID" @keyup.enter="onSearch" />
                         </div>
                         <div class="col-6 col-md-4 col-xl-3">
-                          <label>Item Code</label>
+
                           <input type="search" v-model="formSearch.item_code" class="form-control form-control-sm"
                             placeholder="Item Code" @keyup.enter="onSearch" autofocus />
                         </div>
                         <div class="col-6 col-md-4 col-xl-3">
-                          <label>Bill Code</label>
+
                           <input type="search" v-model="formSearch.bill_code" class="form-control form-control-sm"
                             placeholder="Bill Code" @keyup.enter="onSearch" />
                         </div>
+                        <div class="col-12 col-md-12 col-xl-12">
+
+                          <input type="search" v-model="formSearch.taxnumber" name="taxnumber"
+                            class="form-control form-control-sm" placeholder="เลขประจำตัวผู้เสียภาษี/บัตรประชาชน"
+                            @keyup.enter="onSearch" />
+                        </div>
                         <div class="col-12 col-md-6" v-if="labs">
-                          <label>Lab</label>
+
 
                           <select v-model="formSearch.lab_id" class="form-select form-select-sm" @change="onSelectLab">
                             <option value="">--Lab--</option>
@@ -99,7 +100,7 @@
                           </select>
                         </div>
                         <div class="col-12 col-md-6" v-if="labs">
-                          <label>Sub Lab</label>
+
                           <select class="form-select form-select-sm" v-model="formSearch.sublab_id">
                             <option value="">--SubLab--</option>
                             <option v-for="(item, key) in sublabs" :key="item" :value="item.id">
@@ -341,6 +342,7 @@ const onResetSearch = () => {
   formSearch.value.bill_code = ""
   formSearch.value.barcode_no = ""
   formSearch.value.lab_id = ""
+  formSearch.value.sublab_id = ""
 }
 const getLabs = async () => {
   const { data } = await api.get('/v2/labs/all')

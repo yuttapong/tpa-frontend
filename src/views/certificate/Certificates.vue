@@ -32,7 +32,7 @@
             <div class="tab-content pt-2">
               <div class="tab-pane fade show active qt-index" id="qt-index">
                 <form @submit.prevent="search()">
-                  <div class="d-flex flex-wrap gap-2">
+                  <div class="d-flex flex-wrap gap-2 my-2">
                     <div class="">
                       <select v-model="filterField" class="form-select form-select-sm">
                         <option value="cerno">cerno</option>
@@ -217,6 +217,7 @@ const formSearch = ref({
   q: '',
 })
 const loadData = async () => {
+  items.value = []
   loading.value = true
   let params = {
     page: pagination.value.current_page,

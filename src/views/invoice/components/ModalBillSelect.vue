@@ -153,6 +153,7 @@
                     <table class="table table-sm table-striped table-bordered table-hover">
                       <thead>
                         <tr>
+                          <th scope="col" class="fw-bold">ลำดับ</th>
                           <th scope="col" class="fw-bold text-center">
                             <span v-if="selectedItems.length > 0"> {{ selectedItems.length }}</span>
                           </th>
@@ -177,6 +178,7 @@
                       </tbody>
                       <tbody v-if="!workorderLoading && bill.items">
                         <tr v-for="(item, index) in bill.items" :key="index">
+                          <th>{{ index + 1 }}</th>
                           <th class="text-center align-middle">
                             <template v-if="!isExistItem(item) && item.invoice_item_id == 0">
                               <input class="form-checkbox" v-model="selectedItems" type="checkbox" :value="item" />
@@ -185,13 +187,22 @@
 
                           <td class="align-middle" nowrap>
                             <span class="p-1">{{ item.item_code }}</span>
+                            <div v-if="item.product_id">
+                              <BBadge variant="info" v-if="Boolean(item?.product?.is_job) == true">JOB
+                              </BBadge>
+                            </div>
                           </td>
-                          <td>
+                          <td nowrap>
                             <div class="">
                               <i class="text-danger">{{ item.product_name }}</i>
                               <br />{{ item.manufaturer_name }}
+
+                              <div>
+
+                              </div>
                             </div>
                             <ProductMeta :item="item" />
+
                           </td>
                           <td class="text-right">{{ item.point }}</td>
                           <td class="text-right">
@@ -308,7 +319,6 @@ const pagination = ref({
 
 const _show = () => {
   loadData()
-  invoiceStore.loadCart()
   emit('show', selectedItems.value)
   modalEl.show()
 }
@@ -368,7 +378,6 @@ const bill = ref({})
 
 const getBill = async (id) => {
   workorderLoading.value = true
-  console.log('id', id)
   const { data } = await api.get(`/v2/bills/${id}`, {
     params: {},
   })
@@ -381,7 +390,7 @@ const getBill = async (id) => {
 }
 const getBillByCode = async (code) => {
   workorderLoading.value = true
-
+  bill.value = {}
   const { data, status } = await api.get(`/v2/bills/code/${code}`, {
     params: {},
   })
@@ -462,7 +471,6 @@ const search = () => {
   bill.value = {}
   bill.value.items = []
   pagination.value.current_page = 1
-  invoiceStore.loadCart()
   loadData()
 }
 const onChangePage = (page) => {
